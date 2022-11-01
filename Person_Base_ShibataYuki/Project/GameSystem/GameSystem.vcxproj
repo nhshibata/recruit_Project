@@ -1,0 +1,268 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" ToolsVersion="15.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup Label="ProjectConfigurations">
+    <ProjectConfiguration Include="Debug|Win32">
+      <Configuration>Debug</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|Win32">
+      <Configuration>Release</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Debug|x64">
+      <Configuration>Debug</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|x64">
+      <Configuration>Release</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="..\..\Library\GameSystem\components.h" />
+    <ClInclude Include="..\..\Library\GameSystem\Component\BaseComponent.h" />
+    <ClInclude Include="..\..\Library\GameSystem\Component\Camera\camera.h" />
+    <ClInclude Include="..\..\Library\GameSystem\Component\Camera\debugCamera.h" />
+    <ClInclude Include="..\..\Library\GameSystem\Component\Camera\gameCamera.h" />
+    <ClInclude Include="..\..\Library\GameSystem\Component\Collision\boxCollision.h" />
+    <ClInclude Include="..\..\Library\GameSystem\Component\Collision\collision.h" />
+    <ClInclude Include="..\..\Library\GameSystem\Component\Collision\sphereCollision.h" />
+    <ClInclude Include="..\..\Library\GameSystem\Component\component.h" />
+    <ClInclude Include="..\..\Library\GameSystem\Component\cursor.h" />
+    <ClInclude Include="..\..\Library\GameSystem\Component\Light\directionalLight.h" />
+    <ClInclude Include="..\..\Library\GameSystem\Component\Light\light.h" />
+    <ClInclude Include="..\..\Library\GameSystem\Component\Renderer\billboardRenderer.h" />
+    <ClInclude Include="..\..\Library\GameSystem\Component\Renderer\boxRenderer.h" />
+    <ClInclude Include="..\..\Library\GameSystem\Component\Renderer\effekseerRenderer.h" />
+    <ClInclude Include="..\..\Library\GameSystem\Component\Renderer\meshRenderer.h" />
+    <ClInclude Include="..\..\Library\GameSystem\Component\Renderer\modelRenderer.h" />
+    <ClInclude Include="..\..\Library\GameSystem\Component\Renderer\polygonRenderer.h" />
+    <ClInclude Include="..\..\Library\GameSystem\Component\Renderer\renderer.h" />
+    <ClInclude Include="..\..\Library\GameSystem\Component\Renderer\sphereRenderer.h" />
+    <ClInclude Include="..\..\Library\GameSystem\Component\Renderer\textRenderer.h" />
+    <ClInclude Include="..\..\Library\GameSystem\Component\Transform\rectTransform.h" />
+    <ClInclude Include="..\..\Library\GameSystem\Component\Transform\rigidbody.h" />
+    <ClInclude Include="..\..\Library\GameSystem\Component\Transform\transform.h" />
+    <ClInclude Include="..\..\Library\GameSystem\Component\Transform\Tween.h" />
+    <ClInclude Include="..\..\Library\GameSystem\Factory\componentFactory.h" />
+    <ClInclude Include="..\..\Library\GameSystem\Factory\objectFactory.h" />
+    <ClInclude Include="..\..\Library\GameSystem\gameInstance.h" />
+    <ClInclude Include="..\..\Library\GameSystem\GameObject\BaseObject.h" />
+    <ClInclude Include="..\..\Library\GameSystem\GameObject\gameObject.h" />
+    <ClInclude Include="..\..\Library\GameSystem\GameObject\layer.h" />
+    <ClInclude Include="..\..\Library\GameSystem\GameObject\tag.h" />
+    <ClInclude Include="..\..\Library\GameSystem\GameObject\UIGameObject.h" />
+    <ClInclude Include="..\..\Library\GameSystem\Manager\DrawManager.h" />
+    <ClInclude Include="..\..\Library\GameSystem\Manager\gameObjectManager.h" />
+    <ClInclude Include="..\..\Library\GameSystem\Manager\instantResourceManager.h" />
+    <ClInclude Include="..\..\Library\GameSystem\Manager\sceneManager.h" />
+    <ClInclude Include="..\..\Library\GameSystem\propertyCereal.h" />
+    <ClInclude Include="..\..\Library\GameSystem\Scene\buildScene.h" />
+    <ClInclude Include="..\..\Library\GameSystem\Scene\scene.h" />
+    <ClInclude Include="..\..\Library\GameSystem\Scene\sceneTransitionDetection.h" />
+    <ClInclude Include="..\..\Library\GameSystem\Scene\titleScene.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="..\..\Library\GameSystem\components.cpp" />
+    <ClCompile Include="..\..\Library\GameSystem\Component\BaseComponent.cpp">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
+    </ClCompile>
+    <ClCompile Include="..\..\Library\GameSystem\Component\Camera\camera.cpp" />
+    <ClCompile Include="..\..\Library\GameSystem\Component\Camera\debugCamera.cpp" />
+    <ClCompile Include="..\..\Library\GameSystem\Component\Camera\gameCamera.cpp" />
+    <ClCompile Include="..\..\Library\GameSystem\Component\Collision\boxCollision.cpp" />
+    <ClCompile Include="..\..\Library\GameSystem\Component\Collision\collision.cpp" />
+    <ClCompile Include="..\..\Library\GameSystem\Component\Collision\sphereCollision.cpp" />
+    <ClCompile Include="..\..\Library\GameSystem\Component\component.cpp" />
+    <ClCompile Include="..\..\Library\GameSystem\Component\cursor.cpp" />
+    <ClCompile Include="..\..\Library\GameSystem\Component\Light\directionalLight.cpp" />
+    <ClCompile Include="..\..\Library\GameSystem\Component\Light\light.cpp" />
+    <ClCompile Include="..\..\Library\GameSystem\Component\Renderer\billboardRenderer.cpp" />
+    <ClCompile Include="..\..\Library\GameSystem\Component\Renderer\boxRenderer.cpp" />
+    <ClCompile Include="..\..\Library\GameSystem\Component\Renderer\effekseerRenderer.cpp" />
+    <ClCompile Include="..\..\Library\GameSystem\Component\Renderer\meshRenderer.cpp" />
+    <ClCompile Include="..\..\Library\GameSystem\Component\Renderer\modelRenderer.cpp" />
+    <ClCompile Include="..\..\Library\GameSystem\Component\Renderer\polygonRenderer.cpp" />
+    <ClCompile Include="..\..\Library\GameSystem\Component\Renderer\renderer.cpp" />
+    <ClCompile Include="..\..\Library\GameSystem\Component\Renderer\sphereRenderer.cpp" />
+    <ClCompile Include="..\..\Library\GameSystem\Component\Renderer\textRenderer.cpp" />
+    <ClCompile Include="..\..\Library\GameSystem\Component\Transform\rectTrabsform.cpp" />
+    <ClCompile Include="..\..\Library\GameSystem\Component\Transform\rigidbody.cpp" />
+    <ClCompile Include="..\..\Library\GameSystem\Component\Transform\transform.cpp" />
+    <ClCompile Include="..\..\Library\GameSystem\Component\Transform\Tween.cpp" />
+    <ClCompile Include="..\..\Library\GameSystem\Factory\componentFactory.cpp" />
+    <ClCompile Include="..\..\Library\GameSystem\GameObject\BaseObject.cpp">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
+    </ClCompile>
+    <ClCompile Include="..\..\Library\GameSystem\GameObject\gameObject.cpp" />
+    <ClCompile Include="..\..\Library\GameSystem\GameObject\tag.cpp" />
+    <ClCompile Include="..\..\Library\GameSystem\Manager\DrawManager.cpp" />
+    <ClCompile Include="..\..\Library\GameSystem\Manager\gameObjectManager.cpp" />
+    <ClCompile Include="..\..\Library\GameSystem\Manager\instantResourceManager.cpp" />
+    <ClCompile Include="..\..\Library\GameSystem\Manager\sceneManager.cpp" />
+    <ClCompile Include="..\..\Library\GameSystem\Scene\buildScene.cpp" />
+    <ClCompile Include="..\..\Library\GameSystem\Scene\scene.cpp" />
+    <ClCompile Include="..\..\Library\GameSystem\Scene\sceneTransitionDetection.cpp" />
+    <ClCompile Include="..\..\Library\GameSystem\Scene\titleScene.cpp" />
+  </ItemGroup>
+  <PropertyGroup Label="Globals">
+    <VCProjectVersion>15.0</VCProjectVersion>
+    <ProjectGuid>{905CCD21-988F-406B-BA25-B3580DB58F1C}</ProjectGuid>
+    <Keyword>Win32Proj</Keyword>
+    <RootNamespace>GameSystem</RootNamespace>
+    <WindowsTargetPlatformVersion>10.0.17763.0</WindowsTargetPlatformVersion>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
+    <ConfigurationType>Application</ConfigurationType>
+    <UseDebugLibraries>true</UseDebugLibraries>
+    <PlatformToolset>v141</PlatformToolset>
+    <CharacterSet>Unicode</CharacterSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
+    <ConfigurationType>Application</ConfigurationType>
+    <UseDebugLibraries>false</UseDebugLibraries>
+    <PlatformToolset>v141</PlatformToolset>
+    <WholeProgramOptimization>true</WholeProgramOptimization>
+    <CharacterSet>Unicode</CharacterSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="Configuration">
+    <ConfigurationType>StaticLibrary</ConfigurationType>
+    <UseDebugLibraries>true</UseDebugLibraries>
+    <PlatformToolset>v141</PlatformToolset>
+    <CharacterSet>MultiByte</CharacterSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="Configuration">
+    <ConfigurationType>StaticLibrary</ConfigurationType>
+    <UseDebugLibraries>false</UseDebugLibraries>
+    <PlatformToolset>v141</PlatformToolset>
+    <WholeProgramOptimization>true</WholeProgramOptimization>
+    <CharacterSet>MultiByte</CharacterSet>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
+  <ImportGroup Label="ExtensionSettings">
+  </ImportGroup>
+  <ImportGroup Label="Shared">
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <PropertyGroup Label="UserMacros" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    <LinkIncremental>true</LinkIncremental>
+    <OutDir>$(SolutionDir)exe\$(Configuration)\</OutDir>
+    <IncludePath>$(SolutionDir)Library\Effekseer;$(SolutionDir)Source;$(SolutionDir)Library;$(SolutionDir)Library;$(IncludePath);$(IncludePath)</IncludePath>
+    <LibraryPath>$(SolutionDir)exe\$(Configuration)\;$(SolutionDir)Binary;$(SolutionDir)..\..\DirectXTex;$(LibraryPath)</LibraryPath>
+    <IntDir>$(SolutionDir)Binary\$(ProjectName)\$(Platform)\$(Configuration)\</IntDir>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <LinkIncremental>true</LinkIncremental>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <LinkIncremental>false</LinkIncremental>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+    <LinkIncremental>false</LinkIncremental>
+    <OutDir>$(SolutionDir)exe\$(Configuration)\</OutDir>
+    <IncludePath>$(SolutionDir)Library\Effekseer;$(SolutionDir)Source;$(SolutionDir)Library;$(SolutionDir)Library;$(IncludePath)</IncludePath>
+    <LibraryPath>$(SolutionDir)exe\$(Configuration)\;$(SolutionDir)..\..\DirectXTex;$(LibraryPath)</LibraryPath>
+    <IntDir>$(SolutionDir)Binary\$(ProjectName)\$(Platform)\$(Configuration)\</IntDir>
+  </PropertyGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    <ClCompile>
+      <WarningLevel>Level3</WarningLevel>
+      <Optimization>Disabled</Optimization>
+      <SDLCheck>false</SDLCheck>
+      <PreprocessorDefinitions>_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <ConformanceMode>true</ConformanceMode>
+      <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+      <AdditionalIncludeDirectories>$(SolutionDir)..\..\DirectXTex\x64;$(SolutionDir)..\..\Assimp\include;$(SolutionDir)..\..\Assimp;$(SolutionDir)..\..\DirectXTex;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalOptions>/bigobj %(AdditionalOptions)</AdditionalOptions>
+      <LanguageStandard>stdcpp17</LanguageStandard>
+    </ClCompile>
+    <Link>
+      <SubSystem>Console</SubSystem>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+    </Link>
+    <Lib>
+      <OutputFile>$(OutDir)$(TargetName)$(TargetExt)</OutputFile>
+      <AdditionalLibraryDirectories>
+      </AdditionalLibraryDirectories>
+    </Lib>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <ClCompile>
+      <PrecompiledHeader>
+      </PrecompiledHeader>
+      <WarningLevel>Level3</WarningLevel>
+      <Optimization>Disabled</Optimization>
+      <SDLCheck>true</SDLCheck>
+      <PreprocessorDefinitions>WIN32;_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <ConformanceMode>true</ConformanceMode>
+    </ClCompile>
+    <Link>
+      <SubSystem>Console</SubSystem>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <ClCompile>
+      <PrecompiledHeader>
+      </PrecompiledHeader>
+      <WarningLevel>Level3</WarningLevel>
+      <Optimization>MaxSpeed</Optimization>
+      <FunctionLevelLinking>true</FunctionLevelLinking>
+      <IntrinsicFunctions>true</IntrinsicFunctions>
+      <SDLCheck>true</SDLCheck>
+      <PreprocessorDefinitions>WIN32;NDEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <ConformanceMode>true</ConformanceMode>
+    </ClCompile>
+    <Link>
+      <SubSystem>Console</SubSystem>
+      <EnableCOMDATFolding>true</EnableCOMDATFolding>
+      <OptimizeReferences>true</OptimizeReferences>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+    <ClCompile>
+      <WarningLevel>Level3</WarningLevel>
+      <Optimization>MaxSpeed</Optimization>
+      <FunctionLevelLinking>true</FunctionLevelLinking>
+      <IntrinsicFunctions>true</IntrinsicFunctions>
+      <SDLCheck>false</SDLCheck>
+      <PreprocessorDefinitions>NDEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <ConformanceMode>true</ConformanceMode>
+      <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
+      <AdditionalIncludeDirectories>$(SolutionDir)..\..\DirectXTex\x64;$(SolutionDir)..\..\Assimp\include;$(SolutionDir)..\..\Assimp;$(SolutionDir)..\..\DirectXTex;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalOptions>/bigobj %(AdditionalOptions)</AdditionalOptions>
+      <LanguageStandard>stdcpp17</LanguageStandard>
+    </ClCompile>
+    <Link>
+      <SubSystem>Console</SubSystem>
+      <EnableCOMDATFolding>true</EnableCOMDATFolding>
+      <OptimizeReferences>true</OptimizeReferences>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+    </Link>
+    <Lib>
+      <OutputFile>$(OutDir)$(TargetName)$(TargetExt)</OutputFile>
+      <AdditionalLibraryDirectories>
+      </AdditionalLibraryDirectories>
+    </Lib>
+  </ItemDefinitionGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
+  <ImportGroup Label="ExtensionTargets">
+  </ImportGroup>
+</Project>

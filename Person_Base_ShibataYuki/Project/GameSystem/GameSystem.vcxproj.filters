@@ -1,0 +1,318 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="ソース ファイル">
+      <UniqueIdentifier>{4FC737F1-C7A5-4376-A066-2A32D752A2FF}</UniqueIdentifier>
+      <Extensions>cpp;c;cc;cxx;def;odl;idl;hpj;bat;asm;asmx</Extensions>
+    </Filter>
+    <Filter Include="ヘッダー ファイル">
+      <UniqueIdentifier>{93995380-89BD-4b04-88EB-625FBE52EBFB}</UniqueIdentifier>
+      <Extensions>h;hh;hpp;hxx;hm;inl;inc;ipp;xsd</Extensions>
+    </Filter>
+    <Filter Include="リソース ファイル">
+      <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
+      <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
+    </Filter>
+    <Filter Include="ヘッダー ファイル\Component">
+      <UniqueIdentifier>{2dc5eead-6067-45d2-98b8-9f8bc8fe44e2}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ソース ファイル\Component">
+      <UniqueIdentifier>{f7125c9b-52b4-46cc-81f9-0f85d5706a5b}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ソース ファイル\GameObject">
+      <UniqueIdentifier>{6877c947-9e69-4707-957a-cb87eb8d2ab2}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ヘッダー ファイル\GameObject">
+      <UniqueIdentifier>{caaaa556-9d71-4c8f-9946-0b0730541d37}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ソース ファイル\Manager">
+      <UniqueIdentifier>{918c2ab6-58fe-4313-a306-3fecf207eebf}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ヘッダー ファイル\Manager">
+      <UniqueIdentifier>{5c14c5c5-1ad6-47e1-8c32-73d20395f26e}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ヘッダー ファイル\Scene">
+      <UniqueIdentifier>{81b4340c-6182-46fe-bf58-26299aa2e453}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ソース ファイル\Scene">
+      <UniqueIdentifier>{e3bceeb4-246a-4b37-b108-573b6e1013bd}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ソース ファイル\Component\Camera">
+      <UniqueIdentifier>{b4c856b3-6e95-4399-95a8-9dc378b7c87e}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ヘッダー ファイル\Component\Camera">
+      <UniqueIdentifier>{9efba1bc-f2a7-4704-95e8-65945676c5aa}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ソース ファイル\Component\Collision">
+      <UniqueIdentifier>{c27c7266-1d45-435a-8f01-e3791e5230fa}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ヘッダー ファイル\Component\Collision">
+      <UniqueIdentifier>{05b4084f-0757-4c4f-8f73-11ee759a2388}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ヘッダー ファイル\Component\Light">
+      <UniqueIdentifier>{46bbd5bc-9432-48e0-aa41-b21d6f6c43c5}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ソース ファイル\Component\Light">
+      <UniqueIdentifier>{190f99d6-712a-4a44-8156-31a54ee23f4c}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ソース ファイル\Component\Renderer">
+      <UniqueIdentifier>{bb898a05-71e7-4a7d-b3de-f7ad2d5c2e30}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ヘッダー ファイル\Component\Renderer">
+      <UniqueIdentifier>{81bfc1c7-e12d-4ff9-9c6d-da08871fe304}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ヘッダー ファイル\Component\Transform">
+      <UniqueIdentifier>{09b1f375-1e36-4c96-8cbc-f02c69bf8e3d}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ソース ファイル\Component\Transform">
+      <UniqueIdentifier>{5ab89fda-ecdb-471a-9e75-2139d0e6ed43}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ヘッダー ファイル\Factory">
+      <UniqueIdentifier>{4255603b-d6b5-4f6d-b88f-4bbfafd59b63}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ソース ファイル\Factory">
+      <UniqueIdentifier>{fdf10f7a-9aa5-4dba-a958-280f48be2e8a}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="..\..\Library\GameSystem\Scene\scene.h">
+      <Filter>ヘッダー ファイル\Scene</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Library\GameSystem\Scene\titleScene.h">
+      <Filter>ヘッダー ファイル\Scene</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Library\GameSystem\Manager\DrawManager.h">
+      <Filter>ヘッダー ファイル\Manager</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Library\GameSystem\Manager\gameObjectManager.h">
+      <Filter>ヘッダー ファイル\Manager</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Library\GameSystem\Manager\sceneManager.h">
+      <Filter>ヘッダー ファイル\Manager</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Library\GameSystem\GameObject\layer.h">
+      <Filter>ヘッダー ファイル\GameObject</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Library\GameSystem\GameObject\tag.h">
+      <Filter>ヘッダー ファイル\GameObject</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Library\GameSystem\GameObject\UIGameObject.h">
+      <Filter>ヘッダー ファイル\GameObject</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Library\GameSystem\GameObject\gameObject.h">
+      <Filter>ヘッダー ファイル\GameObject</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Library\GameSystem\Component\Camera\camera.h">
+      <Filter>ヘッダー ファイル\Component\Camera</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Library\GameSystem\Component\Camera\gameCamera.h">
+      <Filter>ヘッダー ファイル\Component\Camera</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Library\GameSystem\Component\Collision\boxCollision.h">
+      <Filter>ヘッダー ファイル\Component\Collision</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Library\GameSystem\Component\Collision\collision.h">
+      <Filter>ヘッダー ファイル\Component\Collision</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Library\GameSystem\Component\Collision\sphereCollision.h">
+      <Filter>ヘッダー ファイル\Component\Collision</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Library\GameSystem\Component\Light\directionalLight.h">
+      <Filter>ヘッダー ファイル\Component\Light</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Library\GameSystem\Component\Light\light.h">
+      <Filter>ヘッダー ファイル\Component\Light</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Library\GameSystem\Component\Renderer\billboardRenderer.h">
+      <Filter>ヘッダー ファイル\Component\Renderer</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Library\GameSystem\Component\Renderer\boxRenderer.h">
+      <Filter>ヘッダー ファイル\Component\Renderer</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Library\GameSystem\Component\Renderer\meshRenderer.h">
+      <Filter>ヘッダー ファイル\Component\Renderer</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Library\GameSystem\Component\Renderer\modelRenderer.h">
+      <Filter>ヘッダー ファイル\Component\Renderer</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Library\GameSystem\Component\Renderer\polygonRenderer.h">
+      <Filter>ヘッダー ファイル\Component\Renderer</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Library\GameSystem\Component\Renderer\renderer.h">
+      <Filter>ヘッダー ファイル\Component\Renderer</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Library\GameSystem\Component\Renderer\sphereRenderer.h">
+      <Filter>ヘッダー ファイル\Component\Renderer</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Library\GameSystem\Component\Transform\rectTransform.h">
+      <Filter>ヘッダー ファイル\Component\Transform</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Library\GameSystem\Component\Transform\rigidbody.h">
+      <Filter>ヘッダー ファイル\Component\Transform</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Library\GameSystem\Component\Transform\transform.h">
+      <Filter>ヘッダー ファイル\Component\Transform</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Library\GameSystem\Component\Transform\Tween.h">
+      <Filter>ヘッダー ファイル\Component\Transform</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Library\GameSystem\Component\component.h">
+      <Filter>ヘッダー ファイル\Component</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Library\GameSystem\Component\cursor.h">
+      <Filter>ヘッダー ファイル\Component</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Library\GameSystem\Component\BaseComponent.h">
+      <Filter>ヘッダー ファイル\Component</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Library\GameSystem\GameObject\BaseObject.h">
+      <Filter>ヘッダー ファイル\GameObject</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Library\GameSystem\components.h">
+      <Filter>ヘッダー ファイル</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Library\GameSystem\Factory\componentFactory.h">
+      <Filter>ヘッダー ファイル\Factory</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Library\GameSystem\Factory\objectFactory.h">
+      <Filter>ヘッダー ファイル\Factory</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Library\GameSystem\Manager\instantResourceManager.h">
+      <Filter>ヘッダー ファイル\Manager</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Library\GameSystem\Component\Renderer\textRenderer.h">
+      <Filter>ヘッダー ファイル\Component\Renderer</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Library\GameSystem\Scene\buildScene.h">
+      <Filter>ヘッダー ファイル\Scene</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Library\GameSystem\Component\Camera\debugCamera.h">
+      <Filter>ヘッダー ファイル\Component\Camera</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Library\GameSystem\Component\Renderer\effekseerRenderer.h">
+      <Filter>ヘッダー ファイル\Component\Renderer</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Library\GameSystem\Scene\sceneTransitionDetection.h">
+      <Filter>ヘッダー ファイル\Scene</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Library\GameSystem\propertyCereal.h">
+      <Filter>ヘッダー ファイル</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Library\GameSystem\gameInstance.h">
+      <Filter>ヘッダー ファイル</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="..\..\Library\GameSystem\Scene\scene.cpp">
+      <Filter>ソース ファイル\Scene</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Library\GameSystem\Scene\titleScene.cpp">
+      <Filter>ソース ファイル\Scene</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Library\GameSystem\Manager\DrawManager.cpp">
+      <Filter>ソース ファイル\Manager</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Library\GameSystem\Manager\gameObjectManager.cpp">
+      <Filter>ソース ファイル\Manager</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Library\GameSystem\Manager\sceneManager.cpp">
+      <Filter>ソース ファイル\Manager</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Library\GameSystem\GameObject\gameObject.cpp">
+      <Filter>ソース ファイル\GameObject</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Library\GameSystem\GameObject\tag.cpp">
+      <Filter>ソース ファイル\GameObject</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Library\GameSystem\Component\Camera\camera.cpp">
+      <Filter>ソース ファイル\Component\Camera</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Library\GameSystem\Component\Camera\gameCamera.cpp">
+      <Filter>ソース ファイル\Component\Camera</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Library\GameSystem\Component\Collision\boxCollision.cpp">
+      <Filter>ソース ファイル\Component\Collision</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Library\GameSystem\Component\Collision\collision.cpp">
+      <Filter>ソース ファイル\Component\Collision</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Library\GameSystem\Component\Collision\sphereCollision.cpp">
+      <Filter>ソース ファイル\Component\Collision</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Library\GameSystem\Component\Light\directionalLight.cpp">
+      <Filter>ソース ファイル\Component\Light</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Library\GameSystem\Component\Light\light.cpp">
+      <Filter>ソース ファイル\Component\Light</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Library\GameSystem\Component\Renderer\billboardRenderer.cpp">
+      <Filter>ソース ファイル\Component\Renderer</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Library\GameSystem\Component\Renderer\boxRenderer.cpp">
+      <Filter>ソース ファイル\Component\Renderer</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Library\GameSystem\Component\Renderer\meshRenderer.cpp">
+      <Filter>ソース ファイル\Component\Renderer</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Library\GameSystem\Component\Renderer\modelRenderer.cpp">
+      <Filter>ソース ファイル\Component\Renderer</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Library\GameSystem\Component\Renderer\polygonRenderer.cpp">
+      <Filter>ソース ファイル\Component\Renderer</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Library\GameSystem\Component\Renderer\renderer.cpp">
+      <Filter>ソース ファイル\Component\Renderer</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Library\GameSystem\Component\Renderer\sphereRenderer.cpp">
+      <Filter>ソース ファイル\Component\Renderer</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Library\GameSystem\Component\Transform\rectTrabsform.cpp">
+      <Filter>ソース ファイル\Component\Transform</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Library\GameSystem\Component\Transform\rigidbody.cpp">
+      <Filter>ソース ファイル\Component\Transform</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Library\GameSystem\Component\Transform\transform.cpp">
+      <Filter>ソース ファイル\Component\Transform</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Library\GameSystem\Component\Transform\Tween.cpp">
+      <Filter>ソース ファイル\Component\Transform</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Library\GameSystem\Component\component.cpp">
+      <Filter>ソース ファイル\Component</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Library\GameSystem\Component\cursor.cpp">
+      <Filter>ソース ファイル\Component</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Library\GameSystem\Component\BaseComponent.cpp">
+      <Filter>ソース ファイル\Component</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Library\GameSystem\GameObject\BaseObject.cpp">
+      <Filter>ソース ファイル\GameObject</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Library\GameSystem\components.cpp">
+      <Filter>ソース ファイル</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Library\GameSystem\Factory\componentFactory.cpp">
+      <Filter>ソース ファイル\Factory</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Library\GameSystem\Manager\instantResourceManager.cpp">
+      <Filter>ソース ファイル\Manager</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Library\GameSystem\Component\Renderer\textRenderer.cpp">
+      <Filter>ソース ファイル\Component\Renderer</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Library\GameSystem\Scene\buildScene.cpp">
+      <Filter>ソース ファイル\Scene</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Library\GameSystem\Component\Camera\debugCamera.cpp">
+      <Filter>ソース ファイル\Component\Camera</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Library\GameSystem\Component\Renderer\effekseerRenderer.cpp">
+      <Filter>ソース ファイル\Component\Renderer</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Library\GameSystem\Scene\sceneTransitionDetection.cpp">
+      <Filter>ソース ファイル\Scene</Filter>
+    </ClCompile>
+  </ItemGroup>
+</Project>

@@ -1,0 +1,48 @@
+73	<IncludePath>$(IncludePath);$(SolutionDir)Library\Effekseer;$(SolutionDir)Library;$(SolutionDir)Source</IncludePath>
+    <LibraryPath>$(SolutionDir)..\..\DirectXTex;$(SolutionDir)Binary;$(LibraryPath)</LibraryPath>
+
+79	    <IncludePath>$(IncludePath);$(SolutionDir)Library\Effekseer;$(SolutionDir)Library;$(SolutionDir)Source</IncludePath>
+    <LibraryPath>$(SolutionDir)..\..\DirectXTex;$(SolutionDir)Binary;$(LibraryPath)</LibraryPath>
+    
+114	<AdditionalLibraryDirectories>$(SolutionDir)..\..\Assimp\lib\x64;$(SolutionDir)..\..\Assimp;$(SolutionDir)..\..\DirectXTex;$(SolutionDir)..\..\DirectXTex\x64\$(Configuration);$(SolutionDir)Library\Effekseer;$(DXSDK_DIR)lib¥x64;</AdditionalLibraryDirectories>
+      <AdditionalDependencies>d3dcompiler.lib;d3d11.lib;EffekseerD.lib;%(AdditionalDependencies)</AdditionalDependencies>
+
+
+exe
+<AdditionalLibraryDirectories>$(SolutionDir)..\..\Assimp\lib\x64;
+$(SolutionDir)..\..\Assimp;
+$(SolutionDir)..\..\DirectXTex;
+$(SolutionDir)..\..\DirectXTex\x64\$(Configuration);
+$(SolutionDir)Library\Effekseer;
+$(DXSDK_DIR)lib¥x64;
+$(SolutionDir)..\..\Assimp;
+$(SolutionDir)..\..\DirectXTex;
+$(SolutionDir)..\..\DirectXTex\x64;
+$(SolutionDir)Library\Effekseer;
+$(DXSDK_DIR)lib¥x64;
+%(AdditionalLibraryDirectories);
+%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+
+<AdditionalLibraryDirectories>$(SolutionDir)..\..\Assimp\lib\x64;$(SolutionDir)..\..\Assimp;$(SolutionDir)..\..\DirectXTex;$(SolutionDir)..\..\DirectXTex\x64\$(Configuration);$(SolutionDir)Library\Effekseer;$(DXSDK_DIR)lib¥x64;</AdditionalLibraryDirectories>
+
+<AdditionalLibraryDirectories>..\DirectXTex;C:\Users\drago\Desktop\GitTestLocal\Person_Base\Person_Base_ShibataYuki\ImGui;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+
+de
+$(SolutionDir)Library\Effekseer;$(SolutionDir)Source;$(SolutionDir)Library;$(IncludePath)</IncludePath>
+
+$(SolutionDir)Library\Effekseer;$(SolutionDir)Source;$(SolutionDir)Library;$(SolutionDir)Source;C:\Users\drago\Desktop\GitTestLocal\Person_Base\Person_Base_ShibataYuki\Library;$(SolutionDir)Library;$(IncludePath);$(IncludePath)</IncludePath>
+
+$(SolutionDir)Binary;$(SolutionDir)..\..\DirectXTex;$(LibraryPath)</LibraryPath>
+
+<AdditionalIncludeDirectories>$(SolutionDir)..\..\DirectXTex\x64;$(SolutionDir)..\..\DirectXTex;$(SolutionDir)..\..\Assimp\include;$(SolutionDir)..\..\Assimp;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+
+<AdditionalIncludeDirectories>$(SolutionDir)..\..\DirectXTex\x64;$(SolutionDir)..\..\Assimp\include;$(SolutionDir)..\..\Assimp;$(SolutionDir)..\..\DirectXTex;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+
+
+//==========================================================
+re
+$(SolutionDir)Library\Effekseer;$(SolutionDir)Source;$(SolutionDir)Library;$(IncludePath);</IncludePath>
+
+$(SolutionDir)Binary;$(SolutionDir)..\..\DirectXTex;$(LibraryPath)</LibraryPath>
+
+$(SolutionDir)Binary;$(SolutionDir)..\..\DirectXTex;$(SolutionDir)Binary;$(LibraryPath)</LibraryPath>

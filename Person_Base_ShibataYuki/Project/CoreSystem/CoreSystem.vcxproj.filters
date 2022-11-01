@@ -1,0 +1,180 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="ソース ファイル">
+      <UniqueIdentifier>{4FC737F1-C7A5-4376-A066-2A32D752A2FF}</UniqueIdentifier>
+      <Extensions>cpp;c;cc;cxx;def;odl;idl;hpj;bat;asm;asmx</Extensions>
+    </Filter>
+    <Filter Include="ヘッダー ファイル">
+      <UniqueIdentifier>{93995380-89BD-4b04-88EB-625FBE52EBFB}</UniqueIdentifier>
+      <Extensions>h;hh;hpp;hxx;hm;inl;inc;ipp;xsd</Extensions>
+    </Filter>
+    <Filter Include="リソース ファイル">
+      <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
+      <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
+    </Filter>
+    <Filter Include="ソース ファイル\File">
+      <UniqueIdentifier>{a466e699-ad82-4797-988e-fe3ee79a25f4}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ヘッダー ファイル\File">
+      <UniqueIdentifier>{4eb9892a-7fc7-41da-ab5a-fb318a5f7fe0}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ヘッダー ファイル\FuncPtr">
+      <UniqueIdentifier>{344ce928-c1b9-41ce-b624-4fcb3fe86efe}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ソース ファイル\FuncPtr">
+      <UniqueIdentifier>{689e6604-b605-4983-ba09-536743e9a4c7}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ソース ファイル\Input">
+      <UniqueIdentifier>{3ce75b5c-09ab-46fd-aacc-b5dcdf6335ad}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ヘッダー ファイル\Input">
+      <UniqueIdentifier>{33534eb6-7130-4b83-b2e3-e5d1902cc07c}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ヘッダー ファイル\Math">
+      <UniqueIdentifier>{221eb672-9f8a-486c-84f6-18147a22a05e}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ソース ファイル\Math">
+      <UniqueIdentifier>{361a616c-1c1e-4721-b948-31926e44540b}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ヘッダー ファイル\Util">
+      <UniqueIdentifier>{198c9f97-fa51-427f-84af-bfe15a65fc02}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ソース ファイル\Util">
+      <UniqueIdentifier>{92d364ce-3634-4d39-91ca-b19b8cfb50f3}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ヘッダー ファイル\Time">
+      <UniqueIdentifier>{6c15a0e8-794e-4d74-99e1-7acea0afded6}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ソース ファイル\Time">
+      <UniqueIdentifier>{c06d3a1a-40e7-42fd-a752-92eb5e5d20b8}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ソース ファイル\Sound">
+      <UniqueIdentifier>{a3f17a62-fe9a-4403-8379-5557a038af60}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ヘッダー ファイル\Sound">
+      <UniqueIdentifier>{ea069cde-c574-421e-91cf-e40738246655}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="..\..\Library\CoreSystem\File\resourceCSV.h">
+      <Filter>ヘッダー ファイル\File</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Library\CoreSystem\File\resource.h">
+      <Filter>ヘッダー ファイル\File</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Library\CoreSystem\FuncPtr\timeFuncPtr.h">
+      <Filter>ヘッダー ファイル\FuncPtr</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Library\CoreSystem\FuncPtr\funcPtr.h">
+      <Filter>ヘッダー ファイル\FuncPtr</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Library\CoreSystem\FuncPtr\funcPtrManager.h">
+      <Filter>ヘッダー ファイル\FuncPtr</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Library\CoreSystem\Input\Keyboard.h">
+      <Filter>ヘッダー ファイル\Input</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Library\CoreSystem\Input\mouse.h">
+      <Filter>ヘッダー ファイル\Input</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Library\CoreSystem\Input\gamePad.h">
+      <Filter>ヘッダー ファイル\Input</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Library\CoreSystem\Input\input.h">
+      <Filter>ヘッダー ファイル\Input</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Library\CoreSystem\Math\MyMath.h">
+      <Filter>ヘッダー ファイル\Math</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Library\CoreSystem\Util\SingletonManager.h">
+      <Filter>ヘッダー ファイル\Util</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Library\CoreSystem\Util\stl.h">
+      <Filter>ヘッダー ファイル\Util</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Library\CoreSystem\Util\cerealCommon.h">
+      <Filter>ヘッダー ファイル\Util</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Library\CoreSystem\Singleton.h">
+      <Filter>ヘッダー ファイル</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Library\CoreSystem\Time\fps.h">
+      <Filter>ヘッダー ファイル\Time</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Library\CoreSystem\Util\define.h">
+      <Filter>ヘッダー ファイル\Util</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Library\CoreSystem\File\filePath.h">
+      <Filter>ヘッダー ファイル\File</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Library\CoreSystem\system.h">
+      <Filter>ヘッダー ファイル</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Library\CoreSystem\File\cerealize.h">
+      <Filter>ヘッダー ファイル\File</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Library\CoreSystem\Math\myVector.h">
+      <Filter>ヘッダー ファイル\Math</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Library\CoreSystem\Sound\Sound.h">
+      <Filter>ヘッダー ファイル\Sound</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Library\CoreSystem\Sound\SoundData.h">
+      <Filter>ヘッダー ファイル\Sound</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Library\CoreSystem\Sound\SoundData.hpp">
+      <Filter>ヘッダー ファイル\Sound</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Library\CoreSystem\property.h">
+      <Filter>ヘッダー ファイル</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Library\CoreSystem\Util\stringConvert.h">
+      <Filter>ヘッダー ファイル\Util</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="..\..\Library\CoreSystem\File\resourceCSV.cpp">
+      <Filter>ソース ファイル\File</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Library\CoreSystem\FuncPtr\timeFuncPtr.cpp">
+      <Filter>ソース ファイル\FuncPtr</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Library\CoreSystem\FuncPtr\funcPtr.cpp">
+      <Filter>ソース ファイル\FuncPtr</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Library\CoreSystem\FuncPtr\funcPtrManager.cpp">
+      <Filter>ソース ファイル\FuncPtr</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Library\CoreSystem\Input\gamePad.cpp">
+      <Filter>ソース ファイル\Input</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Library\CoreSystem\Input\input.cpp">
+      <Filter>ソース ファイル\Input</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Library\CoreSystem\Input\Keyboard.cpp">
+      <Filter>ソース ファイル\Input</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Library\CoreSystem\Input\mouse.cpp">
+      <Filter>ソース ファイル\Input</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Library\CoreSystem\Math\MyMath.cpp">
+      <Filter>ソース ファイル\Math</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Library\CoreSystem\Time\fps.cpp">
+      <Filter>ソース ファイル\Time</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Library\CoreSystem\File\filePath.cpp">
+      <Filter>ソース ファイル\File</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Library\CoreSystem\File\cerealize.cpp">
+      <Filter>ソース ファイル\File</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Library\CoreSystem\Sound\Sound.cpp">
+      <Filter>ソース ファイル\Sound</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Library\CoreSystem\Util\stringConvert.cpp">
+      <Filter>ソース ファイル\Util</Filter>
+    </ClCompile>
+  </ItemGroup>
+</Project>

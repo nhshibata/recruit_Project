@@ -1,0 +1,79 @@
+{
+    "": {
+        "ptr_wrapper": {
+            "id": 2147483649,
+            "data": {
+                "cereal_class_version": 0,
+                "m_SceneName": "Game",
+                "m_GameObjectManager": [
+                    {
+                        "polymorphic_id": 1073741824,
+                        "ptr_wrapper": {
+                            "id": 2147483650,
+                            "data": {
+                                "gameObject": {
+                                    "m_objName": "GameManager",
+                                    "m_spThisPtr": {
+                                        "locked_ptr": {
+                                            "polymorphic_id": 1073741824,
+                                            "ptr_wrapper": {
+                                                "id": 2
+                                            }
+                                        }
+                                    }
+                                },
+                                "m_eState": 0,
+                                "m_Layer": {
+                                    "ptr_wrapper": {
+                                        "id": 2147483651,
+                                        "data": {
+                                            "m_nLayer": 2
+                                        }
+                                    }
+                                },
+                                "m_Tag": {
+                                    "ptr_wrapper": {
+                                        "id": 2147483652,
+                                        "data": {
+                                            "m_nTagID": 1
+                                        }
+                                    }
+                                },
+                                "m_pComponent": [
+                                    {
+                                        "polymorphic_id": 2147483649,
+                                        "polymorphic_name": "MySpace::Game::CTransform",
+                                        "ptr_wrapper": {
+                                            "id": 2147483653,
+                                            "data": {
+                                                "transform": {
+                                                    "Component": {},
+                                                    "m_spThisPtr": {
+                                                        "locked_ptr": {
+                                                            "polymorphic_id": 1,
+                                                            "ptr_wrapper": {
+                                                                "id": 5
+                                                            }
+                                                        }
+                                                    },
+                                                    "m_bActive": true
+                                                },
+                                                "m_vPos": {
+                                                    "x": 0.0,
+                                                    "y": 0.0,
+                                                    "z": 0.0
+                                                },
+                                                "m_vOldPos": {
+                                                    "x": 0.0,
+                                                    "y": 0.0,
+                                                    "z": 0.0
+                                                },
+                                                "m_vRot": {
+                                                    "x": 0.0,
+                                                    "y": 0.0,
+                                                    "z": 0.0
+                                                },
+                                                "m_vDestRot": {
+                                                    "x": 0.0,
+                                                    "y": 0.0,
+         

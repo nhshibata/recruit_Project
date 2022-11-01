@@ -1,0 +1,251 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="ソース ファイル">
+      <UniqueIdentifier>{4FC737F1-C7A5-4376-A066-2A32D752A2FF}</UniqueIdentifier>
+      <Extensions>cpp;c;cc;cxx;def;odl;idl;hpj;bat;asm;asmx</Extensions>
+    </Filter>
+    <Filter Include="ヘッダー ファイル">
+      <UniqueIdentifier>{93995380-89BD-4b04-88EB-625FBE52EBFB}</UniqueIdentifier>
+      <Extensions>h;hh;hpp;hxx;hm;inl;inc;ipp;xsd</Extensions>
+    </Filter>
+    <Filter Include="リソース ファイル">
+      <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
+      <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
+    </Filter>
+    <Filter Include="ヘッダー ファイル\DirectX">
+      <UniqueIdentifier>{b7fd885f-7f47-46b0-9f78-1b6588a16310}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ソース ファイル\DirectX">
+      <UniqueIdentifier>{60ae62ad-a6cb-40ff-a28b-0a782fd2cbd7}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ヘッダー ファイル\Manager">
+      <UniqueIdentifier>{5510bf3f-7d0f-4602-bf0b-57de8a2181ec}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ソース ファイル\Manager">
+      <UniqueIdentifier>{f63edeb0-b06d-44d2-b07c-f30c5330705f}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ヘッダー ファイル\Render">
+      <UniqueIdentifier>{b0772b1d-bc53-499f-9092-843b8520675c}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ソース ファイル\Render">
+      <UniqueIdentifier>{37d8ff2f-bfa0-4428-9166-364c438ecdef}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ソース ファイル\Shader">
+      <UniqueIdentifier>{26e90bc4-c2b3-49fa-b6f5-ccd0eaf880c3}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ヘッダー ファイル\Shader">
+      <UniqueIdentifier>{8ba6d5e7-82f7-4996-b31f-53d85c7f8242}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ソース ファイル\Texture">
+      <UniqueIdentifier>{d4f7d18c-1573-420d-be34-7fee2c0ebb4b}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ヘッダー ファイル\Texture">
+      <UniqueIdentifier>{ef2ade10-d8f3-423b-8356-d9e6fe8d964b}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="..\..\Library\GraphicsSystem\DirectX\DXDevice.h">
+      <Filter>ヘッダー ファイル\DirectX</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Library\GraphicsSystem\Manager\shaderManager.h">
+      <Filter>ヘッダー ファイル\Manager</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Library\GraphicsSystem\Manager\effectManager.h">
+      <Filter>ヘッダー ファイル\Manager</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Library\GraphicsSystem\Manager\imageResourceManager.h">
+      <Filter>ヘッダー ファイル\Manager</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Library\GraphicsSystem\Manager\modelManager.h">
+      <Filter>ヘッダー ファイル\Manager</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Library\GraphicsSystem\Render\polygon.h">
+      <Filter>ヘッダー ファイル\Render</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Library\GraphicsSystem\Render\Sphere.h">
+      <Filter>ヘッダー ファイル\Render</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Library\GraphicsSystem\Render\AssimpModel.h">
+      <Filter>ヘッダー ファイル\Render</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Library\GraphicsSystem\Render\billboard.h">
+      <Filter>ヘッダー ファイル\Render</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Library\GraphicsSystem\Render\box.h">
+      <Filter>ヘッダー ファイル\Render</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Library\GraphicsSystem\Render\mesh.h">
+      <Filter>ヘッダー ファイル\Render</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Library\GraphicsSystem\Render\number.h">
+      <Filter>ヘッダー ファイル\Render</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Library\GraphicsSystem\Shader\shader.h">
+      <Filter>ヘッダー ファイル\Shader</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Library\GraphicsSystem\Texture\Texture.h">
+      <Filter>ヘッダー ファイル\Texture</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Library\GraphicsSystem\Texture\imageResource.h">
+      <Filter>ヘッダー ファイル\Texture</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Library\GraphicsSystem\Texture\spriteAnimation.h">
+      <Filter>ヘッダー ファイル\Texture</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Library\GraphicsSystem\Render\vertex.h">
+      <Filter>ヘッダー ファイル\Render</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Library\GraphicsSystem\Manager\resourceMap.h">
+      <Filter>ヘッダー ファイル\Manager</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Library\GraphicsSystem\Shader\pixelShader.h">
+      <Filter>ヘッダー ファイル\Shader</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Library\GraphicsSystem\Shader\vertexShader.h">
+      <Filter>ヘッダー ファイル\Shader</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Library\GraphicsSystem\Shader\GraphicsBase.h">
+      <Filter>ヘッダー ファイル\Shader</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Library\GraphicsSystem\Shader\constantBuffer.h">
+      <Filter>ヘッダー ファイル\Shader</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Library\GraphicsSystem\Shader\hullShader.h">
+      <Filter>ヘッダー ファイル\Shader</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Library\GraphicsSystem\Shader\domainShader.h">
+      <Filter>ヘッダー ファイル\Shader</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Library\GraphicsSystem\Shader\meshBuffer.h">
+      <Filter>ヘッダー ファイル\Shader</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Library\GraphicsSystem\Manager\FontTexture.h">
+      <Filter>ヘッダー ファイル\Manager</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="..\..\Library\GraphicsSystem\DirectX\DXDevice.cpp">
+      <Filter>ソース ファイル\DirectX</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Library\GraphicsSystem\Manager\modelManager.cpp">
+      <Filter>ソース ファイル\Manager</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Library\GraphicsSystem\Manager\shaderManager.cpp">
+      <Filter>ソース ファイル\Manager</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Library\GraphicsSystem\Manager\effectManager.cpp">
+      <Filter>ソース ファイル\Manager</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Library\GraphicsSystem\Manager\imageResourceManager.cpp">
+      <Filter>ソース ファイル\Manager</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Library\GraphicsSystem\Render\Sphere.cpp">
+      <Filter>ソース ファイル\Render</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Library\GraphicsSystem\Render\AssimpModel.cpp">
+      <Filter>ソース ファイル\Render</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Library\GraphicsSystem\Render\billboard.cpp">
+      <Filter>ソース ファイル\Render</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Library\GraphicsSystem\Render\box.cpp">
+      <Filter>ソース ファイル\Render</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Library\GraphicsSystem\Render\mesh.cpp">
+      <Filter>ソース ファイル\Render</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Library\GraphicsSystem\Render\number.cpp">
+      <Filter>ソース ファイル\Render</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Library\GraphicsSystem\Render\polygon.cpp">
+      <Filter>ソース ファイル\Render</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Library\GraphicsSystem\Shader\shader.cpp">
+      <Filter>ソース ファイル\Shader</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Library\GraphicsSystem\Texture\Texture.cpp">
+      <Filter>ソース ファイル\Texture</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Library\GraphicsSystem\Texture\imageResource.cpp">
+      <Filter>ソース ファイル\Texture</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Library\GraphicsSystem\Texture\spriteAnimation.cpp">
+      <Filter>ソース ファイル\Texture</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Library\GraphicsSystem\Shader\vertexShader.cpp">
+      <Filter>ソース ファイル\Shader</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Library\GraphicsSystem\Shader\pixelShader.cpp">
+      <Filter>ソース ファイル\Shader</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Library\GraphicsSystem\Shader\constantBuffer.cpp">
+      <Filter>ソース ファイル\Shader</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Library\GraphicsSystem\Shader\hullShader.cpp">
+      <Filter>ソース ファイル\Shader</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Library\GraphicsSystem\Shader\domainShader.cpp">
+      <Filter>ソース ファイル\Shader</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Library\GraphicsSystem\Shader\meshBuffer.cpp">
+      <Filter>ソース ファイル\Shader</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Library\GraphicsSystem\Shader\GraphicsBase.cpp">
+      <Filter>ソース ファイル\Shader</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Library\GraphicsSystem\Manager\FontTexture.cpp">
+      <Filter>ソース ファイル\Manager</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <FxCompile Include="..\..\Data\hlsl\ExpPixel.hlsl">
+      <Filter>リソース ファイル</Filter>
+    </FxCompile>
+    <FxCompile Include="..\..\Data\hlsl\ExpVertex.hlsl">
+      <Filter>リソース ファイル</Filter>
+    </FxCompile>
+    <FxCompile Include="..\..\Data\hlsl\Pixel.hlsl">
+      <Filter>リソース ファイル</Filter>
+    </FxCompile>
+    <FxCompile Include="..\..\Data\hlsl\Pixel2D.hlsl">
+      <Filter>リソース ファイル</Filter>
+    </FxCompile>
+    <FxCompile Include="..\..\Data\hlsl\Vertex.hlsl">
+      <Filter>リソース ファイル</Filter>
+    </FxCompile>
+    <FxCompile Include="..\..\Data\hlsl\Vertex2D.hlsl">
+      <Filter>リソース ファイル</Filter>
+    </FxCompile>
+    <FxCompile Include="..\..\Data\hlsl\AssimpPixel.hlsl">
+      <Filter>リソース ファイル</Filter>
+    </FxCompile>
+    <FxCompile Include="..\..\Data\hlsl\AssimpVertex.hlsl">
+      <Filter>リソース ファイル</Filter>
+    </FxCompile>
+    <FxCompile Include="..\..\Data\hlsl\HSQuad.hlsl">
+      <Filter>リソース ファイル</Filter>
+    </FxCompile>
+    <FxCompile Include="..\..\Data\hlsl\HSTriangle.hlsl">
+      <Filter>リソース ファイル</Filter>
+    </FxCompile>
+    <FxCompile Include="..\..\Data\hlsl\DSIsoline.hlsl">
+      <Filter>リソース ファイル</Filter>
+    </FxCompile>
+    <FxCompile Include="..\..\Data\hlsl\DSPointToTriangle.hlsl">
+      <Filter>リソース ファイル</Filter>
+    </FxCompile>
+    <FxCompile Include="..\..\Data\hlsl\DSQuad.hlsl">
+      <Filter>リソース ファイル</Filter>
+    </FxCompile>
+    <FxCompile Include="..\..\Data\hlsl\DSTriangle.hlsl">
+      <Filter>リソース ファイル</Filter>
+    </FxCompile>
+    <FxCompile Include="..\..\Data\hlsl\HSIsoline.hlsl">
+      <Filter>リソース ファイル</Filter>
+    </FxCompile>
+    <FxCompile Include="..\..\Data\hlsl\HSPointToTriangle.hlsl">
+      <Filter>リソース ファイル</Filter>
+    </FxCompile>
+  </ItemGroup>
+</Project>
