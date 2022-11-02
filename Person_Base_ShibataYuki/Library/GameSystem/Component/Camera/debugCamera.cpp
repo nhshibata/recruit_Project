@@ -53,6 +53,25 @@ void CDebugCamera::Update()
 	else if (GetAsyncKeyState(VK_RBUTTON))
 	{
 		m_eMode = ECameraMode::CAM_MODE_DOLLY;
+
+		auto pos = Transform()->GetPos();
+		if (GetAsyncKeyState(0x8000 & 'A'))
+		{
+			pos -= Transform()->right() * MOVE_SPEED;
+		}
+		if (GetAsyncKeyState(0x8000 & 'D'))
+		{
+			pos += Transform()->right() * MOVE_SPEED;
+		}
+		if (GetAsyncKeyState(0x8000 & 'W'))
+		{
+			pos += Transform()->forward() * MOVE_SPEED;
+		}
+		if (GetAsyncKeyState(0x8000 & 'S'))
+		{
+			pos -= Transform()->forward() * MOVE_SPEED;
+		}
+		Transform()->SetPos(pos);
 	}
 	else
 		m_eMode = ECameraMode::CAM_MODE_NONE;

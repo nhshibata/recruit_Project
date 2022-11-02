@@ -54,9 +54,10 @@ namespace MySpace
 			T* GetSystem()
 			{
 				//static_assert(std::is_base_of<CAppSystem, T> == false, ("not AppSystem"));
-				for (auto &ptr : m_pMap)
+				for (auto & ptr : m_pMap)
 				{
-					if (auto system = dynamic_cast<T>(ptr); system)
+					//if (auto system = dynamic_cast<T>(ptr); system)
+					if (T* system = reinterpret_cast<T*>(ptr); system)
 					{
 						//return reinterpret_cast<T*>(m_pMap);
 						return system;

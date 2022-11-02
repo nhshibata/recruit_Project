@@ -40,12 +40,13 @@ namespace MySpace
 			//--- 再定義
 			using Ptr = std::weak_ptr<T>;
 		private:
-			std::string m_objName;		// 名前
+			std::string m_objName = std::string();		// 名前
 			Ptr m_spThisPtr;			// 自身のスマートポインタ
 
 		public:
 			CBaseObject() : m_objName(typeid(*this).name()) {};
-			CBaseObject(const CBaseObject & obj)  {
+			CBaseObject(const CBaseObject & obj)  
+			{
 				this->m_objName = m_objName;
 			};
 			~CBaseObject() {};

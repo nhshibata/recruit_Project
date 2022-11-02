@@ -150,7 +150,7 @@ namespace MySpace
 			template <class T>
 			inline T* AddComponent(int n)
 			{
-				return GetOwner()->AddComponent<T>(n);
+				return GetOwner()->AddComponent<T>().get();
 			}
 			// *@gameobject¸×½‚Ö’¼ÚºİÎß°ÈİÄ‚ğ’Ç‰Á‚·‚é g‚í‚È‚¢?
 			void AddComponent(std::shared_ptr<CComponent> com);

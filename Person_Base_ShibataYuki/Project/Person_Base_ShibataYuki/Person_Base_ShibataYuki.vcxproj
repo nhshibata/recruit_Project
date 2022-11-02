@@ -71,14 +71,14 @@
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <LinkIncremental>true</LinkIncremental>
-    <IncludePath>$(SolutionDir)Library\Effekseer;$(SolutionDir)Source;$(SolutionDir)Library;$(SolutionDir)Source;C:\Users\drago\Desktop\GitTestLocal\Person_Base\Person_Base_ShibataYuki\Library;$(SolutionDir)Library;$(IncludePath);$(IncludePath)</IncludePath>
+    <IncludePath>$(SolutionDir)Library\Effekseer;$(SolutionDir)Source;$(SolutionDir)Library;$(IncludePath)</IncludePath>
     <LibraryPath>$(SolutionDir)exe\$(Configuration)\;$(SolutionDir)..\..\DirectXTex;$(SolutionDir)..\..\Assimp\lib\x64;$(SolutionDir)..\..\Assimp;$(SolutionDir)..\..\DirectXTex\x64\$(Configuration);$(SolutionDir)Library\Effekseer;$(DXSDK_DIR)lib¥x64;$(LibraryPath)</LibraryPath>
     <OutDir>$(SolutionDir)exe\$(Configuration)\</OutDir>
     <IntDir>$(SolutionDir)Binary\$(ProjectName)\$(Platform)\$(Configuration)\</IntDir>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <LinkIncremental>false</LinkIncremental>
-    <IncludePath>$(SolutionDir)Library\Effekseer;$(SolutionDir)Source;$(SolutionDir)Library;C:\Users\drago\Desktop\GitTestLocal\Person_Base\Person_Base_ShibataYuki\Source;C:\Users\drago\Desktop\GitTestLocal\Person_Base\Person_Base_ShibataYuki\Library;$(SolutionDir)Source;$(SolutionDir)Library;$(IncludePath)</IncludePath>
+    <IncludePath>$(SolutionDir)Library\Effekseer;$(SolutionDir)Source;$(SolutionDir)Library;$(IncludePath)</IncludePath>
     <LibraryPath>$(SolutionDir)exe\$(Configuration)\;$(SolutionDir)..\..\DirectXTex;$(SolutionDir)..\..\Assimp\lib\x64;$(SolutionDir)..\..\Assimp;$(SolutionDir)..\..\DirectXTex\x64\$(Configuration);$(SolutionDir)Library\Effekseer;$(DXSDK_DIR)lib¥x64;$(LibraryPath)</LibraryPath>
     <OutDir>$(SolutionDir)exe\$(Configuration)\</OutDir>
     <IntDir>$(SolutionDir)Binary\$(ProjectName)\$(Platform)\$(Configuration)\</IntDir>
@@ -108,7 +108,7 @@
       <PrecompiledHeaderFile>
       </PrecompiledHeaderFile>
       <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
-      <AdditionalIncludeDirectories>$(SolutionDir)..\..\DirectXTex\x64;$(SolutionDir)..\..\DirectXTex;$(SolutionDir)..\..\Assimp\include;$(SolutionDir)..\..\Assimp;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir)Library\Effekseer;$(SolutionDir)..\..\DirectXTex\x64;$(SolutionDir)..\..\DirectXTex;$(SolutionDir)..\..\Assimp\include;$(SolutionDir)..\..\Assimp;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>_DEBUG;_WINDOWS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <AdditionalOptions>/bigobj %(AdditionalOptions)</AdditionalOptions>
       <LanguageStandard>stdcpp17</LanguageStandard>
@@ -151,7 +151,7 @@
       <ConformanceMode>true</ConformanceMode>
       <PrecompiledHeaderFile>
       </PrecompiledHeaderFile>
-      <AdditionalIncludeDirectories>$(SolutionDir)..\..\DirectXTex\x64;$(SolutionDir)..\..\DirectXTex;$(SolutionDir)..\..\Assimp\include;$(SolutionDir)..\..\Assimp;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir)Library\Effekseer;$(SolutionDir)..\..\DirectXTex\x64;$(SolutionDir)..\..\DirectXTex;$(SolutionDir)..\..\Assimp\include;$(SolutionDir)..\..\Assimp;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
       <AdditionalOptions>/bigobj %(AdditionalOptions)</AdditionalOptions>
       <LanguageStandard>stdcpp17</LanguageStandard>
@@ -168,7 +168,10 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="..\..\Source\battleStatus.cpp" />
+    <ClCompile Include="..\..\Source\battleStatus.cpp">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">false</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">false</ExcludedFromBuild>
+    </ClCompile>
     <ClCompile Include="..\..\Source\bulletBase.cpp">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">false</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">false</ExcludedFromBuild>
@@ -177,16 +180,32 @@
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">false</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">false</ExcludedFromBuild>
     </ClCompile>
-    <ClCompile Include="..\..\Source\command.cpp" />
-    <ClCompile Include="..\..\Source\commandSpell.cpp" />
+    <ClCompile Include="..\..\Source\command.cpp">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">false</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">false</ExcludedFromBuild>
+    </ClCompile>
+    <ClCompile Include="..\..\Source\commandSpell.cpp">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">false</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">false</ExcludedFromBuild>
+    </ClCompile>
     <ClCompile Include="..\..\Source\enemyBase.cpp">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">false</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">false</ExcludedFromBuild>
     </ClCompile>
+    <ClCompile Include="..\..\Source\eventMessage.cpp">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">false</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">false</ExcludedFromBuild>
+    </ClCompile>
     <ClCompile Include="..\..\Source\fadeController.cpp" />
-    <ClCompile Include="..\..\Source\gameCamera.cpp" />
+    <ClCompile Include="..\..\Source\gameCamera.cpp">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">false</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">false</ExcludedFromBuild>
+    </ClCompile>
     <ClCompile Include="..\..\Source\gameCentipedeMarch.cpp" />
-    <ClCompile Include="..\..\Source\gameSpellRhythm.cpp" />
+    <ClCompile Include="..\..\Source\gameSpellRhythm.cpp">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">false</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">false</ExcludedFromBuild>
+    </ClCompile>
     <ClCompile Include="..\..\Source\gameUI.cpp">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">false</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">false</ExcludedFromBuild>
@@ -196,8 +215,14 @@
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">false</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">false</ExcludedFromBuild>
     </ClCompile>
-    <ClCompile Include="..\..\Source\mage.cpp" />
-    <ClCompile Include="..\..\Source\mageSociety.cpp" />
+    <ClCompile Include="..\..\Source\mage.cpp">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">false</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">false</ExcludedFromBuild>
+    </ClCompile>
+    <ClCompile Include="..\..\Source\mageSociety.cpp">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">false</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">false</ExcludedFromBuild>
+    </ClCompile>
     <ClCompile Include="..\..\Source\myCamera.cpp">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">false</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">false</ExcludedFromBuild>
@@ -209,7 +234,10 @@
     <ClCompile Include="..\..\Source\UIAnime.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="..\..\Source\battleStatus.h" />
+    <ClInclude Include="..\..\Source\battleStatus.h">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">false</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">false</ExcludedFromBuild>
+    </ClInclude>
     <ClInclude Include="..\..\Source\bulletBase.h">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">false</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">false</ExcludedFromBuild>
@@ -218,16 +246,32 @@
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">false</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">false</ExcludedFromBuild>
     </ClInclude>
-    <ClInclude Include="..\..\Source\command.h" />
-    <ClInclude Include="..\..\Source\commandSpell.h" />
+    <ClInclude Include="..\..\Source\command.h">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">false</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">false</ExcludedFromBuild>
+    </ClInclude>
+    <ClInclude Include="..\..\Source\commandSpell.h">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">false</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">false</ExcludedFromBuild>
+    </ClInclude>
     <ClInclude Include="..\..\Source\enemyBase.h">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">false</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">false</ExcludedFromBuild>
     </ClInclude>
+    <ClInclude Include="..\..\Source\eventMessage.h">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">false</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">false</ExcludedFromBuild>
+    </ClInclude>
     <ClInclude Include="..\..\Source\fadeController.h" />
-    <ClInclude Include="..\..\Source\gameCamera.h" />
+    <ClInclude Include="..\..\Source\gameCamera.h">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">false</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">false</ExcludedFromBuild>
+    </ClInclude>
     <ClInclude Include="..\..\Source\gameCentipedeMarch.h" />
-    <ClInclude Include="..\..\Source\gameSpellRhythm.h" />
+    <ClInclude Include="..\..\Source\gameSpellRhythm.h">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">false</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">false</ExcludedFromBuild>
+    </ClInclude>
     <ClInclude Include="..\..\Source\gameUI.h">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">false</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">false</ExcludedFromBuild>
@@ -237,8 +281,14 @@
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">false</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">false</ExcludedFromBuild>
     </ClInclude>
-    <ClInclude Include="..\..\Source\mage.h" />
-    <ClInclude Include="..\..\Source\mageSociety.h" />
+    <ClInclude Include="..\..\Source\mage.h">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">false</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">false</ExcludedFromBuild>
+    </ClInclude>
+    <ClInclude Include="..\..\Source\mageSociety.h">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">false</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">false</ExcludedFromBuild>
+    </ClInclude>
     <ClInclude Include="..\..\Source\myCamera.h">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">false</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">false</ExcludedFromBuild>

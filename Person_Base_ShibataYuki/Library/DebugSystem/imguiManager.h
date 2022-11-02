@@ -21,6 +21,7 @@
 #include <ImGui/imstb_textedit.h>
 #include <ImGui/imstb_truetype.h>
 
+
 #include "D3D11.h"
 
 namespace MySpace
@@ -30,7 +31,10 @@ namespace MySpace
 		class CInspector;
 		class CHierachy;
 	}
-
+	namespace Game
+	{
+		class CDebugCamera;
+	}
 }
 
 namespace MySpace
@@ -38,6 +42,7 @@ namespace MySpace
 	namespace Debug
 	{
 		using MySpace::System::CSingleton;
+		using MySpace::Game::CDebugCamera;
 
 		// ImGuiä«óùÉNÉâÉX
 		class ImGuiManager : public CAppSystem<ImGuiManager>
@@ -58,7 +63,8 @@ namespace MySpace
 			EPlayMode	m_bPlayMode;			
 			bool m_bPause;				
 			bool m_bOneFlame;
-			bool m_flg;							
+			bool m_flg;
+			std::weak_ptr<CDebugCamera> m_pDebugCamera;
 			MapString m_debugMap;
 
 			std::shared_ptr<CInspector> m_pInspector;

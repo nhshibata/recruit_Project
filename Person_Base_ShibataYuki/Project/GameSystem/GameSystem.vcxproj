@@ -162,8 +162,8 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <LinkIncremental>true</LinkIncremental>
     <OutDir>$(SolutionDir)exe\$(Configuration)\</OutDir>
-    <IncludePath>$(SolutionDir)Library\Effekseer;$(SolutionDir)Source;$(SolutionDir)Library;$(SolutionDir)Library;$(IncludePath);$(IncludePath)</IncludePath>
-    <LibraryPath>$(SolutionDir)exe\$(Configuration)\;$(SolutionDir)Binary;$(SolutionDir)..\..\DirectXTex;$(LibraryPath)</LibraryPath>
+    <IncludePath>$(SolutionDir)Library\Effekseer;$(SolutionDir)Library;$(IncludePath);$(IncludePath)</IncludePath>
+    <LibraryPath>$(LibraryPath)</LibraryPath>
     <IntDir>$(SolutionDir)Binary\$(ProjectName)\$(Platform)\$(Configuration)\</IntDir>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
@@ -175,8 +175,8 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <LinkIncremental>false</LinkIncremental>
     <OutDir>$(SolutionDir)exe\$(Configuration)\</OutDir>
-    <IncludePath>$(SolutionDir)Library\Effekseer;$(SolutionDir)Source;$(SolutionDir)Library;$(SolutionDir)Library;$(IncludePath)</IncludePath>
-    <LibraryPath>$(SolutionDir)exe\$(Configuration)\;$(SolutionDir)..\..\DirectXTex;$(LibraryPath)</LibraryPath>
+    <IncludePath>$(SolutionDir)Library\Effekseer;</IncludePath>
+    <LibraryPath>$(LibraryPath)</LibraryPath>
     <IntDir>$(SolutionDir)Binary\$(ProjectName)\$(Platform)\$(Configuration)\</IntDir>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
@@ -188,7 +188,7 @@
       <ConformanceMode>true</ConformanceMode>
       <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
-      <AdditionalIncludeDirectories>$(SolutionDir)..\..\DirectXTex\x64;$(SolutionDir)..\..\Assimp\include;$(SolutionDir)..\..\Assimp;$(SolutionDir)..\..\DirectXTex;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir)..\..\Assimp\include;$(SolutionDir)..\..\Assimp;$(SolutionDir)..\..\DirectXTex;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <AdditionalOptions>/bigobj %(AdditionalOptions)</AdditionalOptions>
       <LanguageStandard>stdcpp17</LanguageStandard>
     </ClCompile>
@@ -246,7 +246,7 @@
       <PreprocessorDefinitions>NDEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
       <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
-      <AdditionalIncludeDirectories>$(SolutionDir)..\..\DirectXTex\x64;$(SolutionDir)..\..\Assimp\include;$(SolutionDir)..\..\Assimp;$(SolutionDir)..\..\DirectXTex;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir)..\..\Assimp\include;$(SolutionDir)..\..\Assimp;$(SolutionDir)..\..\DirectXTex;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <AdditionalOptions>/bigobj %(AdditionalOptions)</AdditionalOptions>
       <LanguageStandard>stdcpp17</LanguageStandard>
     </ClCompile>

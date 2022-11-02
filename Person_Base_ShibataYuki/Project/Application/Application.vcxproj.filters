@@ -47,8 +47,5 @@
     <ClInclude Include="..\..\Library\Application\Application.h">
       <Filter>ヘッダー ファイル</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\Library\Application\systemManager.h">
-      <Filter>ヘッダー ファイル</Filter>
-    </ClInclude>
   </ItemGroup>
 </Project>

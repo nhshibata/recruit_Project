@@ -252,7 +252,8 @@ LRESULT ImGui_WndProc(HWND hwnd, 		// ウィンドウハンドル
 		PostQuitMessage(0);
 		break;
 	default:
-		return DefWindowProc(hwnd, message, wParam, lParam);
+	return 0;
+		//return DefWindowProc(hwnd, message, wParam, lParam);
 	}
 
 	return 0;
