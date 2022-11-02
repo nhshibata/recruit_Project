@@ -14,6 +14,8 @@
 #include <ImGui/imgui.h>
 
 #include <GameSystem/Manager/sceneManager.h>
+#include <GameSystem/Manager/gameObjectManager.h>
+
 using namespace MySpace::SceneManager;
 using namespace MySpace::Game;
 
@@ -28,8 +30,6 @@ static inline void CheckObj(CGameObject* obj)
 	auto tag = obj->GetTagPtr()->GetTag();
 }
 #endif // _DEBUG
-
-[[maybe_unused]] int g_nObjNum;
 
 // コンストラクタ
 CGameObject::CGameObject()
@@ -172,6 +172,12 @@ bool CGameObject::RemoveComponent(std::weak_ptr<CComponent> com)
 	}
 	return false;
 }
+void CGameObject::SetTag(const std::string tag) 
+{ 
+	// タグの移動
+	GetScene()->GetObjManager()->TagMove(tag, GetPtr());
+	m_Tag->SetTag(tag);
+};
 // 衝突
 void CGameObject::OnCollisionEnter(CGameObject* obj)
 {
@@ -237,17 +243,31 @@ std::weak_ptr<CGameObject> CGameObject::FindGameObject(std::string name)
 	}
 	return std::shared_ptr<CGameObject>();
 }
-std::weak_ptr<CGameObject> CGameObject::FindGameObjectWithTag(std::string name)
+std::weak_ptr<CGameObject> CGameObject::FindGameObjectWithTag(std::string tag)
 {
 	for (auto & scene : CSceneManager::Get().GetAllScene())
 	{
-		auto obj = scene->GetObjManager()->FindGameObjWithTag(name);
+		auto obj = scene->GetObjManager()->FindGameObjWithTag(tag);
 		if (obj.lock())
 		{
 			return obj;
 		}
 	}
 	return std::shared_ptr<CGameObject>();
+}
+std::list<std::weak_ptr<CGameObject>> CGameObject::FindGameObjectsWithTag(std::string tag)
+{
+	std::list<std::weak_ptr<CGameObject>> ret;
+	for (auto & scene : CSceneManager::Get().GetAllScene())
+	{
+		auto objs = scene->GetObjManager()->FindGameObjctsWithTag(tag);
+		// 格納
+		for (auto & obj : objs)
+		{
+			ret.push_back(obj);
+		}
+	}
+	return ret;
 }
 std::weak_ptr<CGameObject> CGameObject::FindGameObjectWithTag(CTag tag)
 {
@@ -279,10 +299,12 @@ std::weak_ptr<CGameObject> CGameObject::CreateObject(CGameObject* pObj)
 #ifdef _DEBUG
 	auto scene = CSceneManager::Get().GetActiveScene();
 #endif // _DEBUG
-
-	//if(auto scene = CSceneManager::Get().GetActiveScene();scene)
-		//return scene->GetObjManager()->CreateGameObject();
-	//return std::weak_ptr<CGameObject>();
+	
+	// ｺﾋﾟｰではない生成
+	if (!pObj) 
+	{
+		return CSceneManager::Get().GetActiveScene()->GetObjManager()->CreateGameObject();
+	}
 	return CSceneManager::Get().GetActiveScene()->GetObjManager()->CreateGameObject(pObj);
 }
 void CGameObject::Destroy(std::weak_ptr<CGameObject> pObj)

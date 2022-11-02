@@ -16,7 +16,6 @@
 #include <GameSystem/Component/Light/directionalLight.h>
 #include <GameSystem/Component/Camera/camera.h>
 
-
 #include <GameSystem/Manager/sceneManager.h>
 
 using namespace MySpace::Game;
@@ -127,6 +126,49 @@ void CGameObjectManager::Update()
 	
 	// 配列のリセット
 	pActiveObj.clear();
+	pDestoroyObj.clear();
+}
+// 更新
+void CGameObjectManager::UpdateInDebug()
+{
+	WeakList pDestoroyObj(0);	// 破棄オブジェクトを格納
+
+	// 状態確認（問題は次のフレームまでは破棄されないオブジェクトがあること?)
+	for (auto & obj : m_objMgr)
+	{
+		// 状態により分岐
+		switch (obj->GetState())
+		{
+		case CGameObject::ACTIVE:				// 通常の更新
+			// トランスフォームの更新
+			obj.get()->GetTransform()->Update();
+			break;
+		case CGameObject::WAIT:					// 待機
+			break;
+		case CGameObject::DESTROY:				// 削除オブジェクト
+			// 格納
+			pDestoroyObj.push_back(obj);
+			break;
+		case CGameObject::TAKEOVER:				// 引き継ぎ待ち
+			break;
+		case CGameObject::MAX_OBJECT_STATE:		// 最大数
+			break;
+		default:
+			break;
+		}
+	}
+
+	// オブジェクトの破棄
+	for (auto & obj : pDestoroyObj)
+	{	// FIXME: 削除されるのか?
+		DestroyObject(obj);
+		obj.reset();
+	}
+
+	// 追加オブジェクトの確認、追加
+	ObjectListUpdate();
+	
+	// 配列のリセット
 	pDestoroyObj.clear();
 }
 void CGameObjectManager::FixedUpdate()
@@ -316,7 +358,6 @@ bool CGameObjectManager::ObjectListUpdate()
 	
 	return false;
 }
-
 // 描画に必要なオブジェクトの作成セット
 void CGameObjectManager::CreateBasicObject()
 {
@@ -327,4 +368,85 @@ void CGameObjectManager::CreateBasicObject()
 	// ライト
 	pObj = CreateGameObject();
 	pObj->AddComponent<CDirectionalLight>();
+}
+// *配列追加
+void CGameObjectManager::SetGameObject(std::shared_ptr<CGameObject> obj)
+{
+	if (!obj.get()->IsPtrIn <ObjList, std::shared_ptr<CGameObject>>(m_objMgr, obj))
+	{
+		m_objMgr.push_back(obj);
+		TagMove(obj->GetTag(),obj);
+	}
+}
+void CGameObjectManager::TagMove(std::string NextTag, std::weak_ptr<CGameObject> obj)
+{
+	// 同一なら抜ける
+	if (obj.lock()->GetTag() == NextTag)
+		return;
+	
+	auto list = m_tagMap[obj.lock()->GetTag()];
+	auto it = list.FindObj(obj.lock());
+	// 現在のtagから除外
+	if(it != list.list.end())
+		m_tagMap[obj.lock()->GetTag()].list.erase(it);
+	
+	// 変更後のtagへ移動
+	m_tagMap[NextTag].list.push_back(obj);
+}
+std::shared_ptr<CGameObject> CGameObjectManager::CreateGameObject(CGameObject* pObj)
+{
+	std::shared_ptr<CGameObject> spObj;
+	// ｺﾋﾟｰ
+	if (pObj)
+	{
+		spObj = std::make_shared<CGameObject>(*pObj);
+	}
+	else
+	{
+		spObj = std::make_shared<CGameObject>();
+	}
+	
+	// 自分の所属シーンを教える
+	spObj.get()->SetScene(m_pAffiliationScene);
+
+	// 自身のweakPtrを渡す
+	spObj.get()->SetPtr(spObj);
+
+	TagMove("Default", spObj);
+
+	// 初期名
+	if(pObj->GetName().empty())
+		spObj->SetName(std::string("GameObj_" + std::to_string(static_cast<int>(m_objMgr.size() + m_addObjList.size()) + 1)));
+	
+	spObj.get()->Awake();	// 実質OnCreateな気がする
+	AddGameObject(spObj);	// 追加待ちリストに追加
+
+	return spObj;
+};
+
+bool CGameObjectManager::DestroyObject(std::weak_ptr<CGameObject> pObj)
+{
+	// 検索
+	auto it = std::find(m_objMgr.begin(), m_objMgr.end(), pObj.lock());
+	if (it == m_objMgr.end())
+		return false;	// 配列に居ない
+	m_objMgr.erase(it);
+
+	// tag管理からも除外
+	auto weakMap = m_tagMap[pObj.lock()->GetTag()];
+	auto mapIt = weakMap.FindObj(pObj.lock());
+	if (mapIt != weakMap.list.end())
+		weakMap.list.erase(mapIt);
+
+	// 非破壊検索
+	if (std::find(m_dontDestroyMgr.begin(), m_dontDestroyMgr.end(), pObj.lock()) != m_dontDestroyMgr.end())
+		m_dontDestroyMgr.erase(it);	// FIXME: 正しく消去されるか要確認
+
+	// 明示的な破棄
+	pObj.lock().reset();
+	
+	// 監視対象が残っている想定しないエラー
+	if (pObj.lock()) 
+		return false; 	
+	return true;
 }

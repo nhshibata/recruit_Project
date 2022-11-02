@@ -12,6 +12,7 @@
 #include <Application/systemManager.h>
 
 #include <GameSystem/Manager/sceneManager.h>
+#include <GameSystem/Manager/gameObjectManager.h>
 #include <GameSystem/Scene/titleScene.h>
 #include <GameSystem/Scene/buildScene.h>
 #include <GameSystem/Component/Camera/camera.h>
@@ -53,9 +54,8 @@ void CGameApp::Init(Application& pApp)
 {
 	HWND hWnd = pApp.GetHWnd();
 
-	pApp.MainSystem.Get()->SetSystem(ESystems::DEVICE, &CDXDevice::Get());
 	// デバイスの初期化
-	auto pDX = pApp.MainSystem.Get()->GetSystem<CDXDevice>();
+	auto pDX = &CDXDevice::Get();
 	//CDXDevice::Get()->Init(hWnd, (unsigned int)CScreen::GetWidth(), (unsigned int)CScreen::GetHeight());
 	pDX->Init(hWnd, (unsigned int)CScreen::GetWidth(), (unsigned int)CScreen::GetHeight());
 	auto pD = pDX->GetDevice();
@@ -63,7 +63,7 @@ void CGameApp::Init(Application& pApp)
 
 #ifdef BUILD_MODE
 	// imGuiの初期化処理
-	auto imgui = reinterpret_cast<ImGuiManager*>(pApp.MainSystem.Get()->SetSystem(ESystems::IMGUI, &ImGuiManager::Get()));
+	auto imgui = &ImGuiManager::Get();
 	imgui->Init(hWnd, pD, pDc);
 #endif // BUILD_MODE
 	
@@ -81,7 +81,7 @@ void CGameApp::Init(Application& pApp)
 	// スカイドーム
 
 	// シーンの生成
-	auto scene = reinterpret_cast<CSceneManager*>(pApp.MainSystem.Get()->SetSystem(ESystems::SCENE, &CSceneManager::Get()));
+	auto scene = &CSceneManager::Get();
 	//CSceneManager::Get()->Init();
 	//auto scene = CSceneManager::Get()->CreateNewScene<CScene>("Title");
 	//CSceneManager::Get()->CreateNewScene<CScene>("Title");
@@ -89,18 +89,18 @@ void CGameApp::Init(Application& pApp)
 	scene->CreateNewScene<CScene>("Title");
 
 	// モデル
-	auto model = reinterpret_cast<CModelManager*>(pApp.MainSystem.Get()->SetSystem(ESystems::MODEL, &CModelManager::Get()));
+	auto model = &CModelManager::Get();
 	model->Init();
 
 	// ポリゴン
 	CPolygon::Init(pD);
 
 	// ｶﾒﾗの生成後
-	auto effect = reinterpret_cast<CEffekseer*>(pApp.MainSystem.Get()->SetSystem(ESystems::EFFEKSEER, &CEffekseer::Get()));
+	auto effect = &CEffekseer::Get();
 	effect->Init(pD, pDc);
 
 	// フォント
-	auto font = reinterpret_cast<CFontTexture*>(pApp.MainSystem.Get()->SetSystem(ESystems::FONT, &CFontTexture::Get()));
+	auto font = &CFontTexture::Get();
 	font->Init();
 
 	// シェーダー
@@ -110,11 +110,11 @@ void CGameApp::Init(Application& pApp)
 	CSound::Init();
 
 	// 解放処理のため格納しておく
-	pApp.MainSystem.Get()->SetSystem(ESystems::TAG, &CTagName::Get());
+	/*pApp.MainSystem.Get()->SetSystem(ESystems::TAG, &CTagName::Get());
 	pApp.MainSystem.Get()->SetSystem(ESystems::TWEEN, &CTweenManager::Get());
 	pApp.MainSystem.Get()->SetSystem(ESystems::IMAGE, &CImageResourceManager::Get());
 	pApp.MainSystem.Get()->SetSystem(ESystems::TYPE_SAVE, &CTypeSaveManager::Get());
-	pApp.MainSystem.Get()->SetSystem(ESystems::FUNC_PTR, &CFuncManager::Get());
+	pApp.MainSystem.Get()->SetSystem(ESystems::FUNC_PTR, &CFuncManager::Get());*/
 
 }
 // 解放処理
@@ -127,11 +127,11 @@ void CGameApp::Uninit(Application& pApp)const
 	CMesh::FinShader();
 	CPolygon::Fin();
 
-	pApp.MainSystem.Get()->GetSystem<CFontTexture>()->Uninit();
+	CFontTexture::Get().Uninit();
 
-	pApp.MainSystem.Get()->GetSystem<CModelManager>()->Uninit();
+	CModelManager::Get().Uninit();
 
-	pApp.MainSystem.Get()->GetSystem<CSceneManager>()->Uninit();
+	CSceneManager::Get().Uninit();
 	//CShaderManager::Get()->Uninit();
 	
 	// 入力
@@ -145,21 +145,29 @@ void CGameApp::Update(Application& pApp)const
 	CSound::Update();
 
 #ifdef BUILD_MODE	// ImGui
-	auto imgui = pApp.MainSystem.Get()->GetSystem<ImGuiManager>();
+	auto imgui = &ImGuiManager::Get();
 	imgui->Update();
-
+	
+	// デバッグ中の更新(GameObjectのdeleteとTransformの更新はないと不便)
 	if (imgui->GetPause())
+	{
+		auto all = CSceneManager::Get().GetAllScene();
+		for (auto & scene : all)
+		{
+			scene->GetObjManager()->UpdateInDebug();
+		}
 		return;
+	}
 #endif // DEBUG
 
-	pApp.MainSystem.Get()->GetSystem<CSceneManager>()->Update();
-	pApp.MainSystem.Get()->GetSystem<CEffekseer>()->Update();
+	CSceneManager::Get().Update();
+	CEffekseer::Get().Update();
 }
 // 定期更新
 void CGameApp::FixedUpdate(Application& pApp)const
 {
 	// 一定時間の更新
-	pApp.MainSystem.Get()->GetSystem<CSceneManager>()->FixedUpdate();
+	CSceneManager::Get().FixedUpdate();
 }
 // 入力更新
 void CGameApp::InputUpdate()
@@ -180,15 +188,15 @@ void CGameApp::Draw(Application& pApp)
 	if (CCamera::GetMain())
 	{
 		// シーンの描画
-		pApp.MainSystem.Get()->GetSystem<CSceneManager>()->Draw();
+		CSceneManager::Get().Draw();
 
 		// effect
-		pApp.MainSystem.Get()->GetSystem<CEffekseer>()->Draw();
+		CSceneManager::Get().Draw();
 	}
 
 #ifdef BUILD_MODE
 	// ImGuiの描画
-	pApp.MainSystem.Get()->GetSystem<ImGuiManager>()->Render();
+	ImGuiManager::Get().Render();
 #endif // BUILD_MODE
 
 	// 描画後更新
@@ -198,7 +206,7 @@ void CGameApp::Draw(Application& pApp)
 void CGameApp::BeginRender(Application& pApp)
 {
 	float ClearColor[4] = { 0.117647f, 0.254902f, 0.352941f, 1.0f };
-	auto pDX = pApp.MainSystem.Get()->GetSystem<CDXDevice>();
+	auto pDX = &CDXDevice::Get();
 	ID3D11DeviceContext* pDC = pDX->GetDeviceContext();
 	pDC->ClearRenderTargetView(pDX->GetRenderTargetView(), ClearColor);
 	pDC->ClearDepthStencilView(pDX->GetDepthStencilView(),
@@ -213,7 +221,7 @@ void CGameApp::BeginRender(Application& pApp)
 void CGameApp::EndRender(Application& pApp)
 {
 	// 描画後更新
-	auto pDX = pApp.MainSystem.Get()->GetSystem<CDXDevice>();
+	auto pDX = &CDXDevice::Get();
 	pDX->SetCullMode((int)ECullMode::CULLMODE_NONE);
 	pDX->GetSwapChain()->Present(0, 0);
 }

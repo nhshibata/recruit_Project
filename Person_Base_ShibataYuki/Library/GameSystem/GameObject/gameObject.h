@@ -24,9 +24,18 @@ namespace MySpace
 		class CRenderer;
 	}
 }
+namespace MySpace
+{
+	namespace SceneManager
+	{
+		class CScene;
+	}
+}
 
 namespace MySpace
 {
+	using MySpace::SceneManager::CScene;
+	
 	namespace Game
 	{
 		//--- クラス定義
@@ -83,6 +92,7 @@ namespace MySpace
 			std::shared_ptr<CTag> m_Tag;			// タグ
 			std::shared_ptr<CLayer> m_Layer;		// レイヤー
 			std::weak_ptr<CTransform> m_Transform;	// パラメータ
+			std::weak_ptr<CScene> m_pScene;
 
 		public:
 			CGameObject();							// *@コンストラクタ
@@ -103,14 +113,14 @@ namespace MySpace
 			bool operator<(std::shared_ptr<CGameObject> other) { return other->GetLayer() < this->GetLayer(); }
 			bool operator>(CGameObject* other) { return other->GetLayer() > this->GetLayer(); }
 			bool operator>(std::shared_ptr<CGameObject> other) { return other->GetLayer() > this->GetLayer(); }
-
+			
 			//--- コンポーネント
 			// *生成することで追加する
 			// *持ち主設定、自SPの設定などを行い、生成時処理を呼び出す
 			template <class T>
 			std::shared_ptr<T> AddComponent()
 			{
-				static_assert(std::is_base_of<CComponent, T> == false, "not CComponent");// ｺﾝﾎﾟｰﾈﾝﾄを継承しているか確認
+				//static_assert(std::is_base_of<CComponent, T> == false, "not CComponent");// ｺﾝﾎﾟｰﾈﾝﾄを継承しているか確認
 
 				std::shared_ptr<T> com = std::make_shared<T>(GetPtr().lock());
 				com->SetPtr(com);					// 自身のポインタの設定
@@ -120,6 +130,7 @@ namespace MySpace
 				AddComponent(com);				// 配列への追加
 				return com;
 			}
+
 			// *コンポーネントの追加
 			// *他onjのcomの場合、comの共有となる
 			std::shared_ptr<CComponent> AddComponent(std::shared_ptr<CComponent> com);
@@ -150,20 +161,24 @@ namespace MySpace
 			}
 
 			// ゲッター・セッター
+
+			inline bool IsVision() { return (m_eState == E_ObjectState::ACTIVE || m_eState == E_ObjectState::WAIT); }	// *描画状態の確認
+			inline bool IsActive() { return (m_eState == E_ObjectState::ACTIVE); }										// *ｱｸﾃｨﾌﾞ状態の確認
+			inline CScene* GetScene() { return m_pScene.lock().get(); }
 			inline CTransform* GetTransform() { return m_Transform.lock().get(); };										// *ﾄﾗﾝｽﾌｫｰﾑの取得
 			inline virtual std::shared_ptr<CTransform> GetTransform(int n) { return m_Transform.lock(); };
 			inline E_ObjectState GetState() { return m_eState; };														// *obj状態取得
-			inline bool IsVision() { return (m_eState == E_ObjectState::ACTIVE || m_eState == E_ObjectState::WAIT); }	// *描画状態の確認
-			inline bool IsActive() { return (m_eState == E_ObjectState::ACTIVE); }										// *ｱｸﾃｨﾌﾞ状態の確認
 			inline std::shared_ptr<CTag> GetTagPtr() { return m_Tag; };													// *ﾀｸﾞｸﾗｽの取得
+			inline std::string GetTag() { return GetTagPtr()->GetTag(); };												// *ﾀｸﾞ文字の取得
 			inline std::shared_ptr<CLayer> GetLayerPtr() { return m_Layer; };											// *ﾚｲﾔｸﾗｽの取得
 			inline int GetLayer() { return *m_Layer->GetLayer(); };														// *ﾚｲﾔｰ番号
 
+			inline void SetScene(std::weak_ptr<CScene> scene) { m_pScene = scene; };
 			inline void SetTransform(std::shared_ptr<CTransform> trans) { m_Transform = trans; };
 			inline void SetState(const E_ObjectState state) { m_eState = state; }// TODO: 状態により親子関係にあるオブジェクトの状態を変える
-			inline void SetTag(const std::string tag) { m_Tag->SetTag(tag); };
 			inline void SetLayer(int layer) { m_Layer->SetLayer(layer); };
 			inline void SetLayer(CLayer::E_Layer layer) { m_Layer->SetLayer(layer); };
+			void SetTag(const std::string tag);
 
 			//--- 仮想関数
 			// コンポーネントが持つ衝突関数の呼び出し
@@ -177,13 +192,14 @@ namespace MySpace
 
 			//--- 静的メンバ関数
 			// ゲームオブジェクト関係ショートカット用関数?(あまりいい方法ではない気がする)
-			static std::weak_ptr<CGameObject> FindGameObject(std::string name);					// *名前検索
-			static std::weak_ptr<CGameObject> FindGameObjectWithTag(std::string tag);			// *タグ名前検索
-			static std::weak_ptr<CGameObject> FindGameObjectWithTag(CTag tag);					// *タグ検索
-			static std::list<std::weak_ptr<CGameObject>> FindGameObjectsWithTag(CTag tag);		// *タグ検索リスト
-			static std::weak_ptr<CGameObject> CreateObject(CGameObject* pObj = nullptr);		// *オブジェクトの生成
-			static void Destroy(std::weak_ptr<CGameObject>);									// *オブジェクト破棄
-			static void DontDestroy(std::weak_ptr<CGameObject> obj);							// *オブジェクト破棄除外
+			static std::weak_ptr<CGameObject> FindGameObject(std::string name);						// *名前検索
+			static std::weak_ptr<CGameObject> FindGameObjectWithTag(std::string tag);				// *タグ名前検索
+			static std::list<std::weak_ptr<CGameObject>> FindGameObjectsWithTag(std::string tag);	// *タグ名前検索
+			static std::weak_ptr<CGameObject> FindGameObjectWithTag(CTag tag);						// *タグ検索
+			static std::list<std::weak_ptr<CGameObject>> FindGameObjectsWithTag(CTag tag);			// *タグ検索リスト
+			static std::weak_ptr<CGameObject> CreateObject(CGameObject* pObj = nullptr);			// *オブジェクトの生成
+			static void Destroy(std::weak_ptr<CGameObject>);										// *オブジェクト破棄
+			static void DontDestroy(std::weak_ptr<CGameObject> obj);								// *オブジェクト破棄除外
 
 #ifdef BUILD_MODE
 

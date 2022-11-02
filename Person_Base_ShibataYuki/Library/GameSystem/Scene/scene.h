@@ -20,10 +20,16 @@ namespace MySpace
 		using MySpace::Game::CGameObjectManager;
 		using MySpace::Game::CDrawManager;
 	}
+	namespace SceneManager
+	{
+		class CSceneManager;
+	}
 }
 
 namespace MySpace
 {	
+	using MySpace::SceneManager::CSceneManager;
+
 	namespace SceneManager
 	{			
 		using namespace MySpace::Game;
@@ -31,14 +37,18 @@ namespace MySpace
 		//--- クラス定義
 		class CScene
 		{
+			friend class MySpace::SceneManager::CSceneManager;
 		protected:
 			//--- メンバ変数
 			std::shared_ptr<CGameObjectManager> m_objeManager;
 			std::shared_ptr<CDrawManager> m_drawManager;
 
 			std::string m_SceneName;
-		public:
+			std::weak_ptr<CScene> m_spPtr;
+		private:
 			//--- ﾒﾝﾊﾞ関数
+			void SetScene(std::weak_ptr<CScene> scene) { m_spPtr = scene; }
+		public:
 			CScene();
 			CScene(std::string name);
 			virtual ~CScene();
@@ -52,11 +62,11 @@ namespace MySpace
 			void CreateEmptyScene();
 
 			//--- セッター・ゲッター
-			const std::string& GetSceneName() { return m_SceneName; }
-			void SetSceneName(const std::string name) { m_SceneName = name; }
-			CGameObjectManager* GetObjManager() { return m_objeManager.get(); }
-			CDrawManager* GetDrawManager() { return m_drawManager.get(); }
-			void SetObjManager(std::shared_ptr<CGameObjectManager> mgr) { m_objeManager.reset(); m_objeManager = mgr; }
+			inline const std::string& GetSceneName() { return m_SceneName; }
+			inline void SetSceneName(const std::string name) { m_SceneName = name; }
+			inline CGameObjectManager* GetObjManager() { return m_objeManager.get(); }
+			inline CDrawManager* GetDrawManager() { return m_drawManager.get(); }
+			inline void SetObjManager(std::shared_ptr<CGameObjectManager> mgr) { m_objeManager.reset(); m_objeManager = mgr; }
 		};
 	}
 }

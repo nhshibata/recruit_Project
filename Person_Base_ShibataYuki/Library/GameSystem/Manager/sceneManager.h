@@ -104,11 +104,11 @@ namespace MySpace
 
 			// *メインシーン取得(引き数ありでSP取得)
 			CScene* GetActiveScene() { return m_pCurrentScene.lock().get(); }
-			// *メインシーン取得(引き数ありでSP取得)
+			// *メインシーン取得
 			std::shared_ptr<CScene> GetActiveScene(int) { return m_pCurrentScene.lock(); }
 			std::string GetActiveSceneName() { return m_pCurrentScene.lock()->GetSceneName(); }
 			// *文字列が一致するシーン取得
-			std::shared_ptr<CScene> GetScene(std::string name) 
+			std::shared_ptr<CScene> GetSceneByName(std::string name) 
 			{
 				for (auto & scene : m_pScenes)
 				{
@@ -146,7 +146,10 @@ namespace MySpace
 					pNextScene = std::make_shared<CScene>();
 				else
 					pNextScene = std::make_shared<CScene>(name);
+				// リストへの追加
 				AddSceneList(pNextScene);
+				// 自分のSPを教える
+				pNextScene->SetScene(pNextScene);
 				
 				if (!m_pCurrentScene.lock())
 					m_pCurrentScene = pNextScene;

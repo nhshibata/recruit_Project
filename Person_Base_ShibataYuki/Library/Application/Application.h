@@ -25,7 +25,6 @@ namespace MySpace
 	}
 }
 using MySpace::System::CSingleton;
-using MySpace::System::CSystemManager;
 
 //--- クラス定義
 class Application : public CSingleton<Application>
@@ -37,9 +36,6 @@ private:
 	HINSTANCE				m_hInst;						// インスタンスハンドル
 	uint32_t				m_SystemCounter;				// システムカウンタ
 	FILE*					m_fp;							// デバッグ用コンソール
-
-public:
-	MySpace::System::CProperty<CSystemManager*> MainSystem;
 
 private:
 	//--- メンバ関数

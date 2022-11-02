@@ -16,6 +16,7 @@
 #include <GraphicsSystem/Manager/imageResourceManager.h>
 
 #include <GameSystem/Component/Camera/camera.h>
+#include <GameSystem/Component/Camera/debugCamera.h>
 
 using namespace MySpace::System;
 using namespace MySpace::Debug;
@@ -73,9 +74,20 @@ void ImGuiManager::Update()
 	if (CInput::GetKeyTrigger(VK_I))
 	{
 		m_flg ^= true;
+		if (!m_pDebugCamera.lock())
+		{
+			m_pDebugCamera = CCamera::GetMain()->AddComponent<CDebugCamera>();
+		}
+		else
+		{
+			m_pDebugCamera.lock()->SetActive(m_flg);
+		}
 	}
 	if (!m_flg)
 		return;
+
+	if (m_pDebugCamera.lock())
+		m_pDebugCamera.lock()->Update();
 
 	//imGuiの更新処理
 	ImGui_ImplDX11_NewFrame();
@@ -98,8 +110,8 @@ void ImGuiManager::Update()
 	ImGui::SetNextWindowSize(ImVec2(300, 300), ImGuiCond_Once);
 	ImGui::Begin(u8"ステータス", &m_flg, ImGuiWindowFlags_::ImGuiWindowFlags_MenuBar);
 
-	// 変更する可能性
 	CSceneManager::Get().ImguiDebug();
+	// 変更されている可能性
 	scene = CSceneManager::Get().GetActiveScene();
 
 	// フレームレートを表示

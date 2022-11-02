@@ -45,10 +45,13 @@ namespace MySpace
 				CAM_MODE_TRACK,		// 注視点と一緒に移動
 				CAM_MODE_DOLLY,		// 注視点に近づいたり遠ざかったり
 			};
-
+		private:
+			//--- メンバ変数
+			const float MOVE_SPEED = 1.0f / 60.0f;
 			ECameraMode m_eMode = ECameraMode::CAM_MODE_NONE;		// カメラ視点
 			bool m_bMouse;
 			POINT m_oldMousePos;
+
 		public:
 			//--- ﾒﾝﾊﾞ関数
 			CDebugCamera();
