@@ -16,6 +16,9 @@
     <Filter Include="ImGui">
       <UniqueIdentifier>{f6876ee5-df76-479b-bb56-ded6f36803ec}</UniqueIdentifier>
     </Filter>
+    <Filter Include="ImGuizmo">
+      <UniqueIdentifier>{b56d6a9e-fc23-4b04-96db-c7133158b574}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\Library\DebugSystem\imguiManager.cpp">
@@ -27,26 +30,44 @@
     <ClCompile Include="..\..\Library\DebugSystem\hierarchy.cpp">
       <Filter>ソース ファイル</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\Library\DebugSystem\typeSaveManager.cpp">
+      <Filter>ソース ファイル</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Library\DebugSystem\imGuiPackage.cpp">
+      <Filter>ソース ファイル</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Library\DebugSystem\imGuiSceneGizmo.cpp">
+      <Filter>ソース ファイル</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Library\ImGui\imgui.cpp">
+      <Filter>ImGui</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Library\ImGui\imgui_demo.cpp">
+      <Filter>ImGui</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Library\ImGui\imgui_draw.cpp">
+      <Filter>ImGui</Filter>
+    </ClCompile>
     <ClCompile Include="..\..\Library\ImGui\imgui_impl_dx11.cpp">
       <Filter>ImGui</Filter>
     </ClCompile>
     <ClCompile Include="..\..\Library\ImGui\imgui_impl_win32.cpp">
       <Filter>ImGui</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\Library\ImGui\imgui_tables.cpp">
+      <Filter>ImGui</Filter>
+    </ClCompile>
     <ClCompile Include="..\..\Library\ImGui\imgui_widgets.cpp">
       <Filter>ImGui</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\Library\ImGui\imgui.cpp">
-      <Filter>ImGui</Filter>
+    <ClCompile Include="..\..\Library\ImGuizmo\ImCurveEdit.cpp">
+      <Filter>ImGuizmo</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\Library\ImGui\imgui_draw.cpp">
-      <Filter>ImGui</Filter>
+    <ClCompile Include="..\..\Library\ImGuizmo\ImGradient.cpp">
+      <Filter>ImGuizmo</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\Library\DebugSystem\typeSaveManager.cpp">
-      <Filter>ソース ファイル</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\Library\DebugSystem\imGuiPackage.cpp">
-      <Filter>ソース ファイル</Filter>
+    <ClCompile Include="..\..\Library\ImGuizmo\ImGuizmo.cpp">
+      <Filter>ImGuizmo</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -61,6 +82,21 @@
     </ClInclude>
     <ClInclude Include="..\..\Library\DebugSystem\debug.h">
       <Filter>ヘッダー ファイル</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Library\DebugSystem\typeSaveManager.h">
+      <Filter>ヘッダー ファイル</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Library\DebugSystem\imGuiPackage.h">
+      <Filter>ヘッダー ファイル</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Library\DebugSystem\imGuiSceneGizmo.h">
+      <Filter>ヘッダー ファイル</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Library\ImGui\imconfig.h">
+      <Filter>ImGui</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Library\ImGui\imgui.h">
+      <Filter>ImGui</Filter>
     </ClInclude>
     <ClInclude Include="..\..\Library\ImGui\imgui_impl_dx11.h">
       <Filter>ImGui</Filter>
@@ -80,17 +116,20 @@
     <ClInclude Include="..\..\Library\ImGui\imstb_truetype.h">
       <Filter>ImGui</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\Library\ImGui\imconfig.h">
-      <Filter>ImGui</Filter>
+    <ClInclude Include="..\..\Library\ImGuizmo\ImApp.h">
+      <Filter>ImGuizmo</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\Library\ImGui\imgui.h">
-      <Filter>ImGui</Filter>
+    <ClInclude Include="..\..\Library\ImGuizmo\ImCurveEdit.h">
+      <Filter>ImGuizmo</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\Library\DebugSystem\typeSaveManager.h">
-      <Filter>ヘッダー ファイル</Filter>
+    <ClInclude Include="..\..\Library\ImGuizmo\ImGradient.h">
+      <Filter>ImGuizmo</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\Library\DebugSystem\imGuiPackage.h">
-      <Filter>ヘッダー ファイル</Filter>
+    <ClInclude Include="..\..\Library\ImGuizmo\ImGuizmo.h">
+      <Filter>ImGuizmo</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Library\ImGuizmo\ImZoomSlider.h">
+      <Filter>ImGuizmo</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

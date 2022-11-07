@@ -98,10 +98,10 @@ void CSpriteAnimation::ImGuiDebug()
 
 	// ImGui.hにコンストラクタと演算子のオーバーロード追加
 	auto split = GetSplit();
-	ImVec2 texSize = static_cast<ImVec2>(GetFrameSize());
+	ImVec2 texSize = (GetFrameSize().Convert<ImVec2>());
 	for (int cnt = 0; cnt < split.x * split.y; ++cnt)
 	{
-		ImVec2 uv = static_cast<XMFLOAT2>(GetUV(cnt));
+		ImVec2 uv = GetUV(cnt).Convert<ImVec2>();
 		ImGui::Image(
 			(void*)GetImage().lock()->GetSRV(),	// 画像
 			ImVec2(10, 10),									// サイズ

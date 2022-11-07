@@ -198,6 +198,7 @@ namespace MySpace
 			static std::weak_ptr<CGameObject> FindGameObjectWithTag(CTag tag);						// *タグ検索
 			static std::list<std::weak_ptr<CGameObject>> FindGameObjectsWithTag(CTag tag);			// *タグ検索リスト
 			static std::weak_ptr<CGameObject> CreateObject(CGameObject* pObj = nullptr);			// *オブジェクトの生成
+			static std::shared_ptr<CGameObject> CreateDebugObject();								// *オブジェクトの生成
 			static void Destroy(std::weak_ptr<CGameObject>);										// *オブジェクト破棄
 			static void DontDestroy(std::weak_ptr<CGameObject> obj);								// *オブジェクト破棄除外
 

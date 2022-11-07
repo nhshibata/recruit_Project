@@ -1,6 +1,6 @@
 //==========================================================
 // [imGuiPackage.cpp]
-// 複数回記述することの多いImGuiのセットを関数化
+// 複数回記述することのあるImGuiのセットを関数化
 //==========================================================
 
 //--- インクルード部
@@ -16,6 +16,8 @@ namespace MySpace
 {
 	namespace Debug
 	{
+		// 文字列入力用
+#pragma region STRING
 		std::string InputString(std::string text, std::string desc)
 		{
 			char name[256];
@@ -23,7 +25,10 @@ namespace MySpace
 			ImGui::InputText(desc.c_str(), name, 256);
 			return name;
 		}
+#pragma endregion
 
+		// 指定パスのフォルダ内のファイル名を表示する
+#pragma region DISP_FILE
 		std::string DispFileMenuBar(std::string path, std::string desc, std::string ext)
 		{
 			CFilePath file;
@@ -104,7 +109,10 @@ namespace MySpace
 				return file[cnt];
 			return std::u16string();
 		}
+#pragma endregion
 
+
+#pragma region INPUT_CAST
 		DirectX::XMFLOAT3 InputInt(DirectX::XMFLOAT3 value)
 		{
 			DirectX::XMINT3 input = {
@@ -136,11 +144,119 @@ namespace MySpace
 				static_cast<float>(input.y)
 				);
 		}
-	
-		/*DirectX::XMFLOAT3 InputFloat(DirectX::XMFLOAT3 value)
-		{
+#pragma endregion
 
-		}*/
+#pragma region DRAG_AND_DROP
+		// 定数などで管理すべき
+		// ドロップ先
+		template<class T>
+		T* DragDropTarget(std::string name)
+		{
+			if (ImGui::BeginDragDropTarget())
+			{
+				if (const ImGuiPayload* payload = ImGui::AcceptDragDropPayload(name.c_str()))
+				{
+					IM_ASSERT(payload->DataSize == sizeof(T));
+					/*T payload_type = *(const T*)payload->Data;
+					return &payload_type;*/
+					return (T*)payload->Data;
+				}
+				ImGui::EndDragDropTarget();
+			}
+			return nullptr;
+		}
+		// ドラッグ元
+		template<class T>
+		bool DragDropSource(std::string name, std::string moveName, T type)
+		{
+			if (ImGui::BeginDragDropSource())
+			{
+				const ImGuiPayload* payload = ImGui::GetDragDropPayload();
+				ImGui::SetDragDropPayload(name.c_str(), &type, sizeof(T));
+				// ドラッグ中のものの名前
+				ImGui::Text(std::string("Move Parent ==>>" + moveName).c_str());
+				ImGui::EndDragDropSource();
+				return true;
+			}
+			return false;
+		}
+#pragma endregion
+
+		// メニューポップ
+#pragma region POP_MENU
+		// -1はなにも選択していない判定
+		int PopupMenu(std::vector<std::string> vec, std::string name, bool open)
+		{
+			if (!open)
+				return -1;
+			ImGui::OpenPopup(name.c_str());
+			int cnt = -1;
+			if (ImGui::BeginPopup(name.c_str(), ImGuiWindowFlags_::ImGuiWindowFlags_MenuBar))
+			{
+				for (cnt = 0; cnt < vec.size(); cnt++)
+				{
+					// 入力があれば抜ける
+					if (ImGui::MenuItem(vec[cnt].c_str()))
+					{
+						break;
+					}
+				}
+				ImGui::EndPopup();
+			}
+			return cnt == vec.size() ? -1 : cnt;
+		}
+#pragma endregion
+
+#pragma region BUTTON_
+		int CreateRadio(std::vector<std::string> vec, int current)
+		{
+			for (int cnt = 0; cnt < vec.size(); cnt++)
+			{
+				if (ImGui::RadioButton(vec[cnt].c_str(), cnt == current))
+				{
+					return cnt;
+				}
+			}
+			return current;
+		}
+		// ビット確認できる定数や列挙体用
+		int CreateRadioForBit(std::vector<std::string> vec, int current)
+		{
+			if (ImGui::RadioButton(vec[0].c_str(), 0 == current))
+				return 0;
+
+			for (int cnt = 0; cnt < vec.size() - 1; cnt++)
+			{
+				if (ImGui::RadioButton(vec[cnt + 1].c_str(), (1 << cnt) == current))
+				{
+					return  (1 << cnt);
+				}
+			}
+			return current;
+		}
+		// ビットで複数切替ボタン
+		int CreateSelectableForBit(std::vector<std::string> vec, int current, int newLine, float width)
+		{
+			ImVec2 size = ImVec2(width, 0);
+			// 初期化 & ダブルクリック
+			if (ImGui::Selectable(vec[0].c_str(), 0 == current, ImGuiSelectableFlags_AllowDoubleClick, size))
+				if (ImGui::IsMouseDoubleClicked(0))
+					return 0;
+
+			for (int cnt = 0; cnt < vec.size() - 1; cnt++)
+			{
+				if (ImGui::Selectable(vec[cnt + 1].c_str(), (1 << cnt) | current, ImGuiSelectableFlags_::ImGuiSelectableFlags_None, size))
+				{
+					// 排他
+					current ^= (1 << cnt);
+				}
+				if ((cnt) % newLine == 0)
+					ImGui::SameLine();
+			}
+			return current;
+		}
+#pragma endregion
+
 	}
 }
 #endif

@@ -179,3 +179,30 @@ void CDebugCamera::CameraMouseMove(int x, int y)
 	m_oldMousePos.x = x;
 	m_oldMousePos.y = y;
 }
+
+void CDebugCamera::ResumeCamera(bool bSwitch)
+{
+	static std::weak_ptr<CCamera> work;
+
+	if (bSwitch)
+	{
+		// ƒƒCƒ“¶Ò×‚É‚È‚Á‚Ä‚È‚¢Žž
+		if (this != CCamera::GetMain())
+		{
+			work = CCamera::GetMain(0);
+			CCamera::Set(this->BaseToDerived<CCamera>());
+		}
+	}
+	else
+	{	// ƒƒCƒ“ƒJƒƒ‰‚ð–ß‚·
+		if (work.lock())
+			CCamera::Set(work);
+		else
+		{
+			if (auto obj = CGameObject::FindGameObjectWithTag(CDefaultTagChar::CAMERA); obj.lock())
+			{
+				CCamera::Set(obj.lock()->GetComponent<CCamera>());
+			}
+		}
+	}
+}

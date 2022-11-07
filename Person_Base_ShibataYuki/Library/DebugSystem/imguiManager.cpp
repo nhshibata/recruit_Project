@@ -54,10 +54,18 @@ void ImGuiManager::Init(HWND hWnd, ID3D11Device* device, ID3D11DeviceContext* co
 
 	m_pInspector = std::make_shared<CInspector>();
 	m_pHierarchy = std::make_shared<CHierachy>();
+	{
+		m_pDebugObj = CGameObject::CreateDebugObject();
+		m_pDebugCamera = m_pDebugObj->AddComponent<CDebugCamera>();
+		m_pDebugCamera.lock()->Init();
+	}
 }
 // ImGui‚ÌI—¹ˆ—
 void ImGuiManager::Uninit()
 {
+	m_pDebugCamera.lock()->GetOwner(0).reset();
+	m_pDebugCamera.reset();
+
 	m_pInspector->Uninit();
 	m_pHierarchy->Uninit();
 	m_pInspector.reset();
@@ -74,14 +82,7 @@ void ImGuiManager::Update()
 	if (CInput::GetKeyTrigger(VK_I))
 	{
 		m_flg ^= true;
-		if (!m_pDebugCamera.lock())
-		{
-			m_pDebugCamera = CCamera::GetMain()->AddComponent<CDebugCamera>();
-		}
-		else
-		{
-			m_pDebugCamera.lock()->SetActive(m_flg);
-		}
+		m_pDebugCamera.lock()->ResumeCamera(m_flg);
 	}
 	if (!m_flg)
 		return;

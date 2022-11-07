@@ -23,12 +23,15 @@ CTagName::CTagName()
 	//SetSave();
 }
 
+CTagName::~CTagName()
+{
+	SaveSystem();
+}
 void CTagName::SaveSystem()
 {
 	CCerealize<std::vector<std::string>> sirial;
 	sirial.OutputFile("tagList", TAG_PATH, m_tagVec);
 }
-
 void CTagName::LoadSystem()
 {
 	CCerealize<std::vector<std::string>> sirial;
@@ -38,9 +41,8 @@ void CTagName::LoadSystem()
 // コンストラクタ
 CTag::CTag()
 {
-	CreateTag("Default");
-	SetTag("Default");
-	//m_nTagID = GetID("Default");
+	CreateTag(CDefaultTagChar::DEFAULT);
+	SetTag(CDefaultTagChar::DEFAULT);
 }
 
 CTag::CTag(std::string name)

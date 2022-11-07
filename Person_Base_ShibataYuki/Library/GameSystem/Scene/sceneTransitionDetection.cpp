@@ -38,6 +38,8 @@ void CSceneTransitionDetection::Call(CScene* scene, int mode)
 {
 	auto list = m_pLoadFunc;
 	m_pLoadFunc.clear();
+	if (list.size() == 0)
+		return;
 
 	for (auto it = list.begin(); it != list.end(); ++it)
 	{

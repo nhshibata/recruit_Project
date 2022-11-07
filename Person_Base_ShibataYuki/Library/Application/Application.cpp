@@ -42,7 +42,7 @@ bool Application::Init(HINSTANCE h_Instance)
 	CScreen::SetSize(1280.0f, 960.0f);
 
 	// メモリの確保
-	MainSystem.Set(new CSystemManager);
+	//MainSystem.Set(new CSystemManager);
 
 	// ウインドウ作成
 	CWindow* window = &CWindow::Get();
@@ -80,16 +80,16 @@ void Application::Uninit()
 
 	// システムの解放
 	// 先に解放したいものがあればこれより先に呼び出す
-	auto all = MainSystem.Get()->GetAll();
-	for (auto it = all.begin(); it != all.end(); ++it)
-	{
-		CBase* app = reinterpret_cast<CBase*>(*it);
-		if (app)
-			app->Uninit();
-	}
+	//auto all = MainSystem.Get()->GetAll();
+	//for (auto it = all.begin(); it != all.end(); ++it)
+	//{
+	//	CBase* app = reinterpret_cast<CBase*>(*it);
+	//	if (app)
+	//		app->Uninit();
+	//}
 
 	// メモリの解放
-	delete MainSystem.Get();
+	//delete MainSystem.Get();
 
 	//CWindow::Get().Close(WINDOW_CLASS_NAME, m_hInst);
 	UnregisterClass(WINDOW_CLASS_NAME, m_hInst);

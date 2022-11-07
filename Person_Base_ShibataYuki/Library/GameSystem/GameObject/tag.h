@@ -18,6 +18,16 @@ namespace MySpace
 	{
 		using MySpace::System::CAppSystem;
 
+		// 基本的なタグ所持ｸﾗｽ
+		class CDefaultTagChar
+		{
+		public:
+			static constexpr const char* DEFAULT = "Default";
+			static constexpr const char* CAMERA = "MainCamera";
+			static constexpr const char* LIGHT = "Light";
+		};
+
+		// タグの全体管理
 		class CTagName : public CAppSystem<CTagName>
 		{
 			friend class CAppSystem<CTagName>;
@@ -26,11 +36,17 @@ namespace MySpace
 			std::vector<std::string> m_tagVec;
 		private:
 			CTagName();
+			~CTagName();
 
 		public:
-			std::vector<std::string> GetList() { return m_tagVec; }
 			void LoadSystem();
 			void SaveSystem();
+
+			std::vector<std::string> GetList() 
+			{
+				return m_tagVec; 
+			}
+
 			int Find(std::string name)
 			{
 				int id = 0;
@@ -40,12 +56,14 @@ namespace MySpace
 				}
 				return -1;
 			}
+
 			// 登録完了 / 必要なし
 			bool CreateTag(std::string name) 
 			{
 				if (Find(name) == -1) { m_tagVec.push_back(name); return true; }
 				return false;
 			}
+
 			std::string GetTag(int id)
 			{
 				if (m_tagVec.size() <= id) { return "null"; }return m_tagVec[id];
@@ -107,13 +125,6 @@ namespace MySpace
 				else if (tag.find(name) != std::string::npos) { return 2; }
 				return false; 
 			}
-			
-			/*bool Compare(std::string name)
-			{
-				auto tagVec = CTagName::Get().GetList(); 
-				if (name == tagVec[m_nTagID]) { return true; }
-				return false; 
-			}*/
 
 		};
 	}

@@ -48,11 +48,14 @@
 #include <tchar.h>
 
 #include <Application/main.h>
+#include <GameSystem/Manager/sceneManager.h>
+#include <gameCentipedeMarch.h>
 
 // ライブラリ参照
 // プロパティで指定するか、ここで指定するか…悩みどころ
+#pragma region LIBRARY
+
 #ifdef _DEBUG
-//#pragma comment(lib, "DirectXTexD")
 #pragma comment(lib, "DirectXTex")
 #else
 #pragma comment(lib, "DirectXTex")
@@ -69,13 +72,12 @@
 //#pragma comment(lib, "DebugSystem")
 //#pragma comment(lib, "GameSystem")
 //#pragma comment(lib, "GraphicsSystem")
-
-#include <GameSystem/Manager/sceneManager.h>
-#include <gameCentipedeMarch.h>
+#pragma endregion
 
 int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine, int nCmdShow)
 {
 	using namespace MySpace::SceneManager;
+
 	// *@シーン作成時に呼び出すｸﾗｽ
 	// *@静的なシーン作成の場合、動的な作成はファイル書き込みと読み込みを行う
 	// *@通常の関数でもいいような
@@ -87,8 +89,12 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 		}
 		void* Load(CScene* scene, int mode)
 		{
-			auto obj = scene->GetObjManager()->CreateGameObject();
-			obj->AddComponent<CGameCentipedeMarch>();
+#if 0
+			//auto obj = scene->GetObjManager()->CreateGameObject();
+			//obj->AddComponent<CGameCentipedeMarch>();
+#endif // 0
+			scene->SetSceneName("BuildeScene");
+			scene->CreateEmptyScene();
 			return nullptr;
 		}
 	};
