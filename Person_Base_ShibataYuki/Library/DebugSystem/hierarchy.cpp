@@ -198,7 +198,7 @@ void CHierachy::DispSaveLoadMenu()
 	}
 
 	//ImGui::InputText("reloadFile", m_loadPath.data(), 256);
-	InputString(m_loadPath, "loadFile");
+	m_loadPath = InputString(m_loadPath, "loadFile");
 
 	if (ImGui::Button("Load"))
 	{
@@ -210,7 +210,7 @@ void CHierachy::DispSaveLoadMenu()
 	ImGui::SetNextWindowSize(ImVec2(200, 300), ImGuiCond_Once);
 
 	//ImGui::Begin("Save", &batsu, ImGuiWindowFlags_MenuBar);
-	InputString(m_savePath, "saveFile");
+	m_savePath = InputString(m_savePath, "saveFile");
 	if (ImGui::Button("Save"))
 	{
 		CSceneManager::Get().SaveScene(m_savePath);
@@ -221,7 +221,7 @@ void CHierachy::DispSaveLoadMenu()
 void CHierachy::UpdateSearch()
 {
 	// for文変数
-	const static int nSearch[static_cast<int>(ESearchTerms::MAX)] =
+	static const int nSearch[static_cast<int>(ESearchTerms::MAX)] =
 	{
 		static_cast<int>(ESearchTerms::OBJ_NAME),
 		static_cast<int>(ESearchTerms::TAG),
@@ -241,7 +241,7 @@ void CHierachy::UpdateSearch()
 		m_Search.bSearchCriteria ^= true;
 	}
 	ImGui::SameLine();
-	InputString(m_Search.inputName, "検索条件");
+	m_Search.inputName = InputString(m_Search.inputName, "検索条件");
 
 	for (int cnt = 0; cnt < static_cast<int>(ESearchTerms::MAX); ++cnt)
 	{
@@ -276,5 +276,39 @@ bool CHierachy::DispCheck(CGameObject* obj)
 	return false;
 }
 #pragma endregion
+
+#pragma region LIST_SWAP
+// list用コンテナ内で挿入入れ替え
+// 受け取ったリストを入れ替え返却 else そのまま返却
+template<class T>
+std::list<T> CHierachy::MovingInList(std::list<T> list, T newT, int index)
+{
+	// 範囲チェック
+	if (index >= list.size())
+		return list;
+
+	// 挿入する場所までitを進める
+	auto pos = list.begin();
+	for (int n = 0; n < index; n++)
+	{
+		++pos;
+	}
+	// 探す
+	for (auto it = list.begin(); it != list.end(); ++it)
+	{
+		if (*it == newT)
+		{
+			// 挿入
+			list.insert(pos, *it);
+			// 元のオブジェクトは配列から除外
+			list.erase(it);
+			return list;
+		}
+	}
+	return list;
+}
+
+#pragma endregion
+
 
 #endif // !BUILD_MODE

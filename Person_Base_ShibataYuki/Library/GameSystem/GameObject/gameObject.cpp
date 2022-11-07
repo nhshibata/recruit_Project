@@ -175,7 +175,8 @@ bool CGameObject::RemoveComponent(std::weak_ptr<CComponent> com)
 void CGameObject::SetTag(const std::string tag) 
 { 
 	// タグの移動
-	GetScene()->GetObjManager()->TagMove(tag, GetPtr());
+	if(auto scene = GetScene(); scene)
+		scene->GetObjManager()->TagMove(tag, GetPtr());
 	m_Tag->SetTag(tag);
 };
 // 衝突
@@ -306,6 +307,18 @@ std::weak_ptr<CGameObject> CGameObject::CreateObject(CGameObject* pObj)
 		return CSceneManager::Get().GetActiveScene()->GetObjManager()->CreateGameObject();
 	}
 	return CSceneManager::Get().GetActiveScene()->GetObjManager()->CreateGameObject(pObj);
+}
+std::shared_ptr<CGameObject>  CGameObject::CreateDebugObject()
+{
+	std::shared_ptr<CGameObject> pObj = std::make_shared<CGameObject>();
+	
+	// 自身のweakPtrを渡す
+	pObj.get()->SetPtr(pObj);
+
+	// 初期名
+	pObj.get()->Awake();	// 実質OnCreateな気がする
+	pObj.get()->Init();
+	return pObj;
 }
 void CGameObject::Destroy(std::weak_ptr<CGameObject> pObj)
 {

@@ -90,8 +90,8 @@ void CCamera::Awake()
 	m_pSky.lock()->SetModel(FORDER_DIR(Data/model/SkyDome/sky.fbx));
 	m_pSky.lock()->SetBSRadius(1000);
 
-	GetOwner()->GetTagPtr()->CreateTag("camera");
-	GetOwner()->GetTagPtr()->SetTag("camera");
+	GetOwner()->GetTagPtr()->CreateTag(CDefaultTagChar::CAMERA);
+	GetOwner()->SetTag(CDefaultTagChar::CAMERA);
 
 	XMStoreFloat4x4(&m_mtxView, XMMatrixIdentity());
 	XMStoreFloat4x4(&m_mtxProj, XMMatrixIdentity());

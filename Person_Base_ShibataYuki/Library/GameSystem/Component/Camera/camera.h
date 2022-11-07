@@ -163,6 +163,7 @@ namespace MySpace
 
 			// セッター・ゲッター
 			static inline CCamera* GetMain() { return m_pCamera.lock().get(); };
+			static inline std::weak_ptr<CCamera> GetMain(int) { return m_pCamera.lock(); };
 			static void Set(std::weak_ptr<CCamera> camera);
 
 #ifdef BUILD_MODE

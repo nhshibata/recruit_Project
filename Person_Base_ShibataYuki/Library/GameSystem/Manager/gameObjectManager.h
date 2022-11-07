@@ -36,12 +36,13 @@ namespace MySpace
 		class CGameObjectManager
 		{
 			friend class CGameObject;
+			//friend class CScene;
 		public:
 			using ObjList = std::list< std::shared_ptr<CGameObject> >;
 			using WeakList = std::list< std::weak_ptr<CGameObject> >;
 			using COLLISION_VEC = std::vector<std::weak_ptr<CCollision>>;	// 途中破棄された場合、参照しないためweak
 			
-			struct obj 
+			struct gameObjWeakList 
 			{
 				WeakList list;
 				typename std::list<std::weak_ptr<CGameObject>>::iterator FindObj(std::weak_ptr<CGameObject> obj)
@@ -57,7 +58,7 @@ namespace MySpace
 					return list.end();
 				}
 			};
-			using TagObjMap = std::unordered_map<std::string, obj>;
+			using TagObjMap = std::unordered_map<std::string, gameObjWeakList>;
 
 		private:
 			COLLISION_VEC m_pCollisionComponent;	// 当たり判定ｸﾗｽ
@@ -82,14 +83,14 @@ namespace MySpace
 				return m_pAffiliationScene; 
 			};
 			
+			
 		public:
 			CGameObjectManager();
-			CGameObjectManager(std::shared_ptr<CScene> scene) 
-			{ 
-				m_pAffiliationScene = scene; 
-			};
 			~CGameObjectManager();
-
+			void SetAffiliationScene(std::shared_ptr<CScene> scene)
+			{
+				m_pAffiliationScene = scene;
+			};
 			// 主要処理
 			void Init();
 			void Uninit();
@@ -162,6 +163,11 @@ namespace MySpace
 			// *オブジェクト検索(タグ名)
 			std::weak_ptr<CGameObject> FindGameObjWithTag(std::string tag) 
 			{
+				if (m_tagMap.count(tag) == 0)
+				{
+					m_tagMap[tag] = gameObjWeakList();
+					return std::weak_ptr<CGameObject>();
+				}
 				return m_tagMap[tag].list.begin()->lock();
 			}
 			// *オブジェクト検索(ﾀｸﾞｸﾗｽ)
@@ -179,6 +185,11 @@ namespace MySpace
 			// *オブジェクト検索(ﾀｸﾞｸﾗｽ)
 			std::list<std::weak_ptr<CGameObject>> FindGameObjctsWithTag(std::string tag)
 			{
+				if (m_tagMap.count(tag) == 0)
+				{
+					m_tagMap[tag] = gameObjWeakList();
+					return std::list<std::weak_ptr<CGameObject>>();
+				}
 				return m_tagMap[tag].list;
 			}
 

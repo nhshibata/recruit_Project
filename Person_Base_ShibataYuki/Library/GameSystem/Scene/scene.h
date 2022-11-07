@@ -47,7 +47,11 @@ namespace MySpace
 			std::weak_ptr<CScene> m_spPtr;
 		private:
 			//--- “› ﬁä÷êî
-			void SetScene(std::weak_ptr<CScene> scene) { m_spPtr = scene; }
+			void SetScene(std::weak_ptr<CScene> scene) 
+			{
+				m_spPtr = scene; 
+				m_objeManager->SetAffiliationScene(m_spPtr.lock());
+			}
 		public:
 			CScene();
 			CScene(std::string name);

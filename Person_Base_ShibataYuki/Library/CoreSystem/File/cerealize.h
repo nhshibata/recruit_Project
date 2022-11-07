@@ -15,12 +15,18 @@
 #include <cereal/archives/json.hpp>
 #include <fstream>
 #include <iostream>
-#include <direct.h>
+#include <CoreSystem/Util/define.h>
 
 namespace MySpace
 {
 	namespace System
 	{
+		class CCerealizePath
+		{
+			static constexpr const char* TAG_PATH = FORDER_DIR(data/SystemData/tag.json);
+		};
+
+		//--- ¸×½’è‹`
 		template <class T>
 		class CCerealize
 		{
@@ -45,6 +51,7 @@ namespace MySpace
 			}
 			ofs.close();
 		}
+
 		template<class T>
 		T CCerealize<T>::InputFile(std::string path)
 		{

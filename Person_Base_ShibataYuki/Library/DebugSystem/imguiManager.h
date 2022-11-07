@@ -33,6 +33,7 @@ namespace MySpace
 	}
 	namespace Game
 	{
+		class CGameObject;
 		class CDebugCamera;
 	}
 }
@@ -42,6 +43,7 @@ namespace MySpace
 	namespace Debug
 	{
 		using MySpace::System::CSingleton;
+		using MySpace::Game::CGameObject;
 		using MySpace::Game::CDebugCamera;
 
 		// ImGuiä«óùÉNÉâÉX
@@ -64,6 +66,7 @@ namespace MySpace
 			bool m_bPause;				
 			bool m_bOneFlame;
 			bool m_flg;
+			std::shared_ptr<CGameObject> m_pDebugObj;
 			std::weak_ptr<CDebugCamera> m_pDebugCamera;
 			MapString m_debugMap;
 

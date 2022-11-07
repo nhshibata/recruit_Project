@@ -58,6 +58,8 @@ namespace MySpace
 			void DispSaveLoadMenu();
 			void UpdateSearch();
 			bool DispCheck(MySpace::Game::CGameObject* obj);
+			template<class T>
+			_NODISCARD std::list<T> MovingInList(std::list<T> list, T newT, int index);
 		public:
 			CHierachy();
 			~CHierachy();

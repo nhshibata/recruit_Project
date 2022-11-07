@@ -72,7 +72,7 @@ void CBillboardRenderer::ImGuiDebug()
 	Color color = GetColor();
 	ImGui::Text(u8"PolygonRenderer");
 	ImGui::Text(u8"filaName : %s", m_pSprite->GetImageName().c_str());
-	ImGui::InputFloat4(u8"F", (float*)&color, 1);
+	ImGui::InputFloat4(u8"F", (float*)&color);
 	SetColor(color);
 
 	m_pSprite->ImGuiDebug();

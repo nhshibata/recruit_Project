@@ -89,6 +89,13 @@ namespace MySpace
 
 			static float Dot(const Vector2 & vec1, const Vector2 & vec2) { return (vec1.x * vec2.x + vec1.y * vec2.y); }
 			static float Cross(const Vector2 & vec1, const Vector2 & vec2) { return (vec1.x * vec2.y - vec1.y * vec2.x); }
+
+			template<class T>
+			T Convert()
+			{
+				T ret = { x , y };
+				return ret;
+			}
 		};
 
 
@@ -246,6 +253,13 @@ namespace MySpace
 						return x;
 				//if (x < z && y < z)
 				return z;
+			}
+
+			template<class T>
+			T Convert()
+			{
+				T ret = { x , y, z };
+				return ret;
 			}
 		};
 

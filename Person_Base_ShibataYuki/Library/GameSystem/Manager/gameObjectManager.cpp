@@ -380,9 +380,16 @@ void CGameObjectManager::SetGameObject(std::shared_ptr<CGameObject> obj)
 }
 void CGameObjectManager::TagMove(std::string NextTag, std::weak_ptr<CGameObject> obj)
 {
-	// “¯ˆê‚È‚ç”²‚¯‚é
+	// “¯ˆêƒ^ƒO
 	if (obj.lock()->GetTag() == NextTag)
+	{
+		auto list = m_tagMap[NextTag];
+		auto it = list.FindObj(obj.lock());
+		// Œ©‚Â‚©‚ç‚È‚©‚Á‚½‚Ì‚Å’Ç‰Á
+		if (it == list.list.end())
+			m_tagMap[NextTag].list.push_back(obj);
 		return;
+	}
 	
 	auto list = m_tagMap[obj.lock()->GetTag()];
 	auto it = list.FindObj(obj.lock());
@@ -415,7 +422,7 @@ std::shared_ptr<CGameObject> CGameObjectManager::CreateGameObject(CGameObject* p
 	TagMove("Default", spObj);
 
 	// ‰Šú–¼
-	if(pObj->GetName().empty())
+	if(spObj->GetName().empty())
 		spObj->SetName(std::string("GameObj_" + std::to_string(static_cast<int>(m_objMgr.size() + m_addObjList.size()) + 1)));
 	
 	spObj.get()->Awake();	// ŽÀŽ¿OnCreate‚È‹C‚ª‚·‚é

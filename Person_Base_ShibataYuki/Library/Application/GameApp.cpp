@@ -56,7 +56,6 @@ void CGameApp::Init(Application& pApp)
 
 	// デバイスの初期化
 	auto pDX = &CDXDevice::Get();
-	//CDXDevice::Get()->Init(hWnd, (unsigned int)CScreen::GetWidth(), (unsigned int)CScreen::GetHeight());
 	pDX->Init(hWnd, (unsigned int)CScreen::GetWidth(), (unsigned int)CScreen::GetHeight());
 	auto pD = pDX->GetDevice();
 	auto pDc = pDX->GetDeviceContext();

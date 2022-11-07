@@ -18,7 +18,7 @@ CScene::CScene()
 	:m_SceneName("none")
 {
 	m_drawManager = std::make_shared<CDrawManager>();
-	m_objeManager = std::make_shared<CGameObjectManager>(m_spPtr.lock());
+	m_objeManager = std::make_shared<CGameObjectManager>();
 
 	//CreateEmptyScene();
 }
@@ -27,7 +27,7 @@ CScene::CScene(std::string name)
 	:m_SceneName(name)
 {
 	m_drawManager = std::make_shared<CDrawManager>();
-	m_objeManager = std::make_shared<CGameObjectManager>(m_spPtr.lock());
+	m_objeManager = std::make_shared<CGameObjectManager>();
 
 	//m_objeManager->Awake();
 }
