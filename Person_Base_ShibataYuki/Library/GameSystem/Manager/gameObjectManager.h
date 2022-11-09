@@ -18,7 +18,6 @@ namespace MySpace
 {
 	namespace Game
 	{
-		class CCollision;
 	}
 
 	namespace SceneManager
@@ -40,7 +39,6 @@ namespace MySpace
 		public:
 			using ObjList = std::list< std::shared_ptr<CGameObject> >;
 			using WeakList = std::list< std::weak_ptr<CGameObject> >;
-			using COLLISION_VEC = std::vector<std::weak_ptr<CCollision>>;	// 途中破棄された場合、参照しないためweak
 			
 			struct gameObjWeakList 
 			{
@@ -61,7 +59,6 @@ namespace MySpace
 			using TagObjMap = std::unordered_map<std::string, gameObjWeakList>;
 
 		private:
-			COLLISION_VEC m_pCollisionComponent;	// 当たり判定ｸﾗｽ
 			ObjList m_objMgr;						// 実際の所持
 			ObjList m_addObjList;					// ↑ に追加するオブジェクト格納用
 			ObjList m_dontDestroyMgr;				// shared_ptrの性質を利用して、シーン遷移時に渡す非破棄リスト
@@ -71,8 +68,7 @@ namespace MySpace
 		private:
 			// *追加待ちリストを配列に追加する
 			bool ObjectListUpdate();
-			// *当たり判定用関数
-			void CollisionCheck();
+
 			// *配列追加
 			void SetGameObject(std::shared_ptr<CGameObject> obj);
 			// *tagMap移動
@@ -113,12 +109,6 @@ namespace MySpace
 
 			// *オブジェクトの破棄
 			bool DestroyObject(std::weak_ptr<CGameObject> pObj);
-
-			// *当たり判定依頼
-			inline void SetColComponent(std::weak_ptr<CCollision> com) 
-			{
-				m_pCollisionComponent.push_back(com); 
-			}
 
 			// *オブジェクト追加待ちに追加
 			inline void AddGameObject(std::shared_ptr<CGameObject> obj) 

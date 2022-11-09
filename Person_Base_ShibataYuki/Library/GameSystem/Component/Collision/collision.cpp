@@ -6,6 +6,7 @@
 
 //--- インクルード部
 #include <GameSystem/Component/Collision/collision.h>
+#include <GameSystem/Manager/collisionSystem.h>
 #include <GameSystem/GameObject/gameObject.h>
 #include <GameSystem/Manager/sceneManager.h>
 #include <ImGui/imgui.h>
@@ -15,12 +16,6 @@ using namespace MySpace::Game;
 using namespace MySpace::SceneManager;
 #pragma endregion
 
-//// コンストラクタ
-//CCollision::CCollision() 
-//	:m_bIsTrigger(false), m_pTransform(nullptr), m_vOldPos(0,0,0),m_HitSubjectTag(CTag::DEFAULT),
-//	m_pEnterList(0), m_pHitList(0)
-//{
-//}
 // 引数付きコンストラクタ
 CCollision::CCollision(std::shared_ptr<CGameObject> owner, bool trigger)
 	:CComponent(owner), m_bIsTrigger(trigger), m_vOldPos(0, 0, 0),
@@ -30,14 +25,14 @@ CCollision::CCollision(std::shared_ptr<CGameObject> owner, bool trigger)
 // デストラクタ
 CCollision::~CCollision()
 {
+	CSceneManager::Get().GetCollisionSystem()->ExecutSystem(m_nSystemIdx);
+
 	m_pOldStayList.clear();
 	m_pHitList.clear();
 	m_pExitList.clear();
 }
 void CCollision::Awake()
 {
-	m_pTransform = GetOwner()->GetComponent<CTransform>();
-
 }
 // 初期化
 void CCollision::Init()
@@ -45,11 +40,9 @@ void CCollision::Init()
 	// 当たり判定の要請
 	RequestCollision();
 
-	if(!m_pTransform.lock())
-		m_pTransform = GetOwner()->GetTransform(1);
 	// 過去座標
-	m_vOldPos = m_pTransform.lock()->GetPos();
-	m_vOldScale = m_pTransform.lock()->GetScale();
+	m_vOldPos = Transform()->GetPos();
+	m_vOldScale = Transform()->GetScale();
 	if (m_vOldScale.check({ 0,0,0 }))
 	{
 		m_vOldScale = { 1,1,1 };
@@ -58,11 +51,8 @@ void CCollision::Init()
 // 更新
 void CCollision::Update()
 {
-	// タグが変更されているかもしれないので、初期化
-	//SetColTag("");
-
 	// 過去座標を更新
-	m_vOldPos = m_pTransform.lock()->GetPos();
+	m_vOldPos = Transform()->GetPos();
 
 	// 当たり判定の要請
 	//RequestCollision();
@@ -70,7 +60,7 @@ void CCollision::Update()
 }
 void CCollision::RequestCollision()
 {
-	CSceneManager::Get().GetActiveScene()->GetObjManager()->SetColComponent(BaseToDerived<CCollision>());
+	m_nSystemIdx = CSceneManager::Get().GetCollisionSystem()->RegistToSystem(BaseToDerived<CCollision>());
 }
 // <Summary>
 // 外部から呼び出される
@@ -99,32 +89,36 @@ void CCollision::HitResponse(CCollision* other)
 		if (!trigger)
 		{
 			// 元の座標を格納
-			//m_pTransform.lock()->SetPos(m_vOldPos);
+			//Transform()->SetPos(m_vOldPos);
 			GetOwner()->OnCollisionStay(pObj);
 		}
 		else
 		{
 			GetOwner()->OnTriggerStay(pObj);
 		}
+
 #ifdef BUILD_MODE
 		++m_nDebugStayCnt;
 #endif // BUILD_MODE
+
 	}
 	else
 	{	// Trigger:今のフレームで接触始めた
 		if (!trigger)
 		{
 			// 元の座標を格納
-			//m_pTransform.lock()->SetPos(m_vOldPos);
+			//Transform()->SetPos(m_vOldPos);
 			GetOwner()->OnCollisionEnter(pObj);
 		}
 		else
 		{
 			GetOwner()->OnTriggerEnter(pObj);
 		}
+
 #ifdef BUILD_MODE
 	++m_nDebugEnterCnt;
 #endif // BUILD_MODE
+
 	}
 
 	// 離れたオブジェクトの判定
@@ -189,10 +183,12 @@ bool CCollision::ExitTell()
 void CCollision::ImGuiDebug()
 {
 	ImGui::Text(u8"現在当たり", m_pOldStayList.size());
-	ImGui::Text(u8"Trigger:", m_nDebugEnterCnt);
+	ImGui::Text(u8"Enter:", m_nDebugEnterCnt);
 	ImGui::Text(u8"Stay:", m_nDebugStayCnt);
 	ImGui::Text(u8"Exit:", m_nDebugExitCnt);
 	ImGui::Text(u8"当たり判定用過去サイズ [x:%f][y:%f][z:%f]", &m_vOldScale);
+	ImGui::Checkbox(u8"Trigger", (bool*)&m_bIsTrigger);
+	ImGui::DragFloat3(u8"Center", (float*)m_vCenter);
 
 	// 再初期化はここで行う
 	m_nDebugEnterCnt = m_nDebugStayCnt = m_nDebugExitCnt = 0;

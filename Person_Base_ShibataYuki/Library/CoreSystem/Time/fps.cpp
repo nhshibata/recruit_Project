@@ -12,6 +12,7 @@ using namespace MySpace::System;
 CFps::CFps()
 	:m_nSlowFramPerSec(60), m_dwExecLastTime(m_dwLastTime), m_bSlow(false), m_bUpdate(true)
 {
+	
 }
 // 引数付きコンストラクタ
 CFps::CFps(int nSlowfps)
@@ -29,8 +30,12 @@ void CFps::Init()
 	// 精度を上げる
 	timeBeginPeriod(1);
 
+#if BUILD_MODE
 	// 現在時刻
-
+	m_dwExecLastTime = m_dwFPSLastTime = timeGetTime();
+	m_dwCurrentTime = m_dwFrameCount = 0;
+#endif // BUILD_MODE
+	srand(::GetTickCount());
 }
 void CFps::Uninit()
 {
@@ -42,6 +47,17 @@ void CFps::Update()
 {
 	// 現在時刻の取得
 	m_dwCurrentTime = timeGetTime();
+
+#if BUILD_MODE
+	if ((m_dwCurrentTime - m_dwFPSLastTime) >= 500)
+	{	// 0.5秒ごとに実行
+		m_nCountFPS = m_dwFrameCount * 1000 /(m_dwCurrentTime - m_dwFPSLastTime);
+		m_dwFPSLastTime = m_dwCurrentTime;
+		m_dwFrameCount = 0;
+	}
+	++m_dwFrameCount;
+#endif // BUILD_MODE
+
 	// 現在時間と前回の更新時間の差を取る 1fの時間を求める
 	m_dwDeltaTime = (m_dwCurrentTime - m_dwExecLastTime);
 	if (m_dwDeltaTime > 100) {
@@ -77,7 +93,6 @@ void CFps::Update()
 			}
 		}
 		
-
 		// 最終更新時間を更新
 		m_dwExecLastTime = m_dwCurrentTime;
 		m_bUpdate = true;

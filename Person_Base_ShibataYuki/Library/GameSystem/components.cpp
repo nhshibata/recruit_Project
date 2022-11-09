@@ -35,6 +35,7 @@ void CreateComponentType()
 
 	mgr.SetComponentSave<CRenderer>();
 	mgr.SetComponentSave<CMeshRenderer>();
+	mgr.SetComponentSave<CBillboardRenderer>();
 	mgr.SetComponentSave<CPolygonRenderer>();
 	mgr.SetComponentSave<CSphereRenderer>();
 	mgr.SetComponentSave<CBoxRenderer>();

@@ -43,8 +43,7 @@ namespace MySpace
 			bool m_bVisible;
 			Color m_vColor;
 
-			// index
-			UINT m_uIdx = 0;
+			int m_nDrawIdx = 0;
 		public:
 			CRenderer() {};
 			CRenderer(std::shared_ptr<CGameObject> owner);
@@ -62,13 +61,11 @@ namespace MySpace
 			inline Color GetColor() { return m_vColor; }
 			inline XMFLOAT4 GetColor(int num) { return XMFLOAT4(m_vColor.r, m_vColor.g, m_vColor.b, m_vColor.a); }
 			// *≤›√ﬁØ∏ΩéÊìæ
-			inline UINT GetIdx() { return m_uIdx; }
+			inline UINT GetIdx() { return m_nDrawIdx; }
 
 			inline void SetLayer(int value) { GetOwner()->SetLayer(value); }
 			inline void SetColor(Color color) { m_vColor = color; }
 			inline void SetVisible(bool value) { m_bVisible = value; }
-			// *indexê›íË
-			inline void SetIdx(UINT idx) { m_uIdx = idx; }
 			// *ï`âÊèÛë‘ämîF
 			inline bool IsVisible() { return m_bVisible; }
 #ifdef BUILD_MODE

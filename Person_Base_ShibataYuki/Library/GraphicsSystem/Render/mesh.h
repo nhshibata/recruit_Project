@@ -105,8 +105,9 @@ namespace MySpace
 
 			void SetWorld(XMFLOAT4X4* pWorld) { m_mWorld = *pWorld; }
 			void SetMaterial(const CMeshMaterial* pMaterial);
-			CMeshMaterial* GetMaterial() { return &m_material; }
 			void SetDiffuse(MySpace::MyMath::Vector4 vDiffuse) { m_material.m_Diffuse = vDiffuse; }
+
+			CMeshMaterial* GetMaterial() { return &m_material; }
 		};
 	}
 }

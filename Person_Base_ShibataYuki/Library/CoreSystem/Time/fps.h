@@ -10,6 +10,7 @@
 #define NOMINMAX
 #include <Windows.h>
 #include <CoreSystem/Singleton.h>
+#include <DebugSystem/debug.h>
 
 //--- 定数定義
 #define FPS			(60)
@@ -37,6 +38,15 @@ namespace MySpace
 			DWORD m_dwExecLastTime;			// 静的でない最後時間
 			bool m_bSlow;					// スロー開始フラグ
 			bool m_bUpdate;
+			
+#if BUILD_MODE
+			DWORD m_dwFPSLastTime;
+			DWORD m_dwFrameCount;
+			int m_nCountFPS;
+		public:
+			inline int GetFPSCount() { return m_nCountFPS; }
+#endif // BUILD_MODE
+
 		public:
 			CFps();
 			CFps(const int nSlowfps);
@@ -64,6 +74,7 @@ namespace MySpace
 			//static void Start() { m_pInstance = new CFps(); };
 			//static void End() { delete m_pInstance; };
 			//static CFps* Get() { return m_pInstance; };
+
 		};
 	}
 }

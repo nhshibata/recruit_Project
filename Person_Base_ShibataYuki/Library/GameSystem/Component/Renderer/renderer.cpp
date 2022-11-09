@@ -8,6 +8,7 @@
 #include <GameSystem/Component/Renderer/renderer.h>
 #include <GameSystem/Component/Transform/transform.h>
 #include <GameSystem/Manager/sceneManager.h>
+#include <GameSystem/Manager/drawSystem.h>
 #include <ImGui/imgui.h>
 
 using namespace MySpace::Game;
@@ -19,19 +20,19 @@ CRenderer::CRenderer(std::shared_ptr<CGameObject> owner)
 }
 CRenderer::~CRenderer()
 {
-	if(SceneManager::CSceneManager::Get().GetActiveScene())
-		SceneManager::CSceneManager::Get().GetActiveScene()->GetDrawManager()->ReleaseDraw(m_uIdx);
+	SceneManager::CSceneManager::Get().GetDrawSystem()->ExecutSystem(m_nDrawIdx);
 }
 void CRenderer::RequestDraw()
 {
 	// •`‰æ“o˜^
-	m_uIdx = SceneManager::CSceneManager::Get().GetActiveScene()->GetDrawManager()->SetDraw(BaseToDerived<CRenderer>(),0);
+	m_nDrawIdx = SceneManager::CSceneManager::Get().GetDrawSystem()->RegistToSystem(BaseToDerived<CRenderer>());
 }
 void CRenderer::Awake()
 {}
 void CRenderer::Init()
 {
-	Transform()->Update();
+	if(Transform())
+		Transform()->Update();
 
 	RequestDraw();
 }
@@ -40,7 +41,7 @@ void CRenderer::Update()
 }
 bool CRenderer::Draw()
 {
-	// •`‰æˆË—Š‚ðo‚·
+	// •`‰æŠm”F
 	return m_bVisible && GetOwner()->IsVision();
 }
 

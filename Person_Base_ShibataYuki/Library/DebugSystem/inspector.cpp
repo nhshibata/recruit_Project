@@ -46,18 +46,33 @@ void CInspector::Uninit()
 }
 void CInspector::Update()
 {
-	if (!m_spViewObj.lock()) return;
-
 	ImGui::PushStyleColor(ImGuiCol_TitleBgActive, ImVec4(0.0f, 0.7f, 0.2f, 1.0f));
 	ImGui::PushStyleColor(ImGuiCol_TitleBg, ImVec4(0.0f, 0.3f, 0.1f, 1.0f));
 	ImGui::SetNextWindowPos(ImVec2(800, 20), ImGuiCond_Once);
 	ImGui::SetNextWindowSize(ImVec2(400, 600), ImGuiCond_Once);
 	
 	ImGui::Begin("Inspector", nullptr, ImGuiWindowFlags_::ImGuiWindowFlags_MenuBar);
+
+	if (!m_spViewObj.lock())
+	{
+		ImGui::End();
+
+		ImGui::PopStyleColor();
+		ImGui::PopStyleColor();
+		return;
+	}
+
 	// 選択中objデバッグ表示
 	DebugObject();
+	
 	// 選択中objの移動
-	MoveObject();
+	//MoveObject();
+	
+	if (ImGui::IsWindowHovered())
+	{	
+		ImGuiManager::Get().UpHover(ImGuiManager::EIsHovered::HOVERED_WINDOW);
+		ImGui::Text("aiueu");
+	}
 
 	if (ImGui::BeginMenuBar())
 	{

@@ -7,7 +7,6 @@
 
 //--- インクルード部
 #include <GameSystem/Manager/gameObjectManager.h>
-#include <GameSystem/Manager/DrawManager.h>
 #include <CoreSystem/Util/stl.h>
 
 //--- 前方参照
@@ -15,10 +14,7 @@ namespace MySpace
 {
 	namespace Game
 	{
-		/*class CGameObjectManager;
-		class CDrawManager;*/
 		using MySpace::Game::CGameObjectManager;
-		using MySpace::Game::CDrawManager;
 	}
 	namespace SceneManager
 	{
@@ -41,7 +37,6 @@ namespace MySpace
 		protected:
 			//--- メンバ変数
 			std::shared_ptr<CGameObjectManager> m_objeManager;
-			std::shared_ptr<CDrawManager> m_drawManager;
 
 			std::string m_SceneName;
 			std::weak_ptr<CScene> m_spPtr;
@@ -67,9 +62,9 @@ namespace MySpace
 
 			//--- セッター・ゲッター
 			inline const std::string& GetSceneName() { return m_SceneName; }
-			inline void SetSceneName(const std::string name) { m_SceneName = name; }
 			inline CGameObjectManager* GetObjManager() { return m_objeManager.get(); }
-			inline CDrawManager* GetDrawManager() { return m_drawManager.get(); }
+
+			inline void SetSceneName(const std::string name) { m_SceneName = name; }
 			inline void SetObjManager(std::shared_ptr<CGameObjectManager> mgr) { m_objeManager.reset(); m_objeManager = mgr; }
 		};
 	}

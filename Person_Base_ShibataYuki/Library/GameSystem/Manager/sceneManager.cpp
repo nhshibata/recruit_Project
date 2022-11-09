@@ -8,9 +8,11 @@
 #include <GameSystem/Manager/sceneManager.h>
 #include <GameSystem/GameObject/gameObject.h>
 #include <GameSystem/Component/Transform/transform.h>
-#include <DebugSystem/imguiManager.h>
-
 #include <GameSystem/components.h>
+#include <GameSystem/Manager/collisionSystem.h>
+#include <GameSystem/Manager/drawSystem.h>
+
+#include <DebugSystem/imguiManager.h>
 
 #include <CoreSystem/File/cerealize.h>
 
@@ -24,6 +26,8 @@ CSceneManager::CSceneManager()
 {
 	m_currentPath = SCENE_PATH + std::string("Title.scene");
 	m_sceneDetection = std::make_shared<CSceneTransitionDetection>();
+	m_pCollisionSystem = std::make_shared<CCollisionSystem>();
+	m_pDrawSystem = std::make_shared<CDrawSystem>();
 }
 void CSceneManager::Init()
 {
@@ -39,6 +43,9 @@ void CSceneManager::Uninit()
 		scene->Uninit();
 		scene.reset();
 	}
+	m_sceneDetection.reset();
+	m_pCollisionSystem.reset();
+	m_pDrawSystem.reset();
 	m_pScenes.clear();
 }
 void CSceneManager::Update()
@@ -46,9 +53,11 @@ void CSceneManager::Update()
 	//for (SceneList::iterator scene = m_pScenes.begin(); scene != m_pScenes.end(); ++scene)
 	for (auto & scene : m_pScenes)
 	{
-		
 		scene->Update();
 	}
+
+	// 当たり判定の確認
+	m_pCollisionSystem->CollisionCheck();
 }
 void CSceneManager::FixedUpdate()
 {
@@ -63,34 +72,52 @@ void CSceneManager::Draw()
 	{
 		scene->Draw();
 	}
+
+	m_pDrawSystem->Update();
 }
+// シーン切替
 std::weak_ptr<CScene> CSceneManager::SceneTransition(std::string name)
 {
 	std::shared_ptr<CScene> pNextScene = NewScene(name);
 	// objの引き渡し
-	std::vector<std::weak_ptr<CRenderer>> list;
 	if (m_pCurrentScene.lock())
 	{
 		m_pCurrentScene.lock()->GetObjManager()->PassDontDestroyList(pNextScene->GetObjManager());
-		// 破棄された
-		if (auto mgr = m_pCurrentScene.lock()->GetDrawManager(); mgr)
-			list = mgr->GetList();
 	}
 	RemoveScene(m_pCurrentScene.lock(), pNextScene);
-	pNextScene->GetDrawManager()->DrawPass(list);
 
 	return m_pCurrentScene;
 }
+// メインシーンの切り替え
 std::weak_ptr<CScene> CSceneManager::SetActiveScene(std::shared_ptr<CScene> pNextScene)
 {
 	// objの引き渡し
 	if (m_pCurrentScene.lock())
 		m_pCurrentScene.lock()->GetObjManager()->PassDontDestroyList(pNextScene->GetObjManager());
-	auto list = m_pCurrentScene.lock()->GetDrawManager()->GetList();
 	RemoveScene(m_pCurrentScene.lock(), pNextScene);
-	pNextScene->GetDrawManager()->DrawPass(list);
 	return m_pCurrentScene;
 }
+// シーン生成
+std::shared_ptr<CScene> CSceneManager::NewScene(std::string name)
+{
+	std::shared_ptr<CScene> pNextScene;
+
+	// 名前指定なし
+	if (name.empty())
+		pNextScene = std::make_shared<CScene>();
+	else
+		pNextScene = std::make_shared<CScene>(name);
+	// リストへの追加
+	AddSceneList(pNextScene);
+	// 自分のSPを教える
+	pNextScene->SetScene(pNextScene);
+
+	if (!m_pCurrentScene.lock())
+		m_pCurrentScene = pNextScene;
+	m_sceneDetection->Call(pNextScene.get(), 0);	// 生成時呼び出し
+	return pNextScene;
+}
+// シーン破棄
 void CSceneManager::RemoveScene(std::shared_ptr<CScene> pRemove, std::shared_ptr<CScene> pNext)
 {
 	// メインの切替
@@ -199,9 +226,10 @@ bool CSceneManager::LoadScene(std::string path)
 void CSceneManager::ImguiDebug()
 {
 	static char sceneName[256] = "none";
+
 	if (ImGui::BeginMenuBar()) 
 	{
-		if (ImGui::BeginMenu("Scene"))
+		if (ImGui::BeginMenu(u8"Scene"))
 		{
 			for (SceneList::iterator it = m_pScenes.begin(); it != m_pScenes.end(); ++it)
 			{
@@ -214,13 +242,13 @@ void CSceneManager::ImguiDebug()
 		}
 		ImGui::EndMenuBar();
 	}
-	if (ImGui::Button("new scene"))
+	if (ImGui::Button(u8"new scene"))
 	{
 		CScene* newScene = SceneTransition("empty").lock().get();
 		newScene->CreateEmptyScene();
 	}
 
-	ImGui::InputText("シーン遷移名", sceneName, 256);
+	ImGui::InputText("u8シーン遷移名", sceneName, 256);
 	ImGui::SameLine();
 	if (ImGui::Button("change scene"))
 	{

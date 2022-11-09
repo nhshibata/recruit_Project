@@ -19,6 +19,7 @@ namespace MySpace
 	namespace Game
 	{
 		class CCamera;
+		class CTransform;
 	}
 }
 
@@ -28,6 +29,7 @@ namespace MySpace
 	{
 		//--- 前方参照
 		using MySpace::Game::CCamera;
+		using MySpace::Game::CTransform;
 
 		//--- クラス定義
 		class CMyGizmo
@@ -48,7 +50,7 @@ namespace MySpace
 			}
 			~CMyGizmo() {};
 
-			void EditTransform(const CCamera& camera, MyMath::Matrix4x4& matrix);
+			void EditTransform(const CCamera& camera, CTransform* editObj);
 		};
 	}
 }

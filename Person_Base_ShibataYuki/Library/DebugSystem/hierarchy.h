@@ -21,6 +21,7 @@ namespace MySpace
 	{
 		class CGameObject;
 	}
+
 }
 #pragma endregion
 		
@@ -28,6 +29,7 @@ namespace MySpace
 {
 	namespace Debug
 	{
+
 		class CHierachy
 		{
 		private:

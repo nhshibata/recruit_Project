@@ -104,7 +104,7 @@ void CPolygonRenderer::ImGuiDebug()
 	ImGui::Text(u8"filaName : %s", m_pSprite->GetImageName().c_str());
 	/*ImGui::InputFloat2(u8"ﾃｸｽﾁｬサイズ", (float*)&m_pSprite->GetFrameSize(), 1);
 	ImGui::InputFloat2(u8"ﾃｸｽﾁｬ座標", (float*)&m_pSprite->GetUV(), 1);*/
-	ImGui::InputFloat4(u8"色", (float*)&color, 1);
+	ImGui::InputFloat4(u8"色", (float*)&color);
 	SetColor(color);
 	
 	m_pSprite->ImGuiDebug();

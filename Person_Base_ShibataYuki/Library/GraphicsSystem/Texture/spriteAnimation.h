@@ -50,7 +50,7 @@ namespace MySpace
 			{
 				int nAnimNo;
 				int nFrame;
-				ST_FRAME():nAnimNo(0),nFrame(0) {}
+				ST_FRAME():nAnimNo(0),nFrame(4) {}
 			};
 		private:	
 			int m_nSplitX;			// •ªŠ„

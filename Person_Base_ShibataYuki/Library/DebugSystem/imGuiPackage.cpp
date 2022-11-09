@@ -9,7 +9,6 @@
 #if BUILD_MODE
 
 using namespace MySpace::System;
-
 // 名前空間内の関数の定義は名前空間で行わなければエラーが起きる
 // ｸﾗｽと違いスコープが明確ではないから？
 namespace MySpace
@@ -89,7 +88,7 @@ namespace MySpace
 		// メニューバーの表示
 		std::u16string DispFileMenuBar16(std::vector<std::string> name,std::vector<std::u16string> file, std::string desc)
 		{
-			int cnt;
+			int cnt = 0;
 			if (ImGui::BeginMenuBar())
 			{
 				if (ImGui::BeginMenu(desc.c_str()))
@@ -105,7 +104,7 @@ namespace MySpace
 				}
 				ImGui::EndMenuBar();
 			}
-			if (cnt >= file.size())
+			if (cnt < file.size())
 				return file[cnt];
 			return std::u16string();
 		}

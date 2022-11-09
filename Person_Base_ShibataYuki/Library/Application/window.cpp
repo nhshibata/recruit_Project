@@ -120,22 +120,43 @@ bool CWindow::RegisterClass(HINSTANCE	 h_Instance,
 	unsigned long h_Style)
 {
 	// ウィンドウクラス登録
-	WNDCLASSEX WndClassEx;
-	WndClassEx.cbSize = sizeof(WNDCLASSEX);
+	WNDCLASSEX WndClassEx = {
+		sizeof(WNDCLASSEX),
+		CS_CLASSDC,
+		WndProc,
+		0,
+		0,
+		h_Instance,
+		nullptr,
+		nullptr,
+		(HBRUSH)(COLOR_WINDOW + 1),
+		nullptr,
+		h_ClassName,
+		nullptr
+	};
+//	WndClassEx.cbSize = sizeof(WNDCLASSEX);
 	WndClassEx.style = h_Style;
-	WndClassEx.lpfnWndProc = WndProc;
-	WndClassEx.cbClsExtra = 0L;
-	WndClassEx.cbWndExtra = 0L;
-	WndClassEx.hInstance = h_Instance;
-	WndClassEx.hIcon = nullptr;
-	WndClassEx.hCursor = nullptr;
-//	WndClassEx.hCursor = LoadCursor(nullptr, IDC_ARROW);
-//	WndClassEx.hbrBackground = nullptr;
-	WndClassEx.hbrBackground = (HBRUSH)(COLOR_WINDOW + 1);
-	WndClassEx.lpszMenuName = nullptr;
-	WndClassEx.lpszClassName = h_ClassName;
-	WndClassEx.hIconSm = NULL;
+//	WndClassEx.lpfnWndProc = WndProc;
+//	WndClassEx.cbClsExtra = 0L;
+//	WndClassEx.cbWndExtra = 0L;
+//	WndClassEx.hInstance = h_Instance;
+//	WndClassEx.hIcon = nullptr;
+//	WndClassEx.hCursor = nullptr;
+////	WndClassEx.hCursor = LoadCursor(nullptr, IDC_ARROW);
+////	WndClassEx.hbrBackground = nullptr;
+//	WndClassEx.hbrBackground = (HBRUSH)(COLOR_WINDOW + 1);
+//	WndClassEx.lpszMenuName = nullptr;
+//	WndClassEx.lpszClassName = h_ClassName;
+//	WndClassEx.hIconSm = NULL;
 
+	// COM初期化
+	if (FAILED(CoInitializeEx(nullptr, COINIT_MULTITHREADED)))
+	{
+		MessageBox(NULL, "COMの初期化に失敗しました。", "error", MB_OK);
+		return false;
+	}
+
+	// ウィンドウクラスの登録
 	if (!RegisterClassEx(&WndClassEx))
 	{
 		MessageBox(NULL, "RegisterClassEx", "Error!", MB_OK);
@@ -157,11 +178,11 @@ void CWindow::SetWindow(HINSTANCE		h_Instance,
 {
 	// クライアント領域サイズからウィンドウ サイズ算出
 	DWORD dwStyle = WS_OVERLAPPED | WS_CAPTION
-		| WS_SYSMENU | WS_BORDER | WS_MINIMIZEBOX;
+		| WS_SYSMENU | WS_BORDER | WS_MINIMIZEBOX | WS_MAXIMIZEBOX;
 	DWORD dwExStyle = 0;
 	RECT rc = { 0, 0, h_Width, h_Height };
 	AdjustWindowRectEx(&rc, dwStyle, FALSE, dwExStyle);
-
+	RECT	rWindow, rClient;
 
 	if (FULLSCREEN) {
 		m_hwnd = CreateWindowEx(
@@ -170,14 +191,15 @@ void CWindow::SetWindow(HINSTANCE		h_Instance,
 			h_Title,						// タイトル
 			dwStyle,//h_Style,						// ウィンドウスタイル
 			CW_USEDEFAULT, CW_USEDEFAULT,	// ウィンドウ位置 縦, 横
-			h_Width, h_Height,				// ウィンドウサイズ
+			//h_Width, h_Height,				// ウィンドウサイズ
+			rc.right - rc.left,
+			rc.bottom - rc.top,
 			NULL,							// 親ウィンドウなし
 			(HMENU)NULL,					// メニューなし
 			h_Instance,						// インスタンスハンドル
 			(LPVOID)NULL);					// 追加引数なし
 	}
 	else {
-		RECT	rWindow, rClient;
 
 		m_hwnd = CreateWindowEx(
 			h_ExStyle,
@@ -191,19 +213,27 @@ void CWindow::SetWindow(HINSTANCE		h_Instance,
 			h_Instance,						// インスタンスハンドル
 			(LPVOID)NULL);					// 追加引数なし
 
+	
+	}
+	{
 		// ウインドウサイズを再計算（Metricsだけでは、フレームデザインでクライアント領域サイズが変わってしまうので）
 		GetWindowRect(m_hwnd, &rWindow);
 		GetClientRect(m_hwnd, &rClient);
-		int width = (rWindow.right - rWindow.left) - (rClient.right - rClient.left) + h_Width;
-		int height = (rWindow.bottom - rWindow.top) - (rClient.bottom - rClient.top) + h_Height;
-		SetWindowPos(
-			m_hwnd,
-			NULL,
-			GetSystemMetrics(SM_CXSCREEN) / 2 - width / 2,
-			GetSystemMetrics(SM_CYSCREEN) / 2 - height / 2,
-			width - 1,
-			height - 1,
-			SWP_NOMOVE | SWP_NOZORDER | SWP_NOOWNERZORDER);
+		if (rClient.right != h_Width || rClient.bottom != h_Height)
+		{
+			int width = (rWindow.right - rWindow.left) - (rClient.right - rClient.left) + h_Width;
+			int height = (rWindow.bottom - rWindow.top) - (rClient.bottom - rClient.top) + h_Height;
+
+			SetWindowPos(
+				m_hwnd,
+				NULL,
+				CW_USEDEFAULT,	// GetSystemMetrics(SM_CXSCREEN) / 2 - width / 2,
+				CW_USEDEFAULT,	// GetSystemMetrics(SM_CYSCREEN) / 2 - height / 2,
+				width,
+				height,
+				SWP_NOMOVE | SWP_NOZORDER | SWP_NOOWNERZORDER
+			);
+		}
 	}
 
 	if (!m_hwnd) {

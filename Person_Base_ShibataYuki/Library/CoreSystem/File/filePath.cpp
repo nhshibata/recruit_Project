@@ -90,17 +90,11 @@ std::vector<std::u16string> CFilePath::GetAllFileNameTo16(std::string path, std:
 
 	for (auto file : it)
 	{
-		if (!ext.empty())
+		if (file.path().extension() == ext)
 		{
-			if (file.path().extension() == ext)
-			{
-				retList.push_back(file.path().u16string());		// ƒpƒX–¼‚ðŠi”[
-				continue;
-			}
+			retList.push_back(file.path().u16string());		// ƒpƒX–¼‚ðŠi”[
+			continue;
 		}
-
-		//std::filesystem::path add = file.path();
-		retList.push_back(file.path().u16string());	// ƒpƒX–¼‚ðŠi”[
 	}
 
 	return retList;

@@ -23,6 +23,7 @@
 
 #include <GameSystem/Component/Renderer/renderer.h>
 #include <GameSystem/Component/Renderer/polygonRenderer.h>
+#include <GameSystem/Component/Renderer/billboardRenderer.h>
 #include <GameSystem/Component/Renderer/meshRenderer.h>
 #include <GameSystem/Component/Renderer/boxRenderer.h>
 #include <GameSystem/Component/Renderer/sphereRenderer.h>

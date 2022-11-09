@@ -1,6 +1,7 @@
 #include <DebugSystem/imguiManager.h>
 #include <DebugSystem/hierarchy.h>
 #include <DebugSystem/inspector.h>
+#include <DebugSystem/imGuiSceneGizmo.h>
 
 #ifdef BUILD_MODE
 
@@ -13,6 +14,7 @@
 #include <GameSystem/Component/Transform/transform.h>
 #include <GameSystem/Manager/sceneManager.h>
 #include <GameSystem/Manager/gameObjectManager.h>
+#include <GameSystem/Manager/drawSystem.h>
 #include <GraphicsSystem/Manager/imageResourceManager.h>
 
 #include <GameSystem/Component/Camera/camera.h>
@@ -29,12 +31,12 @@ ImGuiManager::ImGuiManager()
 {
 	m_bPause = false;
 	m_bOneFlame = false;
-	m_flg = false;
+	m_bEditFlg = false;
 }
 // オーナーのデバッグフラグ確認
 bool ImGuiManager::CheckPlayMode()
 {
-	return m_flg;
+	return m_bEditFlg;
 }
 // 初期化
 void ImGuiManager::Init(HWND hWnd, ID3D11Device* device, ID3D11DeviceContext* context)
@@ -47,6 +49,10 @@ void ImGuiManager::Init(HWND hWnd, ID3D11Device* device, ID3D11DeviceContext* co
 	io.IniFilename = NULL;
 	//日本語フォントに対応
 	io.Fonts->AddFontFromFileTTF("C:\\Windows\\Fonts\\meiryo.ttc", 18.0f, nullptr, io.Fonts->GetGlyphRangesJapanese());
+	{
+		io.DisplaySize.x = CScreen::GetWidth();
+		io.DisplaySize.y = CScreen::GetHeight();
+	}
 
 	ImGui_ImplWin32_Init(hWnd);
 	ImGui_ImplDX11_Init(device, context);
@@ -54,6 +60,9 @@ void ImGuiManager::Init(HWND hWnd, ID3D11Device* device, ID3D11DeviceContext* co
 
 	m_pInspector = std::make_shared<CInspector>();
 	m_pHierarchy = std::make_shared<CHierachy>();
+	m_pGizmo = std::make_shared<CMyGizmo>();
+	
+	// デバッグカメラの生成
 	{
 		m_pDebugObj = CGameObject::CreateDebugObject();
 		m_pDebugCamera = m_pDebugObj->AddComponent<CDebugCamera>();
@@ -81,19 +90,19 @@ void ImGuiManager::Update()
 	// ON/OFF
 	if (CInput::GetKeyTrigger(VK_I))
 	{
-		m_flg ^= true;
-		m_pDebugCamera.lock()->ResumeCamera(m_flg);
+		m_bEditFlg ^= true;
+		m_pDebugCamera.lock()->ResumeCamera(m_bEditFlg);
 	}
-	if (!m_flg)
+	if (!m_bEditFlg)
 		return;
-
-	if (m_pDebugCamera.lock())
-		m_pDebugCamera.lock()->Update();
 
 	//imGuiの更新処理
 	ImGui_ImplDX11_NewFrame();
 	ImGui_ImplWin32_NewFrame();
 	ImGui::NewFrame();
+	ImGuizmo::BeginFrame();
+
+	ImGuiManager::Get().DownHover(ImGuiManager::EIsHovered::HOVERED_WINDOW);
 
 	// ポーズ
 	Pause();
@@ -101,6 +110,8 @@ void ImGuiManager::Update()
 	// デバッグ実行
 	m_pInspector->Update();
 	m_pHierarchy->Update();
+	if(auto selectObj = m_pInspector->GetSelectObject().lock(); selectObj)
+		m_pGizmo->EditTransform(*CCamera::GetMain(), selectObj->GetTransform());
 
 	// 現在シーン取得
 	SceneManager::CScene* scene = CSceneManager::Get().GetActiveScene();
@@ -109,7 +120,7 @@ void ImGuiManager::Update()
 	ImGui::PushStyleColor(ImGuiCol_TitleBgActive, ImVec4(0.0f, 0.7f, 0.2f, 1.0f));
 	ImGui::SetNextWindowPos(ImVec2(20, 300), ImGuiCond_Once);
 	ImGui::SetNextWindowSize(ImVec2(300, 300), ImGuiCond_Once);
-	ImGui::Begin(u8"ステータス", &m_flg, ImGuiWindowFlags_::ImGuiWindowFlags_MenuBar);
+	ImGui::Begin(u8"ステータス", &m_bEditFlg, ImGuiWindowFlags_::ImGuiWindowFlags_MenuBar);
 
 	CSceneManager::Get().ImguiDebug();
 	// 変更されている可能性
@@ -118,12 +129,30 @@ void ImGuiManager::Update()
 	// フレームレートを表示
 	ImGui::Text(u8"現在のFPS : %.1f FPS", ImGui::GetIO().Framerate);
 	ImGui::Text(u8"現在のDeltaTime : %.5f", CFps::Get().DeltaTime());
+	ImGui::Text(u8"現在のCount : %d", CFps::Get().GetFPSCount()/1000);
 
 	// シーン名の表示
 	ImGui::Text(u8"現在のシーン名 : %s", scene->GetSceneName().c_str());
 	ImGui::Text(u8"オブジェクト数 : %d", CSceneManager::Get().GetActiveScene()->GetObjManager()->GetList().size());
 	
-	scene->GetDrawManager()->ImGuiDebug();
+	// 描画の確認
+	CSceneManager::Get().GetDrawSystem()->ImGuiDebug();
+
+	if (ImGui::IsAnyItemHovered())
+	{
+		UpHover(EIsHovered::HOVERED_ITEM);
+	}
+	else
+		DownHover(EIsHovered::HOVERED_ITEM);
+
+	const int e = ImGuiManager::EIsHovered::HOVERED_WINDOW | ImGuiManager::EIsHovered::HOVERED_GIZMO;
+	if (!ImGuiManager::Get().IsHover(EIsHovered(e)))
+	{
+		if (m_pDebugCamera.lock())
+			m_pDebugCamera.lock()->Update();
+	}
+
+	//m_pDebugCamera.lock()->Clear();
 
 	// ログ表示
 	DispLog();
@@ -139,7 +168,7 @@ void ImGuiManager::Update()
 // ImGuiの描画更新処理
 void ImGuiManager::Render()
 {
-	if (!m_flg)
+	if (!m_bEditFlg)
 		return;
 
 	ImGui::Render();
@@ -150,7 +179,7 @@ void ImGuiManager::Pause()
 {
 	ImGui::SetNextWindowPos(ImVec2((float)CScreen::GetWidth() / 2 - 300 / 2, (float)0));   //画面位置を外部から取得できるようにする
 	
-	if (!m_flg)
+	if (!m_bEditFlg)
 		return;
 	ImGui::SetNextWindowSize(ImVec2(420, 120), ImGuiCond_Once);
 	ImGui::Begin("Pause", &m_bPause);

@@ -87,8 +87,10 @@ void CCamera::Awake()
 
 	m_pSky = GetOwner()->AddComponent<CModelRenderer>();
 	GetOwner()->SetLayer(CLayer::E_Layer::SKY);
-	m_pSky.lock()->SetModel(FORDER_DIR(Data/model/SkyDome/sky.fbx));
+	//m_pSky.lock()->SetModel(FORDER_DIR(Data/model/SkyDome/sky.fbx));
+	m_pSky.lock()->SetModel(FORDER_DIR(Data/model/SkyDome/sky2.fbx));
 	m_pSky.lock()->SetBSRadius(1000);
+	Transform()->SetScale({ 10, 10, 10 });
 
 	GetOwner()->GetTagPtr()->CreateTag(CDefaultTagChar::CAMERA);
 	GetOwner()->SetTag(CDefaultTagChar::CAMERA);
@@ -139,34 +141,34 @@ void CCamera::Update()
 }
 void CCamera::Clear()
 {
-	float ClearColor[4] = { 0.117647f, 0.254902f, 0.352941f, 1.0f };
-	ID3D11DeviceContext* pDC = CDXDevice::Get().GetDeviceContext();
-	pDC->ClearRenderTargetView(CDXDevice::Get().GetRenderTargetView(), ClearColor);
-	pDC->ClearDepthStencilView(CDXDevice::Get().GetDepthStencilView(),
-		D3D11_CLEAR_DEPTH | D3D11_CLEAR_STENCIL, 1.0f, 0);
-	ID3D11RenderTargetView* pViews[] = {
-		CDXDevice::Get().GetRenderTargetView()
-	};
-	pDC->OMSetRenderTargets(1, pViews,nullptr);
+	//float ClearColor[4] = { 0.117647f, 0.254902f, 0.352941f, 1.0f };
+	//ID3D11DeviceContext* pDC = CDXDevice::Get().GetDeviceContext();
+	//pDC->ClearRenderTargetView(CDXDevice::Get().GetRenderTargetView(), ClearColor);
+	//pDC->ClearDepthStencilView(CDXDevice::Get().GetDepthStencilView(),
+	//	D3D11_CLEAR_DEPTH | D3D11_CLEAR_STENCIL, 1.0f, 0);
+	//ID3D11RenderTargetView* pViews[] = {
+	//	CDXDevice::Get().GetRenderTargetView()
+	//};
+	//pDC->OMSetRenderTargets(1, pViews,nullptr);
 
 	// TODO: skydomeｸﾗｽ作る？
 	if (m_pSky.lock())
 	{
-		//CDXDevice::Get().SetZBuffer(false);		// Zバッファ無効
-		//CDirectionalLight* pLight = dynamic_cast<CDirectionalLight*>(CLight::Get());
-		//pLight->SetDisable();	// ライティング無効
+		CDXDevice::Get().SetZBuffer(false);		// Zバッファ無効
+		CDirectionalLight* pLight = dynamic_cast<CDirectionalLight*>(CLight::Get());
+		pLight->SetDisable();	// ライティング無効
 
-		//XMFLOAT4X4 mW, oldW;
-		//oldW = Transform()->GetWorldMatrix();
-		//XMStoreFloat4x4(&mW, XMMatrixTranslation(m_vPos.x, m_vPos.y, m_vPos.z));
-		//Transform()->SetWorldMatrix(mW);
+		XMFLOAT4X4 mW, oldW;
+		oldW = Transform()->GetWorldMatrix();
+		XMStoreFloat4x4(&mW, XMMatrixTranslation(m_vPos.x, m_vPos.y, m_vPos.z));
+		Transform()->SetWorldMatrix(mW);
 
-		//m_pSky.lock()->Draw(0);
-		//Transform()->SetWorldMatrix(oldW);
-		//pLight->SetEnable();	// ライティング有効
+		m_pSky.lock()->Draw(0);
+		Transform()->SetWorldMatrix(oldW);
+		pLight->SetEnable();	// ライティング有効
 	}
-	//CDXDevice::Get().SetZBuffer(true);
-	//CDXDevice::Get().SetBlendState(static_cast<int>(EBlendState::BS_NONE));
+	CDXDevice::Get().SetZBuffer(true);
+	CDXDevice::Get().SetBlendState(static_cast<int>(EBlendState::BS_NONE));
 
 }
 void CCamera::SetWorldMatrix(DirectX::XMFLOAT4X4& mtxWorld)

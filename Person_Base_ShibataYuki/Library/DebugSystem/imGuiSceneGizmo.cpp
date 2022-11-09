@@ -9,6 +9,7 @@
 //=====================================================
 
 #include <ImGui/imgui.h>
+#include <DebugSystem/imguiManager.h>
 #include <DebugSystem/imGuiSceneGizmo.h>
 #include <GameSystem/Component/Camera/camera.h>
 
@@ -16,10 +17,11 @@ using namespace MySpace::Debug;
 using namespace MySpace::MyMath;
 using namespace MySpace::Game;
 
-void CMyGizmo::EditTransform(const CCamera& camera, Matrix4x4& matrix)
+void CMyGizmo::EditTransform(const CCamera& camera, CTransform* editTransform)
 {
+	Matrix4x4 matrix = editTransform->GetWorldMatrix();
 	//ImGuizmo::SetDrawlist();
-
+	
 	if (GetAsyncKeyState('Q'))
 		m_CurrentGizmoOperation = ImGuizmo::TRANSLATE;
 	if (GetAsyncKeyState('W'))
@@ -84,7 +86,8 @@ void CMyGizmo::EditTransform(const CCamera& camera, Matrix4x4& matrix)
 	ImGuiIO& io = ImGui::GetIO();
 	// ビューポート
 	ImGuizmo::SetRect(0, 0, io.DisplaySize.x, io.DisplaySize.y);
-	
+	auto size = { io.DisplaySize.x, io.DisplaySize.y };
+
 	// ギズモ
 	XMFLOAT4X4 worldMatrix = matrix;
 	ImGuizmo::Manipulate(
@@ -101,7 +104,7 @@ void CMyGizmo::EditTransform(const CCamera& camera, Matrix4x4& matrix)
 
 	XMFLOAT4X4 local = worldMatrix;
 	// 親がいる
-	if (0)
+	if (auto obj = editTransform->GetParent();obj.lock())
 	{
 		// ワールド座標の逆行列(lcal)
 		//local = worldMatrix * local;
@@ -124,9 +127,23 @@ void CMyGizmo::EditTransform(const CCamera& camera, Matrix4x4& matrix)
 
 	//}
 	matrix = local;
+	//editTransform->SetWorldMatrix(matrix);
+	editTransform->SetWorldMatrix(localTrans, localRot, localScal);
+
+	if (ImGuizmo::IsUsing())
+	{
+		ImGuiManager::Get().UpHover(ImGuiManager::EIsHovered::HOVERED_GIZMO);
+	}
+	else
+		ImGuiManager::Get().DownHover(ImGuiManager::EIsHovered::HOVERED_GIZMO);
 
 	// ｶﾒﾗの姿勢
-	ImGuizmo::ViewManipulate((float*)CCamera::GetMain()->GetViewMatrix().m, 8, ImVec2(io.DisplaySize.x, io.DisplaySize.y), ImVec2(128, 128), 0x10101010);
+	auto viewMatrix = CCamera::GetMain()->GetViewMatrix().m;
+	//auto view = CCamera::GetMain()->GetViewMatrix();
+	//if (CScreen::ScreenJudg(Vector3(view._41, view._42, view._43)))
+	{
+		ImGuizmo::ViewManipulate((float*)&viewMatrix, 8, ImVec2(io.DisplaySize.x, io.DisplaySize.y), ImVec2(128, 128), 0x10101010);
+	}
 
 	// 
 

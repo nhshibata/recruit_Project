@@ -23,24 +23,24 @@ namespace MySpace
 			void save(Archive& archive) const
 			{
 				archive(cereal::make_nvp("collision", cereal::base_class<CComponent>(this)),
-					CEREAL_NVP(m_bIsTrigger)
+					CEREAL_NVP(m_bIsTrigger), CEREAL_NVP(m_vCenter)
 				);
 			}
 			template<class Archive>
 			void load(Archive& archive)
 			{
 				archive(cereal::make_nvp("collision", cereal::base_class<CComponent>(this)),
-					CEREAL_NVP(m_bIsTrigger)
+					CEREAL_NVP(m_bIsTrigger), CEREAL_NVP(m_vCenter)
 				);
 			}
 		protected:
 			//--- ﾒﾝﾊﾞ変数
 			Vector3 m_vOldPos;			// 衝突があった場合、元に戻す座標
 			Vector3 m_vOldScale;		// 衝突があった場合、元に戻す座標
-
-			std::weak_ptr<CTransform> m_pTransform;	// ownerのTransformへのポインタ(関数で取得する無駄を省く)
+			Vector3 m_vCenter;
 
 			bool m_bIsTrigger;				// 当たった時の動作(trueですり抜け)
+			int m_nSystemIdx = -1;
 
 			std::list<std::weak_ptr<CGameObject>> m_pOldStayList;	// 1フレーム前に接触していた
 			std::list<std::weak_ptr<CGameObject>> m_pHitList;		// 現在フレーム接触
@@ -80,6 +80,10 @@ namespace MySpace
 			// *@ 判定を行う際のすりぬけ設定
 			inline void SetTrigger(const bool is) { m_bIsTrigger = is; };
 
+			inline Vector3 GetCenter() { return m_vCenter; }
+			
+			inline void SetCenter(Vector3 value) { m_vCenter = value; }
+
 			// <Summary>
 			// 当たり判定方法により異なる
 			// コリジョンｸﾗｽを引き数にとって、当たり判定を行う
@@ -91,10 +95,9 @@ namespace MySpace
 			// </Summary>
 			virtual bool ExitTell();
 
+
 #ifdef BUILD_MODE
-
 			virtual void ImGuiDebug();
-
 #endif // BUILD_MODE
 		};
 	}

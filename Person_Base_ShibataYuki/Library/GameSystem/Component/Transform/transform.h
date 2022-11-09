@@ -98,6 +98,7 @@ namespace MySpace
 			inline void SetWorldQuaternion(const Quaternion &  rotation);
 			inline void SetLocalQuaternion(const Quaternion &  rotation);
 			inline void SetWorldMatrix();
+			void SetWorldMatrix(Vector3 translate, Vector3 rot, Vector3 scale);
 			inline void SetWorldMatrix(const XMFLOAT4X4 value) { m_mWorldMtx = value; }
 			inline void SetLocalMatrix(const XMFLOAT4X4 value) { m_mLocalMtx = value; }
 
@@ -105,7 +106,9 @@ namespace MySpace
 			{
 				DirectX::XMFLOAT4X4 mtx;
 				DirectX::XMStoreFloat4x4(&mtx,
-					DirectX::XMMatrixRotationRollPitchYaw(DirectX::XMConvertToRadians(m_vRot.x), DirectX::XMConvertToRadians(m_vRot.y), DirectX::XMConvertToRadians(m_vRot.z)));
+					DirectX::XMMatrixRotationRollPitchYaw(DirectX::XMConvertToRadians(m_vRot.x),
+														  DirectX::XMConvertToRadians(m_vRot.y),
+														  DirectX::XMConvertToRadians(m_vRot.z)));
 
 				return Vector3(mtx._31, mtx._32, mtx._33).Normalize();
 			}
@@ -113,7 +116,9 @@ namespace MySpace
 			{
 				DirectX::XMFLOAT4X4 mtx;
 				DirectX::XMStoreFloat4x4(&mtx,
-					DirectX::XMMatrixRotationRollPitchYaw(DirectX::XMConvertToRadians(m_vRot.y + 90.0f), DirectX::XMConvertToRadians(m_vRot.x),DirectX::XMConvertToRadians(m_vRot.z)));
+					DirectX::XMMatrixRotationRollPitchYaw(DirectX::XMConvertToRadians(m_vRot.y + 90.0f),
+														  DirectX::XMConvertToRadians(m_vRot.x),
+														  DirectX::XMConvertToRadians(m_vRot.z)));
 
 				return Vector3(mtx._31, mtx._32, mtx._33).Normalize();
 			}

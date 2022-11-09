@@ -50,10 +50,15 @@ void CHierachy::Update()
 	ImGui::SetNextWindowPos(ImVec2(20, 20), ImGuiCond_Once);
 	ImGui::SetNextWindowSize(ImVec2(200, 400), ImGuiCond_Once);
 	bool flg = true;
-	ImGui::Begin("Hierarchy", &flg, ImGuiWindowFlags_MenuBar);
+	ImGui::Begin(u8"Hierarchy", &flg, ImGuiWindowFlags_MenuBar);
 
 	if (!CSceneManager::Get().GetActiveScene())
 		return;
+
+	if (ImGui::IsWindowHovered())
+	{
+		ImGuiManager::Get().UpHover(ImGuiManager::EIsHovered::HOVERED_WINDOW);
+	}
 
 	auto objList = CSceneManager::Get().GetActiveScene()->GetObjManager()->GetList();
 
@@ -112,7 +117,7 @@ void CHierachy::Update()
 				continue;
 		}
 #if 1
-		// 親要素の確認
+		// 親要素の確認、親が子を表示する
 		if (object->GetTransform()->GetParent().lock())
 			continue;
 #endif // 0
@@ -124,7 +129,8 @@ void CHierachy::Update()
 		}
 		ImGui::SameLine();
 
-		if (ImGui::TreeNode(std::string("child-" + object->GetName()).c_str() ))
+		// 子の表示
+		if (ImGui::TreeNode(std::string(object->GetName() + "child-").c_str()))
 		{
 			if (object->GetTransform()->GetChild(0).expired())
 			{
@@ -143,7 +149,6 @@ void CHierachy::Update()
 					if (select = ImGui::Button(childName); select)
 					{
 						ImGuiManager::Get().GetInspector()->SetGameObject(child);
-						
 					}
 					ImGui::EndChild();
 					ImGui::Separator();
@@ -198,7 +203,7 @@ void CHierachy::DispSaveLoadMenu()
 	}
 
 	//ImGui::InputText("reloadFile", m_loadPath.data(), 256);
-	m_loadPath = InputString(m_loadPath, "loadFile");
+	m_loadPath = InputString(m_loadPath, u8"loadFile");
 
 	if (ImGui::Button("Load"))
 	{
@@ -210,8 +215,8 @@ void CHierachy::DispSaveLoadMenu()
 	ImGui::SetNextWindowSize(ImVec2(200, 300), ImGuiCond_Once);
 
 	//ImGui::Begin("Save", &batsu, ImGuiWindowFlags_MenuBar);
-	m_savePath = InputString(m_savePath, "saveFile");
-	if (ImGui::Button("Save"))
+	m_savePath = InputString(m_savePath, u8"saveFile");
+	if (ImGui::Button(u8"Save"))
 	{
 		CSceneManager::Get().SaveScene(m_savePath);
 	}
@@ -234,19 +239,19 @@ void CHierachy::UpdateSearch()
 		"objName","objTag","stateActiv","stateStop","stateDestroy"
 	};
 
-	ImGui::Text((m_Search .bSearchCriteria? "検索ON": "検索OFF"));
+	m_Search.inputName = InputString(m_Search.inputName, u8"Search:");
 	ImGui::SameLine();
-	if (ImGui::Button("検索"))
+	ImGui::Text((m_Search .bSearchCriteria? u8"Search:ON" : u8"Search:OFF"));
+	ImGui::SameLine();
+	if (ImGui::Button(u8"検索"))
 	{
 		m_Search.bSearchCriteria ^= true;
 	}
-	ImGui::SameLine();
-	m_Search.inputName = InputString(m_Search.inputName, "検索条件");
 
 	for (int cnt = 0; cnt < static_cast<int>(ESearchTerms::MAX); ++cnt)
 	{
-		ImGui::RadioButton(szDisp[cnt], (int*)&m_Search.eTerms, nSearch[cnt]);
 		ImGui::SameLine();
+		ImGui::RadioButton(szDisp[cnt], (int*)&m_Search.eTerms, nSearch[cnt]);
 	}
 }
 // 表示する対象か確認

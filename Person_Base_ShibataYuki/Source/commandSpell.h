@@ -105,7 +105,7 @@ namespace Spell
 		{
 			STSpell s = st;
 			if (id == 0)
-				id = m_SpellMap.size();
+				id = static_cast<int>(m_SpellMap.size());
 			m_SpellMap.insert(std::make_pair(id, s));
 		}
 

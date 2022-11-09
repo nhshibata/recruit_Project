@@ -106,6 +106,8 @@ void CModelRenderer::ImGuiDebug()
 	static std::vector<std::string> s_ObjModelList;
 	static std::vector<std::string> s_FbxModelList;
 
+	CRenderer::ImGuiDebug();
+
 	if (s_XModelList.empty() && s_ObjModelList.empty() && s_FbxModelList.empty() || ImGui::Button("モデル reload"))
 	{
 		MySpace::System::CFilePath file;
@@ -115,7 +117,7 @@ void CModelRenderer::ImGuiDebug()
 	}
 
 	// 名前入力
-	m_modelName = InputString(m_modelName, "設定モデル");
+	m_modelName = InputString(m_modelName, u8"設定モデル");
 
 	// モデル
 	if (auto name = DispMenuBar(s_XModelList, "xFile"); !name.empty())

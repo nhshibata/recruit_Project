@@ -9,6 +9,7 @@
 #include <GameSystem/GameObject/gameObject.h>
 #include <GameSystem/Manager/sceneManager.h>
 #include <ImGui/imgui.h>
+#include <GraphicsSystem/Render/Sphere.h>
 
 using namespace MySpace::Game;
 
@@ -16,12 +17,17 @@ using namespace MySpace::Game;
 CSphereCollision::CSphereCollision(std::shared_ptr<CGameObject> owner, float radius)
 	:CCollision(owner),m_fRadius(radius)
 {
-
+#if BUILD_MODE
+	m_pDebugSphere = std::make_shared<CSphere>();
+	m_pDebugSphere->Init(16, 8, radius);
+#endif //
 }
 //
 CSphereCollision::~CSphereCollision()
 {
-
+#if BUILD_MODE
+	m_pDebugSphere.reset();
+#endif // BUILD_MODE
 }
 bool CSphereCollision::Sphere(Vector3 Apos, float Ar, Vector3 Bpos, float Br)
 {
@@ -34,7 +40,7 @@ bool CSphereCollision::Sphere(Vector3 Apos, float Ar, Vector3 Bpos, float Br)
 // 球の当たり判定
 bool CSphereCollision::CollisionSphere(Vector3 pos, float radius)
 {
-	if (Sphere(m_pTransform.lock()->GetPos(), m_fRadius, pos, radius))
+	if (Sphere(Transform()->GetPos(), m_fRadius, pos, radius))
 	{
 		return true;
 	}
@@ -102,8 +108,8 @@ bool CSphereCollision::HitCheckPtr(CCollision* other)
 
 Vector3 CSphereCollision::PosAdjustment(Vector3 otherPos, float size)
 {
-	Vector3 checkPos = m_pTransform.lock()->GetPos();
-	Vector3 oldPos = m_pTransform.lock()->GetOldPos();
+	Vector3 checkPos = Transform()->GetPos();
+	Vector3 oldPos = Transform()->GetOldPos();
 	Vector3 dist = Vector3::check(checkPos, oldPos);
 
 	// 差がない
@@ -144,10 +150,15 @@ Vector3 CSphereCollision::PosAdjustment(Vector3 otherPos, float size)
 void CSphereCollision::ImGuiDebug()
 {
 	CCollision::ImGuiDebug();
+
 	// 3次元座標
-	ImGui::Checkbox(u8"トリガー", &m_bIsTrigger);
 	//ImGui::Checkbox(u8"状態", &IsActive());
-	ImGui::InputFloat(u8"サイズ", &m_fRadius);
-	ImGui::Text(u8"StayNum : %d", m_pOldStayList.size());
+	if (ImGui::DragFloat3(u8"サイズ", &m_fRadius))
+	{
+		m_pDebugSphere->Init(16, 8, m_fRadius);
+	}
+
+	m_pDebugSphere->SetWorld(&Transform()->GetWorldMatrix());
+	m_pDebugSphere->Draw();
 }
 #endif // BUILD_MODE

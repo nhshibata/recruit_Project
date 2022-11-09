@@ -20,6 +20,11 @@
 
 namespace MySpace
 {
+	namespace Game 
+	{
+		class CCollisionSystem;
+		class CDrawSystem;
+	}
 }
 
 namespace MySpace
@@ -32,6 +37,7 @@ namespace MySpace
 		using MySpace::Game::CGameObject;
 		using MySpace::Game::CComponent;
 		using MySpace::Game::CInstantResourceManager;
+		using MySpace::Game::CCollisionSystem;
 		
 		//--- クラス定義
 		class CSceneManager : public CAppSystem<CSceneManager>
@@ -40,6 +46,7 @@ namespace MySpace
 			friend class CSingleton<CSceneManager>;
 		private:
 			// シリアライズ用ｸﾗｽ
+#pragma region Cereal
 			// 一時的に退避させるMementoパターン
 			class CSceneData
 			{
@@ -60,6 +67,7 @@ namespace MySpace
 				std::list<std::shared_ptr<CGameObject> > m_GameObjectManager;
 				CInstantResourceManager m_resource;
 			};
+#pragma endregion
 
 			// エイリアス
 			using SceneList = std::vector<std::shared_ptr<CScene>>;
@@ -70,6 +78,8 @@ namespace MySpace
 			SceneList m_pScenes;
 			std::string m_currentPath;
 			std::shared_ptr<CSceneTransitionDetection> m_sceneDetection;
+			std::shared_ptr<CCollisionSystem> m_pCollisionSystem;
+			std::shared_ptr<CDrawSystem> m_pDrawSystem;
 			bool m_bTransition;
 
 		private:
@@ -106,6 +116,7 @@ namespace MySpace
 			CScene* GetActiveScene() { return m_pCurrentScene.lock().get(); }
 			// *メインシーン取得
 			std::shared_ptr<CScene> GetActiveScene(int) { return m_pCurrentScene.lock(); }
+			// *メインシーン名前取得
 			std::string GetActiveSceneName() { return m_pCurrentScene.lock()->GetSceneName(); }
 			// *文字列が一致するシーン取得
 			std::shared_ptr<CScene> GetSceneByName(std::string name) 
@@ -123,7 +134,7 @@ namespace MySpace
 			//--- シーンの読み込み
 			// *通常のシーン切替
 			std::weak_ptr<CScene> SceneTransition(std::string name);
-
+			// *メインシーン切替
 			std::weak_ptr<CScene> SetActiveScene(std::shared_ptr<CScene> pNextScene);
 
 			// *シーン生成
@@ -137,25 +148,8 @@ namespace MySpace
 				return m_pCurrentScene.lock().get();
 			}
 			
-			std::shared_ptr<CScene> NewScene(std::string name = std::string())
-			{
-				std::shared_ptr<CScene> pNextScene;
-
-				// 名前指定なし
-				if(name.empty())
-					pNextScene = std::make_shared<CScene>();
-				else
-					pNextScene = std::make_shared<CScene>(name);
-				// リストへの追加
-				AddSceneList(pNextScene);
-				// 自分のSPを教える
-				pNextScene->SetScene(pNextScene);
-				
-				if (!m_pCurrentScene.lock())
-					m_pCurrentScene = pNextScene;
-				m_sceneDetection->Call(pNextScene.get(),0);	// 生成時呼び出し
-				return pNextScene;
-			}
+			// *シーン生成
+			std::shared_ptr<CScene> NewScene(std::string name = std::string());
 
 			// 現在シーンに追加
 			template <class T>
@@ -221,9 +215,13 @@ namespace MySpace
 				m_sceneDetection->Unloaded<T>(func, ptr);
 			}
 
-			auto GetDetection() { return m_sceneDetection.get(); }
+			// *切替呼び出しｸﾗｽの取得
+			inline auto GetDetection() { return m_sceneDetection.get(); }
 			
-
+			// *コリジョンシステムの取得
+			inline std::shared_ptr<CCollisionSystem> GetCollisionSystem() { return m_pCollisionSystem; }
+			
+			inline std::shared_ptr<CDrawSystem> GetDrawSystem() { return m_pDrawSystem; }
 #ifdef BUILD_MODE
 
 			void ImguiDebug();

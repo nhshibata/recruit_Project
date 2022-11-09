@@ -11,8 +11,18 @@
 
 namespace MySpace
 {
+	namespace Graphics
+	{
+		class CSphere;
+	}
+}
+
+namespace MySpace
+{
 	namespace Game
 	{
+		using MySpace::Graphics::CSphere;
+
 		//--- ƒNƒ‰ƒX’è‹`
 		class CSphereCollision : public CCollision
 		{
@@ -64,7 +74,13 @@ namespace MySpace
 				Transform()->SetPos(Transform()->GetPos() + vec);
 			}
 
+#ifdef BUILD_MODE
+		private:
+			std::shared_ptr<CSphere> m_pDebugSphere;
+		public:
 			virtual void ImGuiDebug();
+#endif
+
 		};
 	}
 }

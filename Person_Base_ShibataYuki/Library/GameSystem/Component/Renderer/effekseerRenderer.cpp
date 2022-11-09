@@ -10,6 +10,7 @@
 #include <GraphicsSystem/DirectX/DXDevice.h>
 
 #include <DebugSystem/imGuiPackage.h>
+#include <DebugSystem/imguiManager.h>
 #include <CoreSystem/File/filePath.h>
 
 using namespace MySpace::System;
@@ -39,7 +40,12 @@ void CEffekseerRenderer::Init()
 }
 void CEffekseerRenderer::Update()
 {
+#if BUILD_MODE
+	if (!m_bRead || Debug::ImGuiManager::Get().CheckPlayMode())
+		return;
+#endif // 0
 	m_nHandle = m_pEffekseer->Move(m_nHandle, Transform()->GetPos());
+
 	// 終了確認
 	if (!m_pEffekseer->Exists(m_nHandle))
 	{
@@ -79,7 +85,7 @@ void CEffekseerRenderer::ImGuiDebug()
 	static std::vector<std::string> s_FileNameList;
 	static std::vector<std::u16string> s_FileList;
 
-	if (s_FileNameList.empty() || ImGui::Button("エフェクト reload"))
+	if (s_FileNameList.empty() || ImGui::Button(u8"エフェクト reload"))
 	{
 		MySpace::System::CFilePath file;
 		s_FileNameList = file.GetAllFileName(EFFECT_PATH1, ".efkefc");
@@ -90,6 +96,7 @@ void CEffekseerRenderer::ImGuiDebug()
 	if (std::u16string name = DispFileMenuBar16(s_FileNameList, s_FileList, "effect"); !name.empty())
 	{
 		m_EffectName = name;
+		m_bRead = true;
 	}
 
 	ImGui::Text(u8"name%zu", m_EffectName.c_str());

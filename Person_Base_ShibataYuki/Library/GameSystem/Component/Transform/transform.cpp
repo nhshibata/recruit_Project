@@ -106,7 +106,14 @@ void CTransform::SetWorldMatrix()
 		m_mWorldMtx = world;
 	}
 }
+void CTransform::SetWorldMatrix(Vector3 trans, Vector3 rotate, Vector3 scale)
+{
+	m_vPos = trans;
+	m_vRot = rotate;
+	m_vScale = scale;
 
+	SetWorldMatrix();
+}
 void CTransform::SetWorldQuaternion(const Quaternion &  rotation)
 {
 
@@ -130,24 +137,12 @@ void CTransform::ImGuiDebug()
 	{
 		// 3次元座標
 		//ImGui::InputFloat3(u8"プレイヤー座標", (float*)&this->GetPos());
-		ImGui::InputFloat3(u8"座標", (float*)m_vPos);
-	//	m_vPos = Debug::InputInt(m_vPos);
-		/*ImGui::InputInt(u8"座標x", (int*)&m_vPos.x);
-		ImGui::InputInt(u8"座標y", (int*)&m_vPos.y);
-		ImGui::InputInt(u8"座標z", (int*)&m_vPos.z);*/
+		ImGui::DragFloat3(u8"座標", (float*)m_vPos);
 		ImGui::Text(u8"過去座標 %f %f %f", m_vOldPos.x, m_vOldPos.y, m_vOldPos.z);
-		
-		ImGui::InputFloat3(u8"サイズ", (float*)m_vScale);
-	//	m_vScale = Debug::InputInt(m_vScale);
-		/*ImGui::InputInt(u8"サイズx", (int*)&m_vScale.x);
-		ImGui::InputInt(u8"サイズy", (int*)&m_vScale.y);
-		ImGui::InputInt(u8"サイズz", (int*)&m_vScale.z);*/
-
-		ImGui::InputFloat3(u8"角度", (float*)m_vRot);
-	//	m_vRot = Debug::InputInt(m_vRot);
-	/*	ImGui::InputInt(u8"角度x", (int*)&m_vRot.x);
-		ImGui::InputInt(u8"角度y", (int*)&m_vRot.y);
-		ImGui::InputInt(u8"角度z", (int*)&m_vRot.z);*/
+		ImGui::DragFloat3(u8"角度", (float*)m_vRot);
+		ImGui::DragFloat3(u8"サイズ", (float*)m_vScale);
+	
+		SetWorldMatrix();
 	}
 }
 #endif // BUILD_MODE

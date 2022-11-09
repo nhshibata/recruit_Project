@@ -30,6 +30,7 @@ namespace MySpace
 	{
 		class CInspector;
 		class CHierachy;
+		class CMyGizmo;
 	}
 	namespace Game
 	{
@@ -45,12 +46,22 @@ namespace MySpace
 		using MySpace::System::CSingleton;
 		using MySpace::Game::CGameObject;
 		using MySpace::Game::CDebugCamera;
+		using MySpace::Debug::CMyGizmo;
 
 		// ImGui管理クラス
 		class ImGuiManager : public CAppSystem<ImGuiManager>
 		{
 			friend class CAppSystem<ImGuiManager>;
 			friend class CSingleton<ImGuiManager>;
+		public:
+			enum EIsHovered
+			{
+				HOVERED_NONE	= 0,
+				HOVERED_WINDOW	= 1 << 0,
+				HOVERED_MOUSE	= 1 << 1,
+				HOVERED_ITEM	= 1 << 2,
+				HOVERED_GIZMO	= 1 << 3
+			};
 		private:
 			enum class EPlayMode
 			{
@@ -62,17 +73,19 @@ namespace MySpace
 			using MapStringPair = std::pair<std::string, int>;
 
 		private:
-			EPlayMode	m_bPlayMode;			
+			EPlayMode m_bPlayMode;			
 			bool m_bPause;				
 			bool m_bOneFlame;
-			bool m_flg;
+			bool m_bEditFlg;
 			std::shared_ptr<CGameObject> m_pDebugObj;
 			std::weak_ptr<CDebugCamera> m_pDebugCamera;
 			MapString m_debugMap;
 
 			std::shared_ptr<CInspector> m_pInspector;
 			std::shared_ptr<CHierachy> m_pHierarchy;
-			
+			std::shared_ptr<CMyGizmo> m_pGizmo;
+
+			EIsHovered m_nHover;
 		private:
 			//--- メンバ関数
 			ImGuiManager();
@@ -90,9 +103,9 @@ namespace MySpace
 
 			void Pause();													// ポーズの処理
 
-			bool GetFlg() { return m_flg; }									// フラグ管理クラスの返す
-			bool GetPause() { return m_bPause; }							// ポーズの有無
-			void SetPause(bool flg) { m_bPause = flg; }
+			inline bool GetFlg() { return m_bEditFlg; }									// フラグ管理クラスの返す
+			inline bool GetPause() { return m_bPause; }							// ポーズの有無
+			inline void SetPause(bool flg) { m_bPause = flg; }
 
 			void DebugLog(std::string log) 
 			{
@@ -106,8 +119,23 @@ namespace MySpace
 			};
 			void DispLog();
 
-			std::shared_ptr<CInspector> GetInspector() { return m_pInspector; }
-			std::shared_ptr<CHierachy> GetHierarchy() { return m_pHierarchy; }
+			inline std::shared_ptr<CInspector> GetInspector() { return m_pInspector; }
+			inline std::shared_ptr<CHierachy> GetHierarchy() { return m_pHierarchy; }
+
+
+			inline EIsHovered GetHover() { return m_nHover; };
+			inline bool IsHover(EIsHovered hover) { return m_nHover & hover; };
+			inline void UpHover(EIsHovered hover)
+			{
+				m_nHover = static_cast<EIsHovered>(m_nHover | hover);
+			}
+			inline void DownHover(EIsHovered hover)
+			{
+				if (m_nHover & hover)
+				{
+					m_nHover = static_cast<EIsHovered>(m_nHover ^ hover);
+				}
+			}
 		};
 	}
 }

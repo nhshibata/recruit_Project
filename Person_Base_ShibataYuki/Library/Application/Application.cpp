@@ -29,9 +29,6 @@ namespace
 	const uint32_t	WINDOW_STYLE_FULL_SCREEN = (WS_VISIBLE | WS_POPUP);
 	const uint32_t	WINDOW_EX_STYLE_FULL_SCREEN = (0);
 
-	const uint32_t	CLIENT_WIDTH = 1280;
-	const uint32_t	CLIENT_HEIGHT = 960;
-
 	uint32_t		SYSTEM_WIDTH = 0;
 	uint32_t		SYSTEM_HEIGHT = 0;
 }
@@ -39,7 +36,7 @@ namespace
 bool Application::Init(HINSTANCE h_Instance)
 {
 	// 幅と高さ初期化
-	CScreen::SetSize(1280.0f, 960.0f);
+	//CScreen::SetSize(1280.0f, 960.0f);
 
 	// メモリの確保
 	//MainSystem.Set(new CSystemManager);
@@ -116,7 +113,6 @@ unsigned long Application::MainLoop()
 	// 無限ループ
 	while (window->ExecMessage()) 
 	{
-
 		// fps更新
 		CFps::Get().Update();
 
@@ -139,6 +135,8 @@ unsigned long Application::MainLoop()
 		// ｹﾞｰﾑ描画
 		gameApp->Draw(*this);
 	}
+
+	CFps::Get().Uninit();
 
 	// ゲームの終了処理
 	gameApp->Uninit(*this);

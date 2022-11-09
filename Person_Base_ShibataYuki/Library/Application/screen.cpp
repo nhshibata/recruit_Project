@@ -6,8 +6,8 @@
 #include <Application/screen.h>
 
 //--- ’è”’è‹`
-#define SCREEN_HIGHT		960.0f
 #define SCREEN_WIDTH		1280.0f
+#define SCREEN_HIGHT		720.0f	//960
 
 namespace MySpace
 {

@@ -58,7 +58,9 @@ namespace MySpace
 			void SetImageName(std::u16string name);
 			inline void SetLoop(bool flg) { m_bLoop = flg; }
 #ifdef BUILD_MODE
-
+		private:
+			bool m_bRead = false;
+		public:
 			virtual void ImGuiDebug();
 
 #endif // BUILD_MODE

@@ -1,43 +1,38 @@
 //==========================================================
-// [DrawManager.h]
+// [drawSystem.cpp]
 // 派生クラス
-// 作成:2022/06/07
+//---------------
+// 作成:2022/06/07 ｸﾗｽ名変更するかも
 // 更新:2022/09/11 視錘台当たり判定を調整
-// ｸﾗｽ名変更するかも
+// 更新:2022/11/09 クラス名変更(DrawManager) -> (drawSystem)
 //==========================================================
 
 //--- インクルード部
 #include <algorithm>
 #include <ImGui/imgui.h>
-#include <GameSystem/Manager/DrawManager.h>
+#include <GameSystem/Manager/drawSystem.h>
 #include <GameSystem/Component/Camera/camera.h>
 
 #include <GraphicsSystem/Manager/imageResourceManager.h>
+#include <GameSystem/Component/Renderer/polygonRenderer.h>
+#include <GameSystem/Component/Renderer/meshRenderer.h>
 #include <GraphicsSystem/Manager/effectManager.h>
 #include <GraphicsSystem/Manager/modelManager.h>
 
 using namespace MySpace::Game;
 
-namespace 
-{
-#ifdef BUILD_MODE
-	static int g_nSkipCnt;
-	static int g_nDrawCnt;
-#endif // _DEBUG
-}
-
-CDrawManager::CDrawManager()
-	:m_bIsSort(false)
+CDrawSystem::CDrawSystem()
+	:m_bIsSortNecessary(false)
 {
 }
-CDrawManager::~CDrawManager()
+CDrawSystem::~CDrawSystem()
 {
 	// 解放処理
 	CImageResourceManager::Get().Uninit();
 	CEffekseer::Get().Uninit();
 	CModelManager::Get().Uninit();
 }
-void CDrawManager::Update()
+void CDrawSystem::Update()
 {
 	// CRenderer::Drawはboolを返す
 	// trueであれば描画する
@@ -45,17 +40,16 @@ void CDrawManager::Update()
 	
 	// レイヤーで並び替え
 	//std::sort(m_ObjectList.begin(), m_ObjectList.end(), [](std::weak_ptr<CRenderer> s1, std::weak_ptr<CRenderer> s2)
-	if (m_bIsSort)
+	if (m_bIsSortNecessary)
 	{
-		// 描画出来ないものは除外
-		EraseDraw();
 		// 整列
 		//m_pObjectList.back().lock()->;
-		std::sort(m_pSortList.begin(), m_pSortList.end(), [](auto const& s1, auto const& s2)->bool
+		std::sort(m_pDrawSortList.begin(), m_pDrawSortList.end(), [](auto const& s1, auto const& s2)->bool
 		{
 			return s1.lock()->GetLayer() < s2.lock()->GetLayer();
 		});
-		m_bIsSort = false;
+
+		m_bIsSortNecessary = false;
 
 #ifdef _DEBUG
 		/*std::vector<int> check;
@@ -68,16 +62,13 @@ void CDrawManager::Update()
 
 	}
 	
-	int nEeraseCnt = 0;
-
 	// 3Dの描画
-	for (auto & render : m_pSortList)
+	for (auto & render : m_pDrawSortList)
 	{
 		// ポインタ確認
 		if (!render.lock())
 		{
-			++nEeraseCnt;
-			continue;		// null
+			continue;
 		}
 
 		// 描画可能な状態か確認
@@ -85,11 +76,11 @@ void CDrawManager::Update()
 			continue;
 
 #ifdef BUILD_MODE
-		++g_nDrawCnt;
+		++m_nDrawCnt;
 		auto name = render.lock()->GetName();
 #endif // _DEBUG
 
-		// Meshｺﾝﾎﾟｰﾈﾝﾄか確認
+		// Meshｺﾝﾎﾟｰﾈﾝﾄ(および継承)か確認
 		// TODO: 要実装不完全
 		if (auto mesh = render.lock()->BaseToDerived<CMeshRenderer>().get(); mesh)
 		{	
@@ -104,7 +95,7 @@ void CDrawManager::Update()
 			if (CCamera::GetMain()->CollisionViewFrustum(&Vector3(mW._41, mW._42 ,mW._43), fRadius) == CCamera::EFrustumResult::OUTSIDE)
 			{
 #ifdef BUILD_MODE
-				++g_nSkipCnt;
+				++m_nSkipCnt;
 #endif // _DEBUG
 				continue;
 			}
@@ -112,12 +103,6 @@ void CDrawManager::Update()
 
 		// 描画
 		render.lock()->Draw();
-	}
-
-	// 数字は適当
-	if (nEeraseCnt > 5)
-	{
-		EraseDraw();
 	}
 
 #if 0
@@ -172,18 +157,16 @@ void CDrawManager::Update()
 
 #ifdef BUILD_MODE
 
-void CDrawManager::ImGuiDebug()
+void CDrawSystem::ImGuiDebug()
 {
 	ImGui::Text(u8"DrawManager");
-	ImGui::Text(u8"描画リスト数 %d", m_pSortList.size());
-#ifdef BUILD_MODE
-	ImGui::Text(u8"描画数 %d", g_nDrawCnt);
+	ImGui::Text(u8"描画リスト数 %d", m_pDrawSortList.size());
+	ImGui::Text(u8"描画数 %d", m_nDrawCnt);
 	ImGui::SameLine();
-	ImGui::Text(u8"描画スキップ数 %d", g_nSkipCnt);
+	ImGui::Text(u8"描画スキップ数 %d", m_nSkipCnt);
 	
-	g_nSkipCnt = 0;
-	g_nDrawCnt = 0;
-#endif // _DEBUG
-	ImGui::Checkbox("描画ソート", &m_bIsSort);
+	m_nDrawCnt = 0;
+	m_nSkipCnt = 0;
+	ImGui::Checkbox(u8"描画ソート", &m_bIsSortNecessary);
 }
 #endif

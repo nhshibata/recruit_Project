@@ -114,7 +114,7 @@ void CTextRenderer::ImGuiDebug()
 {
 	ImGui::Text(u8"textRenderer");
 	std::string text;
-	MySpace::Debug::InputString(text, u8"String");
+	text = MySpace::Debug::InputString(text, u8"String");
 	m_Text = StringToWString(text);
 	
 	ImGui::InputFloat(u8"オフセット", &m_fOffset);

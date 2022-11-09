@@ -17,7 +17,6 @@ using namespace MySpace::Game;
 CScene::CScene()
 	:m_SceneName("none")
 {
-	m_drawManager = std::make_shared<CDrawManager>();
 	m_objeManager = std::make_shared<CGameObjectManager>();
 
 	//CreateEmptyScene();
@@ -26,7 +25,6 @@ CScene::CScene()
 CScene::CScene(std::string name)
 	:m_SceneName(name)
 {
-	m_drawManager = std::make_shared<CDrawManager>();
 	m_objeManager = std::make_shared<CGameObjectManager>();
 
 	//m_objeManager->Awake();
@@ -37,7 +35,6 @@ CScene::~CScene()
 	//Uninit();
 
 	m_objeManager.reset();
-	m_drawManager.reset();
 }
 // ‰Šú‰»
 void CScene::Init()
@@ -64,7 +61,6 @@ void CScene::FixedUpdate()
 // •`‰æ
 void CScene::Draw()
 {
-	m_drawManager->Update();
 }
 void CScene::CreateEmptyScene()
 {

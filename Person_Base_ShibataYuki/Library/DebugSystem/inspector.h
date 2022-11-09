@@ -83,6 +83,7 @@ namespace MySpace
 			void Update();
 			void Draw();
 
+			std::weak_ptr<CGameObject> GetSelectObject() { return  m_spViewObj; }
 			void SetGameObject(std::weak_ptr<CGameObject> obj);
 			//void SetDispObj(bool flg) { m_bDispObj = flg; }
 		};

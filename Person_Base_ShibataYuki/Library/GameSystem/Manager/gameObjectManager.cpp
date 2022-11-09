@@ -12,7 +12,6 @@
 #include <GameSystem/GameObject/gameObject.h>
 #include <GameSystem/Component/component.h>
 #include <GameSystem/Component/Transform/Tween.h>
-#include <GameSystem/Component/Collision/collision.h>
 #include <GameSystem/Component/Light/directionalLight.h>
 #include <GameSystem/Component/Camera/camera.h>
 
@@ -47,7 +46,6 @@ void CGameObjectManager::Uninit()
 		obj.reset();
 	}
 	m_objMgr.clear();
-	m_pCollisionComponent.clear();
 }
 // 更新
 void CGameObjectManager::Update()
@@ -83,9 +81,6 @@ void CGameObjectManager::Update()
 			break;
 		}
 	}
-
-	// 当たり判定確認
-	CollisionCheck();
 
 	// Tweenの更新(順番検討)
 	CTweenManager::Get().Update();
@@ -188,142 +183,6 @@ void CGameObjectManager::FixedUpdate()
 		}
 	}
 }
-// REVIEW: 改善の余地あり
-void CGameObjectManager::CollisionCheck()
-{
-	if (m_pCollisionComponent.size() == 0)
-		return;
-#if 1
-	//--- 当たり判定を行うｺﾝﾎﾟｰﾈﾝﾄを選別する
-	COLLISION_VEC list;
-	auto first_col = m_pCollisionComponent.front();
-	// 最初がnullなら探索
-	if (!first_col.lock())
-	{
-		for (auto it = m_pCollisionComponent.begin(); it != m_pCollisionComponent.end(); ++it)
-		{
-			if ((*it).lock())
-				first_col = (*it);
-		}
-	}
-	list.push_back(first_col);
-
-	for (auto it = m_pCollisionComponent.begin(); it != m_pCollisionComponent.end(); ++it)
-	{
-		// 同一のオブジェクトは判定しない
-		if (first_col.lock() == (*it).lock())
-			continue;
-		// 破棄されていないか確認
-		if (!(*it).lock()->GetOwner()->IsActive() || !(*it).lock())
-		{			
-			continue;
-		}
-#ifdef _DEBUG
-		auto name = first_col.lock()->GetOwner()->GetName();
-		auto flg = first_col.lock()->GetOwner()->GetState();
-		auto other_name = (*it).lock()->GetOwner()->GetName();
-		auto other_flg = (*it).lock()->GetOwner()->GetState();
-		// 自身のコリジョンｺﾝﾎﾟｰﾈﾝﾄを引き渡す
-		bool res = first_col.lock()->HitCheckPtr((*it).lock().get());
-		list.push_back((*it));
-#else
-		// 自身のコリジョンｺﾝﾎﾟｰﾈﾝﾄを引き渡す
-		first_col.lock()->HitCheckPtr((*it).lock().get());
-		list.push_back((*it));	// これ忘れると意味ない(やらかし1)
-#endif
-		
-	}
-	// 最初以外
-	for (int cnt = 1; cnt < static_cast<int>(list.size()); ++cnt) 
-	{
-		for (int otherCnt = 0; otherCnt < static_cast<int>(list.size()); ++otherCnt)
-		{
-			if (list[cnt].lock() == list[otherCnt].lock())
-				continue;
-#ifdef _DEBUG
-			auto name = list[cnt].lock()->GetOwner()->GetName();
-			auto flg = list[cnt].lock()->GetOwner()->GetState();
-			auto other_name = list[otherCnt].lock()->GetOwner()->GetName();
-			auto other_flg = list[otherCnt].lock()->GetOwner()->GetState();
-			// 自身のコリジョンｺﾝﾎﾟｰﾈﾝﾄを引き渡す
-			bool res = list[cnt].lock()->HitCheckPtr(list[otherCnt].lock().get());
-#else
-			// 自身のコリジョンｺﾝﾎﾟｰﾈﾝﾄを引き渡す
-			list[cnt].lock()->HitCheckPtr(list[otherCnt].lock().get());
-#endif // _DEBUG
-		}
-	}
-
-	// 離れたオブジェクトを確認
-	// 配列からの除外
-	for (int cnt = 0; cnt < static_cast<int>(m_pCollisionComponent.size()); ++cnt)
-	{
-		if (!m_pCollisionComponent[cnt].lock()->IsActive())
-			continue;
-		if (!m_pCollisionComponent[cnt].lock())
-		{	// 破棄(最後尾を代入)
-			m_pCollisionComponent[cnt] = m_pCollisionComponent.back();
-			m_pCollisionComponent.pop_back();
-			--cnt;	// 仕切り直し
-			continue;
-		}
-		m_pCollisionComponent[cnt].lock()->ExitTell();
-	}
-
-	return;
-#endif // 0
-
-#pragma region OLD
-	for (auto & col : m_pCollisionComponent)
-	{
-		// 判定状態か確認
-		if (!col.lock())
-			continue;
-		// 判定状態か確認
-		if (!col.lock()->GetOwner()->IsActive())
-			continue;
-
-		for (auto & other : m_pCollisionComponent)
-		{
-			// 同一のオブジェクトは判定しない
-			// 破棄されていないか確認
-			if (col.lock() == other.lock() || !other.lock()->GetOwner()->IsActive() || !other.lock())
-			{
-				continue;
-			}
-#ifdef _DEBUG
-			auto name = col.lock()->GetOwner()->GetName();
-			auto flg = col.lock()->GetOwner()->GetState();
-			auto other_name = other.lock()->GetOwner()->GetName();
-			auto other_flg = other.lock()->GetOwner()->GetState();
-			// 自身のコリジョンｺﾝﾎﾟｰﾈﾝﾄを引き渡す
-			bool res = col.lock()->HitCheckPtr(other.lock().get());
-#else
-			// 自身のコリジョンｺﾝﾎﾟｰﾈﾝﾄを引き渡す
-			col.lock()->HitCheckPtr(other.lock().get());
-#endif // _DEBUG
-		}// other
-	}// this
-
-	// 離れたオブジェクトを確認
-	// 配列からの除外
-	for (int cnt = 0; cnt < static_cast<int>(m_pCollisionComponent.size()); ++cnt)
-	{	
-		if (!m_pCollisionComponent[cnt].lock()->IsActive())
-			continue;
-		if (!m_pCollisionComponent[cnt].lock())
-		{	// 破棄(最後尾を代入)
-			m_pCollisionComponent[cnt] = m_pCollisionComponent.back();
-			m_pCollisionComponent.pop_back();
-			--cnt;	// 仕切り直し
-			continue;
-		}
-		m_pCollisionComponent[cnt].lock()->ExitTell();
-	}
-	// 配列を空に
-	//m_pCollisionComponent.clear();
-#pragma endregion
-}
 // オブジェクトの追加
 bool CGameObjectManager::ObjectListUpdate()
 {
@@ -411,6 +270,8 @@ std::shared_ptr<CGameObject> CGameObjectManager::CreateGameObject(CGameObject* p
 	else
 	{
 		spObj = std::make_shared<CGameObject>();
+		// 初期名
+		spObj->SetName(std::string("GameObj_" + std::to_string(static_cast<int>(m_objMgr.size() + m_addObjList.size()) + 1)));
 	}
 	
 	// 自分の所属シーンを教える
@@ -421,10 +282,6 @@ std::shared_ptr<CGameObject> CGameObjectManager::CreateGameObject(CGameObject* p
 
 	TagMove("Default", spObj);
 
-	// 初期名
-	if(spObj->GetName().empty())
-		spObj->SetName(std::string("GameObj_" + std::to_string(static_cast<int>(m_objMgr.size() + m_addObjList.size()) + 1)));
-	
 	spObj.get()->Awake();	// 実質OnCreateな気がする
 	AddGameObject(spObj);	// 追加待ちリストに追加
 

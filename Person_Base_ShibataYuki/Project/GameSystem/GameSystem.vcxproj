@@ -52,9 +52,11 @@
     <ClInclude Include="..\..\Library\GameSystem\GameObject\layer.h" />
     <ClInclude Include="..\..\Library\GameSystem\GameObject\tag.h" />
     <ClInclude Include="..\..\Library\GameSystem\GameObject\UIGameObject.h" />
-    <ClInclude Include="..\..\Library\GameSystem\Manager\DrawManager.h" />
+    <ClInclude Include="..\..\Library\GameSystem\Manager\collisionSystem.h" />
+    <ClInclude Include="..\..\Library\GameSystem\Manager\drawSystem.h" />
     <ClInclude Include="..\..\Library\GameSystem\Manager\gameObjectManager.h" />
     <ClInclude Include="..\..\Library\GameSystem\Manager\instantResourceManager.h" />
+    <ClInclude Include="..\..\Library\GameSystem\Manager\mapSystemBase.h" />
     <ClInclude Include="..\..\Library\GameSystem\Manager\sceneManager.h" />
     <ClInclude Include="..\..\Library\GameSystem\propertyCereal.h" />
     <ClInclude Include="..\..\Library\GameSystem\Scene\buildScene.h" />
@@ -98,7 +100,8 @@
     </ClCompile>
     <ClCompile Include="..\..\Library\GameSystem\GameObject\gameObject.cpp" />
     <ClCompile Include="..\..\Library\GameSystem\GameObject\tag.cpp" />
-    <ClCompile Include="..\..\Library\GameSystem\Manager\DrawManager.cpp" />
+    <ClCompile Include="..\..\Library\GameSystem\Manager\collisionSystem.cpp" />
+    <ClCompile Include="..\..\Library\GameSystem\Manager\drawSystem.cpp" />
     <ClCompile Include="..\..\Library\GameSystem\Manager\gameObjectManager.cpp" />
     <ClCompile Include="..\..\Library\GameSystem\Manager\instantResourceManager.cpp" />
     <ClCompile Include="..\..\Library\GameSystem\Manager\sceneManager.cpp" />
@@ -184,7 +187,7 @@
       <WarningLevel>Level3</WarningLevel>
       <Optimization>Disabled</Optimization>
       <SDLCheck>false</SDLCheck>
-      <PreprocessorDefinitions>_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>BUILD_MODE;_DEBUG;_CONSOLE;%(PreprocessorDefinitions);_BUILD_MODE</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
       <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
@@ -243,7 +246,7 @@
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <SDLCheck>false</SDLCheck>
-      <PreprocessorDefinitions>NDEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>NDEBUG;_CONSOLE;%(PreprocessorDefinitions);_BUILD_MODE</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
       <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
       <AdditionalIncludeDirectories>$(SolutionDir)..\..\Assimp\include;$(SolutionDir)..\..\Assimp;$(SolutionDir)..\..\DirectXTex;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
