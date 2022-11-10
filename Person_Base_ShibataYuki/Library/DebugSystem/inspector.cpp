@@ -163,10 +163,10 @@ void CInspector::DebugObject()
 	// レイヤー
 	layer = *m_spViewObj.lock()->GetLayerPtr()->GetLayer();
 	ImGui::InputInt("layer", &layer);
-	if (layer >= 10)
+	/*if (layer >= 10)
 	{
 		layer = 10;
-	}
+	}*/
 	m_spViewObj.lock()->GetLayerPtr()->SetLayer(layer);
 
 	// ｺﾝﾎﾟｰﾈﾝﾄ
@@ -197,17 +197,17 @@ void CInspector::DebugObject()
 		{
 			std::string name = com->GetName();
 			
-			ImGui::Begin(name.substr(6).c_str(), nullptr, ImGuiWindowFlags_::ImGuiWindowFlags_MenuBar);
+			//ImGui::Begin(name.substr(6).c_str(), nullptr, ImGuiWindowFlags_::ImGuiWindowFlags_MenuBar);
 
 			// ｺﾝﾎﾟｰﾈﾝﾄのデバッグ表示
 			com->ImGuiDebug();
 
-			if (ImGui::Button("Delete"))
+			if (ImGui::Button(u8"Delete"))
 			{
 				m_spViewObj.lock()->RemoveComponent(com);
 			}
 
-			ImGui::End();
+			//ImGui::End();
 			if (m_isDeleted) break;;
 		}
 		cnt++;
@@ -220,7 +220,7 @@ void CInspector::AddComponentWindow()
 	bool batsu = true;
 	ImGui::SetNextWindowPos(ImVec2(1000, 20), ImGuiCond_Once);
 	ImGui::SetNextWindowSize(ImVec2(400, 300), ImGuiCond_Once);
-	ImGui::Begin("AddComponent", &batsu, ImGuiWindowFlags_::ImGuiWindowFlags_MenuBar);
+	ImGui::Begin(u8"AddComponent", &batsu, ImGuiWindowFlags_::ImGuiWindowFlags_MenuBar);
 	std::vector<std::string> componentName = CComponentFactory::GetNameList();
 	
 	// オブジェクトにコンポーネントを追加

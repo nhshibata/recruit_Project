@@ -130,7 +130,7 @@ void CSpriteAnimation::ImGuiDebug()
 	ImGui::InputFloat("aaa", &region_sz);
 	ImVec2 uv = GetUV(animaNo).Convert<ImVec2>();
 	ImVec2 uv0 = ImVec2((uv.x) / m_nSplitX, (uv.y) / m_nSplitY);
-	ImVec2 uv1 = ImVec2(uv.x, uv.y);
+	ImVec2 uv1 = ImVec2(uv.x + texSize.x, uv.y + texSize.y);
 	ImGui::Text("da%f%f", uv1.x, uv1.y);
 	ImGui::Image(
 		(void*)GetImage().lock()->GetSRV(),	// ‰æ‘œ

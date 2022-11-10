@@ -30,13 +30,13 @@ void CMyGizmo::EditTransform(const CCamera& camera, CTransform* editTransform)
 		m_CurrentGizmoOperation = ImGuizmo::SCALE;
 
 	// èÛë‘ïœçX
-	if (ImGui::RadioButton("Translate", m_CurrentGizmoOperation == ImGuizmo::TRANSLATE))
+	if (ImGui::RadioButton(u8"Translate", m_CurrentGizmoOperation == ImGuizmo::TRANSLATE))
 		m_CurrentGizmoOperation = ImGuizmo::TRANSLATE;
 	ImGui::SameLine();
-	if (ImGui::RadioButton("Rotate", m_CurrentGizmoOperation == ImGuizmo::ROTATE))
+	if (ImGui::RadioButton(u8"Rotate", m_CurrentGizmoOperation == ImGuizmo::ROTATE))
 		m_CurrentGizmoOperation = ImGuizmo::ROTATE;
 	ImGui::SameLine();
-	if (ImGui::RadioButton("Scale", m_CurrentGizmoOperation == ImGuizmo::SCALE))
+	if (ImGui::RadioButton(u8"Scale", m_CurrentGizmoOperation == ImGuizmo::SCALE))
 	{
 		m_CurrentGizmoOperation = ImGuizmo::SCALE;
 		m_CurrentGizmoMode = ImGuizmo::LOCAL;

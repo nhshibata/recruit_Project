@@ -89,14 +89,14 @@ void CCamera::Awake()
 	GetOwner()->SetLayer(CLayer::E_Layer::SKY);
 	//m_pSky.lock()->SetModel(FORDER_DIR(Data/model/SkyDome/sky.fbx));
 	m_pSky.lock()->SetModel(FORDER_DIR(Data/model/SkyDome/sky2.fbx));
-	m_pSky.lock()->SetBSRadius(1000);
+	m_pSky.lock()->SetBSRadius(1);
 	Transform()->SetScale({ 10, 10, 10 });
 
 	GetOwner()->GetTagPtr()->CreateTag(CDefaultTagChar::CAMERA);
 	GetOwner()->SetTag(CDefaultTagChar::CAMERA);
 
-	XMStoreFloat4x4(&m_mtxView, XMMatrixIdentity());
-	XMStoreFloat4x4(&m_mtxProj, XMMatrixIdentity());
+	DirectX::XMStoreFloat4x4(&m_mtxView, XMMatrixIdentity());
+	DirectX::XMStoreFloat4x4(&m_mtxProj, XMMatrixIdentity());
 }
 void CCamera::Init()
 {
@@ -135,6 +135,8 @@ void CCamera::Update()
 
 	// マトリックス更新
 	UpdateMatrix();
+
+	//Transform()->Update();
 
 	// 視錘台
 	UpdateFrustum();
@@ -212,6 +214,7 @@ DirectX::XMFLOAT4X4& CCamera::CalcWorldMatrix()
 }
 void CCamera::UpdateMatrix()
 {
+	
 //	if (m_vPos.x != m_vTarget.x && m_vPos.y != m_vTarget.y && m_vPos.z != m_vTarget.z)
 	{
 		XMStoreFloat4x4(&m_mtxView, XMMatrixLookAtLH(
@@ -230,6 +233,9 @@ void CCamera::InitFrustum()
 {
 	// 視錘台準備
 	float fTan = tanf(XMConvertToRadians(m_fFovY * 0.5f));
+	// 上下左右前後
+#if 1
+
 	m_frus[0] = { 0.0f, -1.0f, fTan, 0.0f };
 	m_frus[1] = { 0.0f, 1.0f, fTan, 0.0f };
 	fTan *= m_fAspectRatio;	// アスペクト比を掛ける
@@ -237,11 +243,21 @@ void CCamera::InitFrustum()
 
 	m_frus[3] = { -1.0f, 0.0f, fTan, 0.0f };
 
-	m_frus[4] = { 0.0f,0.0f,1.0f,-m_fNearZ };
+	m_frus[4] = { 0.0f, 0.0f,1.0f, -m_fNearZ };
 
-	m_frus[5] = { 0.0f,0.0f,-1.0f,m_fFarZ };
+	m_frus[5] = { 0.0f, 0.0f,-1.0f, m_fFarZ };
+#else
+	// 前後左右上下
+	float fTan2 = fTan * m_fAspectRatio;	// アスペクト比を掛ける
+	m_frus[0] = { 0.0f, 0.0f, 1.0f, -m_fNearZ };
+	m_frus[1] = { 0.0f, 0.0f,-1.0f, m_fFarZ };
+	m_frus[2] = { 1.0f, 0.0f, fTan2, 0.0f };
+	m_frus[3] = { -1.0f, 0.0f, fTan2, 0.0f };
+	m_frus[4] = { 0.0f, -1.0f, fTan, 0.0f };
+	m_frus[5] = { 0.0f, 1.0f, fTan, 0.0f };
+#endif // 0
 
-	for (int cnt = 0; cnt < 4; ++cnt)
+	for (int cnt = 0; cnt < 6; ++cnt)
 	{
 		XMStoreFloat4(&m_frus[cnt],
 			XMPlaneNormalize(XMLoadFloat4(&m_frus[cnt])));
@@ -254,9 +270,9 @@ void CCamera::InitFrustum()
 }
 void CCamera::UpdateFrustum()
 {
-	//m_mtxWorld = Transform()->GetWorldMatrix();
+	auto mtx = this->CalcWorldMatrix();	//Transform()->GetWorldMatrix();
 	// ｶﾒﾗの移動に伴い、視錘台をワールド変換
-	XMMATRIX mW = XMLoadFloat4x4(&m_mtxWorld);
+	XMMATRIX mW = XMLoadFloat4x4(&mtx);
 	// 平面をワールド空間に配置
 	mW = XMMatrixInverse(nullptr, mW);
 	mW = XMMatrixTranspose(mW);
@@ -293,8 +309,8 @@ void CCamera::Set(std::weak_ptr<CCamera> pCamera)
 
 	m_pCamera = (pCamera);
 }
-#ifdef BUILD_MODE
 
+#ifdef BUILD_MODE
 
 void CCamera::ImGuiDebug()
 {

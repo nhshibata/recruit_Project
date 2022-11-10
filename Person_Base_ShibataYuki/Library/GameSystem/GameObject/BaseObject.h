@@ -47,7 +47,7 @@ namespace MySpace
 			CBaseObject() : m_objName(typeid(*this).name()) {};
 			CBaseObject(const CBaseObject & obj)  
 			{
-				this->m_objName = m_objName;
+				this->m_objName = obj.m_objName;
 			};
 			~CBaseObject() {};
 

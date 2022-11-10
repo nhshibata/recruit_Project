@@ -110,9 +110,7 @@ void ImGuiManager::Update()
 	// デバッグ実行
 	m_pInspector->Update();
 	m_pHierarchy->Update();
-	if(auto selectObj = m_pInspector->GetSelectObject().lock(); selectObj)
-		m_pGizmo->EditTransform(*CCamera::GetMain(), selectObj->GetTransform());
-
+	
 	// 現在シーン取得
 	SceneManager::CScene* scene = CSceneManager::Get().GetActiveScene();
 	
@@ -121,6 +119,9 @@ void ImGuiManager::Update()
 	ImGui::SetNextWindowPos(ImVec2(20, 300), ImGuiCond_Once);
 	ImGui::SetNextWindowSize(ImVec2(300, 300), ImGuiCond_Once);
 	ImGui::Begin(u8"ステータス", &m_bEditFlg, ImGuiWindowFlags_::ImGuiWindowFlags_MenuBar);
+
+	if (auto selectObj = m_pInspector->GetSelectObject().lock(); selectObj)
+		m_pGizmo->EditTransform(*CCamera::GetMain(), selectObj->GetTransform());
 
 	CSceneManager::Get().ImguiDebug();
 	// 変更されている可能性
