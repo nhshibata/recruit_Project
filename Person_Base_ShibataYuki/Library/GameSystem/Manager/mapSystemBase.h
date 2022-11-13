@@ -12,7 +12,7 @@
 //--- インクルード部
 #include <CoreSystem/Util/stl.h>
 
-#pragma region _forward_declaration
+#pragma region ForwardDeclaration
 namespace MySpace
 {
 	namespace Game

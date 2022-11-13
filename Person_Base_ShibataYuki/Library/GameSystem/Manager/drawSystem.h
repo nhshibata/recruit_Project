@@ -2,7 +2,7 @@
 // [drawSystem.h]
 // 派生クラス
 //---------------------------
-// 2022/06/07 作成 ｸﾗｽ名変更するかも
+// 作成:2022/06/07 ｸﾗｽ名変更するかも
 // 更新:2022/11/09 クラス名変更(DrawManager) -> (drawSystem)
 // TODO: 2D用のコンポーネントを受け取る仕様の追加
 // TODO: レイヤー分け。通常のモデルとの関係。背景とUI、前景、を分けて描画
@@ -35,14 +35,14 @@ namespace MySpace
 		private:
 			// エイリアス
 			using RenderWeak = std::vector<std::weak_ptr<CRenderer>>;
-			//using RenderSort = std::vector<STDrawSet>;
+			
 		private:
 			//--- メンバ変数
 			bool m_bIsSortNecessary = false;
-
-			RenderWeak m_pDrawSortList;
+			RenderWeak m_pDrawSortList;			// 管理しているmapをソートした結果を入れる変数
 
 #if BUILD_MODE
+			// 確認用変数
 			int m_nSkipCnt;
 			int m_nDrawCnt;
 #endif // _DEBUG
@@ -55,8 +55,8 @@ namespace MySpace
 			void Update();
 
 			//--- 描画するコンポーネント
-			//
-			int RegistToSystem(std::weak_ptr<CRenderer> render)
+			// 登録 override
+			_NODISCARD int RegistToSystem(std::weak_ptr<CRenderer> render)
 			{
 				int ret = CMapSystemBase::RegistToSystem(render);
 				m_pDrawSortList.push_back(render);
@@ -79,7 +79,7 @@ namespace MySpace
 				return release;
 			}
 
-			std::vector<std::weak_ptr<CRenderer>> GetList()
+			_NODISCARD inline std::vector<std::weak_ptr<CRenderer>> GetList()
 			{
 				return m_pDrawSortList;
 			}

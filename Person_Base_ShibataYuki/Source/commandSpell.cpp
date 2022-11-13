@@ -24,7 +24,7 @@ void CCommandSpell::Awake()
 void CCommandSpell::Init()
 {
 	// Žæ“¾
-	m_pStock = GetComponent<CCommandStock>();
+	m_pStock = this->GetComponent<CCommandStock>();
 	if(!m_pStock)
 		m_pStock = AddComponent<CCommandStock>(0);
 }

@@ -39,6 +39,7 @@ namespace MySpace
 				);
 			}
 		private:
+			//--- ƒƒ“ƒo•Ï”
 			CEffekseer* m_pEffekseer;
 			Effekseer::Handle m_nHandle;
 			std::u16string m_EffectName;
@@ -46,8 +47,16 @@ namespace MySpace
 			float m_fAngle;
 
 		public:
+			//--- ƒƒ“ƒoŠÖ”
 			CEffekseerRenderer() {};
 			CEffekseerRenderer(std::shared_ptr<CGameObject> owner);
+			CEffekseerRenderer(const CEffekseerRenderer & copy) {
+				this->m_pEffekseer = copy.m_pEffekseer;
+				this->m_nHandle = copy.m_nHandle;
+				this->m_EffectName = copy.m_EffectName;
+				this->m_bLoop = copy.m_bLoop;
+				this->m_fAngle = copy.m_fAngle;
+			};
 			~CEffekseerRenderer();
 
 			virtual void Awake();
@@ -57,13 +66,14 @@ namespace MySpace
 
 			void SetImageName(std::u16string name);
 			inline void SetLoop(bool flg) { m_bLoop = flg; }
+
 #ifdef BUILD_MODE
 		private:
 			bool m_bRead = false;
 		public:
 			virtual void ImGuiDebug();
-
 #endif // BUILD_MODE
+
 		};
 	}
 }

@@ -10,6 +10,7 @@
 
 //--- インクルード部
 #include <functional>
+#include <GameSystem/GameObject/gameObject.h>
 #include <GameSystem/Component/component.h>
 #include <GameSystem/Component/Renderer/polygonRenderer.h>
 

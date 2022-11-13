@@ -8,6 +8,7 @@
 #ifndef __EVENT_MESSAGE_H__
 #define __EVENT_MESSAGE_H__
 
+//--- インクルード部
 #include <CoreSystem/Singleton.h>
 #include <unordered_map>
 #include <string>

@@ -6,6 +6,7 @@
 
 //--- インクルード部
 #include <GameSystem/Component/Camera/debugCamera.h>
+#include <GameSystem/GameObject/gameObject.h>
 #include <Application/screen.h>
 #include <CoreSystem/Input/Keyboard.h>
 //#include <CoreSystem/Input/input.h>
@@ -190,18 +191,18 @@ void CDebugCamera::ResumeCamera(bool bSwitch)
 		if (this != CCamera::GetMain())
 		{
 			work = CCamera::GetMain(0);
-			CCamera::Set(this->BaseToDerived<CCamera>());
+			SetMain(this->BaseToDerived<CCamera>());
 		}
 	}
 	else
 	{	// メインカメラを戻す
 		if (work.lock())
-			CCamera::Set(work);
+			SetMain(work);
 		else
 		{
 			if (auto obj = CGameObject::FindGameObjectWithTag(CDefaultTagChar::CAMERA); obj.lock())
 			{
-				CCamera::Set(obj.lock()->GetComponent<CCamera>());
+				CCamera::SetMain(obj.lock()->GetComponent<CCamera>());
 			}
 		}
 	}

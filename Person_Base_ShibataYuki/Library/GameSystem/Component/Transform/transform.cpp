@@ -6,6 +6,8 @@
 //--- インクルード部
 #include <math.h>
 #include <GameSystem/Component/Transform/transform.h>
+#include <GameSystem/GameObject/gameObject.h>
+
 #include <DebugSystem/imGuiPackage.h>
 
 using namespace MySpace::Game;
@@ -21,32 +23,29 @@ namespace
 CTransform::CTransform()
 	:m_pChilds(0),m_vPos(0,0,20), m_vRot(0,0,0), m_vScale(1,1,1),m_vDestRot(0, 0, 0)
 {
+	m_pChilds = std::vector<std::weak_ptr<CTransform>>();
 	XMStoreFloat4x4(&m_mLocalMtx, XMMatrixIdentity());
 	XMStoreFloat4x4(&m_mWorldMtx, XMMatrixIdentity());
 }
 CTransform::CTransform(std::shared_ptr<CGameObject> owner)
 	:CComponent(owner),m_pChilds(0),m_vPos(0,0,0), m_vRot(0,0,0), m_vScale(1,1,1), m_vDestRot(0, 0, 0)
 {
+	m_pChilds = std::vector<std::weak_ptr<CTransform>>();
 	XMStoreFloat4x4(&m_mLocalMtx, XMMatrixIdentity());
 	XMStoreFloat4x4(&m_mWorldMtx, XMMatrixIdentity());
-}
-CTransform::CTransform(std::shared_ptr<CGameObject> owner, Vector3 pos, Vector3 rot, Vector3 size)
-	: CComponent(owner), m_pChilds(0), m_vPos(pos), m_vRot(rot), m_vScale(size), m_vDestRot(0, 0, 0)
-{
-	
 }
 CTransform::~CTransform()
 {
 }
 void CTransform::Uninit()
 {
-	std::vector<std::weak_ptr<CGameObject>>::iterator it = m_pChilds.begin();
+	std::vector<std::weak_ptr<CTransform>>::iterator it = m_pChilds.begin();
 	for (; it != m_pChilds.end(); ++it)
 	{
 		auto obj = (*it).lock();
 		if (obj) 
 		{
-			obj->SetState(CGameObject::E_ObjectState::DESTROY);
+			obj->GetOwner()->SetState(CGameObject::E_ObjectState::DESTROY);
 		}
 	}
 }
@@ -61,7 +60,7 @@ void CTransform::Update()
 		m_vOldPos = m_vPos;
 	}
 
-	SetWorldMatrix();
+	UpdateWorldMatrix();
 }
 Quaternion CTransform::GetWorldQuaternion()
 {
@@ -71,7 +70,7 @@ Quaternion CTransform::GetLocalQuaternion()
 {
 	return m_Rot;
 }
-void CTransform::SetWorldMatrix()
+void CTransform::UpdateWorldMatrix()
 {
 	XMMATRIX mtx, scl, rot, translate;
 	mtx = XMMatrixIdentity();
@@ -90,20 +89,21 @@ void CTransform::SetWorldMatrix()
 	mtx = XMMatrixMultiply(mtx, translate);
 
 	// ワールドマトリックスを反映
-	XMStoreFloat4x4(&m_mWorldMtx, mtx);
+	// 親が居る場合、親が更新する
+	if (auto parent = GetParent(); !parent.lock())
+		XMStoreFloat4x4(&m_mWorldMtx, mtx);
 	XMStoreFloat4x4(&m_mLocalMtx, mtx);
 
-	// 親が居たら
-	if (auto parent = GetParent(); parent.lock())
+	// 子が居たら
+	if (GetChildCount() == 0)
+		return;
+
+	// 子の更新
+	auto world = m_mWorldMtx;
+	CGameObject::PtrWeak child;
+	for (auto child : GetChilds())
 	{
-		auto world = m_mWorldMtx;
-		while (parent.lock())
-		{
-			auto otherWorld = parent.lock()->GetTransform()->GetWorldMatrix();
-			world = world * otherWorld;
-			parent = parent.lock()->GetTransform()->GetParent();
-		}
-		m_mWorldMtx = world;
+		UpdateChildMatrix(child.lock().get(), world);
 	}
 }
 void CTransform::SetWorldMatrix(Vector3 trans, Vector3 rotate, Vector3 scale)
@@ -112,7 +112,7 @@ void CTransform::SetWorldMatrix(Vector3 trans, Vector3 rotate, Vector3 scale)
 	m_vRot = rotate;
 	m_vScale = scale;
 
-	SetWorldMatrix();
+	//UpdateWorldMatrix();
 }
 void CTransform::SetWorldQuaternion(const Quaternion &  rotation)
 {
@@ -122,27 +122,76 @@ void CTransform::SetLocalQuaternion(const Quaternion &  rotation)
 {
 
 }
-
-std::weak_ptr<CGameObject> CTransform::GetChild(int no)
+Matrix4x4 CTransform::UpdateChildMatrix(CTransform* child, Matrix4x4 mtx)
 {
-	if (no >= m_pChilds.size())return std::make_shared<CGameObject>(); 
+	child->UpdateWorldMatrix();
+
+	Matrix4x4 childMtx;
+	XMStoreFloat4x4(&childMtx, XMMatrixMultiply(
+		XMLoadFloat4x4(&child->GetLocalMatrix()),
+		XMLoadFloat4x4(&mtx)
+	));
+	child->SetWorldMatrix(childMtx);
+
+	// 孫の確認
+	int size = child->GetChildCount();
+	std::weak_ptr<CTransform> childT;
+
+	for (int cnt = 0; cnt < size; cnt++)
+	{
+		childT = child->GetChild(cnt);
+		if (childT.lock())
+		{	// 再帰
+			UpdateChildMatrix(childT.lock().get(), childMtx);
+		}
+	}
+	return childMtx;
+}
+void CTransform::AddChild(std::weak_ptr<CTransform> child)
+{
+	// ﾎﾟｲﾝﾀ
+	if (child.lock() == GetPtr().lock())
+		return;
+	// 格納済みか
+	for (const auto & com : m_pChilds)
+	{
+		if (child.lock() == com.lock())
+			break;
+	}
+	// 親子解除
+	if (auto parent = child.lock()->GetParent(); parent.lock())
+	{
+		parent.lock()->RemoveChild(this->BaseToDerived<CTransform>());
+	}
+
+	m_pChilds.push_back(child);
+	child.lock()->SetParent(this->BaseToDerived<CTransform>());
+	Matrix4x4 childMtx;
+	XMStoreFloat4x4(&childMtx, XMMatrixMultiply(
+		XMLoadFloat4x4(&child.lock()->GetWorldMatrix()),
+		XMMatrixInverse(nullptr, XMLoadFloat4x4(&m_mWorldMtx))
+	));
+
+	child.lock()->SetLocalMatrix(childMtx);
+}
+std::weak_ptr<CTransform> CTransform::GetChild(int no)
+{
+	if (no >= m_pChilds.size())
+		return std::shared_ptr<CTransform>();
 	return m_pChilds[no].lock();
 }
-#ifdef BUILD_MODE
 
+#ifdef BUILD_MODE
 
 void CTransform::ImGuiDebug()
 {
-	//if (ImGui::CollapsingHeader("open"))
-	{
-		// 3次元座標
-		//ImGui::InputFloat3(u8"プレイヤー座標", (float*)&this->GetPos());
-		ImGui::DragFloat3(u8"座標", (float*)m_vPos);
-		ImGui::Text(u8"過去座標 %f %f %f", m_vOldPos.x, m_vOldPos.y, m_vOldPos.z);
-		ImGui::DragFloat3(u8"角度", (float*)m_vRot);
-		ImGui::DragFloat3(u8"サイズ", (float*)m_vScale);
+	// 3次元座標
+	//ImGui::InputFloat3(u8"プレイヤー座標", (float*)&this->GetPos());
+	ImGui::DragFloat3(u8"座標", (float*)m_vPos);
+	ImGui::Text(u8"過去座標 %f %f %f", m_vOldPos.x, m_vOldPos.y, m_vOldPos.z);
+	ImGui::DragFloat3(u8"角度", (float*)m_vRot);
+	ImGui::DragFloat3(u8"サイズ", (float*)m_vScale);
 	
-		SetWorldMatrix();
-	}
+	//UpdateWorldMatrix();
 }
 #endif // BUILD_MODE

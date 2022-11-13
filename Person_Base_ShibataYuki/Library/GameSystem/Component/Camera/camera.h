@@ -13,7 +13,7 @@
 #include <GameSystem/Component/Transform/transform.h>
 #include <GraphicsSystem/DirectX/DXDevice.h>
 
-#pragma region _forward_declaration
+#pragma region ForwardDeclaration
 namespace MySpace
 {
 	namespace Game
@@ -41,7 +41,7 @@ namespace MySpace
 					CEREAL_NVP(m_vTarget), CEREAL_NVP(m_vUp), CEREAL_NVP(m_vAngle), CEREAL_NVP(m_fLengthInterval),
 					CEREAL_NVP(m_fAspectRatio), CEREAL_NVP(m_fFovY), CEREAL_NVP(m_fNearZ), CEREAL_NVP(m_fFarZ),
 					CEREAL_NVP(m_mtxWorld), CEREAL_NVP(m_mtxView), CEREAL_NVP(m_mtxProj), 
-					CEREAL_NVP(m_pSky)/*CEREAL_NVP(VIEW_ASPECT),, CEREAL_NVP(m_pCamera)*/
+					CEREAL_NVP(m_pSky)/* CEREAL_NVP(m_pCamera)*/
 				);
 			}
 			template<class Archive>
@@ -51,10 +51,11 @@ namespace MySpace
 					CEREAL_NVP(m_vTarget), CEREAL_NVP(m_vUp), CEREAL_NVP(m_vAngle), CEREAL_NVP(m_fLengthInterval),
 					CEREAL_NVP(m_fAspectRatio), CEREAL_NVP(m_fFovY), CEREAL_NVP(m_fNearZ), CEREAL_NVP(m_fFarZ),
 					CEREAL_NVP(m_mtxWorld), CEREAL_NVP(m_mtxView), CEREAL_NVP(m_mtxProj), 
-					CEREAL_NVP(m_pSky)/*CEREAL_NVP(VIEW_ASPECT), CEREAL_NVP(m_pCamera)*/
+					CEREAL_NVP(m_pSky)/*CEREAL_NVP(m_pCamera)*/
 				);
 			}
 #pragma endregion
+
 		public:
 			enum class EFrustumResult
 			{
@@ -63,6 +64,8 @@ namespace MySpace
 				PARTINSIDE,
 				MAX
 			};
+			static const int MAX_FRUS = 6;	// 視覚錘
+
 		protected:
 			DirectX::XMFLOAT3 m_vPos;	// 視点
 			Vector3 m_vTarget;			// 注視点
@@ -70,7 +73,7 @@ namespace MySpace
 			Vector3 m_vAngle;			// カメラの角度
 
 			float m_fLengthInterval;	// カメラの視点と注視点の距離
-			static inline float VIEW_ASPECT;
+
 		private:
 			float m_fAspectRatio;		// 縦横比
 			float m_fFovY;				// 視野角(Degree)
@@ -81,20 +84,18 @@ namespace MySpace
 			Matrix4x4 m_mtxView;		// ビュー マトリックス
 			Matrix4x4 m_mtxProj;		// プロジェクション マトリックス
 
-			std::weak_ptr<CModelRenderer> m_pSky;	// スカイ ドーム
+			std::weak_ptr<CModelRenderer> m_pSky;	// スカイドームptr
 
-			static const int MAX_FRUS = 6;
 			XMFLOAT4 m_frus[MAX_FRUS];
 			XMFLOAT4 m_frusw[MAX_FRUS];
 
-			static inline std::weak_ptr<CCamera> m_pCamera;
+			static inline std::weak_ptr<CCamera> m_pMainCamera;	// メインカメラ
 
 		private:
 			//--- ﾒﾝﾊﾞ関数
 			void InitFrustum();
 			void UpdateFrustum();
-		protected:
-			void SetMain(std::weak_ptr<CCamera> ptr) { m_pCamera = ptr; }
+
 		public:
 			CCamera();
 			CCamera(std::shared_ptr<CGameObject> owner);
@@ -106,7 +107,7 @@ namespace MySpace
 			void Update();					// 更新
 			//void LateUpdate();			// 遅い更新
 
-			void Clear();
+			void DrawSkyDome();
 			void UpdateMatrix();
 			DirectX::XMFLOAT4X4& CalcWorldMatrix();
 
@@ -128,8 +129,6 @@ namespace MySpace
 			inline DirectX::XMFLOAT4X4& GetViewMatrix() { return m_mtxView; }
 			inline DirectX::XMFLOAT4X4& GetProjMatrix() { return m_mtxProj; }
 			inline DirectX::XMFLOAT3& GetAngle() { return m_vAngle; }
-			//void SetSky(CAssimpModel* pSky) { m_pSky = pSky; }
-			//CAssimpModel* GetSky() { return m_pSky; }
 			inline float GetAspect() { return m_fAspectRatio; }
 			inline float GetFarZ() { return m_fFarZ; }
 			inline float GetFOV() { return m_fFovY; }
@@ -143,7 +142,7 @@ namespace MySpace
 			EFrustumResult CollisionViewFrustum(XMFLOAT3* pCenter, float fRadius);
 			
 			// スクリーン座標を3D座標へ変換
-			Vector3 ConvertScreenToWorld(Vector2 pos)
+			inline Vector3 ConvertScreenToWorld(Vector2 pos)
 			{
 				Vector3 ret;
 				D3D11_VIEWPORT& vp = *MySpace::Graphics::CDXDevice::Get().GetViewPort();
@@ -157,14 +156,16 @@ namespace MySpace
 					vp.MaxDepth,
 					XMLoadFloat4x4(&GetProjMatrix()), 
 					XMLoadFloat4x4(&GetViewMatrix()),
-					XMMatrixIdentity()));
+					XMMatrixIdentity()
+				));
 				return ret;
 			}
 
 			// セッター・ゲッター
-			static inline CCamera* GetMain() { return m_pCamera.lock().get(); };
-			static inline std::weak_ptr<CCamera> GetMain(int) { return m_pCamera.lock(); };
-			static void Set(std::weak_ptr<CCamera> camera);
+			inline static CCamera* GetMain() { return m_pMainCamera.lock().get(); };
+			inline static std::weak_ptr<CCamera> GetMain(int) { return m_pMainCamera.lock(); };
+
+			inline void SetMain(std::weak_ptr<CCamera> ptr) { m_pMainCamera = ptr; }
 
 #ifdef BUILD_MODE
 

@@ -17,7 +17,6 @@
 #include <gameCamera.h>
 
 // UI
-#include <titleUI.h>
 #include <gameUI.h>
 #include <resultUI.h>
 
@@ -79,7 +78,7 @@ void CGameSpellRhythm::FixedUpdate()
 	auto name = CCamera::GetMain()->GetName();
 	if (MySpace::Input::Keyboad::IsTrigger(VK_END) && m_pDebugCamera.lock())
 	{
-		CCamera::GetMain()->Set(m_pDebugCamera);
+		CCamera::GetMain()->SetMain(m_pDebugCamera);
 		m_pDebugCamera.lock()->SetActive(true);
 		if (auto com = m_pDebugCamera.lock()->GetComponent<CModelRenderer>(); com)
 			com->SetActive(true);
@@ -93,7 +92,7 @@ void CGameSpellRhythm::FixedUpdate()
 	}
 	if (MySpace::Input::Keyboad::IsTrigger(VK_HOME) && m_pGameCamera.lock())
 	{
-		CCamera::GetMain()->Set(m_pGameCamera);
+		CCamera::GetMain()->SetMain(m_pGameCamera);
 		m_pGameCamera.lock()->SetActive(true);
 		if (auto com = m_pGameCamera.lock()->GetComponent<CModelRenderer>(); com)
 			com->SetActive(true);
@@ -176,7 +175,7 @@ void* CGameSpellRhythm::CreateManager(CScene* prev, CScene* next)
 		m_pDebugCamera = obj->AddComponent<CDebugCamera>();
 
 		// ƒƒCƒ“¶Ò×Ý’è
-		CCamera::GetMain()->Set(m_pGameCamera);
+		CCamera::GetMain()->SetMain(m_pGameCamera);
 		m_pGameCamera.lock()->SetActive(true);
 		if (auto com = m_pGameCamera.lock()->GetComponent<CModelRenderer>(); com)
 			com->SetActive(true);
@@ -201,7 +200,7 @@ void* CGameSpellRhythm::CreateManager(CScene* prev, CScene* next)
 		m_pDebugCamera = obj->AddComponent<CDebugCamera>();
 
 		// ƒƒCƒ“¶Ò×Ý’è
-		CCamera::GetMain()->Set(m_pGameCamera);
+		CCamera::GetMain()->SetMain(m_pGameCamera);
 		m_pGameCamera.lock()->SetActive(true);
 		if (auto com = m_pGameCamera.lock()->GetComponent<CModelRenderer>(); com)
 			com->SetActive(true);
@@ -269,9 +268,9 @@ void CTitleSceneManager::Awake()
 {
 	GetOwner()->SetName("TitleManager");
 	auto obj = CGameObject::CreateObject().lock();
-	obj->AddComponent<CTitleUI>();
+	//obj->AddComponent<CTitleUI>();
 
-	obj = CGameObject::CreateObject().lock();
+	//obj = CGameObject::CreateObject().lock();
 	obj->AddComponent<CTextRenderer>();
 
 	obj = CGameObject::CreateObject().lock();

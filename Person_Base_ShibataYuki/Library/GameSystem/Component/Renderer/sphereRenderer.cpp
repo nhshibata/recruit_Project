@@ -3,11 +3,12 @@
 #include <GameSystem/Component/Transform/transform.h>
 #include <GameSystem/Manager/sceneManager.h>
 #include <GraphicsSystem/DirectX/DXDevice.h>
+#include <ImGui/imgui.h>
 
 using namespace MySpace::Game;
 
 CSphereRenderer::CSphereRenderer(std::shared_ptr<CGameObject> ptr)
-	:CMeshRenderer(ptr), m_fRadius(20),m_pBSphere(nullptr)
+	:CMeshRenderer(ptr), m_fRadius(50),m_pBSphere(nullptr)
 {
 	SetSphere(m_fRadius);
 }
@@ -16,7 +17,7 @@ CSphereRenderer::~CSphereRenderer()
 
 }
 void CSphereRenderer::Awake()
-{
+{	
 	if (!m_pBSphere)SetSphere(m_fRadius);
 }
 void CSphereRenderer::Init()
@@ -26,6 +27,7 @@ void CSphereRenderer::Init()
 void CSphereRenderer::Update()
 {
 	CMeshRenderer::Update();
+	
 }
 bool CSphereRenderer::Draw()
 {
@@ -47,12 +49,13 @@ bool CSphereRenderer::Draw()
 HRESULT CSphereRenderer::SetSphere(float radius)
 {
 	HRESULT hr = S_OK;
-
-	m_pBSphere = std::make_shared<CSphere>();
+	
+	if(!m_pBSphere)
+		m_pBSphere = std::make_shared<CSphere>();
 	m_fRadius = radius;
 	
 	// TODO: •ªŠ„”
-	hr = m_pBSphere->Init();
+	hr = m_pBSphere->Init(18, 8, m_fRadius);
 	if (FAILED(hr))
 	{
 		m_pBSphere->Fin();
@@ -64,3 +67,18 @@ void CSphereRenderer::SetMaterial(CMeshMaterial mat)
 {
 	m_pBSphere->SetMaterial(&mat);
 }
+
+#if BUILD_MODE
+
+void CSphereRenderer::ImGuiDebug()
+{
+	if(ImGui::Button(u8"SphereRenderer"))
+		m_fRadius = Transform()->GetScale().GetLargeValue();
+	if (ImGui::DragFloat("Radius", &m_fRadius))
+	{
+		SetSphere(m_fRadius);
+	}
+	CMeshRenderer::ImGuiDebug();
+}
+
+#endif // 0

@@ -48,6 +48,14 @@ namespace MySpace
 			inline void SetRadius(float value) { m_fRadius = value; }
 			HRESULT SetSphere(float radius);
 			virtual void SetMaterial(CMeshMaterial mat);
+			
+#if BUILD_MODE
+
+			void ImGuiDebug();
+
+#endif // 0
+
+
 		};
 	}
 }

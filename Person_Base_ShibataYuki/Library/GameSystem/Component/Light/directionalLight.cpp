@@ -13,7 +13,8 @@ using namespace MySpace::Game;
 using namespace MySpace::MyMath;
 
 //--- íËêîíËã`
-namespace{
+namespace
+{
 	const Vector3 LIGHT0_DIRECTION = Vector3(0.0f, -1.0f, 1.0f);
 	const Vector4 LIGHT0_DIFFUSE = Vector4(0.7f, 0.7f, 0.7f, 1.0f);
 	const Vector4 LIGHT0_AMBIENT = Vector4(0.4f, 0.4f, 0.4f, 1.0f);

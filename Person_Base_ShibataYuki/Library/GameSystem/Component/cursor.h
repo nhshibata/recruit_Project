@@ -35,12 +35,14 @@ namespace MySpace
 			}
 
 		private:
+			//--- メンバ変数
 			bool m_bInput;				// カーソルを移動しない時用
 			int m_nPoint;				// 
 			int m_nOldPoint;			// 
 			int m_nMax;					// 最大数
 
 			bool m_bAuthority;			// 操作権限
+
 		public:
 			//--- ﾒﾝﾊﾞ関数
 			CCursor();
@@ -51,12 +53,14 @@ namespace MySpace
 			void Update();
 
 			void InputSwitch() { m_bInput ^= true; };
+
 			//--- セッター・ゲッター
-			void SetMax(int value) { m_nMax = value; };
 			int GetPos() { return m_nPoint; };
 			int GetOldPos() { return m_nOldPoint; };
-			bool IsAuthority() { return m_bAuthority; }
+
+			void SetMax(int value) { m_nMax = value; };
 			void SetAuthority(bool flg) { m_bAuthority = flg; }
+			bool IsAuthority() { return m_bAuthority; }
 		};
 	}
 }

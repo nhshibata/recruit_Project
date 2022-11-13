@@ -6,6 +6,7 @@
 
 //--- インクルード部
 #include <GameSystem/Component/Renderer/textRenderer.h>
+#include <GameSystem/GameObject/gameObject.h>
 
 #include <GraphicsSystem/DirectX/DXDevice.h>
 #include <GraphicsSystem/Render/polygon.h>
@@ -15,7 +16,6 @@
 using namespace MySpace::System;
 using namespace MySpace::Game;
 using namespace MySpace::Graphics;
-
 		
 CTextRenderer::CTextRenderer(std::shared_ptr<CGameObject> owner)
 	:CRenderer(owner), m_fOffset(0), m_Font(L"ＭＳ Ｐ明朝"), m_bVerticalWrit(false)
@@ -28,16 +28,16 @@ CTextRenderer::~CTextRenderer()
 }
 void CTextRenderer::Awake()
 {
+	// 初期化文
 	GetOwner()->SetName("Text");
 	m_Text = L"Text";
 
 	GetOwner()->SetLayer(CLayer::E_Layer::UI);
 
 	// コンポーネントの取得
-	m_pRectTransform = GetOwner()->GetComponent<CRectTransform>();
-
 	// なければ追加
-	if (!m_pRectTransform.lock()) {
+	if(m_pRectTransform = GetOwner()->GetComponent<CRectTransform>(); !m_pRectTransform.lock()) 
+	{
 		m_pRectTransform = GetOwner()->AddComponent<CRectTransform>();
 	}
 }

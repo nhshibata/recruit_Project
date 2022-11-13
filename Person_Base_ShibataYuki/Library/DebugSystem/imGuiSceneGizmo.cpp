@@ -1,13 +1,16 @@
 //=====================================================
 // [imGuiSceneGizmo.cpp]
 // 作成:2022/11/07
+// 更新:2022/11/13 親子関係に向けて修正
 // 
 // ------------------------
 // ImGuiのGizmoを使用
 // ステージ作成用のオブジェクトの設置に欲しかった
 // 別プロジェクトで試してから移植
+// RectTransformは悩み中
 //=====================================================
 
+//--- インクルード部
 #include <ImGui/imgui.h>
 #include <DebugSystem/imguiManager.h>
 #include <DebugSystem/imGuiSceneGizmo.h>
@@ -21,15 +24,16 @@ void CMyGizmo::EditTransform(const CCamera& camera, CTransform* editTransform)
 {
 	Matrix4x4 matrix = editTransform->GetWorldMatrix();
 	//ImGuizmo::SetDrawlist();
+	ImGuizmo::AllowAxisFlip(false);
 	
-	if (GetAsyncKeyState('Q'))
-		m_CurrentGizmoOperation = ImGuizmo::TRANSLATE;
 	if (GetAsyncKeyState('W'))
+		m_CurrentGizmoOperation = ImGuizmo::TRANSLATE;
+	if (GetAsyncKeyState('E'))
 		m_CurrentGizmoOperation = ImGuizmo::ROTATE;
-	if (GetAsyncKeyState('E')) // r Key
+	if (GetAsyncKeyState('R')) // r Key
 		m_CurrentGizmoOperation = ImGuizmo::SCALE;
 
-	// 状態変更
+	//--- 状態変更
 	if (ImGui::RadioButton(u8"Translate", m_CurrentGizmoOperation == ImGuizmo::TRANSLATE))
 		m_CurrentGizmoOperation = ImGuizmo::TRANSLATE;
 	ImGui::SameLine();
@@ -52,9 +56,7 @@ void CMyGizmo::EditTransform(const CCamera& camera, CTransform* editTransform)
 	ImGui::DragFloat3("Sc", (float*)&matrixScale);
 	ImGuizmo::RecomposeMatrixFromComponents((float*)&matrixTranslation, (float*)&matrixRotation, (float*)&matrixScale, (float*)oldMatrix.m);
 
-	ImGui::Indent();
-	ImGui::ArrowButton("testt", ImGuiDir_::ImGuiDir_Up);
-
+	//--- ﾛｰｶﾙ・ﾜｰﾙﾄﾞ
 	if (m_CurrentGizmoOperation != ImGuizmo::SCALE)
 	{
 		if (ImGui::RadioButton("Local", m_CurrentGizmoMode == ImGuizmo::LOCAL))
@@ -84,12 +86,11 @@ void CMyGizmo::EditTransform(const CCamera& camera, CTransform* editTransform)
 	}
 
 	ImGuiIO& io = ImGui::GetIO();
-	// ビューポート
+	//--- ビューポート
 	ImGuizmo::SetRect(0, 0, io.DisplaySize.x, io.DisplaySize.y);
-	auto size = { io.DisplaySize.x, io.DisplaySize.y };
 
-	// ギズモ
-	XMFLOAT4X4 worldMatrix = matrix;
+	//--- ギズモ
+	XMFLOAT4X4 worldMatrix = oldMatrix;
 	ImGuizmo::Manipulate(
 		(float*)CCamera::GetMain()->GetViewMatrix().m, (float*)CCamera::GetMain()->GetProjMatrix().m, 
 		m_CurrentGizmoOperation, 
@@ -107,29 +108,19 @@ void CMyGizmo::EditTransform(const CCamera& camera, CTransform* editTransform)
 	if (auto obj = editTransform->GetParent();obj.lock())
 	{
 		// ワールド座標の逆行列(lcal)
-		//local = worldMatrix * local;
+		XMStoreFloat4x4(&local, XMMatrixMultiply(
+			XMLoadFloat4x4(&local),
+			XMMatrixInverse(nullptr, XMLoadFloat4x4(&obj.lock()->GetWorldMatrix()))
+		));
 	}
 	XMFLOAT3 localTrans, localRot, localScal;
 	ImGuizmo::DecomposeMatrixToComponents((float*)local.m, (float*)&localTrans, (float*)&localRot, (float*)&localScal);
 
-	// ローカルマトリックス
-	//transform.local = local;
-	//if (oldTrans != newTrans)
-	//{
-
-	//}
-	//if (oldRot != newRot)
-	//{
-
-	//}
-	//if (oldScal != newScal)
-	//{
-
-	//}
-	matrix = local;
+	// 行列設定
 	//editTransform->SetWorldMatrix(matrix);
 	editTransform->SetWorldMatrix(localTrans, localRot, localScal);
 
+	// 選択状態設定
 	if (ImGuizmo::IsUsing())
 	{
 		ImGuiManager::Get().UpHover(ImGuiManager::EIsHovered::HOVERED_GIZMO);
@@ -137,7 +128,7 @@ void CMyGizmo::EditTransform(const CCamera& camera, CTransform* editTransform)
 	else
 		ImGuiManager::Get().DownHover(ImGuiManager::EIsHovered::HOVERED_GIZMO);
 
-	// ｶﾒﾗの姿勢
+	//--- ｶﾒﾗの姿勢
 	auto viewMatrix = CCamera::GetMain()->GetViewMatrix().m;
 	//auto view = CCamera::GetMain()->GetViewMatrix();
 	//if (CScreen::ScreenJudg(Vector3(view._41, view._42, view._43)))

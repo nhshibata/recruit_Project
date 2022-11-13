@@ -7,8 +7,9 @@
 //--- インクルード部
 #include <GameSystem/Component/Light/light.h>
 #include <GameSystem/GameObject/gameObject.h>
-#include <ImGui/imgui.h>
 #include <GameSystem/Manager/sceneManager.h>
+
+#include <ImGui/imgui.h>
 
 using namespace MySpace::Game;
 

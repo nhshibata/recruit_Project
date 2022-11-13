@@ -51,6 +51,7 @@ namespace MySpace
 #pragma endregion
 
 		private:
+			//--- メンバ変数
 			RectTransWeakPtr m_pRectTransform;					// 描画情報
 			std::vector<CFontTexture::STCharaData> m_pTexList;	// ○○番目の文字取得などがしやすいvector
 			
@@ -61,6 +62,7 @@ namespace MySpace
 			bool m_bVerticalWrit;		// 縦書きか否か
 
 		public:
+			//--- メンバ関数
 			CTextRenderer() {};
 			CTextRenderer(std::shared_ptr<CGameObject> owner);
 			~CTextRenderer();
@@ -70,6 +72,7 @@ namespace MySpace
 			virtual void Update();
 			virtual bool Draw();
 
+			//--- ゲッター・セッター
 			RectTransSharedPtr GetRectTransform() { return m_pRectTransform.lock(); }
 
 			// *@font設定
@@ -77,8 +80,10 @@ namespace MySpace
 			// *@テキストに何を表示させるか
 			// *@ワイド文字
 			inline void SetTextWString(std::wstring text) { m_Text = text; m_pTexList = CFontTexture::Get().GetString(m_Text, m_Font);}
+
 			// *@文字間距離の設定
 			inline void SetOffSet(float offset) { m_fOffset = offset; }
+
 			// *@縦描画フラグ
 			inline void Vertical(bool flg) { m_bVerticalWrit = flg; }
 
@@ -89,6 +94,7 @@ namespace MySpace
 			std::wstring VKeyToWString(int nKey);
 
 #endif // BUILD_MODE
+
 		};
 	}
 }

@@ -6,12 +6,14 @@
 //--- インクルード部
 #include <GameSystem/Component/Transform/rigidbody.h>
 #include <GameSystem/Component/Transform/transform.h>
+#include <GameSystem/GameObject/gameObject.h>
 #include <ImGui/imgui.h>
 
 using namespace MySpace::Game;
 
 //--- 定数定義
-namespace {
+namespace 
+{
 	const float GRAVITY = 0.98f;		// 重力 座標系によって向きが違う
 }
 
@@ -86,7 +88,6 @@ void CRigidbody::SetFreezRot(bool x, bool y, bool z)
 
 #ifdef BUILD_MODE
 
-
 void CRigidbody::ImGuiDebug()
 {
 	ImGui::InputFloat(u8"重力", &m_fGravity);
@@ -115,5 +116,4 @@ void CRigidbody::ImGuiDebug()
 	m_pFreezRot.Fix(GetOwner()->GetTransform()->GetRot());
 	
 }
-
 #endif // BUILD_MODE

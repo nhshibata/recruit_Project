@@ -15,13 +15,13 @@ using namespace Spell;
 
 #define _DISP_KEY	(1)
 #if _DISP_KEY
-std::weak_ptr< CTextRenderer> testText;
+std::weak_ptr<CTextRenderer> testText;
 #endif
 
 void CCommandStock::Awake()
 {
 #if _DISP_KEY
-	testText = AddComponent<CTextRenderer>();
+	testText = this->AddComponent<CTextRenderer>();
 	testText.lock()->GetRectTransform()->SetPos({ -CScreen::GetWidth() / 3, CScreen::GetHeight() / 3 });
 #endif // _DEBUG
 	

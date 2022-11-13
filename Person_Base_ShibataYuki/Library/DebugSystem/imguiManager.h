@@ -21,9 +21,9 @@
 #include <ImGui/imstb_textedit.h>
 #include <ImGui/imstb_truetype.h>
 
-
 #include "D3D11.h"
 
+#pragma region ForwardDeclaration
 namespace MySpace
 {
 	namespace Debug
@@ -38,6 +38,7 @@ namespace MySpace
 		class CDebugCamera;
 	}
 }
+#pragma endregion
 
 namespace MySpace
 {
@@ -56,11 +57,14 @@ namespace MySpace
 		public:
 			enum EIsHovered
 			{
+				MAX_HOVERD = 7,
 				HOVERED_NONE	= 0,
 				HOVERED_WINDOW	= 1 << 0,
 				HOVERED_MOUSE	= 1 << 1,
 				HOVERED_ITEM	= 1 << 2,
-				HOVERED_GIZMO	= 1 << 3
+				HOVERED_GIZMO	= 1 << 3,
+				HOVERED_DRAG	= 1 << 4,
+				HOVERED_INPUT	= 1 << 5,
 			};
 		private:
 			enum class EPlayMode
@@ -73,41 +77,62 @@ namespace MySpace
 			using MapStringPair = std::pair<std::string, int>;
 
 		private:
-			EPlayMode m_bPlayMode;			
-			bool m_bPause;				
-			bool m_bOneFlame;
-			bool m_bEditFlg;
-			std::shared_ptr<CGameObject> m_pDebugObj;
-			std::weak_ptr<CDebugCamera> m_pDebugCamera;
-			MapString m_debugMap;
+			EPlayMode m_bPlayMode;						// 
+			bool m_bPause;								// ポーズ
+			bool m_bOneFlame;							// 1フレーム進行
+			bool m_bEditFlg;							// 編集フラグ
+			std::weak_ptr<CDebugCamera> m_pDebugCamera;	// デバッグ用ｶﾒﾗﾎﾟｲﾝﾀ
+			std::shared_ptr<CGameObject> m_pDebugObj;	// デバッグ用ｶﾒﾗﾎﾟｲﾝﾀを保持するオブジェクト(ここで保持しないと破棄される)
+			MapString m_debugMap;						// デバッグログ用map
+			EIsHovered m_eHover;						// マウス等選択中か列挙体(bit)
+														
+			std::shared_ptr<CInspector> m_pInspector;	// インスペクター
+			std::shared_ptr<CHierachy> m_pHierarchy;	// ヒエラルキー
+			std::shared_ptr<CMyGizmo> m_pGizmo;			// ギズモ
 
-			std::shared_ptr<CInspector> m_pInspector;
-			std::shared_ptr<CHierachy> m_pHierarchy;
-			std::shared_ptr<CMyGizmo> m_pGizmo;
-
-			EIsHovered m_nHover;
 		private:
 			//--- メンバ関数
 			ImGuiManager();
-		public:
-			//~ImGuiManager();
+			~ImGuiManager() {};
 
+			void DispLog();
+
+		public:
 			void Init(HWND hWnd, ID3D11Device* device, ID3D11DeviceContext* context);
 			void Update();
 			void Render();
 			void Uninit();
 
-			bool CheckPlayMode();											// 確認
-			void DebugStop() { m_bPlayMode = EPlayMode::Release; }			// ImGuiデバッグしない
-			void DebugPlay() { m_bPlayMode = EPlayMode::Debug; }				// ImGuiデバッグする
-
 			void Pause();													// ポーズの処理
 
-			inline bool GetFlg() { return m_bEditFlg; }									// フラグ管理クラスの返す
-			inline bool GetPause() { return m_bPause; }							// ポーズの有無
-			inline void SetPause(bool flg) { m_bPause = flg; }
+			bool CheckPlayMode();											// 確認
+			inline void DebugStop() { m_bPlayMode = EPlayMode::Release; }	// ImGuiデバッグしない
+			inline void DebugPlay() { m_bPlayMode = EPlayMode::Debug; }		// ImGuiデバッグする
 
-			void DebugLog(std::string log) 
+			//--- ゲッター・セッター
+			inline bool GetFlg() { return m_bEditFlg; }						// フラグ管理クラスの返す
+			inline bool GetPause() { return m_bPause; }						// ポーズの有無
+			inline void SetPause(bool flg) { m_bPause = flg; }				// ポーズ切替
+
+			inline std::shared_ptr<CInspector> GetInspector() { return m_pInspector; }
+			inline std::shared_ptr<CHierachy> GetHierarchy() { return m_pHierarchy; }
+
+			//--- マウス等確認
+			inline EIsHovered GetHover() { return m_eHover; };
+			inline bool IsHover(EIsHovered hover) { return m_eHover & hover; };
+			inline void UpHover(EIsHovered hover)
+			{
+				m_eHover = static_cast<EIsHovered>(m_eHover | hover);
+			}
+			inline void DownHover(EIsHovered hover)
+			{
+				if (m_eHover & hover)
+				{
+					m_eHover = static_cast<EIsHovered>(m_eHover ^ hover);
+				}
+			}
+
+			void DebugLog(std::string log)
 			{
 				auto it = m_debugMap.find(log);
 				if (it != m_debugMap.end())
@@ -117,25 +142,6 @@ namespace MySpace
 				}
 				m_debugMap.insert(MapStringPair(log, 0));
 			};
-			void DispLog();
-
-			inline std::shared_ptr<CInspector> GetInspector() { return m_pInspector; }
-			inline std::shared_ptr<CHierachy> GetHierarchy() { return m_pHierarchy; }
-
-
-			inline EIsHovered GetHover() { return m_nHover; };
-			inline bool IsHover(EIsHovered hover) { return m_nHover & hover; };
-			inline void UpHover(EIsHovered hover)
-			{
-				m_nHover = static_cast<EIsHovered>(m_nHover | hover);
-			}
-			inline void DownHover(EIsHovered hover)
-			{
-				if (m_nHover & hover)
-				{
-					m_nHover = static_cast<EIsHovered>(m_nHover ^ hover);
-				}
-			}
 		};
 	}
 }

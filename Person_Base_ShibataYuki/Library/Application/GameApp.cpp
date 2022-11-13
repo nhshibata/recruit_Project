@@ -215,6 +215,8 @@ void CGameApp::BeginRender(Application& pApp)
 		pDX->GetRenderTargetView()
 	};
 	pDC->OMSetRenderTargets(1, pViews, nullptr);
+
+	CCamera::GetMain()->DrawSkyDome();
 }
 // *@•`‰æŒã
 void CGameApp::EndRender(Application& pApp)

@@ -9,6 +9,7 @@
 //--- インクルード部
 #include <GameSystem/Component/Collision/collision.h>
 
+#pragma region ForwardDeclaration
 namespace MySpace
 {
 	namespace Graphics
@@ -16,6 +17,7 @@ namespace MySpace
 		class CBox;
 	}
 }
+#pragma endregion
 
 namespace MySpace
 {

@@ -32,13 +32,6 @@ namespace MySpace
 		DirectX::XMFLOAT3 InputInt(DirectX::XMFLOAT3 value);
 		DirectX::XMFLOAT2 InputInt(DirectX::XMFLOAT2 value);
 
-		template<class T>
-		T* DragDropTarget(std::string name);
-
-		// ドラッグ元
-		template<class T>
-		bool DragDropSource(std::string name, std::string moveName, T type);
-
 		// -1はなにも選択していない判定
 		_NODISCARD int PopupMenu(std::vector<std::string> vec, std::string name, bool open);
 
@@ -49,6 +42,44 @@ namespace MySpace
 		_NODISCARD int CreateRadioForBit(std::vector<std::string> vec, int current);
 
 		_NODISCARD int CreateRadio(std::vector<std::string> vec, int current);
+
+#pragma region DRAG_AND_DROP
+		// 定数などで管理すべき
+		// ドロップ先
+		template<class T>
+		T* DragDropTarget(std::string name)
+		{
+			if (ImGui::BeginDragDropTarget())
+			{
+				if (const ImGuiPayload* payload = ImGui::AcceptDragDropPayload(name.c_str()))
+				{
+					IM_ASSERT(payload->DataSize == sizeof(T));
+					/*T payload_type = *(const T*)payload->Data;
+					return &payload_type;*/
+					if (auto ptr = (T*)payload->Data; !ptr)
+						return nullptr;
+					return (T*)payload->Data;
+				}
+				ImGui::EndDragDropTarget();
+			}
+			return nullptr;
+		}
+		// ドラッグ元
+		template<class T>
+		bool DragDropSource(std::string name, std::string moveName, T type)
+		{
+			if (ImGui::BeginDragDropSource())
+			{
+				const ImGuiPayload* payload = ImGui::GetDragDropPayload();
+				ImGui::SetDragDropPayload(name.c_str(), &type, sizeof(T));
+				// ドラッグ中のものの名前
+				ImGui::Text(std::string("Move Parent ==>>" + moveName).c_str());
+				ImGui::EndDragDropSource();
+				return true;
+			}
+			return false;
+		}
+#pragma endregion
 
 	}
 }

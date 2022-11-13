@@ -7,6 +7,8 @@
 //--- インクルード部
 #include <GameSystem/Component/Renderer/effekseerRenderer.h>
 #include <GameSystem/Component/Transform/transform.h>
+#include <GameSystem/GameObject/gameObject.h>
+
 #include <GraphicsSystem/DirectX/DXDevice.h>
 
 #include <DebugSystem/imGuiPackage.h>
@@ -44,6 +46,7 @@ void CEffekseerRenderer::Update()
 	if (!m_bRead || Debug::ImGuiManager::Get().CheckPlayMode())
 		return;
 #endif // 0
+
 	m_nHandle = m_pEffekseer->Move(m_nHandle, Transform()->GetPos());
 
 	// 終了確認
@@ -76,8 +79,8 @@ void CEffekseerRenderer::SetImageName(std::u16string name)
 	m_pEffekseer->Load(name);
 	m_nHandle = m_pEffekseer->Play(name, Transform()->GetPos(), Transform()->GetScale(), XMFLOAT4(rot.x, rot.y, rot.z, m_fAngle));
 }
-#ifdef BUILD_MODE
 
+#ifdef BUILD_MODE
 
 void CEffekseerRenderer::ImGuiDebug()
 {

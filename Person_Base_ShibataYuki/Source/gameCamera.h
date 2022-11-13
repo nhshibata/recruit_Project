@@ -8,10 +8,13 @@
 #define __GAME_CAMERA_COMPONENT_H__
 
 //--- インクルード部
+#include <GameSystem/GameObject/gameObject.h>
 #include <GameSystem/Component/Camera/camera.h>
 
 namespace Spell
 {
+	using namespace MySpace::Game;
+
 	//--- クラス定義
 	class CGameCamera : public CCamera
 	{

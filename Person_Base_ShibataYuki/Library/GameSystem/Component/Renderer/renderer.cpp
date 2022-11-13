@@ -7,8 +7,10 @@
 //--- インクルード部
 #include <GameSystem/Component/Renderer/renderer.h>
 #include <GameSystem/Component/Transform/transform.h>
+#include <GameSystem/GameObject/gameObject.h>
 #include <GameSystem/Manager/sceneManager.h>
 #include <GameSystem/Manager/drawSystem.h>
+
 #include <ImGui/imgui.h>
 
 using namespace MySpace::Game;
@@ -43,6 +45,11 @@ bool CRenderer::Draw()
 {
 	// 描画確認
 	return m_bVisible && GetOwner()->IsVision();
+}
+
+void CRenderer::SetLayer(int value) 
+{
+	GetOwner()->SetLayer(value); 
 }
 
 #ifdef BUILD_MODE

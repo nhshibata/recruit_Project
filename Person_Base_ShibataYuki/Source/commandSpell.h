@@ -9,12 +9,15 @@
 #define __COMMAND_SPELL_COMPONENT_H__
 
 //--- インクルード部
+#include <GameSystem/GameObject/gameObject.h>
 #include <GameSystem/Component/component.h>
 #include <CoreSystem/property.h>
 #include <command.h>
 
 namespace Spell
 {
+	using namespace MySpace::Game;
+
 	enum class EAttributte
 	{
 		RED = 0,

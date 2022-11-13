@@ -49,6 +49,8 @@ namespace MySpace
 				std::string inputName;
 			};
 		private:
+			static constexpr const char* DESC_SELECT_OBJ = u8"selectGameObjcet";
+
 			bool m_bLoadSaveWindow;
 			SearchSet m_Search;
 			std::string m_savePath;
@@ -62,6 +64,9 @@ namespace MySpace
 			bool DispCheck(MySpace::Game::CGameObject* obj);
 			template<class T>
 			_NODISCARD std::list<T> MovingInList(std::list<T> list, T newT, int index);
+			void DispChild(std::weak_ptr<MySpace::Game::CGameObject> obj);
+
+
 		public:
 			CHierachy();
 			~CHierachy();

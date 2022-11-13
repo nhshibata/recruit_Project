@@ -39,11 +39,17 @@ namespace MySpace
 				// FIXME: 基底クラスで呼び出せば手間が省ける?
 				Init();
 			}
+
 		private:
+			//--- メンバ変数
 			bool m_bVisible;
 			Color m_vColor;
 
-			int m_nDrawIdx = 0;
+			int m_nDrawIdx = -1;
+
+		private:
+			//--- メンバ関数
+			void RequestDraw();
 		public:
 			CRenderer() {};
 			CRenderer(std::shared_ptr<CGameObject> owner);
@@ -54,20 +60,19 @@ namespace MySpace
 			virtual void Update();
 			virtual bool Draw();
 
-			void RequestDraw();
+			//--- セッター・ゲッター
+			_NODISCARD inline Color GetColor() { return m_vColor; }
+			_NODISCARD inline XMFLOAT4 GetColor(int num) { return XMFLOAT4(m_vColor.r, m_vColor.g, m_vColor.b, m_vColor.a); }
+			// *@ｲﾝﾃﾞｯｸｽ取得
+			_NODISCARD inline UINT GetIdx() { return m_nDrawIdx; }
 
-			// セッター・ゲッター
-			inline int GetLayer() { return GetOwner()->GetLayer(); }
-			inline Color GetColor() { return m_vColor; }
-			inline XMFLOAT4 GetColor(int num) { return XMFLOAT4(m_vColor.r, m_vColor.g, m_vColor.b, m_vColor.a); }
-			// *ｲﾝﾃﾞｯｸｽ取得
-			inline UINT GetIdx() { return m_nDrawIdx; }
-
-			inline void SetLayer(int value) { GetOwner()->SetLayer(value); }
+			void SetLayer(int value);
 			inline void SetColor(Color color) { m_vColor = color; }
 			inline void SetVisible(bool value) { m_bVisible = value; }
+
 			// *描画状態確認
 			inline bool IsVisible() { return m_bVisible; }
+
 #ifdef BUILD_MODE
 
 			virtual void ImGuiDebug();

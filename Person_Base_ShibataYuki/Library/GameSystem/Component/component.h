@@ -19,10 +19,10 @@
 #include <CoreSystem/Time/fps.h>
 #include <memory>
 
-// *@ weak_ptr確認用 
-#define WEAK_LOCK(ptr)			if (!ptr.lock())return nullptr
+//---
 #define LIVE_POINTER			0
 
+#pragma region ForwardDeclaration
 namespace MySpace
 {
 	using namespace MySpace::MyMath;
@@ -34,6 +34,7 @@ namespace MySpace
 		class CTransform;
 	}
 }
+#pragma endregion
 
 namespace MySpace
 {
@@ -79,89 +80,19 @@ namespace MySpace
 			CComponent(std::shared_ptr<CGameObject> owner);
 			virtual ~CComponent() {};
 
-			// 更新種類
-			// *@生成時に呼び出される
+			//--- 基本
+			// *@ 生成時に呼び出される
 			virtual void Awake() {};
-			// *@初期化 他コンポーネントの取得などを行う
+			// *@ 初期化 他コンポーネントの取得などを行う
 			virtual void Init() {};				
-			// *@更新 必ず実装
+			// *@ 更新 必ず実装
 			virtual void Update() {};			
-			// *@遅い更新
+			// *@ 遅い更新
 			virtual void LateUpdate() {};		
-			// *@一定時間の更新
+			// *@ 一定時間の更新
 			virtual void FixedUpdate() {};		
-
+			// *@ 読み込み時呼び出し関数
 			virtual void OnLoad();
-
-			// セッター・ゲッター
-			// *@型名の取得
-			inline std::string GetName() { return typeid(*this).name(); }
-			// *@GameObject状態の取得
-			inline CGameObject::E_ObjectState GetState() { return (GetOwner()->GetState()); };
-			// *@ｱｸﾃｨﾌﾞ状態取得
-			inline bool IsActive() { return (m_bActive && GetOwner()->IsVision()); };
-			// *@ｺﾝﾎﾟｰﾈﾝﾄのｱｸﾃｨﾌﾞ設定
-			inline void SetActive(bool flg) { m_bActive = flg; };
-			// *@gameobjectの状態設定
-			inline void SetState(CGameObject::E_ObjectState state) { GetOwner()->SetState(state); }
-
-			// *@自身のSPを引き渡す
-			// NOTE: オブジェクト、コンポーネント生成時にポインタを渡さなければいけない
-			inline void SetPtr(Ptr ptr) { m_spThisPtr = ptr; }
-			//void SetPtr(std::weak_ptr<T> ptr) { m_spThisPtr = ptr; }
-
-			// *@weakPtrの取得			
-			inline Ptr GetPtr() { return m_spThisPtr; }
-
-			// *@派生クラスへのキャスト
-			template <class T>
-			inline std::shared_ptr<T> BaseToDerived() { return std::dynamic_pointer_cast<T>(m_spThisPtr.lock()); }
-
-			// *@Componentの持ち主GameObject型の取得
-			// *@引き数なしで生ポインタを受け取る
-			// *@引き数ありでweak_ptrを受け取る
-			inline CGameObject* GetOwner() { return m_pOwner.lock().get(); }
-			
-			// *@Componentの持ち主GameObject型の取得
-			// *@引き数なしで生ポインタを受け取る
-			// *@引き数ありでweak_ptrを受け取る
-			inline std::weak_ptr<CGameObject> GetOwner(int no) { return m_pOwner.lock(); };
-
-			// *@持ち主を設定
-			inline void SetOwner(std::weak_ptr<CGameObject> pOwner) { m_pOwner = pOwner; }
-
-			// *@トランスフォームポインタ取得
-			CTransform* Transform();
-			// *@ ownerがnullならエラー
-			std::string Tag()const;
-
-			// *@レイヤー番号取得
-			inline int GetLayer() { return *GetOwner()->GetLayerPtr()->GetLayer(); }
-
-			// *@gameobjectｸﾗｽからのAddComponent呼び出し
-			// *@引き数ありで生ポインタ取得
-			template <class T>
-			inline std::shared_ptr<T> AddComponent()
-			{
-				return GetOwner()->AddComponent<T>();
-			}
-
-			// *@gameobjectｸﾗｽからのAddComponent呼び出し
-			template <class T>
-			inline T* AddComponent(int n)
-			{
-				return GetOwner()->AddComponent<T>().get();
-			}
-			// *@gameobjectｸﾗｽへ直接ｺﾝﾎﾟｰﾈﾝﾄを追加する 使わない?
-			void AddComponent(std::shared_ptr<CComponent> com);
-			
-			// *@持ち主から型指定したコンポーネントを取得する
-			template <class T>
-			inline T* GetComponent()
-			{
-				std::weak_ptr<T> com = GetOwner()->GetComponent<T>();
-				return com.lock().get();
-			};
 
 			//--- 仮想関数
 			// 衝突したときに呼び出される関数
@@ -179,7 +110,84 @@ namespace MySpace
 			virtual void OnTriggerEnter(CGameObject* obj) {};
 			// *@ 離れたオブジェクトが渡される(トリガー)
 			virtual void OnTriggerExit(CGameObject* obj) {};
+
+			//--- CGameObject
+			// *@gameobjectｸﾗｽからのAddComponent呼び出し
+			// *@引き数ありで生ポインタ取得
+			template <class T>
+			inline std::shared_ptr<T> AddComponent()
+			{
+				return m_pOwner.lock()->AddComponent<T>();
+			}
+
+			// *@gameobjectｸﾗｽからのAddComponent呼び出し
+			template <class T>
+			inline T* AddComponent(int n)
+			{
+				return m_pOwner.lock()->AddComponent<T>().get();
+			}
+
+			// *@gameobjectｸﾗｽへ直接ｺﾝﾎﾟｰﾈﾝﾄを追加する 使わない?
+			inline void AddComponent(std::shared_ptr<CComponent> com)
+			{
+				m_pOwner.lock()->AddComponent(com);
+			}
+
+			// *@持ち主から型指定したコンポーネントを取得する
+			template <class T>
+			inline T* GetComponent()
+			{
+				std::weak_ptr<T> com = m_pOwner.lock()->GetComponent<T>();
+				return com.lock().get();
+			};
+
+			//--- セッター・ゲッター
+			// *@トランスフォームポインタ取得
+			CTransform* Transform()const;
+
+			// *@ tag取得
+			// *@ ownerがnullならエラー
+			std::string Tag()const;
+			
+			// *@レイヤー番号取得
+			int GetLayer()const;
+
+			// *@自身のSPを派生クラスへキャスト
+			template <class T>
+			inline std::shared_ptr<T> BaseToDerived() { return std::dynamic_pointer_cast<T>(m_spThisPtr.lock()); }
+
+			// *@型名の取得
+			inline std::string GetName() { return typeid(*this).name(); }
+
+			// *@weakPtrの取得			
+			inline Ptr GetPtr() { return m_spThisPtr; }
+
+			// *@Componentの持ち主GameObject型の取得
+			// *@引き数なしで生ポインタを受け取る
+			// *@引き数ありでweak_ptrを受け取る
+			inline CGameObject* GetOwner() { return m_pOwner.lock().get(); }
+
+			// *@Componentの持ち主GameObject型の取得
+			// *@引き数なしで生ポインタを受け取る
+			// *@引き数ありでweak_ptrを受け取る
+			inline std::weak_ptr<CGameObject> GetOwner(int no) { return m_pOwner.lock(); };
+
+			// *@ｺﾝﾎﾟｰﾈﾝﾄのｱｸﾃｨﾌﾞ設定
+			inline void SetActive(bool flg) { m_bActive = flg; };
+
+			// *@自身のSPを引き渡す
+			// NOTE: オブジェクト、コンポーネント生成時にポインタを渡さなければいけない
+			inline void SetPtr(Ptr ptr) { m_spThisPtr = ptr; }
+
+			// *@持ち主を設定
+			inline void SetOwner(std::weak_ptr<CGameObject> pOwner) { m_pOwner = pOwner; }
+
+			// *@ｱｸﾃｨﾌﾞ状態取得
+			// *@持ち主もActiveでなければfalse
+			bool IsActive();
+		
 		};
+
 	}
 
 }

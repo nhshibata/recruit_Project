@@ -39,7 +39,6 @@ void CDrawSystem::Update()
 	// 描画数などの確認をするならばこれを活用する
 	
 	// レイヤーで並び替え
-	//std::sort(m_ObjectList.begin(), m_ObjectList.end(), [](std::weak_ptr<CRenderer> s1, std::weak_ptr<CRenderer> s2)
 	if (m_bIsSortNecessary)
 	{
 		// 整列
@@ -51,15 +50,6 @@ void CDrawSystem::Update()
 
 		m_bIsSortNecessary = false;
 
-#ifdef _DEBUG
-		/*std::vector<int> check;
-		for (auto & render : m_pSortList)
-		{
-			check.push_back(render.lock()->GetOwner()->GetLayer());
-
-		}*/
-#endif // _DEBUG
-
 	}
 	
 	// 3Dの描画
@@ -67,9 +57,7 @@ void CDrawSystem::Update()
 	{
 		// ポインタ確認
 		if (!render.lock())
-		{
 			continue;
-		}
 
 		// 描画可能な状態か確認
 		if (!render.lock()->IsActive())
@@ -81,7 +69,6 @@ void CDrawSystem::Update()
 #endif // _DEBUG
 
 		// Meshｺﾝﾎﾟｰﾈﾝﾄ(および継承)か確認
-		// TODO: 要実装不完全
 		if (auto mesh = render.lock()->BaseToDerived<CMeshRenderer>().get(); mesh)
 		{	
 			float fRadius = 0.0f;
@@ -159,14 +146,18 @@ void CDrawSystem::Update()
 
 void CDrawSystem::ImGuiDebug()
 {
-	ImGui::Text(u8"DrawManager");
-	ImGui::Text(u8"描画リスト数 %d", m_pDrawSortList.size());
-	ImGui::Text(u8"描画数 %d", m_nDrawCnt);
+	if (!ImGui::TreeNode("---Draw---"))
+		return;
+	ImGui::Text(u8"---Draw---");
+	ImGui::Text(u8"描画リスト数 : %d", m_pDrawSortList.size());
+	ImGui::Text(u8"描画OK数 : %d", m_nDrawCnt);
 	ImGui::SameLine();
-	ImGui::Text(u8"描画スキップ数 %d", m_nSkipCnt);
+	ImGui::Text(u8"描画スキップ数 : %d", m_nSkipCnt);
+	ImGui::Checkbox(u8"描画ソートON", &m_bIsSortNecessary);
 	
+	ImGui::TreePop();
+	//--- 次のフレーム用初期化
 	m_nDrawCnt = 0;
 	m_nSkipCnt = 0;
-	ImGui::Checkbox(u8"描画ソート", &m_bIsSortNecessary);
 }
 #endif

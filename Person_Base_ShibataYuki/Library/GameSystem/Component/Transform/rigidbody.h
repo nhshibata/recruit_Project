@@ -37,6 +37,7 @@ namespace MySpace
 				);
 			}
 		private:
+			//--- 軸固定構造体
 			struct FixedVector3
 			{
 				// シリアライズ
@@ -48,9 +49,10 @@ namespace MySpace
 							CEREAL_NVP(bX), CEREAL_NVP(bY), CEREAL_NVP(bZ)
 					);
 				}
-
+				//--- メンバ変数
 				float x, y, z;
 				bool bX, bY, bZ;
+				//--- メンバ関数
 				FixedVector3()
 				{
 					x = y = z = 0;
@@ -77,39 +79,43 @@ namespace MySpace
 			};
 
 		private:
-			bool m_bGravity;
-			bool m_bIsSleep;
+			//--- ﾒﾝﾊﾞ変数
+			bool m_bGravity;			// 重力フラグ
+			bool m_bIsSleep;			//
 			//bool m_bCollisionDetectionMode;		// 当たり判定を行うか
-			float m_fResistance;				// 抵抗
-
-			float m_fGravity;
+			float m_fResistance;		// 抵抗
+			float m_fGravity;			// 重力
 			float m_fMass;				// 質量
 
-			Vector3 m_vTargetPos;	// 目標座標
-			Vector3 m_vVel;			// 移動量
-			Vector3 m_vAccel;		// 加速
-			FixedVector3 m_pFreezPos;
-			FixedVector3 m_pFreezRot;
+			Vector3 m_vTargetPos;		// 目標座標
+			Vector3 m_vVel;				// 移動量
+			Vector3 m_vAccel;			// 加速
+			FixedVector3 m_pFreezPos;	// 座標固定
+			FixedVector3 m_pFreezRot;	// 回転固定
 
 		public:
+			//--- メンバ関数
 			CRigidbody();
 			CRigidbody(std::shared_ptr<CGameObject> owner);
 			~CRigidbody();
+			
 			void Update();
 
-			inline bool UseGravity() { return m_bGravity; }
-			inline bool IsSleeping() { return m_bIsSleep; }
-			inline bool SetGravity(const bool value) { m_bGravity = value; }
+			//--- ゲッター・セッター
 			inline Vector3 GetVel() { return m_vVel; };
 			inline Vector3 GetAccel() { return m_vAccel; };
 
+			inline bool SetGravity(const bool value) { m_bGravity = value; }
 			inline void SetTargetPos(Vector3 value) { m_vTargetPos = value; };
 			inline void SetVel(Vector3 value) { m_vVel = value; };
 			inline void SetAccel(Vector3 value) { m_vAccel = value; };
-
 			// 位置・角度固定
 			void SetFreezPos(const bool x, const bool y, const bool z);
 			void SetFreezRot(const bool x, const bool y, const bool z);
+
+			inline bool UseGravity() { return m_bGravity; }
+			inline bool IsSleeping() { return m_bIsSleep; }
+
 #ifdef BUILD_MODE
 
 			void ImGuiDebug();

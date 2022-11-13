@@ -16,7 +16,7 @@
 
 #if BUILD_MODE
 
-#pragma region forward_declaration
+#pragma region ForwardDeclaration
 namespace MySpace 
 {
 	namespace MyMath
@@ -70,7 +70,7 @@ namespace MySpace
 			void AddComponentWindow();
 			void DeleteObject();
 			void DeleteInformation();
-			void Copy();
+			void CopyGameObject();
 			void Value(float* value, MySpace::MyMath::Vector3* vec);
 			void Value(float* value, MySpace::MyMath::Vector2* vec);
 			void Value(float* value, float vec);
@@ -83,7 +83,7 @@ namespace MySpace
 			void Update();
 			void Draw();
 
-			std::weak_ptr<CGameObject> GetSelectObject() { return  m_spViewObj; }
+			_NODISCARD inline std::weak_ptr<CGameObject> GetSelectObject() { return  m_spViewObj; }
 			void SetGameObject(std::weak_ptr<CGameObject> obj);
 			//void SetDispObj(bool flg) { m_bDispObj = flg; }
 		};

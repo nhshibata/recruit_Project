@@ -10,12 +10,15 @@
 #define __MAGE_COMPONENT_H__
 
 //--- インクルード部
+#include <GameSystem/GameObject/gameObject.h>
 #include <GameSystem/Component/component.h>
 #include <battleStatus.h>
 #include <commandSpell.h>
 
 namespace Spell
 {
+	using namespace MySpace::Game;
+
 	class CMage : public CComponent
 	{
 	public:

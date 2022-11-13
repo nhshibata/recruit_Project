@@ -20,11 +20,13 @@
 #include <GameSystem/Component/Camera/camera.h>
 #include <GameSystem/Component/Camera/debugCamera.h>
 
+#pragma region NAME_SPACE
 using namespace MySpace::System;
 using namespace MySpace::Debug;
 using namespace MySpace::Game;
 using namespace MySpace::Graphics;
 using namespace MySpace::SceneManager;
+#pragma endregion
 
 // コンストラクタ
 ImGuiManager::ImGuiManager()
@@ -127,39 +129,50 @@ void ImGuiManager::Update()
 	// 変更されている可能性
 	scene = CSceneManager::Get().GetActiveScene();
 
-	// フレームレートを表示
-	ImGui::Text(u8"現在のFPS : %.1f FPS", ImGui::GetIO().Framerate);
-	ImGui::Text(u8"現在のDeltaTime : %.5f", CFps::Get().DeltaTime());
-	ImGui::Text(u8"現在のCount : %d", CFps::Get().GetFPSCount()/1000);
-
 	// シーン名の表示
 	ImGui::Text(u8"現在のシーン名 : %s", scene->GetSceneName().c_str());
 	ImGui::Text(u8"オブジェクト数 : %d", CSceneManager::Get().GetActiveScene()->GetObjManager()->GetList().size());
+
+	// フレームレートを表示
+	ImGui::Text(u8"現在のFPS : %.1f FPS", ImGui::GetIO().Framerate);
+	CFps::Get().ImGuiDebug();	
 	
 	// 描画の確認
 	CSceneManager::Get().GetDrawSystem()->ImGuiDebug();
 
-	if (ImGui::IsAnyItemHovered())
+	if(ImGui::IsDragDropPayloadBeingAccepted())
+		UpHover(EIsHovered::HOVERED_DRAG);
+
+	if (ImGui::IsAnyItemHovered()) 
 	{
 		UpHover(EIsHovered::HOVERED_ITEM);
 	}
 	else
 		DownHover(EIsHovered::HOVERED_ITEM);
 
+	//--- ｶﾒﾗ操作
 	const int e = ImGuiManager::EIsHovered::HOVERED_WINDOW | ImGuiManager::EIsHovered::HOVERED_GIZMO;
 	if (!ImGuiManager::Get().IsHover(EIsHovered(e)))
 	{
 		if (m_pDebugCamera.lock())
 			m_pDebugCamera.lock()->Update();
 	}
+	int res = 0;
+	for (int cnt = 1; cnt < sizeof(EIsHovered) ; cnt++)
+	{
+		res += m_eHover & (1 << cnt) ? 1 : 0;
+		res *= 10;
+	}
+	ImGui::Text("Hover->%d", res);
 
-	//m_pDebugCamera.lock()->Clear();
+	// スカイドーム描画
+	//m_pDebugCamera.lock()->DrawSkyDome();
 
 	// ログ表示
 	DispLog();
 	
 	// 関数ポインタ表示
-	//CFuncManager::Get().ImGuiDebug();
+
 	ImGui::End();
 	ImGui::PopStyleColor();
 
@@ -178,12 +191,12 @@ void ImGuiManager::Render()
 // ポーズの処理
 void ImGuiManager::Pause()
 {
-	ImGui::SetNextWindowPos(ImVec2((float)CScreen::GetWidth() / 2 - 300 / 2, (float)0));   //画面位置を外部から取得できるようにする
-	
 	if (!m_bEditFlg)
 		return;
+
+	ImGui::SetNextWindowPos(ImVec2((float)CScreen::GetWidth() / 2 - 300 / 2, (float)0));   //画面位置を外部から取得できるようにする
 	ImGui::SetNextWindowSize(ImVec2(420, 120), ImGuiCond_Once);
-	ImGui::Begin("Pause", &m_bPause);
+	ImGui::Begin(u8"Pause", &m_bPause);
 
 	ImGui::Text(u8"stop[L]");
 	ImGui::SameLine();
@@ -191,7 +204,7 @@ void ImGuiManager::Pause()
 	ImGui::SameLine();
 
 	// デバッグポーズの処理
-	if (ImGui::Button("STOP") || CInput::GetKeyTrigger(VK_L))
+	if (ImGui::Button(u8"STOP") || CInput::GetKeyTrigger(VK_L))
 	{
 		m_bPause ^= true;
 	}
@@ -200,7 +213,7 @@ void ImGuiManager::Pause()
 	if (m_bPause)
 	{
 		ImGui::SameLine();
-		if (ImGui::Button("STEP") || CInput::GetKeyTrigger(VK_O))
+		if (ImGui::Button(u8"STEP") || CInput::GetKeyTrigger(VK_O))
 		{
 			if (!m_bOneFlame)
 			{
@@ -226,7 +239,8 @@ void ImGuiManager::DispLog()
 {
 	/*DebugLog("aaa");
 	DebugLog("bbb");
-*/
+	*/
+	
 	//ImGui::SetNextWindowPos(ImVec2(120, 60), ImGuiCond_::ImGuiCond_Once);
 	//ImGui::SetNextWindowSize(ImVec2(500, 400), ImGuiCond_::ImGuiCond_Once);
 	//ImGui::Begin(u8"Log");

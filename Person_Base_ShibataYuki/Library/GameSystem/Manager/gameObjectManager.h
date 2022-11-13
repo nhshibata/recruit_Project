@@ -13,7 +13,7 @@
 #include <GameSystem/GameObject/gameObject.h>
 #include <CoreSystem/Util/stl.h>
 
-#pragma region _forward_declaration
+#pragma region ForwardDeclaration
 namespace MySpace
 {
 	namespace Game
@@ -37,6 +37,7 @@ namespace MySpace
 			friend class CGameObject;
 			//friend class CScene;
 		public:
+			//--- エイリアス
 			using ObjList = std::list< std::shared_ptr<CGameObject> >;
 			using WeakList = std::list< std::weak_ptr<CGameObject> >;
 			
@@ -79,7 +80,6 @@ namespace MySpace
 				return m_pAffiliationScene; 
 			};
 			
-			
 		public:
 			CGameObjectManager();
 			~CGameObjectManager();
@@ -116,14 +116,13 @@ namespace MySpace
 				m_addObjList.push_back(obj); 
 			}
 
-			// ゲッター・セッター
+			//--- ゲッター・セッター
 			// 所持リスト(引き数intでweak)
 			inline ObjList GetList() 
 			{
 				return m_objMgr; 
 			}
-			// 所持リスト
-			// weak用
+			// *@所持リスト(weak用)
 			inline WeakList GetList(int)
 			{ 
 				WeakList ret;
@@ -138,7 +137,7 @@ namespace MySpace
 				m_objMgr = list;
 			}
 
-			// *オブジェクト検索(名前)
+			// *@オブジェクト検索(名前)
 			std::weak_ptr<CGameObject> FindGameObj(std::string name) 
 			{
 				for (ObjList::iterator it = m_objMgr.begin(); it != m_objMgr.end(); ++it) 
@@ -150,7 +149,7 @@ namespace MySpace
 				}
 				return std::shared_ptr<CGameObject>();
 			}
-			// *オブジェクト検索(タグ名)
+			// *@オブジェクト検索(タグ名)
 			std::weak_ptr<CGameObject> FindGameObjWithTag(std::string tag) 
 			{
 				if (m_tagMap.count(tag) == 0)

@@ -13,7 +13,6 @@
 #include <typeinfo>
 #include <CoreSystem/Util/stl.h>
 #include <CoreSystem/Util/cerealCommon.h>
-#include <DebugSystem/debug.h>
 
 namespace MySpace
 {
@@ -95,14 +94,9 @@ namespace MySpace
 			}
 
 #ifdef BUILD_MODE
-		protected:
-			//bool m_bDebug;
 		public:
 			// デバッグ関係
 			virtual void ImGuiDebug() {};
-			//void SetDebug(bool flg) { m_bDebug = flg; }
-			//bool GetDebug() { return m_bDebug; }
-			//bool *GetDebugAdress() { return &m_bDebug; }
 
 #endif // BUILD_MODE
 

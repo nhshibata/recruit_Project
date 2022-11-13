@@ -39,11 +39,13 @@ namespace MySpace
 				);
 			}
 		private:
+			//--- メンバ変数
 			Vector3 m_vCenter;			// *@
 			bool m_bLightEnable;		// *@
 			float m_fBSRadius = 1;		// *@バウンディングスフィア
 		
 		public:
+			//--- メンバ関数
 			CMeshRenderer();
 			CMeshRenderer(std::shared_ptr<CGameObject> owner);
 			virtual ~CMeshRenderer();
@@ -57,12 +59,13 @@ namespace MySpace
 			inline bool GetLightEnable() { return m_bLightEnable; };
 			inline Vector3 GetCenter() { return m_vCenter; }
 			Vector3 GetCenter(int n);
-			// *@バウンディングスフィア
-			inline float GetBSRadius()const { return m_fBSRadius; };
+			inline float GetBSRadius()const { return m_fBSRadius; };		// *@バウンディングスフィア
 
 			inline void SetLightEnable(bool flg) { m_bLightEnable = flg; };
 			inline void SetCenter(Vector3 value) { m_vCenter = value; }
 			inline void SetBSRadius(const float value) { m_fBSRadius = value; };
+
+			// over ride
 			virtual void SetMaterial(CMeshMaterial mat) {};
 		};
 	}

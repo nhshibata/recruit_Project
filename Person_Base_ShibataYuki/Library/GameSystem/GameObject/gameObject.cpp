@@ -15,6 +15,7 @@
 
 #include <GameSystem/Manager/sceneManager.h>
 #include <GameSystem/Manager/gameObjectManager.h>
+#include <GameSystem/Factory/componentFactory.h>
 
 using namespace MySpace::SceneManager;
 using namespace MySpace::Game;
@@ -23,7 +24,7 @@ using namespace MySpace::Game;
 //CGameObject::GAMEOBJECT CGameObject::m_pObjects;
 
 #ifdef _DEBUG
-
+// オブジェクトの名前とtagが知りたい時に
 static inline void CheckObj(CGameObject* obj)
 {
 	auto name = obj->GetName();
@@ -48,12 +49,29 @@ CGameObject::CGameObject(std::string name)
 // コピーコンストラクタ
 CGameObject::CGameObject(const CGameObject & object)
 {
+#if BUILD_MODE
+	this->m_objName = object.m_objName + std::to_string(++m_nCopyCnt);
+#else
+	this->m_objName = object.m_objName;
+#endif // BUILD_MODE
+
 	this->m_Transform = object.m_Transform;
 	this->m_eState = object.m_eState;
 	this->m_Layer = object.m_Layer;
 	this->m_Tag = object.m_Tag;
-	this->m_pComponent = object.m_pComponent;
-	CBaseObject::CBaseObject(object);	// 基底クラスのコピー
+	//this->m_pComponent = object.m_pComponent;
+	// ｺﾝﾎﾟｰﾈﾝﾄの名前から同じｺﾝﾎﾟｰﾈﾝﾄを追加
+	// TODO: 各ｺﾝﾎﾟｰﾈﾝﾄの値のｺﾋﾟｰは行えない
+	for (auto & component : object.m_pComponent)
+	{
+		// コンポーネントを保存しているｸﾗｽに追加してもらう
+		if (CComponentFactory::ObjSetComponent(*this, component->GetName()))
+		{
+			//// 最後尾に追加されているコンポーネントを取得
+			//auto com = this->GetComponentList().back();
+			////com->Init();
+		}
+	}
 }
 CGameObject::~CGameObject()
 {
@@ -172,11 +190,18 @@ bool CGameObject::RemoveComponent(std::weak_ptr<CComponent> com)
 	}
 	return false;
 }
+// inline?
+void CGameObject::SetState(const E_ObjectState state)
+{
+	m_eState = state;
+}
+// タグの移動
+// ここでやるのは間違い?
 void CGameObject::SetTag(const std::string tag) 
 { 
-	// タグの移動
 	if(auto scene = GetScene(); scene)
 		scene->GetObjManager()->TagMove(tag, GetPtr());
+
 	m_Tag->SetTag(tag);
 };
 // 衝突
@@ -308,6 +333,7 @@ std::weak_ptr<CGameObject> CGameObject::CreateObject(CGameObject* pObj)
 	}
 	return CSceneManager::Get().GetActiveScene()->GetObjManager()->CreateGameObject(pObj);
 }
+// 作るだけで管理は受け取った側に委任
 std::shared_ptr<CGameObject>  CGameObject::CreateDebugObject()
 {
 	std::shared_ptr<CGameObject> pObj = std::make_shared<CGameObject>();
@@ -343,15 +369,16 @@ void CGameObject::DontDestroy(std::weak_ptr<CGameObject> pObj)
 void CGameObject::ImGuiDebug()
 {
 	static const char* szState[CGameObject::MAX_OBJECT_STATE] = {
-	"ACTIVE",				// 更新状態
-	"WAIT",				// 待機
-	"DESTROY",			// 削除
-	"TAKEOVER",			// 引き継ぎ（使いまわし)
-	"STOP",				// デバッグ?
+		"ACTIVE",				// 更新状態
+		"WAIT",				// 待機
+		"DESTROY",			// 削除
+		"TAKEOVER",			// 引き継ぎ（使いまわし)
+		"STOP",				// デバッグ?
 	};
 
-	if (ImGui::BeginMenuBar()) {
-		if (ImGui::BeginMenu("State"))
+	if (ImGui::BeginMenuBar()) 
+	{
+		if (ImGui::BeginMenu(u8"State"))
 		{
 			for (int state = 0; state < E_ObjectState::MAX_OBJECT_STATE; ++state)
 			{
@@ -364,8 +391,9 @@ void CGameObject::ImGuiDebug()
 		ImGui::EndMenuBar();
 	}
 
-	if (ImGui::BeginMenuBar()) {
-		if (ImGui::BeginMenu("tag"))
+	if (ImGui::BeginMenuBar()) 
+	{
+		if (ImGui::BeginMenu(u8"tag"))
 		{
 			auto tagList = CTagName::Get().GetList();
 			for (int state = 0; state < static_cast<int>(tagList.size()); ++state)

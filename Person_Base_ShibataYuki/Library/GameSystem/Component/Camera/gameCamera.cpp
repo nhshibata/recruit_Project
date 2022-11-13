@@ -5,6 +5,7 @@
 //=========================================================
 
 //--- インクルード部
+#include <GameSystem/GameObject/gameObject.h>
 #include <GameSystem/Component/Camera/gameCamera.h>
 
 using namespace MySpace::Game;

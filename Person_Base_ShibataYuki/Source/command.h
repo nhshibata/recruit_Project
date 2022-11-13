@@ -7,12 +7,16 @@
 #ifndef __COMMAND_COMPONENT_H__
 #define __COMMAND_COMPONENT_H__
 
+//--- インクルード部
+#include <GameSystem/GameObject/gameObject.h>
 #include <GameSystem/Component/component.h>
 #include <CoreSystem/Input/input.h>
 #include <CoreSystem/property.h>
 
 namespace Spell
 {
+	using namespace MySpace::Game;
+
 	// *@入力を記録するｸﾗｽ
 	class CCommandStock : public CComponent
 	{

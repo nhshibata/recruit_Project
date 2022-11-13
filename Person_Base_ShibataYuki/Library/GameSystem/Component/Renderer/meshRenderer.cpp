@@ -7,6 +7,8 @@
 //--- ƒCƒ“ƒNƒ‹[ƒh•”
 #include <GameSystem/Component/Renderer/meshRenderer.h>
 #include <GameSystem/Component/Transform/transform.h>
+#include <GameSystem/GameObject/gameObject.h>
+
 #include <GameSystem/Manager/sceneManager.h>
 
 using namespace MySpace::Game;
@@ -33,8 +35,6 @@ void CMeshRenderer::Init()
 {
 	// •`‰æ“o˜^
 	CRenderer::Init();
-	//SceneManager::CSceneManager::Get().GetActiveScene()->GetDrawManager()->SetObjectDraw(GetPtr());
-	//SceneManager::CSceneManager::Get().GetActiveScene()->GetDrawManager()->SetDraw(BaseToDerived<CRenderer>());
 }
 void CMeshRenderer::Update()
 {

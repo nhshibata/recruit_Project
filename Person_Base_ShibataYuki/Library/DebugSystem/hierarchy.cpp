@@ -18,14 +18,23 @@
 
 #include <GameSystem/Scene/scene.h>
 #include <GameSystem/Component/Transform/transform.h>
+#include <GameSystem/Component/Camera/debugCamera.h>
+#include <GameSystem/Component/Renderer/billboardRenderer.h>
+#include <GameSystem/Component/Renderer/polygonRenderer.h>
+#include <GameSystem/Component/Renderer/textRenderer.h>
+#include <GameSystem/Component/Renderer/sphereRenderer.h>
+#include <GameSystem/Component/Renderer/boxRenderer.h>
+#include <GameSystem/Component/Renderer/effekseerRenderer.h>
+#include <GameSystem/Component/Renderer/modelRenderer.h>
 #include <GameSystem/Manager/sceneManager.h>
 #include <GameSystem/Manager/gameObjectManager.h>
-#include <GameSystem/Component/Camera/debugCamera.h>
+
 #include <CoreSystem/File/filePath.h>
 
 using namespace MySpace::System;
 using namespace MySpace::Debug;
 using namespace MySpace::SceneManager;
+using namespace MySpace::Game;
 
 CHierachy::CHierachy()
 	:m_bLoadSaveWindow(false)
@@ -86,15 +95,45 @@ void CHierachy::Update()
 				auto obj = CSceneManager::Get().GetActiveScene()->GetObjManager()->CreateGameObject();
 				ImGuiManager::Get().GetInspector()->SetGameObject(obj);
 			}
-			/*if (ImGui::MenuItem("Plane"))
+			if (ImGui::MenuItem("Model"))
 			{
-				auto obj = CGameObject::CreateObject();
+				auto obj = CGameObject::CreateObject().lock();
+				obj->AddComponent<CModelRenderer>();
+				// ｺﾝﾎﾟｰﾈﾝﾄの追加後
 				ImGuiManager::Get().GetInspector()->SetGameObject(obj);
-			}*/
-			if (ImGui::MenuItem("DebugCamera"))
+			}
+			if (ImGui::MenuItem("Billboard"))
 			{
-				auto obj = CGameObject::CreateObject();
-				obj.lock()->AddComponent<CDebugCamera>();
+				auto obj = CGameObject::CreateObject().lock();
+				obj->AddComponent<Game::CBillboardRenderer>();
+				// ｺﾝﾎﾟｰﾈﾝﾄの追加後
+				ImGuiManager::Get().GetInspector()->SetGameObject(obj);
+			}
+			if (ImGui::MenuItem("Sphere"))
+			{
+				auto obj = CGameObject::CreateObject().lock();
+				obj->AddComponent<Game::CSphereRenderer>();
+				// ｺﾝﾎﾟｰﾈﾝﾄの追加後
+				ImGuiManager::Get().GetInspector()->SetGameObject(obj);
+			}
+			if (ImGui::MenuItem("Box"))
+			{
+				auto obj = CGameObject::CreateObject().lock();
+				obj->AddComponent<Game::CBoxRenderer>();
+				// ｺﾝﾎﾟｰﾈﾝﾄの追加後
+				ImGuiManager::Get().GetInspector()->SetGameObject(obj);
+			}
+			if (ImGui::MenuItem("Polygon"))
+			{
+				auto obj = CGameObject::CreateObject().lock();
+				obj->AddComponent<Game::CPolygonRenderer>();
+				// ｺﾝﾎﾟｰﾈﾝﾄの追加後
+				ImGuiManager::Get().GetInspector()->SetGameObject(obj);
+			}
+			if (ImGui::MenuItem("Text"))
+			{
+				auto obj = CGameObject::CreateObject().lock();
+				obj->AddComponent<Game::CTextRenderer>();
 				// ｺﾝﾎﾟｰﾈﾝﾄの追加後
 				ImGuiManager::Get().GetInspector()->SetGameObject(obj);
 			}
@@ -106,59 +145,84 @@ void CHierachy::Update()
 	// 検索更新
 	UpdateSearch();
 
-	bool select = false;
 	// ゲームオブジェクト名の表示と子要素の表示
 	for (const auto & object : objList)
 	{
-		// 検索がONになっていれば
+		// 検索がONになっている時
 		if (m_Search.bSearchCriteria)
-		{	// 検索条件と一致するか判定
+		{	// 検索条件と一致するか判定し、一致しないならば次へ
 			if (!DispCheck(object.get()))
 				continue;
 		}
 #if 1
-		// 親要素の確認、親が子を表示する
+		// 親要素の確認、親が子を表示するので次へ
 		if (object->GetTransform()->GetParent().lock())
 			continue;
 #endif // 0
-		// ウィンドウ表示ボタン
+		
+		// 選択ボタン、ウィンドウ表示
 		if (ImGui::Button(object->GetName().c_str()) )
 		{
 			ImGuiManager::Get().GetInspector()->SetGameObject(object);
 			break;
 		}
-		ImGui::SameLine();
 
-		// 子の表示
-		if (ImGui::TreeNode(std::string(object->GetName() + "child-").c_str()))
+		// ドラッグ設定
+		//if (ImGuiManager::Get().GetInspector()->GetSelectObject().lock() == object)
 		{
-			if (object->GetTransform()->GetChild(0).expired())
-			{
-				ImGui::Text(u8"なし");
-			}
-			for (auto cnt = 0; cnt < object->GetTransform()->GetChildCount(); ++cnt)
-			{
-				// nullptr確認
-				if (auto child = object->GetTransform()->GetChild(cnt).lock() ; child)
-				{
-					std::string ownname = child->GetName();
-					const char* childName = ownname.c_str();
-
-					ImGui::BeginChild(childName, ImVec2(0, 30), false);
-					ImGui::SameLine();
-					if (select = ImGui::Button(childName); select)
-					{
-						ImGuiManager::Get().GetInspector()->SetGameObject(child);
-					}
-					ImGui::EndChild();
-					ImGui::Separator();
-					
-					if (select)break;
-				}
-			}
-			ImGui::TreePop();
+			DragDropSource<CGameObject::PtrWeak>(CHierachy::DESC_SELECT_OBJ, object->GetName(), object);
 		}
+
+		// ドラッグ&ドロップされたとき
+		if (auto select = DragDropTarget<CGameObject::PtrWeak>(CHierachy::DESC_SELECT_OBJ); select)
+			object->GetTransform()->AddChild(select->lock()->GetComponent<CTransform>());
+
+		DispChild(object);
+
+//		// 子の表示
+//		if (ImGui::TreeNode(std::string(object->GetName() + "child-").c_str()))
+//		{
+//			if (object->GetTransform()->GetChild(0).expired())
+//			{
+//				ImGui::Text(u8"なし");
+//			}
+//			for (auto cnt = 0; cnt < object->GetTransform()->GetChildCount(); ++cnt)
+//			{
+//				// nullptr確認
+//				if (auto child = object->GetTransform()->GetChild(cnt).lock()->GetOwner(0) ; child.lock())
+//				{
+//					std::string ownname = child.lock()->GetName();
+//					const char* childName = ownname.c_str();
+//
+//					ImGui::BeginChild(childName, ImVec2(0, 30), false);
+//					ImGui::SameLine();
+//
+//#pragma region CHILD
+//					if (select = ImGui::Button(childName); select)
+//					{
+//						ImGuiManager::Get().GetInspector()->SetGameObject(child);
+//					}
+//					// ドラッグ設定
+//					if (ImGuiManager::Get().GetInspector()->GetSelectObject().lock() == object)
+//					{
+//						DragDropSource<CGameObject::PtrWeak>(CHierachy::DESC_SELECT_OBJ, object->GetName(), object);
+//					}
+//
+//					// ドラッグ&ドロップされたとき
+//					if (auto select = DragDropTarget<CGameObject::PtrWeak>(CHierachy::DESC_SELECT_OBJ); select)
+//						object->GetTransform()->AddChild(select->lock()->GetComponent<CTransform>());
+//#pragma endregion
+//
+//					ImGui::EndChild();
+//					ImGui::Separator();
+//					
+//					if (select)break;
+//				}
+//			}
+//			ImGui::TreePop();
+//		}
 	}
+	
 	ImGui::End();
 
 	// セーブロード
@@ -222,6 +286,66 @@ void CHierachy::DispSaveLoadMenu()
 	}
 	ImGui::End();
 }
+
+#pragma region GAME_OBJECT
+void CHierachy::DispChild(std::weak_ptr<MySpace::Game::CGameObject> object)
+{
+	bool select = false;
+
+	ImGui::SameLine();
+
+	// 子の表示
+	if (ImGui::TreeNode(std::string(object.lock()->GetName() + "-child-").c_str()))
+	{
+		if (object.lock()->GetTransform()->GetChildCount() == 0)
+		{
+			ImGui::Text(u8"なし");
+			ImGui::TreePop();
+			return;
+		}
+		
+		for (auto cnt = 0; cnt < object.lock()->GetTransform()->GetChildCount(); ++cnt)
+		{
+			// nullptr確認
+			if (auto child = object.lock()->GetTransform()->GetChild(cnt).lock()->GetOwner(0); child.lock())
+			{
+				std::string ownname = child.lock()->GetName();
+				const char* childName = ownname.c_str();
+
+#pragma region CHILD
+				if (select = ImGui::Button(childName); select)
+				{
+					ImGuiManager::Get().GetInspector()->SetGameObject(child);
+				}
+
+				// ドラッグ設定
+				//if (ImGuiManager::Get().GetInspector()->GetSelectObject().lock() == object.lock())
+				{
+					DragDropSource<CGameObject::PtrWeak>(CHierachy::DESC_SELECT_OBJ, child.lock()->GetName(), child);
+				}
+
+				// ドラッグ&ドロップされたとき
+				if (auto selectObj = DragDropTarget<CGameObject::PtrWeak>(CHierachy::DESC_SELECT_OBJ); selectObj)
+					child.lock()->GetTransform()->AddChild(selectObj->lock()->GetComponent<CTransform>());
+#pragma endregion
+
+				//ImGui::SameLine();
+				//--- 子要素を更に表示(再帰)
+				//if (auto childObj = child.lock()->GetTransform()->GetChild(0); childObj.lock())
+				DispChild(child.lock());
+
+				//ImGui::Separator();
+
+				if (select)
+					break;
+			}
+		}
+
+		ImGui::TreePop();
+	}
+}
+#pragma endregion
+
 #pragma region SEARCH
 void CHierachy::UpdateSearch()
 {
@@ -236,23 +360,25 @@ void CHierachy::UpdateSearch()
 	};
 	static const char* szDisp[static_cast<int>(ESearchTerms::MAX)] =
 	{
-		"objName","objTag","stateActiv","stateStop","stateDestroy"
+		"Name","Tag","sActiv","sStop","sDestroy"
 	};
 
-	m_Search.inputName = InputString(m_Search.inputName, u8"Search:");
-	ImGui::SameLine();
 	ImGui::Text((m_Search .bSearchCriteria? u8"Search:ON" : u8"Search:OFF"));
 	ImGui::SameLine();
 	if (ImGui::Button(u8"検索"))
 	{
 		m_Search.bSearchCriteria ^= true;
 	}
+	ImGui::SameLine();
+	m_Search.inputName = InputString(m_Search.inputName, u8"Search");
 
+	ImGui::Text(u8"Condition");
 	for (int cnt = 0; cnt < static_cast<int>(ESearchTerms::MAX); ++cnt)
 	{
 		ImGui::SameLine();
 		ImGui::RadioButton(szDisp[cnt], (int*)&m_Search.eTerms, nSearch[cnt]);
 	}
+	ImGui::Separator();
 }
 // 表示する対象か確認
 bool CHierachy::DispCheck(CGameObject* obj)

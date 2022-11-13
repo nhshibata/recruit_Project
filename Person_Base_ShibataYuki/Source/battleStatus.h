@@ -9,12 +9,15 @@
 #define __BATTLE_STATUS_COMPONENT_H__
 
 //--- インクルード部
+#include <GameSystem/GameObject/gameObject.h>
 #include <GameSystem/Component/component.h>
 #include <GameSystem/Component/Renderer/polygonRenderer.h>
 #include <CoreSystem/property.h>
 
 namespace Spell
 {
+	using namespace MySpace::Game;
+
 	// *@ステータスｸﾗｽ
 	class CBattleStatus : public CComponent
 	{

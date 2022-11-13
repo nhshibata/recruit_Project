@@ -35,7 +35,9 @@ namespace MySpace
 					CEREAL_NVP(m_diffuse), CEREAL_NVP(m_ambient), CEREAL_NVP(m_specular), CEREAL_NVP(m_direction)
 				);
 			}
+
 		private:
+			//--- ƒƒ“ƒo•Ï”
 			Vector4 m_diffuse;
 			Vector4 m_ambient;
 			Vector4 m_specular;

@@ -280,7 +280,7 @@ std::shared_ptr<CGameObject> CGameObjectManager::CreateGameObject(CGameObject* p
 	// 自身のweakPtrを渡す
 	spObj.get()->SetPtr(spObj);
 
-	TagMove("Default", spObj);
+	TagMove(CDefaultTagChar::DEFAULT, spObj);
 
 	spObj.get()->Awake();	// 実質OnCreateな気がする
 	AddGameObject(spObj);	// 追加待ちリストに追加

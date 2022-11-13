@@ -86,7 +86,7 @@ void CInspector::Update()
 
 			if (ImGui::MenuItem("Copy"))
 			{
-				Copy();
+				CopyGameObject();
 			}
 
 			if (ImGui::MenuItem("Delete"))
@@ -141,14 +141,20 @@ void CInspector::DeleteInformation()
 		}
 	}
 }
-void CInspector::Copy()
+void CInspector::CopyGameObject()
 {
-	if (!m_spViewObj.lock()) return;
+	if (!m_spViewObj.lock()) 
+		return;
 
 	m_spViewObj = CGameObject::CreateObject(m_spViewObj.lock().get());
-	//CGameObject* obj = new CGameObject(*m_object->obj.lock());
-	//std::shared_ptr<CGameObject> spobj = std::shared_ptr<CGameObject>(obj);
-	//SceneManager::CSceneManager::Get().GetActiveScene()->GetObjManager()->SetGameObject(spobj);
+	// ここで持ち主を渡す
+	// TODO: シリアライズ化して名前,ﾎﾟｲﾝﾀなどだけ上書きすればできる?
+	auto comList = m_spViewObj.lock()->GetComponentList();
+	for (auto & com : comList)
+	{
+		com->SetOwner(m_spViewObj.lock());
+		com->Init();
+	}
 }
 void CInspector::DebugObject()
 {

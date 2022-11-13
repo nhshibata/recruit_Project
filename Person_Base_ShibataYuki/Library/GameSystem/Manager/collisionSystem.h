@@ -13,7 +13,7 @@
 #include <CoreSystem/Util/stl.h>
 #include <GameSystem/Manager/mapSystemBase.h>
 
-#pragma region _forward_declaration
+#pragma region ForwardDeclaration
 namespace MySpace
 {
 	namespace Game

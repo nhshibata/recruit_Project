@@ -10,23 +10,27 @@
 
 //--- インクルード部
 #include <GameSystem/Component/component.h>
+#include <GameSystem/GameObject/gameObject.h>
 #include <vector>
 
+#pragma region ForwardDeclaration
 namespace MySpace
 {
 	using namespace MySpace::MyMath;
 
 	namespace Game
 	{
-		//--- 前方参照
 		class CGameObject;
 	}
 }
+#pragma endregion
 
 namespace MySpace
 {
 	namespace Game
 	{
+		using MySpace::Game::CGameObject;
+
 		//--- クラス定義
 		class CTransform : public CComponent
 		{
@@ -37,20 +41,20 @@ namespace MySpace
 			void save(Archive& archive) const
 			{
 				archive(cereal::make_nvp("transform", cereal::base_class<CComponent>(this)),
-					/*CEREAL_NVP(m_pChilds), CEREAL_NVP(m_pParent),*/
 					CEREAL_NVP(m_vPos), CEREAL_NVP(m_vOldPos), CEREAL_NVP(m_vRot),
 					CEREAL_NVP(m_vDestRot), CEREAL_NVP(m_vScale),
 					/*CEREAL_NVP(m_mWorldMtx),CEREAL_NVP(m_mLocalMtx),*/CEREAL_NVP(m_Rot)
+					/*CEREAL_NVP(m_pChilds), CEREAL_NVP(m_pParent),*/
 				);
 			}
 			template<class Archive>
 			void load(Archive& archive)
 			{
 				archive(cereal::make_nvp("transform", cereal::base_class<CComponent>(this)),
-					/*CEREAL_NVP(m_pChilds), CEREAL_NVP(m_pParent),*/
 					CEREAL_NVP(m_vPos), CEREAL_NVP(m_vOldPos), CEREAL_NVP(m_vRot),
 					CEREAL_NVP(m_vDestRot), CEREAL_NVP(m_vScale),
-					/*CEREAL_NVP(m_mWorldMtx),CEREAL_NVP(m_mLocalMtx),*/CEREAL_NVP(m_Rot)
+					/*CEREAL_NVP(m_mWorldMtx),CEREAL_NVP(m_mLocalMtx),*/ CEREAL_NVP(m_Rot)
+					/*CEREAL_NVP(m_pChilds), CEREAL_NVP(m_pParent),*/
 				);
 			}
 		private:
@@ -65,94 +69,114 @@ namespace MySpace
 			Quaternion m_Rot;
 
 		protected:
-			std::weak_ptr<CGameObject> m_pParent;				// 親オブジェクト
-			std::vector<std::weak_ptr<CGameObject>> m_pChilds;	// 子要素リスト
+			std::weak_ptr<CTransform> m_pParent;					// 親オブジェクト
+			std::vector<std::weak_ptr<CTransform>> m_pChilds;		// 子要素リスト
+		
+		private:
+			//--- メンバ関数
+			Matrix4x4 UpdateChildMatrix(CTransform* ptr, Matrix4x4 mtx);
 
 		public:
-			//--- メンバ関数
 			CTransform();
 			// *@ 親オブジェクトを教える
 			CTransform(std::shared_ptr<CGameObject> owner);
-			CTransform(std::shared_ptr<CGameObject> owner, Vector3 pos, Vector3 rot, Vector3 size);
 			~CTransform();
 
-			virtual void Uninit();
 			void Init();
+			virtual void Uninit();
 			void Update();
+			void UpdateWorldMatrix();
 
-			// ゲッター・セッター
-			inline Vector3 GetPos() { if (!m_pParent.lock()) { return m_vPos; } return m_vPos; };
-			inline Vector3 GetOldPos() { return m_vOldPos; };
-			inline Vector3 GetRot() { if (!m_pParent.lock()) { return m_vRot; }return m_vPos; }
-			inline Vector3 GetScale() { if (!m_pParent.lock()) { return m_vScale; } return m_vPos; };
+			//--- ゲッター・セッター
+			_NODISCARD inline Vector3 GetPos()		{ return m_vPos; };
+			_NODISCARD inline Vector3 GetRot()		{ return m_vRot; };
+			_NODISCARD inline Vector3 GetScale()	{ return m_vScale; };
+			_NODISCARD inline Vector3 GetOldPos()	{ return m_vOldPos; };
 			
 			Quaternion GetWorldQuaternion();
 			Quaternion GetLocalQuaternion();
-			inline XMFLOAT4X4 GetWorldMatrix() { return m_mWorldMtx; }
-			inline XMFLOAT4X4 GetLocalMatrix() { return m_mLocalMtx; }
+			_NODISCARD inline XMFLOAT4X4 GetWorldMatrix() { return m_mWorldMtx; }
+			_NODISCARD inline XMFLOAT4X4 GetLocalMatrix() { return m_mLocalMtx; }
 
-			inline void SetPos(Vector3 value) { m_vPos = value; };
-			inline void SetRot(Vector3 value) { m_vRot = value; };
-			inline void SetDestRot(Vector3 value) { m_vDestRot = value; };
-			inline void SetScale(Vector3 value) { m_vScale = value; };
+			inline void SetPos(Vector3 value)					{ m_vPos = value; };
+			inline void SetRot(Vector3 value)					{ m_vRot = value; };
+			inline void SetDestRot(Vector3 value)				{ m_vDestRot = value; };
+			inline void SetScale(Vector3 value)					{ m_vScale = value; };
 			inline void SetWorldQuaternion(const Quaternion &  rotation);
 			inline void SetLocalQuaternion(const Quaternion &  rotation);
-			inline void SetWorldMatrix();
 			void SetWorldMatrix(Vector3 translate, Vector3 rot, Vector3 scale);
-			inline void SetWorldMatrix(const XMFLOAT4X4 value) { m_mWorldMtx = value; }
-			inline void SetLocalMatrix(const XMFLOAT4X4 value) { m_mLocalMtx = value; }
+			inline void SetWorldMatrix(const XMFLOAT4X4 value)	{ m_mWorldMtx = value; }
+			inline void SetLocalMatrix(const XMFLOAT4X4 value)	{ m_mLocalMtx = value; }
 
-			Vector3 forward()
+			//--- 親子関係
+			// *@ 親オブジェクト取得
+			_NODISCARD inline std::weak_ptr<CTransform> GetParent()		{ return m_pParent; };				// 親を返す
+			// *@ 子オブジェクト取得
+			_NODISCARD inline 
+				std::vector<std::weak_ptr<CTransform>> GetChilds()		{ return m_pChilds; }
+			// *@ 子オブジェクト取得
+			_NODISCARD std::weak_ptr<CTransform> GetChild(int no);
+			// *@要素数を返す
+			_NODISCARD inline int GetChildCount()						{ return static_cast<int>(m_pChilds.size()); };
+
+			// *@ 親要素追加
+			inline void SetParent(std::weak_ptr<CTransform> parent)		{ m_pParent = parent; }
+			// *@ 子要素追加
+			void AddChild(std::weak_ptr<CTransform> child);
+			// *@ 子要素除外
+			void RemoveChild(std::weak_ptr<CTransform> child)
+			{
+				for (auto it = m_pChilds.begin(); it != m_pChilds.end(); ++it)
+				{
+					if ((*it).lock() == child.lock())
+					{
+						m_pChilds.erase(it); 
+						break;
+					}
+				}
+			}
+			// 親子関係解消
+			void ParentDissolved()
+			{
+				if (!m_pParent.lock())
+					return;
+				m_pParent.lock()->RemoveChild(BaseToDerived<CTransform>());
+				m_pParent.reset();
+			}
+
+			//--- オブジェクト向き取得
+			// *@前方
+			inline Vector3 forward()
 			{
 				DirectX::XMFLOAT4X4 mtx;
 				DirectX::XMStoreFloat4x4(&mtx,
-					DirectX::XMMatrixRotationRollPitchYaw(DirectX::XMConvertToRadians(m_vRot.x),
-														  DirectX::XMConvertToRadians(m_vRot.y),
-														  DirectX::XMConvertToRadians(m_vRot.z)));
+					DirectX::XMMatrixRotationRollPitchYaw(
+						DirectX::XMConvertToRadians(m_vRot.x),
+						DirectX::XMConvertToRadians(m_vRot.y),
+						DirectX::XMConvertToRadians(m_vRot.z)
+					));
 
 				return Vector3(mtx._31, mtx._32, mtx._33).Normalize();
 			}
-			Vector3 right()
+			// *@右方
+			inline Vector3 right()
 			{
 				DirectX::XMFLOAT4X4 mtx;
 				DirectX::XMStoreFloat4x4(&mtx,
-					DirectX::XMMatrixRotationRollPitchYaw(DirectX::XMConvertToRadians(m_vRot.y + 90.0f),
-														  DirectX::XMConvertToRadians(m_vRot.x),
-														  DirectX::XMConvertToRadians(m_vRot.z)));
+					DirectX::XMMatrixRotationRollPitchYaw(
+						DirectX::XMConvertToRadians(m_vRot.y + 90.0f),
+						DirectX::XMConvertToRadians(m_vRot.x),
+						DirectX::XMConvertToRadians(m_vRot.z)
+					));
 
 				return Vector3(mtx._31, mtx._32, mtx._33).Normalize();
 			}
-			Vector3 up()
+			// *@ 上方
+			inline Vector3 up()
 			{
 				return Vector3::Normalize(Vector3::Cross(forward(), right()));
 			}
 
-			// *@ 親オブジェクト取得
-			inline std::weak_ptr<CGameObject> GetParent() { return m_pParent; };				// 親を返す
-			// *@ 子オブジェクト取得
-			inline std::vector<std::weak_ptr<CGameObject>> GetChilds() { return m_pChilds; }
-			// *@ 子オブジェクト取得
-			std::weak_ptr<CGameObject> GetChild(int no);
-			inline int GetChildCount() { return (int)m_pChilds.size(); };	// 要素数を返す
-
-			// *@ 親要素追加
-			inline void SetParent(std::weak_ptr<CGameObject> parent) { m_pParent = parent; }
-			// *@ 子要素追加
-			void AddChild(std::weak_ptr<CGameObject> child) 
-			{ 
-				m_pChilds.push_back(child); 
-				child.lock()->GetTransform()->SetParent(GetOwner(0));
-			}
-			// *@ 子要素除外
-			void RemoveChild(std::weak_ptr<CGameObject> child) 
-			{
-				for (auto it = m_pChilds.begin(); it != m_pChilds.end(); ++it)
-				{
-					if ((*it).lock() == child.lock()) {
-						m_pChilds.erase(it); break;
-					}
-				}
-			}
 #ifdef BUILD_MODE
 
 			virtual void ImGuiDebug();

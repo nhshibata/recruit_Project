@@ -145,42 +145,6 @@ namespace MySpace
 		}
 #pragma endregion
 
-#pragma region DRAG_AND_DROP
-		// 定数などで管理すべき
-		// ドロップ先
-		template<class T>
-		T* DragDropTarget(std::string name)
-		{
-			if (ImGui::BeginDragDropTarget())
-			{
-				if (const ImGuiPayload* payload = ImGui::AcceptDragDropPayload(name.c_str()))
-				{
-					IM_ASSERT(payload->DataSize == sizeof(T));
-					/*T payload_type = *(const T*)payload->Data;
-					return &payload_type;*/
-					return (T*)payload->Data;
-				}
-				ImGui::EndDragDropTarget();
-			}
-			return nullptr;
-		}
-		// ドラッグ元
-		template<class T>
-		bool DragDropSource(std::string name, std::string moveName, T type)
-		{
-			if (ImGui::BeginDragDropSource())
-			{
-				const ImGuiPayload* payload = ImGui::GetDragDropPayload();
-				ImGui::SetDragDropPayload(name.c_str(), &type, sizeof(T));
-				// ドラッグ中のものの名前
-				ImGui::Text(std::string("Move Parent ==>>" + moveName).c_str());
-				ImGui::EndDragDropSource();
-				return true;
-			}
-			return false;
-		}
-#pragma endregion
-
 		// メニューポップ
 #pragma region POP_MENU
 		// -1はなにも選択していない判定

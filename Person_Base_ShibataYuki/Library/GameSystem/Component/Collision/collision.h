@@ -71,7 +71,6 @@ namespace MySpace
 			void RequestCollision();
 
 			//--- セッター・ゲッター
-			//std::string GetColTag() { return m_HitSubjectTag; };
 			// *@ 判定を行う際のすりぬけ確認
 			inline bool IsTrigger() { return m_bIsTrigger; };
 
@@ -94,7 +93,6 @@ namespace MySpace
 			// 離れたオブジェクトを持ち主に教える
 			// </Summary>
 			virtual bool ExitTell();
-
 
 #ifdef BUILD_MODE
 			virtual void ImGuiDebug();

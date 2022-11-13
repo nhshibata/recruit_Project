@@ -10,6 +10,7 @@
 #define __MAGE_SOCIETY_COMPONENT_H__
 
 //--- インクルード部
+#include <GameSystem/GameObject/gameObject.h>
 #include <GameSystem/Component/component.h>
 
 namespace Spell
@@ -19,6 +20,8 @@ namespace Spell
 
 namespace Spell
 {
+	using namespace MySpace::Game;
+
 	class CMageSociety : public CComponent
 	{
 	public:

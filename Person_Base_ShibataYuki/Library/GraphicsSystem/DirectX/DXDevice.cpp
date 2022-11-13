@@ -53,64 +53,64 @@ HRESULT CDXDevice::Init(HWND hWnd, unsigned int Width, unsigned int Height, bool
 	};
 	UINT numFeatureLevels = ARRAYSIZE(featureLevels);
 
-	//// Create a DirectX graphics interface factory
-	//hr = CreateDXGIFactory(__uuidof(IDXGIFactory), (void**)&factory);
-	//if (FAILED(hr)) {
-	//	return false;
-	//}
+	// Create a DirectX graphics interface factory
+	hr = CreateDXGIFactory(__uuidof(IDXGIFactory), (void**)&factory);
+	if (FAILED(hr)) {
+		return false;
+	}
 
-	//// use the factory to create an adpter for the primary graphics interface(video card)
-	//hr = factory->EnumAdapters(0, &adapter);
-	//if (FAILED(hr)) {
-	//	return false;
-	//}
+	// use the factory to create an adpter for the primary graphics interface(video card)
+	hr = factory->EnumAdapters(0, &adapter);
+	if (FAILED(hr)) {
+		return false;
+	}
 
-	//// enumerrate primary adapter output(monitor)
-	//hr = adapter->EnumOutputs(0, &adapterOutput);
-	//if (FAILED(hr)) {
-	//	return false;
-	//}
+	// enumerrate primary adapter output(monitor)
+	hr = adapter->EnumOutputs(0, &adapterOutput);
+	if (FAILED(hr)) {
+		return false;
+	}
 
-	//// get the number of modes that fit the DXGI_FORMAT_R8G8B8_UNORM display format forthe adapter output(monitor)
-	//hr = adapterOutput->GetDisplayModeList(DXGI_FORMAT_R8G8B8A8_UNORM, DXGI_ENUM_MODES_INTERLACED, &numModes, NULL);
-	//if (FAILED(hr)) {
-	//	return false;
-	//}
+	// get the number of modes that fit the DXGI_FORMAT_R8G8B8_UNORM display format forthe adapter output(monitor)
+	hr = adapterOutput->GetDisplayModeList(DXGI_FORMAT_R8G8B8A8_UNORM, DXGI_ENUM_MODES_INTERLACED, &numModes, NULL);
+	if (FAILED(hr)) {
+		return false;
+	}
 
-	//// create alist to hold all possible display modes for this monitor/video card combination
-	//displayModeList = new DXGI_MODE_DESC[numModes];
-	//if (!displayModeList) {
-	//	return false;
-	//}
+	// create alist to hold all possible display modes for this monitor/video card combination
+	displayModeList = new DXGI_MODE_DESC[numModes];
+	if (!displayModeList) {
+		return false;
+	}
 
-	//// now fill the display mode list structures
-	//hr = adapterOutput->GetDisplayModeList(DXGI_FORMAT_R8G8B8A8_UNORM, DXGI_ENUM_MODES_INTERLACED, &numModes, displayModeList);
-	//if (FAILED(hr)) {
-	//	return false;
-	//}
+	// now fill the display mode list structures
+	hr = adapterOutput->GetDisplayModeList(DXGI_FORMAT_R8G8B8A8_UNORM, DXGI_ENUM_MODES_INTERLACED, &numModes, displayModeList);
+	if (FAILED(hr)) {
+		return false;
+	}
 
-	//// now go through all the display modes and find the one that matches the screen width and height
-	//// when a match is found store the numerator and denominator of the refresh rate for that monitor
-	//for (unsigned int i = 0; i < numModes; i++) {
-	//	if (displayModeList[i].Width == Width) {
-	//		if (displayModeList[i].Height == Height) {
-	//			numerator = displayModeList[i].RefreshRate.Numerator;
-	//			denominator = displayModeList[i].RefreshRate.Denominator;
-	//		}
-	//	}
-	//}
+	// now go through all the display modes and find the one that matches the screen width and height
+	// when a match is found store the numerator and denominator of the refresh rate for that monitor
+	for (unsigned int i = 0; i < numModes; i++) {
+		if (displayModeList[i].Width == Width) {
+			if (displayModeList[i].Height == Height) {
+				numerator = displayModeList[i].RefreshRate.Numerator;
+				denominator = displayModeList[i].RefreshRate.Denominator;
+			}
+		}
+	}
 
-	//delete[] displayModeList;
-	//displayModeList = 0;
+	delete[] displayModeList;
+	displayModeList = 0;
 
-	//adapterOutput->Release();
-	//adapterOutput = 0;
+	adapterOutput->Release();
+	adapterOutput = 0;
 
-	//adapter->Release();
-	//adapter = 0;
+	adapter->Release();
+	adapter = 0;
 
-	//factory->Release();
-	//factory = 0;
+	factory->Release();
+	factory = 0;
 
 	// スワップチェインの設定
 	// スワップチェインとは、ウインドウへの表示ダブルバッファを管理する

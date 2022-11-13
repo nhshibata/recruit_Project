@@ -1,4 +1,13 @@
+//=========================================================
+// [Application.cpp]
+// ゲーム実行ｸﾗｽ
+//------------------------
+// 作成:2022/05/24
+// 更新:2022/11/12 FixedUpdate実装
+// 
+//=========================================================
 
+//--- インクルード部
 #define NOMINMAX
 //#include <Windows.h>
 #include <Crtdbg.h>
@@ -21,7 +30,7 @@ using namespace MySpace::Graphics;
 
 namespace
 {
-	const char*		WINDOW_TITLE = "百足の行進"; //"タイトル";
+	const char*		WINDOW_TITLE = "SPEL"; //"タイトル";
 	const char*		WINDOW_CLASS_NAME = CLASS_NAME;
 
 	const uint32_t	WINDOW_STYLE_WINDOWED = (WS_VISIBLE | WS_CAPTION | WS_SYSMENU);
@@ -107,7 +116,7 @@ unsigned long Application::MainLoop()
 	// ゲームの初期化処理
 	gameApp->Init(*this);
 
-	//タイム初期化処理
+	// タイム初期化処理
 	CFps::Get().Init();
 
 	// 無限ループ
@@ -116,11 +125,13 @@ unsigned long Application::MainLoop()
 		// fps更新
 		CFps::Get().Update();
 
+		// 固定時間更新
+		if (!CFps::Get().IsFixedUpdate())
+			gameApp->FixedUpdate(*this);
+
 		// 一定時間の更新
 		if (!CFps::Get().IsUpdate())
-		{
 			continue;
-		}
 
 		// 呼び出されれば更新
 		gameApp->InputUpdate();
@@ -130,7 +141,6 @@ unsigned long Application::MainLoop()
 
 		// ｹﾞｰﾑ更新
 		gameApp->Update(*this);
-		gameApp->FixedUpdate(*this);
 
 		// ｹﾞｰﾑ描画
 		gameApp->Draw(*this);

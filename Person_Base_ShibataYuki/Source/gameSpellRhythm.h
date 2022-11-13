@@ -8,6 +8,7 @@
 #define __GAME_SPELL_RHYTHM_COMPONENT_H__
 
 //--- インクルード部
+#include <GameSystem/GameObject/gameObject.h>
 #include <GameSystem/Component/component.h>
 #include <GameSystem/Manager/sceneManager.h>
 
@@ -38,6 +39,8 @@ class CFadeController;
 // 制作を分けるための名前空間の展開
 namespace Spell
 {
+	using namespace MySpace::Game;
+
 	class CGameSpellRhythm : public CComponent
 	{
 	private:

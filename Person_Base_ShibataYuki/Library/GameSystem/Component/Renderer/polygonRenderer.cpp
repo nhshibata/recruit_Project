@@ -39,6 +39,7 @@ void CPolygonRenderer::Awake()
 	if (!m_pRectTransform.lock())
 	{
 		m_pRectTransform = GetOwner()->AddComponent<CRectTransform>();
+		m_pRectTransform.lock()->SetSize(100, 100);
 	}
 
 	// Ã¸½Á¬‚Ì’Ç‰Á
@@ -109,14 +110,14 @@ void CPolygonRenderer::ImGuiDebug()
 	
 	m_pSprite->ImGuiDebug();
 
-	if (s_FileList.empty() || ImGui::Button("‰æ‘œ reload"))
+	if (s_FileList.empty() || ImGui::Button(u8"‰æ‘œ reload"))
 	{
 		MySpace::System::CFilePath file;
 		s_FileList = file.GetAllFileName(TEXTURE_PATH);
 	}
 
 	// Ã¸½Á¬
-	if (auto name = DispMenuBar(s_FileList, "‰æ‘œ"); !name.empty())
+	if (auto name = DispMenuBar(s_FileList, u8"‰æ‘œ"); !name.empty())
 	{
 		m_pSprite->SetImage(name);
 	}

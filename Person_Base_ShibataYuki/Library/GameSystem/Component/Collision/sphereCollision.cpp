@@ -8,12 +8,12 @@
 #include <GameSystem/Component/Collision/boxCollision.h>
 #include <GameSystem/GameObject/gameObject.h>
 #include <GameSystem/Manager/sceneManager.h>
+
 #include <ImGui/imgui.h>
 #include <GraphicsSystem/Render/Sphere.h>
 
 using namespace MySpace::Game;
 
-//
 CSphereCollision::CSphereCollision(std::shared_ptr<CGameObject> owner, float radius)
 	:CCollision(owner),m_fRadius(radius)
 {
@@ -105,7 +105,17 @@ bool CSphereCollision::HitCheckPtr(CCollision* other)
 
 	return false;
 }
-
+void CSphereCollision::PushObject(CSphereCollision* other)
+{
+	//---  ‰Ÿ‚µo‚µ
+	// “ñ“_ŠÔ‚Æ‚Q”¼Œa‚Ì·
+	Vector3 distance = Transform()->GetPos() - other->Transform()->GetPos();
+	float len = (GetRadius() + other->GetRadius()) - distance.Length();
+	// ‰Ÿ‚µo‚·•ûŒü
+	Vector3 vec = Vector3::Normalize(distance) * len;
+	// ‰Ÿ‚µo‚µ
+	Transform()->SetPos(Transform()->GetPos() + vec);
+}
 Vector3 CSphereCollision::PosAdjustment(Vector3 otherPos, float size)
 {
 	Vector3 checkPos = Transform()->GetPos();

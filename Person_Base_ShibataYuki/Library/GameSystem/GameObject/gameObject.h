@@ -95,6 +95,7 @@ namespace MySpace
 			std::weak_ptr<CScene> m_pScene;
 
 		public:
+			//--- メンバ関数
 			CGameObject();							// *@コンストラクタ
 			CGameObject(std::string name);			// *@引き数月コンストラクタ
 			CGameObject(const CGameObject& obj);	// *@コピーコンストラクタ
@@ -130,7 +131,7 @@ namespace MySpace
 				AddComponent(com);				// 配列への追加
 				return com;
 			}
-
+			
 			// *コンポーネントの追加
 			// *他onjのcomの場合、comの共有となる
 			std::shared_ptr<CComponent> AddComponent(std::shared_ptr<CComponent> com);
@@ -175,9 +176,10 @@ namespace MySpace
 
 			inline void SetScene(std::weak_ptr<CScene> scene) { m_pScene = scene; };
 			inline void SetTransform(std::shared_ptr<CTransform> trans) { m_Transform = trans; };
-			inline void SetState(const E_ObjectState state) { m_eState = state; }// TODO: 状態により親子関係にあるオブジェクトの状態を変える
 			inline void SetLayer(int layer) { m_Layer->SetLayer(layer); };
 			inline void SetLayer(CLayer::E_Layer layer) { m_Layer->SetLayer(layer); };
+			// *@状態により親子関係にあるオブジェクトの状態を変える
+			void SetState(const E_ObjectState state);
 			void SetTag(const std::string tag);
 
 			//--- 仮想関数
@@ -203,7 +205,9 @@ namespace MySpace
 			static void DontDestroy(std::weak_ptr<CGameObject> obj);								// *オブジェクト破棄除外
 
 #ifdef BUILD_MODE
-
+		private:
+			int m_nCopyCnt = 0;
+		public:
 			virtual void ImGuiDebug();
 
 #endif // BUILD_MODE

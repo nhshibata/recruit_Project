@@ -9,6 +9,7 @@
 //--- インクルード部
 #include <GameSystem/Component/Collision/collision.h>
 
+#pragma region ForwardDeclaration
 namespace MySpace
 {
 	namespace Graphics
@@ -16,6 +17,7 @@ namespace MySpace
 		class CSphere;
 	}
 }
+#pragma endregion
 
 namespace MySpace
 {
@@ -50,29 +52,21 @@ namespace MySpace
 			CSphereCollision(std::shared_ptr<CGameObject> owner, float radius = 1.0f);
 			~CSphereCollision();
 
-			//--- ゲッター・セッター
-			inline float GetRadius() { return m_fRadius; };
-			inline void SetRadius(float radius) { m_fRadius = radius; };
-
 			bool Sphere(Vector3 Apos, float Ar, Vector3 Bpos, float Br);
 			bool CollisionSphere(Vector3 pos, float radius);
 
-			//
 			Vector3 PosAdjustment(Vector3 pos, Vector3 size) {};
 			Vector3 PosAdjustment(Vector3 pos, float size);
-			bool HitCheckPtr(CCollision* col);		// コリジョンｸﾗｽを引き数にとって、当たり判定を行う
+
+			// *@コリジョンｸﾗｽを引き数にとって、当たり判定を行う
+			bool HitCheckPtr(CCollision* col);
 			
-			void PushObject(CSphereCollision* other)
-			{
-				//---  押し出し
-				// 二点間と２半径の差
-				Vector3 distance = Transform()->GetPos() - other->Transform()->GetPos();
-				float len = (GetRadius() + other->GetRadius()) - distance.Length();
-				// 押し出す方向
-				Vector3 vec = Vector3::Normalize(distance) * len;
-				// 押し出し
-				Transform()->SetPos(Transform()->GetPos() + vec);
-			}
+			// *@押し出し
+			void PushObject(CSphereCollision* other);
+
+			//--- ゲッター・セッター
+			inline float GetRadius() { return m_fRadius; };
+			inline void SetRadius(float radius) { m_fRadius = radius; };
 
 #ifdef BUILD_MODE
 		private:
