@@ -55,11 +55,12 @@ void CTransform::Init()
 }
 void CTransform::Update()
 {
+	//--- 過去座標格納
 	if (m_vOldPos != m_vPos)
 	{
 		m_vOldPos = m_vPos;
 	}
-
+	//--- マトリックスの更新
 	UpdateWorldMatrix();
 }
 Quaternion CTransform::GetWorldQuaternion()
@@ -124,6 +125,7 @@ void CTransform::SetLocalQuaternion(const Quaternion &  rotation)
 }
 Matrix4x4 CTransform::UpdateChildMatrix(CTransform* child, Matrix4x4 mtx)
 {
+	// 子のワールドマトリックス更新
 	child->UpdateWorldMatrix();
 
 	Matrix4x4 childMtx;
@@ -133,7 +135,7 @@ Matrix4x4 CTransform::UpdateChildMatrix(CTransform* child, Matrix4x4 mtx)
 	));
 	child->SetWorldMatrix(childMtx);
 
-	// 孫の確認
+	// 孫の更新
 	int size = child->GetChildCount();
 	std::weak_ptr<CTransform> childT;
 
@@ -142,9 +144,11 @@ Matrix4x4 CTransform::UpdateChildMatrix(CTransform* child, Matrix4x4 mtx)
 		childT = child->GetChild(cnt);
 		if (childT.lock())
 		{	// 再帰
+			// 子のマトリックスから孫のマトリックスを更新する
 			UpdateChildMatrix(childT.lock().get(), childMtx);
 		}
 	}
+	// 確認用、受け取るかはわからない
 	return childMtx;
 }
 void CTransform::AddChild(std::weak_ptr<CTransform> child)
@@ -158,7 +162,7 @@ void CTransform::AddChild(std::weak_ptr<CTransform> child)
 		if (child.lock() == com.lock())
 			break;
 	}
-	// 親子解除
+	// 既に親が居れば親子解除
 	if (auto parent = child.lock()->GetParent(); parent.lock())
 	{
 		parent.lock()->RemoveChild(this->BaseToDerived<CTransform>());
@@ -186,7 +190,6 @@ std::weak_ptr<CTransform> CTransform::GetChild(int no)
 void CTransform::ImGuiDebug()
 {
 	// 3次元座標
-	//ImGui::InputFloat3(u8"プレイヤー座標", (float*)&this->GetPos());
 	ImGui::DragFloat3(u8"座標", (float*)m_vPos);
 	ImGui::Text(u8"過去座標 %f %f %f", m_vOldPos.x, m_vOldPos.y, m_vOldPos.z);
 	ImGui::DragFloat3(u8"角度", (float*)m_vRot);

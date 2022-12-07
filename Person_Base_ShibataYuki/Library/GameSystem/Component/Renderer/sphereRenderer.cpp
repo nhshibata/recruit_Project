@@ -32,6 +32,7 @@ void CSphereRenderer::Update()
 bool CSphereRenderer::Draw()
 {
 	if (!CMeshRenderer::Draw())return false;
+	m_pBSphere->SetMaterial(GetMaterial());
 
 	XMVECTOR vCenter = XMLoadFloat3(&GetCenter());
 	XMMATRIX mWorld = XMLoadFloat4x4(&Transform()->GetWorldMatrix());
@@ -63,15 +64,13 @@ HRESULT CSphereRenderer::SetSphere(float radius)
 	}
 	return hr;
 }
-void CSphereRenderer::SetMaterial(CMeshMaterial mat)
-{
-	m_pBSphere->SetMaterial(&mat);
-}
 
 #if BUILD_MODE
 
 void CSphereRenderer::ImGuiDebug()
 {
+	//this->SetMaterial(*this->GetMaterial());
+
 	if(ImGui::Button(u8"SphereRenderer"))
 		m_fRadius = Transform()->GetScale().GetLargeValue();
 	if (ImGui::DragFloat("Radius", &m_fRadius))

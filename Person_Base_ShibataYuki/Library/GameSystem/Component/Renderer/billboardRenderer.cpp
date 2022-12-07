@@ -77,13 +77,14 @@ void CBillboardRenderer::ImGuiDebug()
 
 	m_pSprite->ImGuiDebug();
 
+	// 画像のリロード
 	if (s_FileList.empty() || ImGui::Button(u8"画像 reload"))
 	{
 		MySpace::System::CFilePath file;
 		s_FileList = file.GetAllFileName(TEXTURE_PATH);
 	}
 
-	// ﾃｸｽﾁｬ
+	//--- メニューからﾃｸｽﾁｬ選択
 	if (auto name = DispMenuBar(s_FileList, u8"画像"); !name.empty())
 	{
 		m_pSprite->SetImage(name);

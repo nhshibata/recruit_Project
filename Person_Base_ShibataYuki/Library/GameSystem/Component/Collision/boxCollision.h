@@ -49,7 +49,7 @@ namespace MySpace
 
 		public:
 			CBoxCollision() {};
-			CBoxCollision(std::shared_ptr<CGameObject> owner, Vector3 size = Vector3(1, 1, 1));
+			CBoxCollision(std::shared_ptr<CGameObject> owner, Vector3 size = Vector3(10, 10, 10));
 			~CBoxCollision();
 
 			bool Box(Vector3 Apos, Vector3 Asize, Vector3 Bpos, Vector3 Bsize);

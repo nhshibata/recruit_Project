@@ -1,9 +1,10 @@
 //=========================================================
 // [hirarchy.cpp] 
 // 作成:2022/07/10
+// 更新:2022/11/12 Drag&Dropで親子関係
 //---------------------------------------------------------
+// GameObjectを表示、操作する
 //=========================================================
-
 
 //--- インクルード部
 #include <DebugSystem/hierarchy.h>
@@ -61,6 +62,7 @@ void CHierachy::Update()
 	bool flg = true;
 	ImGui::Begin(u8"Hierarchy", &flg, ImGuiWindowFlags_MenuBar);
 
+	// シーンが存在していなければ処理しない
 	if (!CSceneManager::Get().GetActiveScene())
 		return;
 
@@ -69,11 +71,10 @@ void CHierachy::Update()
 		ImGuiManager::Get().UpHover(ImGuiManager::EIsHovered::HOVERED_WINDOW);
 	}
 
-	auto objList = CSceneManager::Get().GetActiveScene()->GetObjManager()->GetList();
-
+	//--- メニューバー
 	if (ImGui::BeginMenuBar())
 	{
-		// ファイル
+		//--- シーン
 		if (ImGui::BeginMenu("File"))
 		{
 			if (ImGui::MenuItem("New Scene"))
@@ -87,55 +88,55 @@ void CHierachy::Update()
 			}
 			ImGui::EndMenu();
 		}
-		// オブジェクト生成
+		//--- オブジェクト生成
 		if (ImGui::BeginMenu("GameObject"))
 		{
 			if (ImGui::MenuItem("Empty"))
 			{
 				auto obj = CSceneManager::Get().GetActiveScene()->GetObjManager()->CreateGameObject();
-				ImGuiManager::Get().GetInspector()->SetGameObject(obj);
+				ImGuiManager::Get().GetInspector()->SetSelectGameObject(obj);
 			}
 			if (ImGui::MenuItem("Model"))
 			{
 				auto obj = CGameObject::CreateObject().lock();
 				obj->AddComponent<CModelRenderer>();
 				// ｺﾝﾎﾟｰﾈﾝﾄの追加後
-				ImGuiManager::Get().GetInspector()->SetGameObject(obj);
+				ImGuiManager::Get().GetInspector()->SetSelectGameObject(obj);
 			}
 			if (ImGui::MenuItem("Billboard"))
 			{
 				auto obj = CGameObject::CreateObject().lock();
 				obj->AddComponent<Game::CBillboardRenderer>();
 				// ｺﾝﾎﾟｰﾈﾝﾄの追加後
-				ImGuiManager::Get().GetInspector()->SetGameObject(obj);
+				ImGuiManager::Get().GetInspector()->SetSelectGameObject(obj);
 			}
 			if (ImGui::MenuItem("Sphere"))
 			{
 				auto obj = CGameObject::CreateObject().lock();
 				obj->AddComponent<Game::CSphereRenderer>();
 				// ｺﾝﾎﾟｰﾈﾝﾄの追加後
-				ImGuiManager::Get().GetInspector()->SetGameObject(obj);
+				ImGuiManager::Get().GetInspector()->SetSelectGameObject(obj);
 			}
 			if (ImGui::MenuItem("Box"))
 			{
 				auto obj = CGameObject::CreateObject().lock();
 				obj->AddComponent<Game::CBoxRenderer>();
 				// ｺﾝﾎﾟｰﾈﾝﾄの追加後
-				ImGuiManager::Get().GetInspector()->SetGameObject(obj);
+				ImGuiManager::Get().GetInspector()->SetSelectGameObject(obj);
 			}
 			if (ImGui::MenuItem("Polygon"))
 			{
 				auto obj = CGameObject::CreateObject().lock();
 				obj->AddComponent<Game::CPolygonRenderer>();
 				// ｺﾝﾎﾟｰﾈﾝﾄの追加後
-				ImGuiManager::Get().GetInspector()->SetGameObject(obj);
+				ImGuiManager::Get().GetInspector()->SetSelectGameObject(obj);
 			}
 			if (ImGui::MenuItem("Text"))
 			{
 				auto obj = CGameObject::CreateObject().lock();
 				obj->AddComponent<Game::CTextRenderer>();
 				// ｺﾝﾎﾟｰﾈﾝﾄの追加後
-				ImGuiManager::Get().GetInspector()->SetGameObject(obj);
+				ImGuiManager::Get().GetInspector()->SetSelectGameObject(obj);
 			}
 			ImGui::EndMenu();
 		}
@@ -143,8 +144,10 @@ void CHierachy::Update()
 	}
 
 	// 検索更新
-	UpdateSearch();
+	DispSearch();
 
+	//--- GameObject表示
+	auto objList = CSceneManager::Get().GetActiveScene()->GetObjManager()->GetList();
 	// ゲームオブジェクト名の表示と子要素の表示
 	for (const auto & object : objList)
 	{
@@ -163,7 +166,7 @@ void CHierachy::Update()
 		// 選択ボタン、ウィンドウ表示
 		if (ImGui::Button(object->GetName().c_str()) )
 		{
-			ImGuiManager::Get().GetInspector()->SetGameObject(object);
+			ImGuiManager::Get().GetInspector()->SetSelectGameObject(object);
 			break;
 		}
 
@@ -177,50 +180,8 @@ void CHierachy::Update()
 		if (auto select = DragDropTarget<CGameObject::PtrWeak>(CHierachy::DESC_SELECT_OBJ); select)
 			object->GetTransform()->AddChild(select->lock()->GetComponent<CTransform>());
 
+		//--- 子要素の表示
 		DispChild(object);
-
-//		// 子の表示
-//		if (ImGui::TreeNode(std::string(object->GetName() + "child-").c_str()))
-//		{
-//			if (object->GetTransform()->GetChild(0).expired())
-//			{
-//				ImGui::Text(u8"なし");
-//			}
-//			for (auto cnt = 0; cnt < object->GetTransform()->GetChildCount(); ++cnt)
-//			{
-//				// nullptr確認
-//				if (auto child = object->GetTransform()->GetChild(cnt).lock()->GetOwner(0) ; child.lock())
-//				{
-//					std::string ownname = child.lock()->GetName();
-//					const char* childName = ownname.c_str();
-//
-//					ImGui::BeginChild(childName, ImVec2(0, 30), false);
-//					ImGui::SameLine();
-//
-//#pragma region CHILD
-//					if (select = ImGui::Button(childName); select)
-//					{
-//						ImGuiManager::Get().GetInspector()->SetGameObject(child);
-//					}
-//					// ドラッグ設定
-//					if (ImGuiManager::Get().GetInspector()->GetSelectObject().lock() == object)
-//					{
-//						DragDropSource<CGameObject::PtrWeak>(CHierachy::DESC_SELECT_OBJ, object->GetName(), object);
-//					}
-//
-//					// ドラッグ&ドロップされたとき
-//					if (auto select = DragDropTarget<CGameObject::PtrWeak>(CHierachy::DESC_SELECT_OBJ); select)
-//						object->GetTransform()->AddChild(select->lock()->GetComponent<CTransform>());
-//#pragma endregion
-//
-//					ImGui::EndChild();
-//					ImGui::Separator();
-//					
-//					if (select)break;
-//				}
-//			}
-//			ImGui::TreePop();
-//		}
 	}
 	
 	ImGui::End();
@@ -315,7 +276,7 @@ void CHierachy::DispChild(std::weak_ptr<MySpace::Game::CGameObject> object)
 #pragma region CHILD
 				if (select = ImGui::Button(childName); select)
 				{
-					ImGuiManager::Get().GetInspector()->SetGameObject(child);
+					ImGuiManager::Get().GetInspector()->SetSelectGameObject(child);
 				}
 
 				// ドラッグ設定
@@ -347,20 +308,21 @@ void CHierachy::DispChild(std::weak_ptr<MySpace::Game::CGameObject> object)
 #pragma endregion
 
 #pragma region SEARCH
-void CHierachy::UpdateSearch()
+void CHierachy::DispSearch()
 {
 	// for文変数
 	static const int nSearch[static_cast<int>(ESearchTerms::MAX)] =
 	{
 		static_cast<int>(ESearchTerms::OBJ_NAME),
 		static_cast<int>(ESearchTerms::TAG),
+		static_cast<int>(ESearchTerms::COMPONENT),
 		static_cast<int>(ESearchTerms::STATE_ACTIVE),
 		static_cast<int>(ESearchTerms::STATE_STOP),
 		static_cast<int>(ESearchTerms::STATE_DESTROY),
 	};
 	static const char* szDisp[static_cast<int>(ESearchTerms::MAX)] =
 	{
-		"Name","Tag","sActiv","sStop","sDestroy"
+		"Name","Tag","Component","sActiv","sStop","sDestroy"
 	};
 
 	ImGui::Text((m_Search .bSearchCriteria? u8"Search:ON" : u8"Search:OFF"));
@@ -370,6 +332,7 @@ void CHierachy::UpdateSearch()
 		m_Search.bSearchCriteria ^= true;
 	}
 	ImGui::SameLine();
+	// 入力
 	m_Search.inputName = InputString(m_Search.inputName, u8"Search");
 
 	ImGui::Text(u8"Condition");
@@ -385,16 +348,22 @@ bool CHierachy::DispCheck(CGameObject* obj)
 {
 	switch (m_Search.eTerms)
 	{
-	case MySpace::Debug::CHierachy::ESearchTerms::OBJ_NAME:
-		// 一部一致
+	case MySpace::Debug::CHierachy::ESearchTerms::OBJ_NAME:		// 文字列一部一致でも可
 		if (obj->GetName().find(m_Search.inputName) != std::string::npos)
-		{
 			return true;
+		break;
+	case MySpace::Debug::CHierachy::ESearchTerms::TAG:			// tag比較
+		return obj->GetTagPtr()->Compare(m_Search.inputName);
+	case MySpace::Debug::CHierachy::ESearchTerms::COMPONENT:
+	{
+		auto comList = obj->GetComponentList();					// 文字列一部一致でも可
+		for (const auto & com : comList)
+		{
+			if (com->GetName().find(m_Search.inputName) != std::string::npos)
+				return true;
 		}
 		break;
-	case MySpace::Debug::CHierachy::ESearchTerms::TAG:
-		// tag比較
-		return obj->GetTagPtr()->Compare(m_Search.inputName);
+	}
 	case MySpace::Debug::CHierachy::ESearchTerms::STATE_ACTIVE:
 		return obj->GetState() == CGameObject::E_ObjectState::ACTIVE;
 	case MySpace::Debug::CHierachy::ESearchTerms::STATE_STOP:

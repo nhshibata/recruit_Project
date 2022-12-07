@@ -21,8 +21,6 @@ namespace MySpace
 {
 	namespace Game
 	{
-		//using MySpace::Graphics::EModelType;
-
 		class CModelRenderer : public CMeshRenderer
 		{
 		private:
@@ -47,6 +45,14 @@ namespace MySpace
 		private:
 			ModelWeakPtr m_pModel;
 			std::string m_modelName;
+			UINT m_nVertex;				// 頂点数
+			TAssimpVertex* m_pVertex;	// 頂点配列
+			UINT m_nIndex;				// インデックス数
+			UINT* m_pIndex;				// インデックス配列
+
+		private:
+			void InitVertexArray();
+			void FinVertexArray();
 
 		public:
 			CModelRenderer() {};
@@ -59,11 +65,19 @@ namespace MySpace
 			virtual bool Draw();
 			bool Draw(int);
 
+			// レイとの当たり判定
+			bool CollisionRay(XMFLOAT3 vP0, XMFLOAT3 vW, XMFLOAT3* pX = nullptr, XMFLOAT3* pN = nullptr);
+
+			// 線分との当たり判定
+			bool CollisionLineSegment(XMFLOAT3 vP0, XMFLOAT3 vP1, XMFLOAT3* pX = nullptr, XMFLOAT3* pN = nullptr);
+
+			//--- ゲッター・セッター
 			inline void SetModel(ModelWeakPtr model) { m_pModel = model; /*m_modelName = model.lock()->GetFileName();*/ }
 			void SetModel(std::string name);
 			
 			inline ModelWeakPtr GetModel() { return m_pModel; }
 			inline std::string GetModelName() { return m_modelName; }
+
 #ifdef BUILD_MODE
 
 			virtual void ImGuiDebug();

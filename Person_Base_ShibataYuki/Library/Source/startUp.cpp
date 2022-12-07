@@ -28,6 +28,8 @@
 // 更新:2022/08/28～8/31 UEぷちコン制作作業で休み
 // 更新:2022/09/01 制作再開。ムカデの分割表示
 // 更新:2022/11/01 インターンで停止していたので再開。
+// 更新:2022/12/07 描画システムや当たり判定システム改善したり
+//					NavMeshとAISystem(Behavior)を移植
 // 
 //
 // 内容:コンポーネント指向をベースとしたプログラム。
@@ -49,7 +51,7 @@
 
 #include <Application/main.h>
 #include <GameSystem/Manager/sceneManager.h>
-#include <gameCentipedeMarch.h>
+//#include <gameCentipedeMarch.h>
 
 // ライブラリ参照
 // プロパティで指定するか、ここで指定するか…悩みどころ

@@ -9,7 +9,6 @@
 #define __INSPECTOR_H__
 
 //--- インクルード部
-#include <DebugSystem/debug.h>
 #include <vector>
 #include <memory>
 #include <CoreSystem/Math/myVector.h>
@@ -42,7 +41,7 @@ namespace MySpace
 		class CInspector
 		{
 		private:
-			enum class EObjMoveType : int
+			/*enum class EObjMoveType : int
 			{
 				POSITION = 0,
 				ROTATE,
@@ -54,26 +53,26 @@ namespace MySpace
 				EObjMoveType eType = EObjMoveType::POSITION;
 				float fMoveValue = 1.0f;
 				std::weak_ptr<CRectTransform> spRect;
-			};
+			};*/
 		private:
 			std::weak_ptr<CGameObject> m_spViewObj;
 			std::vector<bool> m_isDrawInfo;
 			bool m_isComponent;
 			bool m_isDeleted;
 			//bool m_bDispObj;
-			STTransformSet m_TransformController;
+			//STTransformSet m_TransformController;
 
 		private:
 			//--- メンバ関数
-			void DebugObject();
-			void MoveObject();
-			void AddComponentWindow();
-			void DeleteObject();
-			void DeleteInformation();
-			void CopyGameObject();
-			void Value(float* value, MySpace::MyMath::Vector3* vec);
-			void Value(float* value, MySpace::MyMath::Vector2* vec);
-			void Value(float* value, float vec);
+			void DispDebugSelectObject();		// *@選択中Objectの表示
+			void AddComponentWindow();			// *@選択中Objectのウィンドウ表示
+			void DeleteObject();				// *@削除
+			void CopyGameObject();				// *@オブジェクトのｺﾋﾟｰ
+			void DispPopUpMenuObject();
+			//void MoveObject();
+			//void Value(float* value, MySpace::MyMath::Vector3* vec);
+			//void Value(float* value, MySpace::MyMath::Vector2* vec);
+			//void Value(float* value, float vec);
 		public:
 			CInspector();
 			~CInspector();
@@ -84,7 +83,7 @@ namespace MySpace
 			void Draw();
 
 			_NODISCARD inline std::weak_ptr<CGameObject> GetSelectObject() { return  m_spViewObj; }
-			void SetGameObject(std::weak_ptr<CGameObject> obj);
+			void SetSelectGameObject(std::weak_ptr<CGameObject> obj);
 			//void SetDispObj(bool flg) { m_bDispObj = flg; }
 		};
 	}

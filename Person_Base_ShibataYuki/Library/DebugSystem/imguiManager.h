@@ -55,7 +55,10 @@ namespace MySpace
 			friend class CAppSystem<ImGuiManager>;
 			friend class CSingleton<ImGuiManager>;
 		public:
-			enum EIsHovered
+			//--- 列挙体定義
+			// *@マウスの状態を確認するフラグ
+			// *@2進数により複数状態を確認する
+			enum EIsHovered	
 			{
 				MAX_HOVERD = 7,
 				HOVERED_NONE	= 0,

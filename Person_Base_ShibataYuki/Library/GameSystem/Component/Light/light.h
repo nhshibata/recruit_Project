@@ -46,8 +46,7 @@ namespace MySpace
 			CLight(std::shared_ptr<CGameObject> owner);
 			~CLight();
 
-			void Init();				// 初期化 他コンポーネントの取得などを行う
-			void Update();				// 更新
+			virtual void Awake();			// 初期化 他コンポーネントの取得などを行う
 			//void LateUpdate();			// 遅い更新
 
 			inline void SetEnable(bool bEnable = true) { m_bEnable = bEnable; }

@@ -9,7 +9,7 @@
 #include <GameSystem/Manager/gameObjectManager.h>
 #include <CoreSystem/Util/stl.h>
 
-//--- ‘O•ûQÆ
+//--- ‘O•ûéŒ¾
 namespace MySpace
 {
 	namespace Game
@@ -40,19 +40,16 @@ namespace MySpace
 
 			std::string m_SceneName;
 			std::weak_ptr<CScene> m_spPtr;
-		private:
-			//--- ÒİÊŞŠÖ”
-			void SetScene(std::weak_ptr<CScene> scene) 
-			{
-				m_spPtr = scene; 
-				m_objeManager->SetAffiliationScene(m_spPtr.lock());
-			}
+
+		
+			
 		public:
+			//--- ÒİÊŞŠÖ”
 			CScene();
 			CScene(std::string name);
 			virtual ~CScene();
 			
-			virtual void Init();
+			virtual void Init(std::weak_ptr<CScene> scene);
 			virtual void Uninit();
 			virtual void Update();
 			virtual void FixedUpdate();

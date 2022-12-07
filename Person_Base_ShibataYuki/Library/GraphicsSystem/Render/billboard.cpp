@@ -96,10 +96,10 @@ void CBillboard::Update(Vector3 pos, Vector2 size)
 
 	SetWorld(&mtx);
 
-	// ƒ|ƒŠƒSƒ“‚Ì•`‰æ
-	GetMaterial()->m_Diffuse.x += 0.01f;
-	if (GetMaterial()->m_Diffuse.x > 1)
-		GetMaterial()->m_Diffuse.x = 0;
+	// Šm”F
+	//GetMaterial()->m_Diffuse.x += 0.01f;
+	//if (GetMaterial()->m_Diffuse.x > 1)
+	//	GetMaterial()->m_Diffuse.x = 0;
 }
 
 void CBillboard::Draw(ID3D11ShaderResourceView* pTex, CSpriteAnimation* pSprite)
@@ -114,9 +114,11 @@ void CBillboard::Draw(ID3D11ShaderResourceView* pTex, CSpriteAnimation* pSprite)
 		auto uvSize = pSprite->GetFrameSize();
 		auto uv = pSprite->GetUV();
 		XMFLOAT4X4 mtxTexture;
-		XMMATRIX mtxTex = XMMatrixScaling(uvSize.x,
+		XMMATRIX mtxTex = XMMatrixScaling(
+			uvSize.x,
 			uvSize.y, 1.0f);
-		mtxTex = XMMatrixMultiply(mtxTex, XMMatrixTranslation(uv.x,
+		mtxTex = XMMatrixMultiply(mtxTex, XMMatrixTranslation(
+			uv.x,
 			uv.y, 0.0f));
 		XMStoreFloat4x4(&mtxTexture, mtxTex);
 		//XMStoreFloat4x4(&mtxTexture, XMMatrixIdentity());

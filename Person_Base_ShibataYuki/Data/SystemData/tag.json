@@ -1,6 +1,7 @@
 {
     "tagList": [
         "Default",
-        "camera"
+        "MainCamera",
+        "light"
     ]
 }

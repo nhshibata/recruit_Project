@@ -7,6 +7,7 @@
 //--- インクルード部
 #include <GameSystem/Component/Light/directionalLight.h>
 #include <GameSystem/GameObject/gameObject.h>
+#include <GameSystem/Component/Transform/transform.h>
 #include <ImGui/imgui.h>
 
 using namespace MySpace::Game;
@@ -25,17 +26,20 @@ namespace
 CDirectionalLight::CDirectionalLight(std::shared_ptr<CGameObject> owner)
 	:CLight(owner)
 {
+	Set(this);
 }
 CDirectionalLight::~CDirectionalLight()
 {
 
 }
 
-void CDirectionalLight::Init()
+void CDirectionalLight::Awake()
 {
-	Set(this);
+	CLight::Init();
 	XMFLOAT3 vDir = LIGHT0_DIRECTION;
 	XMStoreFloat3(&m_direction, XMVector3Normalize(XMLoadFloat3(&vDir)));
+	//this->Transform()->SetRot(m_direction);
+
 	m_diffuse = LIGHT0_DIFFUSE;
 	m_ambient = LIGHT0_AMBIENT;
 	m_specular = LIGHT0_SPECULAR;
@@ -43,8 +47,11 @@ void CDirectionalLight::Init()
 }
 XMFLOAT3& CDirectionalLight::GetDir()
 {
-	if (IsEnable()) 
+	if (IsEnable())
+	{
+		//m_direction = this->Transform()->GetRot();
 		return m_direction;
+	}
 	static XMFLOAT3 off(0.0f, 0.0f, 0.0f);
 	return off;
 }
@@ -55,4 +62,5 @@ void CDirectionalLight::ImGuiDebug()
 {
 
 }
+
 #endif // BUILD_MODE

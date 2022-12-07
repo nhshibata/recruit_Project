@@ -20,11 +20,17 @@ using namespace MySpace::Debug;
 using namespace MySpace::MyMath;
 using namespace MySpace::Game;
 
+void CMyGizmo::Init()
+{
+	m_CurrentGizmoOperation = ImGuizmo::TRANSLATE;
+	m_CurrentGizmoMode = ImGuizmo::LOCAL;
+	ImGuizmo::AllowAxisFlip(false);
+
+}
 void CMyGizmo::EditTransform(const CCamera& camera, CTransform* editTransform)
 {
 	Matrix4x4 matrix = editTransform->GetWorldMatrix();
 	//ImGuizmo::SetDrawlist();
-	ImGuizmo::AllowAxisFlip(false);
 	
 	if (GetAsyncKeyState('W'))
 		m_CurrentGizmoOperation = ImGuizmo::TRANSLATE;
@@ -117,7 +123,6 @@ void CMyGizmo::EditTransform(const CCamera& camera, CTransform* editTransform)
 	ImGuizmo::DecomposeMatrixToComponents((float*)local.m, (float*)&localTrans, (float*)&localRot, (float*)&localScal);
 
 	// s—ñÝ’è
-	//editTransform->SetWorldMatrix(matrix);
 	editTransform->SetWorldMatrix(localTrans, localRot, localScal);
 
 	// ‘I‘ðó‘ÔÝ’è
@@ -130,13 +135,10 @@ void CMyGizmo::EditTransform(const CCamera& camera, CTransform* editTransform)
 
 	//--- ¶Ò×‚ÌŽp¨
 	auto viewMatrix = CCamera::GetMain()->GetViewMatrix().m;
-	//auto view = CCamera::GetMain()->GetViewMatrix();
 	//if (CScreen::ScreenJudg(Vector3(view._41, view._42, view._43)))
 	{
 		ImGuizmo::ViewManipulate((float*)&viewMatrix, 8, ImVec2(io.DisplaySize.x, io.DisplaySize.y), ImVec2(128, 128), 0x10101010);
 	}
-
-	// 
 
 
 }

@@ -10,9 +10,8 @@
 
 //--- インクルード部
 #include <CoreSystem/Util/stl.h>
-#include <DebugSystem/debug.h>
 
-#ifdef BUILD_MODE
+#if BUILD_MODE
 
 #pragma region forward_declaration
 namespace MySpace
@@ -21,7 +20,6 @@ namespace MySpace
 	{
 		class CGameObject;
 	}
-
 }
 #pragma endregion
 		
@@ -33,23 +31,26 @@ namespace MySpace
 		class CHierachy
 		{
 		private:
-			enum class ESearchTerms : int
+			//--- 列挙体定義
+			enum class ESearchTerms : int	// 検索条件
 			{
 				OBJ_NAME,
 				TAG,
+				COMPONENT,
 				STATE_ACTIVE,
 				STATE_STOP,
 				STATE_DESTROY,
 				MAX
 			};
-			struct SearchSet
+			//--- 構造体定義
+			struct SearchSet				// 検索セット
 			{
 				ESearchTerms eTerms = ESearchTerms::OBJ_NAME;
 				bool bSearchCriteria = false;
 				std::string inputName;
 			};
 		private:
-			static constexpr const char* DESC_SELECT_OBJ = u8"selectGameObjcet";
+			static constexpr const char* DESC_SELECT_OBJ = u8"selectGameObjcet";	// *@ドラッグ＆ドロップ認識用文字列
 
 			bool m_bLoadSaveWindow;
 			SearchSet m_Search;
@@ -59,13 +60,18 @@ namespace MySpace
 
 		private:
 			//--- メンバ関数
+			// *@セーブとロード表示
 			void DispSaveLoadMenu();
-			void UpdateSearch();
+			// *@検索更新
+			void DispSearch();
+			// *@検索条件と一致するか確認する
 			bool DispCheck(MySpace::Game::CGameObject* obj);
+			// *@リスト内の移動用関数
 			template<class T>
 			_NODISCARD std::list<T> MovingInList(std::list<T> list, T newT, int index);
+			// *@子要素の表示
+			// *@孫の表示などを行うため、再帰する
 			void DispChild(std::weak_ptr<MySpace::Game::CGameObject> obj);
-
 
 		public:
 			CHierachy();

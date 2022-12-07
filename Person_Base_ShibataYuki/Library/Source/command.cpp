@@ -39,7 +39,7 @@ void CCommandStock::Update()
 	if (InputInterval.accessor <= 0)
 		return;
 
-#if _DISP_KEY	// 文字列として入力情報を確認する
+#if BUILD_MODE	// 文字列として入力情報を確認する
 	std::wstring text, wText;
 	for (auto & nKey : m_nInputList)
 	{	// empty?

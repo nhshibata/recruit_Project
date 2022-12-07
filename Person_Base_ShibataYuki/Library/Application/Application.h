@@ -43,19 +43,16 @@ private:
 	//--- メンバ変数
 	HWND					m_hWnd;						// Windowハンドル
 	HINSTANCE				m_hInst;					// インスタンスハンドル
-	uint32_t				m_SystemCounter;			// システムカウンタ
-	FILE*					m_fp;						// デバッグ用コンソール
 
 private:
 	//--- メンバ関数
-	Application() { };									// コンストラクタ
+	Application() {};									// コンストラクタ
 	~Application() {};									// デストラクタ
 
 	//Application(const Application&);					// コピー
 	//Application& operator = (const Application&) {}		// =
 
 public:
-
 	bool Init(HINSTANCE h_cpInstance);					// システム有効化
 	
 	void Uninit();										// システム無効化

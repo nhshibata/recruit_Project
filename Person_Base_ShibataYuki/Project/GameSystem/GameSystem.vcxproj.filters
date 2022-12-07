@@ -78,9 +78,6 @@
     <ClInclude Include="..\..\Library\GameSystem\Scene\scene.h">
       <Filter>ヘッダー ファイル\Scene</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\Library\GameSystem\Scene\titleScene.h">
-      <Filter>ヘッダー ファイル\Scene</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\Library\GameSystem\Manager\gameObjectManager.h">
       <Filter>ヘッダー ファイル\Manager</Filter>
     </ClInclude>
@@ -180,9 +177,6 @@
     <ClInclude Include="..\..\Library\GameSystem\Component\Renderer\textRenderer.h">
       <Filter>ヘッダー ファイル\Component\Renderer</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\Library\GameSystem\Scene\buildScene.h">
-      <Filter>ヘッダー ファイル\Scene</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\Library\GameSystem\Component\Camera\debugCamera.h">
       <Filter>ヘッダー ファイル\Component\Camera</Filter>
     </ClInclude>
@@ -210,9 +204,6 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\Library\GameSystem\Scene\scene.cpp">
-      <Filter>ソース ファイル\Scene</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\Library\GameSystem\Scene\titleScene.cpp">
       <Filter>ソース ファイル\Scene</Filter>
     </ClCompile>
     <ClCompile Include="..\..\Library\GameSystem\Manager\gameObjectManager.cpp">
@@ -287,9 +278,6 @@
     <ClCompile Include="..\..\Library\GameSystem\Component\cursor.cpp">
       <Filter>ソース ファイル\Component</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\Library\GameSystem\Component\BaseComponent.cpp">
-      <Filter>ソース ファイル\Component</Filter>
-    </ClCompile>
     <ClCompile Include="..\..\Library\GameSystem\GameObject\BaseObject.cpp">
       <Filter>ソース ファイル\GameObject</Filter>
     </ClCompile>
@@ -304,9 +292,6 @@
     </ClCompile>
     <ClCompile Include="..\..\Library\GameSystem\Component\Renderer\textRenderer.cpp">
       <Filter>ソース ファイル\Component\Renderer</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\Library\GameSystem\Scene\buildScene.cpp">
-      <Filter>ソース ファイル\Scene</Filter>
     </ClCompile>
     <ClCompile Include="..\..\Library\GameSystem\Component\Camera\debugCamera.cpp">
       <Filter>ソース ファイル\Component\Camera</Filter>

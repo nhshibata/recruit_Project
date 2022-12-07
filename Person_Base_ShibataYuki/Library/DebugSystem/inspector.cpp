@@ -10,6 +10,7 @@
 
 #if BUILD_MODE
 #include <DebugSystem/imguiManager.h>
+#include <DebugSystem/imGuiPackage.h>
 
 #include <ImGui/imgui.h>
 #include <ImGui/imgui_impl_win32.h>
@@ -63,10 +64,10 @@ void CInspector::Update()
 	}
 
 	// 選択中objデバッグ表示
-	DebugObject();
-	
-	// 選択中objの移動
-	//MoveObject();
+	DispDebugSelectObject();
+
+	// メニュー表示
+	DispPopUpMenuObject();
 	
 	if (ImGui::IsWindowHovered())
 	{	
@@ -100,6 +101,7 @@ void CInspector::Update()
 		ImGui::EndMenuBar();
 	}
 
+	//--- コンポーネント追加
 	if (m_isComponent)
 		AddComponentWindow();
 
@@ -116,12 +118,11 @@ void CInspector::DeleteObject()
 	CGameObject::Destroy(m_spViewObj.lock());
 	m_spViewObj.reset();
 }
-void CInspector::SetGameObject(std::weak_ptr<CGameObject> obj)
+void CInspector::SetSelectGameObject(std::weak_ptr<CGameObject> obj)
 {
 	m_spViewObj = obj;
 	
-	// 移動用に取得（なくても構わない
-	m_TransformController.spRect = m_spViewObj.lock()->GetComponent<CRectTransform>();
+	//m_TransformController.spRect = m_spViewObj.lock()->GetComponent<CRectTransform>();
 	m_isDrawInfo.clear();
 	int n = static_cast<int>(obj.lock()->GetComponentList().size()) + 1;
 	for (int cnt = 0; cnt < n; ++cnt)
@@ -129,18 +130,7 @@ void CInspector::SetGameObject(std::weak_ptr<CGameObject> obj)
 		m_isDrawInfo.push_back(false);
 	}
 }
-void CInspector::DeleteInformation()
-{
-	for (unsigned int i = 1; i < m_isDrawInfo.size(); i++)
-	{
-		if (m_isDrawInfo[i] == true)
-		{
-			m_isDrawInfo.erase(m_isDrawInfo.begin() + i);
-			m_isDeleted = true;
-			return;
-		}
-	}
-}
+// copy
 void CInspector::CopyGameObject()
 {
 	if (!m_spViewObj.lock()) 
@@ -156,7 +146,8 @@ void CInspector::CopyGameObject()
 		com->Init();
 	}
 }
-void CInspector::DebugObject()
+// 選択中オブジェクトの表示
+void CInspector::DispDebugSelectObject()
 {
 	if (!m_spViewObj.lock()) return;
 
@@ -203,8 +194,6 @@ void CInspector::DebugObject()
 		{
 			std::string name = com->GetName();
 			
-			//ImGui::Begin(name.substr(6).c_str(), nullptr, ImGuiWindowFlags_::ImGuiWindowFlags_MenuBar);
-
 			// ｺﾝﾎﾟｰﾈﾝﾄのデバッグ表示
 			com->ImGuiDebug();
 
@@ -212,14 +201,45 @@ void CInspector::DebugObject()
 			{
 				m_spViewObj.lock()->RemoveComponent(com);
 			}
-
-			//ImGui::End();
 			if (m_isDeleted) break;;
 		}
 		cnt++;
 	}
 	ImGui::PopStyleColor();
 	ImGui::PopStyleColor();
+}
+void CInspector::DispPopUpMenuObject()
+{
+	static std::vector<std::string> menuVec = {
+		u8"ParentDissolved(親子関係解消)",
+	};
+	static bool open = false;
+	if (ImGui::IsMouseClicked(ImGuiMouseButton_::ImGuiMouseButton_Right) && ImGui::IsItemFocused())
+		open ^= true;
+	if (!m_spViewObj.lock())
+		return;
+
+	int res = Debug::PopupMenu(menuVec, "", open);
+	switch (res)
+	{
+		case 0:
+		{
+			// 親子関係解消
+			auto trans = m_spViewObj.lock()->GetTransform();
+			if (auto parent = trans->GetParent(); parent.lock())
+			{
+				open = false;
+				trans->ParentDissolved();
+			}
+			break;
+		}
+		case -1:
+			/*if (ImGui::IsMouseClicked(ImGuiMouseButton_::ImGuiMouseButton_Left) && !ImGui::IsItemHovered())
+				open = false;*/
+			break;
+		default:
+			break;
+	}
 }
 void CInspector::AddComponentWindow()
 {
@@ -249,132 +269,132 @@ void CInspector::AddComponentWindow()
 	}
 	ImGui::End();
 }
-void CInspector::MoveObject()
-{
-	if (!ImGuiManager::Get().GetPause())
-		return;
-	if (!m_spViewObj.lock()) return;
-
-	// TODO:rectかどうかで処理を変える(少し長いし無駄ありそう)
-	float* value;
-	// nullでなければ0を、nullならxyz分のサイズ
-	int nSize = m_TransformController.spRect.lock() != nullptr ? 0 : 3;
-	if (nSize)
-		value = new float[nSize];
-
-	// 操作させる変数を変更
-	if (Input::Keyboad::IsTrigger(VK_X))
-	{
-		int newType = static_cast<int>(m_TransformController.eType);
-		newType = (newType + 1 >= static_cast<int>(EObjMoveType::MAX) ? static_cast<int>(EObjMoveType::POSITION) : newType + 1);
-		m_TransformController.eType = static_cast<EObjMoveType>(newType);
-	}
-
-	switch (m_TransformController.eType)
-	{
-	case MySpace::Debug::CInspector::EObjMoveType::POSITION:
-	{
-		if (!nSize)
-		{
-			nSize = 2;
-			value = new float[nSize];
-			Value(value, &m_TransformController.spRect.lock()->GetPos());
-		}
-		else
-			Value(value, &m_spViewObj.lock()->GetTransform()->GetPos());
-		break;
-	}
-	case MySpace::Debug::CInspector::EObjMoveType::ROTATE:
-	{
-		if (!nSize)
-		{
-			nSize = 1;
-			value = new float[nSize];
-			Value(value, m_TransformController.spRect.lock()->GetAngle());
-		}
-		else
-			Value(value, &m_spViewObj.lock()->GetTransform()->GetRot());
-		break; 
-	}
-	case MySpace::Debug::CInspector::EObjMoveType::SCALE:
-	{
-		if (!nSize)
-		{
-			nSize = 2;
-			value = new float[nSize];
-			Value(value, &m_TransformController.spRect.lock()->GetSize());
-		}
-		else
-			Value(value, &m_spViewObj.lock()->GetTransform()->GetScale());
-		break;
-	}
-	default:
-		break;
-	}
-
-	// WASDQE(xyz)
-	if (Input::Keyboad::IsTrigger(VK_A))
-		value[0] -= m_TransformController.fMoveValue;
-	if (Input::Keyboad::IsTrigger(VK_D))
-		value[0] += m_TransformController.fMoveValue;
-	if (nSize >= 2)
-	{
-		if (Input::Keyboad::IsTrigger(VK_Q))
-			value[1] -= m_TransformController.fMoveValue;
-		if (Input::Keyboad::IsTrigger(VK_E))
-			value[1] += m_TransformController.fMoveValue;
-	}
-	if (nSize == 3)
-	{
-		if (Input::Keyboad::IsTrigger(VK_W))
-			value[2] += m_TransformController.fMoveValue;
-		if (Input::Keyboad::IsTrigger(VK_S))
-			value[2] -= m_TransformController.fMoveValue;
-	}
-	// 一フレームで操作する値の調整
-	m_TransformController.fMoveValue += Input::Mouse::GetHwheel();
-	if (m_TransformController.fMoveValue > 5.0f)
-		m_TransformController.fMoveValue = 5.0f;
-	if (m_TransformController.fMoveValue < 0.5f)
-		m_TransformController.fMoveValue = 0.5f;
-
-	switch (m_TransformController.eType)
-	{
-	case MySpace::Debug::CInspector::EObjMoveType::POSITION:
-		if (nSize)
-			m_TransformController.spRect.lock()->SetPos({value[0],value[1]});
-		else
-			m_spViewObj.lock()->GetTransform()->SetPos({ value[0],value[1],value[2] });
-		break;
-	case MySpace::Debug::CInspector::EObjMoveType::ROTATE:
-		if (nSize)
-			m_TransformController.spRect.lock()->SetAngle({ value[0] });
-		else
-			m_spViewObj.lock()->GetTransform()->SetRot({ value[0],value[1],value[2] });
-		break;
-	case MySpace::Debug::CInspector::EObjMoveType::SCALE:
-		if (nSize)
-			m_TransformController.spRect.lock()->SetSize({ value[0],value[1] });
-		else
-			m_spViewObj.lock()->GetTransform()->SetScale({ value[0],value[1],value[2] });
-		break;
-	default:
-		break;
-	}
-
-	delete[] value;
-}
-void CInspector::Value(float* value, Vector3* vec)
-{
-	value[0] = vec->x; value[1] = vec->y; value[2] = vec->z;
-}
-void CInspector::Value(float* value, Vector2* vec)
-{
-	value[0] = vec->x; value[1] = vec->y;
-}
-void CInspector::Value(float* value, float vec)
-{
-	value[0] = vec;
-}
+//void CInspector::MoveObject()
+//{
+//	if (!ImGuiManager::Get().GetPause())
+//		return;
+//	if (!m_spViewObj.lock()) return;
+//
+//	// TODO:rectかどうかで処理を変える(少し長いし無駄ありそう)
+//	float* value;
+//	// nullでなければ0を、nullならxyz分のサイズ
+//	int nSize = m_TransformController.spRect.lock() != nullptr ? 0 : 3;
+//	if (nSize)
+//		value = new float[nSize];
+//
+//	// 操作させる変数を変更
+//	if (Input::Keyboad::IsTrigger(VK_X))
+//	{
+//		int newType = static_cast<int>(m_TransformController.eType);
+//		newType = (newType + 1 >= static_cast<int>(EObjMoveType::MAX) ? static_cast<int>(EObjMoveType::POSITION) : newType + 1);
+//		m_TransformController.eType = static_cast<EObjMoveType>(newType);
+//	}
+//
+//	switch (m_TransformController.eType)
+//	{
+//	case MySpace::Debug::CInspector::EObjMoveType::POSITION:
+//	{
+//		if (!nSize)
+//		{
+//			nSize = 2;
+//			value = new float[nSize];
+//			Value(value, &m_TransformController.spRect.lock()->GetPos());
+//		}
+//		else
+//			Value(value, &m_spViewObj.lock()->GetTransform()->GetPos());
+//		break;
+//	}
+//	case MySpace::Debug::CInspector::EObjMoveType::ROTATE:
+//	{
+//		if (!nSize)
+//		{
+//			nSize = 1;
+//			value = new float[nSize];
+//			Value(value, m_TransformController.spRect.lock()->GetAngle());
+//		}
+//		else
+//			Value(value, &m_spViewObj.lock()->GetTransform()->GetRot());
+//		break; 
+//	}
+//	case MySpace::Debug::CInspector::EObjMoveType::SCALE:
+//	{
+//		if (!nSize)
+//		{
+//			nSize = 2;
+//			value = new float[nSize];
+//			Value(value, &m_TransformController.spRect.lock()->GetSize());
+//		}
+//		else
+//			Value(value, &m_spViewObj.lock()->GetTransform()->GetScale());
+//		break;
+//	}
+//	default:
+//		break;
+//	}
+//
+//	// WASDQE(xyz)
+//	if (Input::Keyboad::IsTrigger(VK_A))
+//		value[0] -= m_TransformController.fMoveValue;
+//	if (Input::Keyboad::IsTrigger(VK_D))
+//		value[0] += m_TransformController.fMoveValue;
+//	if (nSize >= 2)
+//	{
+//		if (Input::Keyboad::IsTrigger(VK_Q))
+//			value[1] -= m_TransformController.fMoveValue;
+//		if (Input::Keyboad::IsTrigger(VK_E))
+//			value[1] += m_TransformController.fMoveValue;
+//	}
+//	if (nSize == 3)
+//	{
+//		if (Input::Keyboad::IsTrigger(VK_W))
+//			value[2] += m_TransformController.fMoveValue;
+//		if (Input::Keyboad::IsTrigger(VK_S))
+//			value[2] -= m_TransformController.fMoveValue;
+//	}
+//	// 一フレームで操作する値の調整
+//	m_TransformController.fMoveValue += Input::Mouse::GetHwheel();
+//	if (m_TransformController.fMoveValue > 5.0f)
+//		m_TransformController.fMoveValue = 5.0f;
+//	if (m_TransformController.fMoveValue < 0.5f)
+//		m_TransformController.fMoveValue = 0.5f;
+//
+//	switch (m_TransformController.eType)
+//	{
+//	case MySpace::Debug::CInspector::EObjMoveType::POSITION:
+//		if (nSize)
+//			m_TransformController.spRect.lock()->SetPos({value[0],value[1]});
+//		else
+//			m_spViewObj.lock()->GetTransform()->SetPos({ value[0],value[1],value[2] });
+//		break;
+//	case MySpace::Debug::CInspector::EObjMoveType::ROTATE:
+//		if (nSize)
+//			m_TransformController.spRect.lock()->SetAngle({ value[0] });
+//		else
+//			m_spViewObj.lock()->GetTransform()->SetRot({ value[0],value[1],value[2] });
+//		break;
+//	case MySpace::Debug::CInspector::EObjMoveType::SCALE:
+//		if (nSize)
+//			m_TransformController.spRect.lock()->SetSize({ value[0],value[1] });
+//		else
+//			m_spViewObj.lock()->GetTransform()->SetScale({ value[0],value[1],value[2] });
+//		break;
+//	default:
+//		break;
+//	}
+//
+//	delete[] value;
+//}
+//void CInspector::Value(float* value, Vector3* vec)
+//{
+//	value[0] = vec->x; value[1] = vec->y; value[2] = vec->z;
+//}
+//void CInspector::Value(float* value, Vector2* vec)
+//{
+//	value[0] = vec->x; value[1] = vec->y;
+//}
+//void CInspector::Value(float* value, float vec)
+//{
+//	value[0] = vec;
+//}
 
 #endif // !BUILD_MODE

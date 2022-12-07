@@ -19,6 +19,7 @@
 
 #include <GameSystem/Component/Camera/camera.h>
 #include <GameSystem/Component/Camera/debugCamera.h>
+#include <AISystem/navMeshBake.h>
 
 #pragma region NAME_SPACE
 using namespace MySpace::System;
@@ -63,10 +64,12 @@ void ImGuiManager::Init(HWND hWnd, ID3D11Device* device, ID3D11DeviceContext* co
 	m_pInspector = std::make_shared<CInspector>();
 	m_pHierarchy = std::make_shared<CHierachy>();
 	m_pGizmo = std::make_shared<CMyGizmo>();
+	m_pGizmo->Init();
 	
 	// デバッグカメラの生成
 	{
-		m_pDebugObj = CGameObject::CreateDebugObject();
+		m_pDebugObj = std::make_shared<CGameObject>();
+		CGameObject::CreateDebugObject(m_pDebugObj);
 		m_pDebugCamera = m_pDebugObj->AddComponent<CDebugCamera>();
 		m_pDebugCamera.lock()->Init();
 	}
@@ -125,21 +128,26 @@ void ImGuiManager::Update()
 	if (auto selectObj = m_pInspector->GetSelectObject().lock(); selectObj)
 		m_pGizmo->EditTransform(*CCamera::GetMain(), selectObj->GetTransform());
 
+	// SceneManager表示
 	CSceneManager::Get().ImguiDebug();
-	// 変更されている可能性
+	// 変更されている可能性があるため再取得
 	scene = CSceneManager::Get().GetActiveScene();
 
-	// シーン名の表示
+	// シーン名表示
 	ImGui::Text(u8"現在のシーン名 : %s", scene->GetSceneName().c_str());
 	ImGui::Text(u8"オブジェクト数 : %d", CSceneManager::Get().GetActiveScene()->GetObjManager()->GetList().size());
 
-	// フレームレートを表示
+	// フレームレート表示
 	ImGui::Text(u8"現在のFPS : %.1f FPS", ImGui::GetIO().Framerate);
 	CFps::Get().ImGuiDebug();	
 	
 	// 描画の確認
 	CSceneManager::Get().GetDrawSystem()->ImGuiDebug();
 
+	// NavMesh
+	CSceneManager::Get().GetNavMesh()->ImGuiDebug();
+
+	//--- マウス状態確認
 	if(ImGui::IsDragDropPayloadBeingAccepted())
 		UpHover(EIsHovered::HOVERED_DRAG);
 
@@ -152,7 +160,8 @@ void ImGuiManager::Update()
 
 	//--- ｶﾒﾗ操作
 	const int e = ImGuiManager::EIsHovered::HOVERED_WINDOW | ImGuiManager::EIsHovered::HOVERED_GIZMO;
-	if (!ImGuiManager::Get().IsHover(EIsHovered(e)))
+	//if (!ImGuiManager::Get().IsHover(EIsHovered(e)))
+	if (ImGuiManager::Get().GetHover() == EIsHovered::HOVERED_NONE)
 	{
 		if (m_pDebugCamera.lock())
 			m_pDebugCamera.lock()->Update();

@@ -22,7 +22,8 @@ CRenderer::CRenderer(std::shared_ptr<CGameObject> owner)
 }
 CRenderer::~CRenderer()
 {
-	SceneManager::CSceneManager::Get().GetDrawSystem()->ExecutSystem(m_nDrawIdx);
+	if(auto sys = SceneManager::CSceneManager::Get().GetDrawSystem(); sys)
+		sys->ExecutSystem(m_nDrawIdx);
 }
 void CRenderer::RequestDraw()
 {
@@ -56,9 +57,18 @@ void CRenderer::SetLayer(int value)
 
 void CRenderer::ImGuiDebug()
 {
+	static bool disp = false;
 	ImGui::Text(u8"Renderer");
 	ImGui::Checkbox("bool", &m_bVisible);
-	ImGui::ColorPicker4("color", (float*)&m_vColor);
-
+	if (ImGui::Begin(u8"ColorWindow", &disp))
+	{
+		if (!disp)
+			return;
+		Vector4 color = Vector4(m_vColor.a, m_vColor.g, m_vColor.b, m_vColor.a);
+		ImGui::ColorPicker4("color4", (float*)&color);
+		//ImGui::ColorEdit4("color", (float*)&color);
+		m_vColor = Color(color.x, color.y, color.z, color.w);
+	}
+	ImGui::End();
 }
 #endif // BUILD_MODE

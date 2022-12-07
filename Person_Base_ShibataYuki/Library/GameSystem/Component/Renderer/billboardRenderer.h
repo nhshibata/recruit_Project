@@ -13,7 +13,6 @@
 #include <GraphicsSystem/Texture/spriteAnimation.h>
 #include <GraphicsSystem/Render/billboard.h>
 
-
 namespace MySpace
 {
 	namespace Game

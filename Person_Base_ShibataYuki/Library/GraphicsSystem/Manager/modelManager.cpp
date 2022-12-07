@@ -69,4 +69,5 @@ void CModelManager::UnloadAll()
 		(*it).second->Release();
 		(*it).second.reset();
 	}
+	m_ResourceMap.clear();
 }

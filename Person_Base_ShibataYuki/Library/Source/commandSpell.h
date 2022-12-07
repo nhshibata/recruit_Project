@@ -76,7 +76,7 @@ namespace Spell
 	};
 
 	// *@“ü—Í‚ğ‹L˜^‚·‚é¸×½
-	class CCommandSpell : public CComponent
+	class CCommandSpell : public MySpace::Game::CComponent
 	{
 	private:
 		//--- ƒƒ“ƒo•Ï”
@@ -93,7 +93,7 @@ namespace Spell
 		_NODISCARD std::vector<bool> SpellCheckConsidered(std::vector<int> list, std::vector<int> check);
 	public:
 		CCommandSpell() {};
-		CCommandSpell(std::shared_ptr<CGameObject> owner) :CComponent(owner)
+		CCommandSpell(std::shared_ptr<CGameObject> owner) :MySpace::Game::CComponent(owner)
 		{};
 		~CCommandSpell() {};
 

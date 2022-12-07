@@ -11,8 +11,8 @@
 #include <GameSystem/components.h>
 #include <GameSystem/Manager/collisionSystem.h>
 #include <GameSystem/Manager/drawSystem.h>
-
 #include <DebugSystem/imguiManager.h>
+#include <AISystem/navMeshBake.h>
 
 #include <CoreSystem/File/cerealize.h>
 
@@ -28,12 +28,14 @@ CSceneManager::CSceneManager()
 	m_sceneDetection = std::make_shared<CSceneTransitionDetection>();
 	m_pCollisionSystem = std::make_shared<CCollisionSystem>();
 	m_pDrawSystem = std::make_shared<CDrawSystem>();
+	m_pNavMesh = std::make_shared<CNavMeshBake>();
 }
 void CSceneManager::Init()
 {
 	// 関数設定
 	SceneUnloaded<CSceneManager>(&CSceneManager::FlagOn, this);
 	//m_pCurrentScene.lock()->Init();
+	m_pNavMesh->Init();
 }
 void CSceneManager::Uninit()
 {
@@ -74,6 +76,7 @@ void CSceneManager::Draw()
 	}
 
 	m_pDrawSystem->Update();
+	m_pNavMesh->Draw();
 }
 // シーン切替
 std::weak_ptr<CScene> CSceneManager::SceneTransition(std::string name)
@@ -109,8 +112,8 @@ std::shared_ptr<CScene> CSceneManager::NewScene(std::string name)
 		pNextScene = std::make_shared<CScene>(name);
 	// リストへの追加
 	AddSceneList(pNextScene);
-	// 自分のSPを教える
-	pNextScene->SetScene(pNextScene);
+	// 初期化:自分のSPを教える
+	pNextScene->Init(pNextScene);
 
 	if (!m_pCurrentScene.lock())
 		m_pCurrentScene = pNextScene;
@@ -259,4 +262,5 @@ void CSceneManager::ImguiDebug()
 	//	CScene* newScene = AddScene<CScene>();
 	//}
 }
+
 #endif // BUILD_MODE
