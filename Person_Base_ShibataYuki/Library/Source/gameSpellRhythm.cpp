@@ -13,14 +13,16 @@
 #include <CoreSystem/Sound/Sound.h>
 
 // ÉQÅ[ÉÄ
+#include <GameSystem/Component/Renderer/meshRenderer.h>
 #include <GameSystem/Component/Collision/boxCollision.h>
+#include <GameSystem/Component/Light/directionalLight.h>
 #include <gameCamera.h>
 
 // UI
-#include <gameUI.h>
-#include <resultUI.h>
+#include <fadeController.h>
 
 using namespace MySpace::SceneManager;
+using namespace MySpace::Game;
 using namespace Spell;
 
 CGameSpellRhythm::CGameSpellRhythm(std::shared_ptr<CGameObject> owner)
@@ -80,6 +82,7 @@ void CGameSpellRhythm::FixedUpdate()
 	{
 		CCamera::GetMain()->SetMain(m_pDebugCamera);
 		m_pDebugCamera.lock()->SetActive(true);
+
 		if (auto com = m_pDebugCamera.lock()->GetComponent<CModelRenderer>(); com)
 			com->SetActive(true);
 

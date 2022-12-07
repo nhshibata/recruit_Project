@@ -50,6 +50,15 @@ namespace MySpace
 			Vector4 m_Specular;	// Specular 'shininess'
 			Vector4 m_Emissive;	// Emissive color RGB
 			float		m_Power;		// Sharpness if specular highlight
+			CMeshMaterial() {};
+			CMeshMaterial(Vector4 diff, Vector4 amb, Vector4 spe, Vector4 emi, float pow)
+			{
+				m_Diffuse = diff;
+				m_Ambient = amb;
+				m_Specular = spe;
+				m_Emissive = emi;
+				m_Power = pow;
+			}
 		};
 
 		class CMesh

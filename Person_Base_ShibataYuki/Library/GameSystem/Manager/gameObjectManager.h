@@ -81,12 +81,9 @@ namespace MySpace
 			};
 			
 		public:
-			CGameObjectManager();
+			CGameObjectManager(std::shared_ptr<CScene> scene);
 			~CGameObjectManager();
-			void SetAffiliationScene(std::shared_ptr<CScene> scene)
-			{
-				m_pAffiliationScene = scene;
-			};
+			
 			// å—vˆ—
 			void Init();
 			void Uninit();
@@ -154,7 +151,7 @@ namespace MySpace
 			{
 				if (m_tagMap.count(tag) == 0)
 				{
-					m_tagMap[tag] = gameObjWeakList();
+					//m_tagMap[tag] = gameObjWeakList();
 					return std::weak_ptr<CGameObject>();
 				}
 				return m_tagMap[tag].list.begin()->lock();

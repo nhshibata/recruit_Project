@@ -49,7 +49,7 @@ namespace MySpace
 		public:
 			//--- “› ﬁä÷êî
 			CSphereCollision() {};
-			CSphereCollision(std::shared_ptr<CGameObject> owner, float radius = 1.0f);
+			CSphereCollision(std::shared_ptr<CGameObject> owner, float radius = 10.0f);
 			~CSphereCollision();
 
 			bool Sphere(Vector3 Apos, float Ar, Vector3 Bpos, float Br);

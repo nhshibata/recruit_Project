@@ -21,7 +21,10 @@ namespace MySpace
 		{
 			char name[256];
 			strcpy_s(name, text.c_str());
-			ImGui::InputText(desc.c_str(), name, 256);
+			if (ImGui::InputText(desc.c_str(), name, 256))
+			{
+
+			}
 			return name;
 		}
 #pragma endregion

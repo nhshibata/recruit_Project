@@ -49,7 +49,12 @@ namespace MySpace
 			HRESULT SetBox(Vector3 vBBox);
 			inline void SetSize(Vector3 vBBox) { m_vSize = vBBox; }
 			
-			virtual void SetMaterial(CMeshMaterial mat);
+#if BUILD_MODE
+
+			void ImGuiDebug();
+
+#endif // BUILD_MODE
+
 		};
 	}
 }

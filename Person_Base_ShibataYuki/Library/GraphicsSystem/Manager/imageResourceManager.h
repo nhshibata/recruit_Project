@@ -20,7 +20,6 @@ namespace MySpace
 {
 	namespace Graphics
 	{
-		//--- 前方参照
 		//--- クラス定義
 		class CImageResourceManager : public CAppSystem<CImageResourceManager>, public CResourceMap<std::string, ImageSharedPtr>
 		{

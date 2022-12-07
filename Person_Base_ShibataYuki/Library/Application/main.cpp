@@ -105,6 +105,7 @@ void ShutDown()
 
 	_CrtDumpMemoryLeaks();
 #endif //!CONSOLE
+
 }
 void MainLoop()
 {

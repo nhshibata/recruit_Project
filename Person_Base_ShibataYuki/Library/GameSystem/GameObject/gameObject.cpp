@@ -4,6 +4,8 @@
 // 作成:2022/04/19 (火曜日)
 // 更新:2022/05/11 タグが一致するオブジェクトを全て取得する関数作成
 //			課題: 同一のコンポーネントを使う場合、mapは適切ではない
+// 更新:2022/11/14 コピーコンストラクタを改造、同一のコンポーネントを生成するように
+// 
 //=========================================================
 
 //--- インクルード部
@@ -334,10 +336,8 @@ std::weak_ptr<CGameObject> CGameObject::CreateObject(CGameObject* pObj)
 	return CSceneManager::Get().GetActiveScene()->GetObjManager()->CreateGameObject(pObj);
 }
 // 作るだけで管理は受け取った側に委任
-std::shared_ptr<CGameObject>  CGameObject::CreateDebugObject()
+std::shared_ptr<CGameObject> CGameObject::CreateDebugObject(std::shared_ptr<CGameObject> pObj)
 {
-	std::shared_ptr<CGameObject> pObj = std::make_shared<CGameObject>();
-	
 	// 自身のweakPtrを渡す
 	pObj.get()->SetPtr(pObj);
 

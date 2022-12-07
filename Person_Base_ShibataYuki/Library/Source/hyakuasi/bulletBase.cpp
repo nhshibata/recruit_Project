@@ -104,7 +104,8 @@ void CBulletManager::Create(Vector3 pos, Vector3 vel)
 	{
 		// ÅŒã”ö‚ðÄ—˜—p
 		auto bullet = m_pStandby.back();
-		bullet.lock()->SetState(CGameObject::E_ObjectState::ACTIVE);
+		//bullet.lock()->SetState(CGameObject::E_ObjectState::ACTIVE);
+		bullet.lock()->GetOwner()->SetState(CGameObject::E_ObjectState::ACTIVE);
 		bullet.lock()->Transform()->SetPos(pos);
 		bullet.lock()->SetVel(vel);
 		m_pStandby.pop_back();

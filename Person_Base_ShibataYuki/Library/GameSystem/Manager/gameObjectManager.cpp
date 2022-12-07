@@ -21,9 +21,9 @@ using namespace MySpace::Game;
 //using namespace MySpace;
 
 // コンストラクタ
-CGameObjectManager::CGameObjectManager()
+CGameObjectManager::CGameObjectManager(std::shared_ptr<CScene> scene)
 {
-	
+	this->m_pAffiliationScene = scene;
 }
 // デストラクタ
 CGameObjectManager::~CGameObjectManager()
@@ -279,8 +279,10 @@ std::shared_ptr<CGameObject> CGameObjectManager::CreateGameObject(CGameObject* p
 
 	// 自身のweakPtrを渡す
 	spObj.get()->SetPtr(spObj);
-
-	TagMove(CDefaultTagChar::DEFAULT, spObj);
+	if (!pObj)
+		TagMove(CDefaultTagChar::DEFAULT, spObj);
+	else
+		TagMove(pObj->GetTag(), spObj);
 
 	spObj.get()->Awake();	// 実質OnCreateな気がする
 	AddGameObject(spObj);	// 追加待ちリストに追加

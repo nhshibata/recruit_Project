@@ -27,13 +27,10 @@ void CreateComponentType()
 	mgr.SetComponentSave<CGameCamera>();
 	mgr.SetComponentSave<CDebugCamera>();
 
-	mgr.SetComponentSave<CLight>();
 	mgr.SetComponentSave<CDirectionalLight>();
-	mgr.SetComponentSave<CCollision>();
 	mgr.SetComponentSave<CSphereCollision>();
 	mgr.SetComponentSave<CBoxCollision>();
 
-	mgr.SetComponentSave<CRenderer>();
 	mgr.SetComponentSave<CMeshRenderer>();
 	mgr.SetComponentSave<CBillboardRenderer>();
 	mgr.SetComponentSave<CPolygonRenderer>();
@@ -42,4 +39,8 @@ void CreateComponentType()
 	mgr.SetComponentSave<CModelRenderer>();
 	mgr.SetComponentSave<CTextRenderer>();
 	mgr.SetComponentSave<CEffekseerRenderer>();
+
+	mgr.SetComponentSave<CRenderer>();
+	mgr.SetComponentSave<CLight>();
+	mgr.SetComponentSave<CCollision>();
 }

@@ -59,17 +59,11 @@
     <ClInclude Include="..\..\Library\GameSystem\Manager\mapSystemBase.h" />
     <ClInclude Include="..\..\Library\GameSystem\Manager\sceneManager.h" />
     <ClInclude Include="..\..\Library\GameSystem\propertyCereal.h" />
-    <ClInclude Include="..\..\Library\GameSystem\Scene\buildScene.h" />
     <ClInclude Include="..\..\Library\GameSystem\Scene\scene.h" />
     <ClInclude Include="..\..\Library\GameSystem\Scene\sceneTransitionDetection.h" />
-    <ClInclude Include="..\..\Library\GameSystem\Scene\titleScene.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\Library\GameSystem\components.cpp" />
-    <ClCompile Include="..\..\Library\GameSystem\Component\BaseComponent.cpp">
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
-    </ClCompile>
     <ClCompile Include="..\..\Library\GameSystem\Component\Camera\camera.cpp" />
     <ClCompile Include="..\..\Library\GameSystem\Component\Camera\debugCamera.cpp" />
     <ClCompile Include="..\..\Library\GameSystem\Component\Camera\gameCamera.cpp" />
@@ -105,10 +99,8 @@
     <ClCompile Include="..\..\Library\GameSystem\Manager\gameObjectManager.cpp" />
     <ClCompile Include="..\..\Library\GameSystem\Manager\instantResourceManager.cpp" />
     <ClCompile Include="..\..\Library\GameSystem\Manager\sceneManager.cpp" />
-    <ClCompile Include="..\..\Library\GameSystem\Scene\buildScene.cpp" />
     <ClCompile Include="..\..\Library\GameSystem\Scene\scene.cpp" />
     <ClCompile Include="..\..\Library\GameSystem\Scene\sceneTransitionDetection.cpp" />
-    <ClCompile Include="..\..\Library\GameSystem\Scene\titleScene.cpp" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <VCProjectVersion>15.0</VCProjectVersion>
@@ -178,7 +170,7 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <LinkIncremental>false</LinkIncremental>
     <OutDir>$(SolutionDir)exe\$(Configuration)\</OutDir>
-    <IncludePath>$(SolutionDir)Library\Effekseer;</IncludePath>
+    <IncludePath>$(SolutionDir)Library\Effekseer;$(SolutionDir)Library;$(IncludePath);$(IncludePath)</IncludePath>
     <LibraryPath>$(LibraryPath)</LibraryPath>
     <IntDir>$(SolutionDir)Binary\$(ProjectName)\$(Platform)\$(Configuration)\</IntDir>
   </PropertyGroup>
@@ -187,13 +179,14 @@
       <WarningLevel>Level3</WarningLevel>
       <Optimization>Disabled</Optimization>
       <SDLCheck>false</SDLCheck>
-      <PreprocessorDefinitions>BUILD_MODE;_DEBUG;_CONSOLE;%(PreprocessorDefinitions);_BUILD_MODE</PreprocessorDefinitions>
+      <PreprocessorDefinitions>BUILD_MODE;_DEBUG;_LIB;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
       <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
-      <AdditionalIncludeDirectories>$(SolutionDir)..\..\Assimp\include;$(SolutionDir)..\..\Assimp;$(SolutionDir)..\..\DirectXTex;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir)..\..\DirectXTex;$(SolutionDir)..\..\Assimp\include;$(SolutionDir)..\..\Assimp;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <AdditionalOptions>/bigobj %(AdditionalOptions)</AdditionalOptions>
       <LanguageStandard>stdcpp17</LanguageStandard>
+      <InlineFunctionExpansion>AnySuitable</InlineFunctionExpansion>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -246,12 +239,13 @@
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <SDLCheck>false</SDLCheck>
-      <PreprocessorDefinitions>NDEBUG;_CONSOLE;%(PreprocessorDefinitions);_BUILD_MODE</PreprocessorDefinitions>
+      <PreprocessorDefinitions>BUILD_MODE;NDEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
       <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
-      <AdditionalIncludeDirectories>$(SolutionDir)..\..\Assimp\include;$(SolutionDir)..\..\Assimp;$(SolutionDir)..\..\DirectXTex;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir)..\..\DirectXTex;$(SolutionDir)..\..\Assimp\include;$(SolutionDir)..\..\Assimp;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <AdditionalOptions>/bigobj %(AdditionalOptions)</AdditionalOptions>
       <LanguageStandard>stdcpp17</LanguageStandard>
+      <InlineFunctionExpansion>Default</InlineFunctionExpansion>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>

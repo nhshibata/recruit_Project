@@ -427,13 +427,17 @@ namespace MySpace
 		public:
 			Color() :r(0), g(0), b(0), a(1) {};
 			Color(float x, float y, float z, float w) :r(x), g(y), b(z), a(w) {}
+			Color(XMFLOAT4 color) :r(color.x), g(color.y), b(color.z), a(color.w) {}
 
 			
+			void operator=(XMFLOAT4 c) { r = c.x; g = c.y; b = c.z; a = c.w; }
 			void operator+=(Color c) { r += c.r; g += c.g; b += c.b; a += c.a; }
 			void operator-=(Color c) { r -= c.r; g -= c.g; b -= c.b; a -= c.a; }
 			void operator/=(Color c) { r /= c.r; g /= c.g; b /= c.b; a /= c.a; }
 			void operator*=(Color c) { r *= c.r; g *= c.g; b *= c.b; a *= c.a; }
 
+			// *@Vector4Žó‚¯“n‚µ
+			Vector4 operator()()	 { return Vector4(r, g, b, a); }
 			Color operator+(Color c) { return Color(r + c.r, g + c.g, b + c.b, a + c.a); }
 			Color operator-(Color c) { return Color(r - c.r, g - c.g, b - c.b, a - c.a); }
 			Color operator/(Color c) { return Color(r / c.r, g / c.g, b / c.b, a / c.a); }

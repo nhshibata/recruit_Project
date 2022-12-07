@@ -73,6 +73,10 @@ namespace MySpace
 			std::weak_ptr<CGameObject> m_pOwner;
 			// *@アクティブ状態
 			bool m_bActive;
+#if BUILD_MODE
+			std::string m_Name;
+#endif // BUILD_MODE
+
 
 		public:
 			//--- ﾒﾝﾊﾞ関数

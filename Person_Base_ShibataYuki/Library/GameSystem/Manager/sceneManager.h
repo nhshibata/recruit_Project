@@ -27,6 +27,11 @@ namespace MySpace
 	}
 }
 
+namespace AI
+{
+	class CNavMeshBake;
+}
+
 namespace MySpace
 {
 	namespace SceneManager
@@ -38,6 +43,7 @@ namespace MySpace
 		using MySpace::Game::CComponent;
 		using MySpace::Game::CInstantResourceManager;
 		using MySpace::Game::CCollisionSystem;
+		using AI::CNavMeshBake;
 		
 		//--- クラス定義
 		class CSceneManager : public CAppSystem<CSceneManager>
@@ -80,6 +86,7 @@ namespace MySpace
 			std::shared_ptr<CSceneTransitionDetection> m_sceneDetection;
 			std::shared_ptr<CCollisionSystem> m_pCollisionSystem;
 			std::shared_ptr<CDrawSystem> m_pDrawSystem;
+			std::shared_ptr<CNavMeshBake> m_pNavMesh;
 			bool m_bTransition;
 
 		private:
@@ -167,8 +174,8 @@ namespace MySpace
 				return sp.get();
 			}
 
-			// シーン破棄
-			// 引き数指定で切替
+			// *@シーン破棄
+			// *@引き数指定で切替
 			void RemoveScene(std::shared_ptr<CScene> pRemove, std::shared_ptr<CScene> pNext = std::shared_ptr<CScene>());
 		
 			// *リストに追加
@@ -215,13 +222,17 @@ namespace MySpace
 				m_sceneDetection->Unloaded<T>(func, ptr);
 			}
 
-			// *切替呼び出しｸﾗｽの取得
-			inline auto GetDetection() { return m_sceneDetection.get(); }
+			// *@切替呼び出しｸﾗｽの取得
+			inline CSceneTransitionDetection* GetDetection() { return m_sceneDetection.get(); }
 			
-			// *コリジョンシステムの取得
+			// *@コリジョンシステムの取得
 			inline std::shared_ptr<CCollisionSystem> GetCollisionSystem() { return m_pCollisionSystem; }
 			
+			// *@描画システムの取得
 			inline std::shared_ptr<CDrawSystem> GetDrawSystem() { return m_pDrawSystem; }
+
+			inline std::shared_ptr<CNavMeshBake> GetNavMesh() { return m_pNavMesh; };
+
 #ifdef BUILD_MODE
 
 			void ImguiDebug();

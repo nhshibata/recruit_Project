@@ -36,7 +36,7 @@ void CBattleStatus::Update()
 {
 	if (this->Damage.accessor == 0)	// ƒ_ƒ[ƒW‚ª‚È‚¢‚È‚ç”²‚¯‚é
 		return;
-	if (CFps::Get().GetTime() % 4 == 0)	// ŠÔŠu‚ğ‹ó‚¯‚é
+	if (MySpace::System::CFps::Get().GetTime() % 4 == 0)	// ŠÔŠu‚ğ‹ó‚¯‚é
 		return;
 
 	int add = 0;

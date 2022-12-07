@@ -49,7 +49,7 @@ namespace MySpace
 			CDirectionalLight(std::shared_ptr<CGameObject> owner);
 			~CDirectionalLight();
 
-			void Init();				// 初期化 他コンポーネントの取得などを行う
+			void Awake();				// 初期化 他コンポーネントの取得などを行う
 
 			inline XMFLOAT4& GetDiffuse() { return m_diffuse; }
 			inline XMFLOAT4& GetAmbient() { return m_ambient; }

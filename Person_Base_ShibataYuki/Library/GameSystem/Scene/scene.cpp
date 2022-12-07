@@ -17,16 +17,12 @@ using namespace MySpace::Game;
 CScene::CScene()
 	:m_SceneName("none")
 {
-	m_objeManager = std::make_shared<CGameObjectManager>();
-
 	//CreateEmptyScene();
 }
 // コンストラクタ
 CScene::CScene(std::string name)
 	:m_SceneName(name)
 {
-	m_objeManager = std::make_shared<CGameObjectManager>();
-
 	//m_objeManager->Awake();
 }
 // デストラクタ
@@ -37,8 +33,10 @@ CScene::~CScene()
 	m_objeManager.reset();
 }
 // 初期化
-void CScene::Init()
+void CScene::Init(std::weak_ptr<CScene> scene)
 {
+	m_spPtr = scene;
+	m_objeManager = std::make_shared<CGameObjectManager>(scene.lock());
 	// シーンに対してゲームオブジェクトを引き渡す
 	//m_objeManager->Init();
 }
@@ -67,11 +65,10 @@ void CScene::CreateEmptyScene()
 	if (m_objeManager)
 	{
 		m_objeManager->Uninit();
-		m_objeManager.reset();
 	}
-	m_objeManager = std::make_shared<CGameObjectManager>();
+	//m_objeManager = std::make_shared<CGameObjectManager>();
 	m_objeManager->CreateBasicObject();
 	//m_objeManager->Init();
-
-	m_SceneName = "empty";
+	if(m_SceneName.empty())
+		m_SceneName = "empty";
 }

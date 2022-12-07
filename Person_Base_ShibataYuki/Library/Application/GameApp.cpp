@@ -128,8 +128,6 @@ void CGameApp::Uninit(Application& pApp)const
 
 	CFontTexture::Get().Uninit();
 
-	CModelManager::Get().Uninit();
-
 	CSceneManager::Get().Uninit();
 	//CShaderManager::Get()->Uninit();
 	
@@ -183,14 +181,14 @@ void CGameApp::Draw(Application& pApp)
 	// 描画準備
 	BeginRender(pApp);
 
-	// ライトオブジェクトが存在しないとき
-	if (CCamera::GetMain())
+	// オブジェクトが存在しないとき
+	if (CCamera::GetMain() && CLight::Get())
 	{
 		// シーンの描画
 		CSceneManager::Get().Draw();
 
 		// effect
-		CSceneManager::Get().Draw();
+		CEffekseer::Get().Draw();
 	}
 
 #ifdef BUILD_MODE

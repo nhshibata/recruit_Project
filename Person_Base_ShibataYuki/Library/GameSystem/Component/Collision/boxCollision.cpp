@@ -242,7 +242,33 @@ void CBoxCollision::ImGuiDebug()
 	}
 	ImGui::Checkbox(u8"OBB", (bool*)&m_bOBBMode);
 
-	m_pDebugBox->SetWorld(&Transform()->GetWorldMatrix());
-	m_pDebugBox->Draw();
+	if (m_bOBBMode)
+	{
+		// 平行移動マトリックス生成
+		Vector3 center = GetCenter();
+		XMMATRIX mMove = XMMatrixTranslation(center.x, center.y, center.z);
+		// モデル
+		XMMATRIX mWorld = XMLoadFloat4x4(&Transform()->GetWorldMatrix());
+		mWorld = XMMatrixMultiply(mMove, mWorld);
+		// 境界ボックス表示
+		XMFLOAT4X4 mW;
+		XMStoreFloat4x4(&mW, mWorld);
+		m_pDebugBox->SetWorld(&mW);
+		m_pDebugBox->Draw();
+	}
+	else
+	{
+		XMVECTOR vCenter = XMLoadFloat3(&GetCenter());
+		XMMATRIX mWorld = XMLoadFloat4x4(&Transform()->GetWorldMatrix());
+
+		vCenter = XMVector3TransformCoord(vCenter, mWorld);
+		mWorld = XMMatrixTranslationFromVector(vCenter);
+		XMFLOAT4X4 mW;
+		XMStoreFloat4x4(&mW, mWorld);
+
+		m_pDebugBox->SetWorld(&mW);
+		m_pDebugBox->Draw();
+	}
+
 }
 #endif // BUILD_MODE

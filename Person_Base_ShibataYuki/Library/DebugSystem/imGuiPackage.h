@@ -32,20 +32,21 @@ namespace MySpace
 		DirectX::XMFLOAT3 InputInt(DirectX::XMFLOAT3 value);
 		DirectX::XMFLOAT2 InputInt(DirectX::XMFLOAT2 value);
 
-		// -1はなにも選択していない判定
+		// *@Popメニュー表示and選択
+		// *@-1はなにも選択していない判定
 		_NODISCARD int PopupMenu(std::vector<std::string> vec, std::string name, bool open);
 
-		// ビットで複数切替ボタン
+		// *@ビットで複数切替ボタン
 		_NODISCARD int CreateSelectableForBit(std::vector<std::string> vec, int current, int newLine = 2, float width = 200);
 
-		// ビット確認できる定数や列挙体用
+		// *@ビット確認できる定数や列挙体用
 		_NODISCARD int CreateRadioForBit(std::vector<std::string> vec, int current);
 
 		_NODISCARD int CreateRadio(std::vector<std::string> vec, int current);
 
 #pragma region DRAG_AND_DROP
-		// 定数などで管理すべき
-		// ドロップ先
+		// *@Source関数の第一引き数と同一にする(定数などで管理すべき)
+		// *@ドロップ先
 		template<class T>
 		T* DragDropTarget(std::string name)
 		{
@@ -64,7 +65,8 @@ namespace MySpace
 			}
 			return nullptr;
 		}
-		// ドラッグ元
+		// *@Target関数の第一引き数と同一にする(定数などで管理すべき)
+		// *@ドラッグ元
 		template<class T>
 		bool DragDropSource(std::string name, std::string moveName, T type)
 		{

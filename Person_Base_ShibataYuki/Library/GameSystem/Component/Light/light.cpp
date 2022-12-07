@@ -6,6 +6,7 @@
 
 //--- インクルード部
 #include <GameSystem/Component/Light/light.h>
+#include <GameSystem/Component/Light/directionalLight.h>
 #include <GameSystem/GameObject/gameObject.h>
 #include <GameSystem/Manager/sceneManager.h>
 
@@ -23,23 +24,22 @@ CLight::CLight()
 CLight::CLight(std::shared_ptr<CGameObject> owner)
 	:CComponent(owner)
 {
-	//m_pLight = this;
-	//StartUp();
+	GetOwner()->GetTagPtr()->CreateTag("light");
+	GetOwner()->SetTag("light");
+	Set(this);
 }
 CLight::~CLight()
 {
-
+	Set(nullptr);
 }
-void CLight::Init()
+void CLight::Awake()
 {
 	GetOwner()->GetTagPtr()->CreateTag("light");
-	GetOwner()->GetTagPtr()->SetTag("light");
-
+	GetOwner()->SetTag("light");
+	Set(this);
 	m_bEnable = true;
 }
-void CLight::Update()
-{
-}
+
 CLight* CLight::Get()
 {
 	using namespace::MySpace::SceneManager;
@@ -47,7 +47,8 @@ CLight* CLight::Get()
 	{
 		if (auto obj = CGameObject::FindGameObjectWithTag("light"); obj.lock())
 		{
-			m_pLight = obj.lock()->GetComponent<CLight>().lock().get();
+			if (m_pLight = obj.lock()->GetComponent<CLight>().lock().get(); !m_pLight)
+				m_pLight = obj.lock()->GetComponent<CDirectionalLight>().lock().get();
 		}
 	}
 	return m_pLight;
@@ -57,8 +58,8 @@ void CLight::Set(CLight* pLight)
 	//m_pLight = (pLight) ? pLight : &g_Light;
 	m_pLight = (pLight);
 }
-#ifdef BUILD_MODE
 
+#ifdef BUILD_MODE
 
 void CLight::ImGuiDebug()
 {

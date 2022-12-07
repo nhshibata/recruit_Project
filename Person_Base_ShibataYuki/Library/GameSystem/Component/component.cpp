@@ -17,6 +17,9 @@ CComponent::CComponent() : m_bActive(true)
 CComponent::CComponent(std::shared_ptr<CGameObject> owner) 
 	:m_pOwner(owner), m_bActive(true)
 {
+#if BUILD_MODE
+	m_Name = GetName();
+#endif // BUILD_MODE
 };
 void CComponent::OnLoad()
 {

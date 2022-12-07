@@ -9,7 +9,6 @@
 
 //--- インクルード部
 #define NOMINMAX
-//#include <Windows.h>
 #include <Crtdbg.h>
 #include <tchar.h>
 
@@ -46,9 +45,6 @@ bool Application::Init(HINSTANCE h_Instance)
 {
 	// 幅と高さ初期化
 	//CScreen::SetSize(1280.0f, 960.0f);
-
-	// メモリの確保
-	//MainSystem.Set(new CSystemManager);
 
 	// ウインドウ作成
 	CWindow* window = &CWindow::Get();
@@ -93,9 +89,6 @@ void Application::Uninit()
 	//	if (app)
 	//		app->Uninit();
 	//}
-
-	// メモリの解放
-	//delete MainSystem.Get();
 
 	//CWindow::Get().Close(WINDOW_CLASS_NAME, m_hInst);
 	UnregisterClass(WINDOW_CLASS_NAME, m_hInst);

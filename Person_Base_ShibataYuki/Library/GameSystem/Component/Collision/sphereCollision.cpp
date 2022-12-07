@@ -160,6 +160,8 @@ Vector3 CSphereCollision::PosAdjustment(Vector3 otherPos, float size)
 void CSphereCollision::ImGuiDebug()
 {
 	CCollision::ImGuiDebug();
+	if (!m_pDebugSphere)
+		return;
 
 	// 3ŽŸŒ³À•W
 	//ImGui::Checkbox(u8"ó‘Ô", &IsActive());
@@ -168,7 +170,14 @@ void CSphereCollision::ImGuiDebug()
 		m_pDebugSphere->Init(16, 8, m_fRadius);
 	}
 
-	m_pDebugSphere->SetWorld(&Transform()->GetWorldMatrix());
+	XMVECTOR vCenter = XMLoadFloat3(&GetCenter());
+	XMMATRIX mWorld = XMLoadFloat4x4(&Transform()->GetWorldMatrix());
+
+	vCenter = XMVector3TransformCoord(vCenter, mWorld);
+	mWorld = XMMatrixTranslationFromVector(vCenter);
+	XMFLOAT4X4 mW;
+	XMStoreFloat4x4(&mW, mWorld);
+	m_pDebugSphere->SetWorld(&mW);
 	m_pDebugSphere->Draw();
 }
 #endif // BUILD_MODE

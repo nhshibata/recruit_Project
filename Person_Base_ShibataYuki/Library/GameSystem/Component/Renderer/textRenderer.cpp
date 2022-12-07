@@ -28,8 +28,16 @@ CTextRenderer::~CTextRenderer()
 }
 void CTextRenderer::Awake()
 {
+#if BUILD_MODE
+	// ImGui‚Ì“s‡ãA–¼‘Oˆê’v‚Í”ð‚¯‚½‚¢‚½‚ßAID‚ð•t‚¯‘«‚·
+	static int CreateNum = 0;
+	// ‰Šú‰»•¶
+	GetOwner()->SetName("Text_" + std::to_string(++CreateNum));
+#else
 	// ‰Šú‰»•¶
 	GetOwner()->SetName("Text");
+#endif // BUILD_MODE
+
 	m_Text = L"Text";
 
 	GetOwner()->SetLayer(CLayer::E_Layer::UI);

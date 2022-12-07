@@ -3,6 +3,7 @@
 #include <GameSystem/Component/Renderer/boxRenderer.h>
 #include <GameSystem/Component/Transform/transform.h>
 #include <GameSystem/Manager/sceneManager.h>
+#include <ImGui/imgui.h>
 
 using namespace MySpace::Game;
 using namespace MySpace::Graphics;
@@ -30,6 +31,8 @@ void CBoxRenderer::Update()
 bool CBoxRenderer::Draw()
 {
 	if (!CMeshRenderer::Draw())return false;
+
+	m_pBBox->SetMaterial(GetMaterial());
 
 #pragma region AABB
 	//XMVECTOR vCenter = XMLoadFloat3(&GetCenter());
@@ -76,7 +79,18 @@ HRESULT CBoxRenderer::SetBox(Vector3 vBBox)
 	}
 	return hr;
 }
-void CBoxRenderer::SetMaterial(CMeshMaterial mat)
+
+#if BUILD_MODE
+
+void CBoxRenderer::ImGuiDebug()
 {
-	m_pBBox->SetMaterial(&mat);
+	if (ImGui::Button(u8"SphereRenderer"))
+		m_vSize = Transform()->GetScale();
+	if (ImGui::DragFloat3("Box", (float*)&m_vSize))
+	{
+		SetBox(m_vSize);
+	}
+	CMeshRenderer::ImGuiDebug();
 }
+
+#endif // 0
