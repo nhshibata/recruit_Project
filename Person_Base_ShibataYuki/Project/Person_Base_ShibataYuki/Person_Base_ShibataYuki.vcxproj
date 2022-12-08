@@ -71,14 +71,15 @@
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <LinkIncremental>true</LinkIncremental>
-    <IncludePath>$(SolutionDir)Library\Effekseer;$(SolutionDir)Library\Source;$(SolutionDir)Library;$(IncludePath)</IncludePath>
+    <IncludePath>$(SolutionDir)Library\Effekseer;$(SolutionDir)Library\Source\common;$(SolutionDir)Library\Source\spel;$(SolutionDir)Library\Source;$(SolutionDir)Library;$(IncludePath)</IncludePath>
     <LibraryPath>$(SolutionDir)exe\$(Configuration)\;$(SolutionDir)..\..\DirectXTex;$(SolutionDir)..\..\Assimp\lib\x64;$(SolutionDir)..\..\Assimp;$(SolutionDir)..\..\DirectXTex\x64\$(Configuration);$(SolutionDir)Library\Effekseer;$(DXSDK_DIR)lib¥x64;$(LibraryPath)</LibraryPath>
     <OutDir>$(SolutionDir)exe\$(Configuration)\</OutDir>
     <IntDir>$(SolutionDir)Binary\$(ProjectName)\$(Platform)\$(Configuration)\</IntDir>
+    <TargetName>$(ProjectName)D</TargetName>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <LinkIncremental>false</LinkIncremental>
-    <IncludePath>$(SolutionDir)Library\Effekseer;$(SolutionDir)Library\Source;$(SolutionDir)Library;$(IncludePath)</IncludePath>
+    <IncludePath>$(SolutionDir)Library\Effekseer;$(SolutionDir)Library\Source\common;$(SolutionDir)Library\Source\spel;$(SolutionDir)Library\Source;$(SolutionDir)Library;$(IncludePath)</IncludePath>
     <LibraryPath>$(SolutionDir)exe\$(Configuration)\;$(SolutionDir)..\..\DirectXTex;$(SolutionDir)..\..\Assimp\lib\x64;$(SolutionDir)..\..\Assimp;$(SolutionDir)..\..\DirectXTex\x64\$(Configuration);$(SolutionDir)Library\Effekseer;$(DXSDK_DIR)lib¥x64;$(LibraryPath)</LibraryPath>
     <OutDir>$(SolutionDir)exe\$(Configuration)\</OutDir>
     <IntDir>$(SolutionDir)Binary\$(ProjectName)\$(Platform)\$(Configuration)\</IntDir>
@@ -120,6 +121,7 @@
       <AdditionalLibraryDirectories>%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <AdditionalDependencies>d3dcompiler.lib;d3d11.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <GenerateDebugInformation>true</GenerateDebugInformation>
+      <OutputFile>$(OutDir)$(ProjectName)D$(TargetExt)</OutputFile>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
@@ -169,107 +171,6 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="..\..\Library\Source\battleStatus.cpp" />
-    <ClCompile Include="..\..\Library\Source\command.cpp" />
-    <ClCompile Include="..\..\Library\Source\commandSpell.cpp" />
-    <ClCompile Include="..\..\Library\Source\eventMessage.cpp" />
-    <ClCompile Include="..\..\Library\Source\fadeController.cpp" />
-    <ClCompile Include="..\..\Library\Source\gameCamera.cpp" />
-    <ClCompile Include="..\..\Library\Source\gameScene.cpp">
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
-    </ClCompile>
-    <ClCompile Include="..\..\Library\Source\gameSpellRhythm.cpp">
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
-    </ClCompile>
-    <ClCompile Include="..\..\Library\Source\hyakuasi\bulletBase.cpp">
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
-    </ClCompile>
-    <ClCompile Include="..\..\Library\Source\hyakuasi\centipede.cpp">
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
-    </ClCompile>
-    <ClCompile Include="..\..\Library\Source\hyakuasi\enemyBase.cpp">
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
-    </ClCompile>
-    <ClCompile Include="..\..\Library\Source\hyakuasi\gameCentipedeMarch.cpp">
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
-    </ClCompile>
-    <ClCompile Include="..\..\Library\Source\hyakuasi\gameUI.cpp">
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
-    </ClCompile>
-    <ClCompile Include="..\..\Library\Source\hyakuasi\ground.cpp">
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
-    </ClCompile>
-    <ClCompile Include="..\..\Library\Source\hyakuasi\itemBase.cpp">
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
-    </ClCompile>
-    <ClCompile Include="..\..\Library\Source\hyakuasi\myCamera.cpp">
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
-    </ClCompile>
-    <ClCompile Include="..\..\Library\Source\hyakuasi\resultUI.cpp">
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
-    </ClCompile>
-    <ClCompile Include="..\..\Library\Source\hyakuasi\timer.cpp">
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
-    </ClCompile>
-    <ClCompile Include="..\..\Library\Source\hyakuasi\titleUI.cpp">
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
-    </ClCompile>
-    <ClCompile Include="..\..\Library\Source\hyakuasi\UIAnime.cpp">
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
-    </ClCompile>
-    <ClCompile Include="..\..\Library\Source\mage.cpp" />
-    <ClCompile Include="..\..\Library\Source\mageSociety.cpp" />
-    <ClCompile Include="..\..\Library\Source\Main.cpp" />
-    <ClCompile Include="..\..\Library\Source\startUp.cpp" />
-  </ItemGroup>
-  <ItemGroup>
-    <ClInclude Include="..\..\Library\Source\battleStatus.h" />
-    <ClInclude Include="..\..\Library\Source\command.h" />
-    <ClInclude Include="..\..\Library\Source\commandSpell.h" />
-    <ClInclude Include="..\..\Library\Source\eventMessage.h" />
-    <ClInclude Include="..\..\Library\Source\fadeController.h" />
-    <ClInclude Include="..\..\Library\Source\gameCamera.h" />
-    <ClInclude Include="..\..\Library\Source\gameSpellRhythm.h" />
-    <ClInclude Include="..\..\Library\Source\hyakuasi\bulletBase.h">
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
-    </ClInclude>
-    <ClInclude Include="..\..\Library\Source\hyakuasi\centipede.h">
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
-    </ClInclude>
-    <ClInclude Include="..\..\Library\Source\hyakuasi\enemyBase.h">
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
-    </ClInclude>
-    <ClInclude Include="..\..\Library\Source\hyakuasi\gameCentipedeMarch.h">
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
-    </ClInclude>
-    <ClInclude Include="..\..\Library\Source\hyakuasi\gameUI.h">
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
-    </ClInclude>
-    <ClInclude Include="..\..\Library\Source\hyakuasi\ground.h">
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
-    </ClInclude>
-    <ClInclude Include="..\..\Library\Source\hyakuasi\itemBase.h">
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
-    </ClInclude>
-    <ClInclude Include="..\..\Library\Source\hyakuasi\myCamera.h">
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
-    </ClInclude>
-    <ClInclude Include="..\..\Library\Source\hyakuasi\resultUI.h">
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
-    </ClInclude>
-    <ClInclude Include="..\..\Library\Source\hyakuasi\timer.h">
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
-    </ClInclude>
-    <ClInclude Include="..\..\Library\Source\hyakuasi\titleUI.h">
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
-    </ClInclude>
-    <ClInclude Include="..\..\Library\Source\hyakuasi\UIAnime.h">
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
-    </ClInclude>
-    <ClInclude Include="..\..\Library\Source\mage.h" />
-    <ClInclude Include="..\..\Library\Source\mageSociety.h" />
-  </ItemGroup>
-  <ItemGroup>
     <ProjectReference Include="..\AISystem\AISystem.vcxproj">
       <Project>{731f586a-1867-4baa-9cd2-cbb04bb062e8}</Project>
     </ProjectReference>
@@ -288,6 +189,30 @@
     <ProjectReference Include="..\GraphicsSystem\GraphicsSystem.vcxproj">
       <Project>{bf57fcf8-4999-46fc-becc-9a6a9fa58e40}</Project>
     </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="..\..\Library\Source\common\eventMessage.h" />
+    <ClInclude Include="..\..\Library\Source\common\fadeController.h" />
+    <ClInclude Include="..\..\Library\Source\gameCamera.h" />
+    <ClInclude Include="..\..\Library\Source\spel\battleStatus.h" />
+    <ClInclude Include="..\..\Library\Source\spel\command.h" />
+    <ClInclude Include="..\..\Library\Source\spel\commandSpell.h" />
+    <ClInclude Include="..\..\Library\Source\spel\gameSpellRhythm.h" />
+    <ClInclude Include="..\..\Library\Source\spel\mage.h" />
+    <ClInclude Include="..\..\Library\Source\spel\mageSociety.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="..\..\Library\Source\common\eventMessage.cpp" />
+    <ClCompile Include="..\..\Library\Source\common\fadeController.cpp" />
+    <ClCompile Include="..\..\Library\Source\gameCamera.cpp" />
+    <ClCompile Include="..\..\Library\Source\Main.cpp" />
+    <ClCompile Include="..\..\Library\Source\spel\battleStatus.cpp" />
+    <ClCompile Include="..\..\Library\Source\spel\command.cpp" />
+    <ClCompile Include="..\..\Library\Source\spel\commandSpell.cpp" />
+    <ClCompile Include="..\..\Library\Source\spel\gameSpellRhythm.cpp" />
+    <ClCompile Include="..\..\Library\Source\spel\mage.cpp" />
+    <ClCompile Include="..\..\Library\Source\spel\mageSociety.cpp" />
+    <ClCompile Include="..\..\Library\Source\startUp.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
