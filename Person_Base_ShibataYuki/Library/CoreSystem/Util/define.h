@@ -28,9 +28,9 @@
 #define address2str(func) #func
 #define TODO(str) __pragma(message(__FILE__"(" address2str(__LINE__) ") : ÅyTODOÅz " str))
 
-#define FORDER_DIR(path)		("../../"#path)
-#define FORDER_DIR2(path)		(L"..\\..\\"#path)
-#define SHADER_PATH(path)		(std::wstring(L"..\\..\\") + std::wstring(path)).data()
+#define FORDER_DIR(path)		("../"#path)
+#define FORDER_DIR2(path)		(L"..\\"#path)
+#define SHADER_PATH(path)		(std::wstring(L"..\\") + std::wstring(path)).data()
 
 
 #endif // !__DEFINE_H__

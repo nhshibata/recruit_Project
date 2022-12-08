@@ -5,12 +5,12 @@
 //=========================================================
 
 #include <fadeController.h>
+#include <GameSystem/Component/component.h>
 
 //
 CFadeController::CFadeController(std::shared_ptr<CGameObject> owner)
 	:CComponent(owner), m_fFadeTime(60), m_eState(E_FadeState::NONE)
 {
-
 }
 void CFadeController::Awake()
 {
@@ -25,10 +25,6 @@ void CFadeController::Awake()
 	m_pPolygon.lock()->SetColor(Color(0, 0, 0, 0));
 	m_pPolygon.lock()->GetRectTransform()->SetSize(CScreen::GetWidth(), CScreen::GetHeight());
 	GetOwner()->SetLayer(static_cast<int>(CLayer::E_Layer::FOG));
-}
-void CFadeController::Init()
-{
-
 }
 void CFadeController::Update()
 {

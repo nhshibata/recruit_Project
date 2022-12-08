@@ -9,7 +9,7 @@
 #include <CoreSystem/Time/fps.h>
 #include <ImGui/imgui.h>
 
-#pragma comment(lib, "winmm.lib")	// winmm.libを使用する
+//#pragma comment(lib, "winmm.lib")	// winmm.libを使用する
 // --- 定数定義 ---
 
 using namespace MySpace::System;

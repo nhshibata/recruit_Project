@@ -16,10 +16,8 @@
 
 namespace Spell
 {
-	using namespace MySpace::Game;
-
 	// *@ステータスｸﾗｽ
-	class CBattleStatus : public CComponent
+	class CBattleStatus : public MySpace::Game::CComponent
 	{
 	private:
 		//--- メンバ変数
@@ -33,7 +31,7 @@ namespace Spell
 	public:
 		//--- メンバ関数
 		CBattleStatus() {};
-		CBattleStatus(std::shared_ptr<CGameObject> owner) :CComponent(owner)
+		CBattleStatus(std::shared_ptr<MySpace::Game::CGameObject> owner) : MySpace::Game::CComponent(owner)
 		{};
 		~CBattleStatus() {};
 

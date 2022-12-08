@@ -19,7 +19,7 @@
 
 #include <GameSystem/Component/Camera/camera.h>
 #include <GameSystem/Component/Camera/debugCamera.h>
-#include <AISystem/navMeshBake.h>
+#include <AISystem/Nav/navMeshBake.h>
 
 #pragma region NAME_SPACE
 using namespace MySpace::System;

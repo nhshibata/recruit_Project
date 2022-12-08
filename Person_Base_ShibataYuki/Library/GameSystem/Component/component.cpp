@@ -18,19 +18,59 @@ CComponent::CComponent(std::shared_ptr<CGameObject> owner)
 	:m_pOwner(owner), m_bActive(true)
 {
 #if BUILD_MODE
-	m_Name = GetName();
+	//m_Name = GetName();
 #endif // BUILD_MODE
 };
+CComponent::~CComponent() 
+{}
+//--- 基本
+// *@ 生成時に呼び出される
+void CComponent::Awake() 
+{};
+// *@ 初期化 他コンポーネントの取得などを行う
+void CComponent::Init() 
+{};
+// *@ 終了処理
+void CComponent::Uninit() 
+{};
+// *@ 更新 必ず実装
+void CComponent::Update() 
+{};
+// *@ 遅い更新
+void CComponent::LateUpdate() 
+{};
+// *@ 一定時間の更新
+void CComponent::FixedUpdate() 
+{}
+// *@ 読み込み時呼び出し関数
 void CComponent::OnLoad()
 {
 #ifdef _DEBUG
-	auto owner = m_pOwner.lock();
+	/*auto owner = m_pOwner.lock();
 	if (m_spThisPtr.lock())
 	{
 		[[maybe_unused]] auto name = m_spThisPtr.lock()->GetName();
-	}
+	}*/
 #endif // _DEBUG
 }
+// *@ 接し続けているオブジェクトが渡される
+void CComponent::OnCollisionStay(CGameObject* obj) 
+{};
+// *@ 接し始めたオブジェクトが渡される
+void CComponent::OnCollisionEnter(CGameObject* obj) 
+{};
+// *@ 離れたオブジェクトが渡される
+void CComponent::OnCollisionExit(CGameObject* obj) 
+{};
+// *@ 接し続けているオブジェクトが渡される(トリガー)
+void CComponent::OnTriggerStay(CGameObject* obj) 
+{};
+// *@ 接し始めたオブジェクトが渡される(トリガー)
+void CComponent::OnTriggerEnter(CGameObject* obj) 
+{};
+// *@ 離れたオブジェクトが渡される(トリガー)
+void CComponent::OnTriggerExit(CGameObject* obj) 
+{};
 // 持ち主がActiveでなければActiveとは言えない
 bool CComponent::IsActive() 
 {

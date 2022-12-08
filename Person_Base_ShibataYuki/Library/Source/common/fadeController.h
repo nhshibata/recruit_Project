@@ -10,8 +10,6 @@
 
 //--- インクルード部
 #include <functional>
-#include <GameSystem/GameObject/gameObject.h>
-#include <GameSystem/Component/component.h>
 #include <GameSystem/Component/Renderer/polygonRenderer.h>
 
 class CFadeController : public CComponent
@@ -31,6 +29,7 @@ private:
 	std::weak_ptr<CPolygonRenderer> m_pPolygon;										// *@ポリゴンptr
 	E_FadeState m_eState;															// *@状態
 	float m_fFadeTime;																// *@フェード実行時間
+	
 	static inline std::map<E_FadeState, std::vector<std::function<void(void)>>> m_pFuncMap;		// *@フェード実行時関数ポインタ
 	static inline std::map<E_FadeState, std::vector<std::function<void(void)>>> m_pLoopFuncMap;	// *@フェード実行時関数ポインタ(ループ)
 	
@@ -62,7 +61,6 @@ public:
 	~CFadeController() {};
 
 	void Awake();
-	void Init();
 	void Update();
 
 	// *@フェードアウト開始
@@ -88,7 +86,7 @@ public:
 	//--- ゲッター・セッター
 
 	// *@fade状況取得
-	E_FadeState GetState() { return m_eState; }
+	E_FadeState GetFadeState() { return m_eState; }
 	// *@動いている状態か確認
 	// *@fade中ならtrue
 	bool IsFadeProcess() { return (m_eState != E_FadeState::NONE); }

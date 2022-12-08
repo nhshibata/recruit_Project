@@ -84,7 +84,17 @@ void CCollision::HitResponse(CCollision* other)
 
 	// Stay:以前のフレームで接触していたか確認
 	//if (auto it = std::find(m_pOldStayList.begin(), m_pOldStayList.end(), otherObj.lock()); it != m_pOldStayList.end())
-	if (IsPtrIn<std::weak_ptr<CGameObject>>(m_pOldStayList, otherObj))
+	bool res = false;
+	for (auto & obj : m_pOldStayList)
+	{
+		if (obj.lock() == otherObj.lock())
+		{
+			res = true;
+			break;
+		}
+	}
+
+	if (res)
 	{
 		if (!trigger)
 		{
@@ -133,19 +143,27 @@ void CCollision::ColObjectUpdate()
 	for (std::list<std::weak_ptr<CGameObject>>::iterator it = m_pOldStayList.begin(); it != m_pOldStayList.end(); ++it)
 	{
 		if (!(*it).lock()) // 削除されている可能性を鑑みて
-		{
 			continue;
-		}
 
 		// 格納されていない、離れた
 		//if (auto res = std::find(m_pHitList.begin(), m_pHitList.end(), (*it)); res == m_pHitList.end())
-		if(!IsPtrIn<std::weak_ptr<CGameObject>>(m_pHitList, (*it)))
-		{
-			m_pExitList.push_back((*it));
-#ifdef BUILD_MODE
-			++m_nDebugExitCnt;
-#endif // BUILD_MODE
+		bool res = false;
+		for (auto & obj : m_pHitList)
+		{	
+			if ((*it).lock() == (*it).lock())
+			{	// 格納されていた
+				res = true;
+				break;
+			}
 		}
+		if (res)
+			continue;
+
+		m_pExitList.push_back((*it));
+#ifdef BUILD_MODE
+		++m_nDebugExitCnt;
+#endif // BUILD_MODE
+
 	}
 
 	// hitリストからStayリストへ格納

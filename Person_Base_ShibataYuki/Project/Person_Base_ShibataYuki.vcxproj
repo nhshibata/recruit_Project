@@ -158,8 +158,8 @@
       <AdditionalOptions>/bigobj %(AdditionalOptions)</AdditionalOptions>
       <LanguageStandard>stdcpp17</LanguageStandard>
       <ShowIncludes>false</ShowIncludes>
-      <InlineFunctionExpansion>Default</InlineFunctionExpansion>
-      <PreprocessorDefinitions>%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <InlineFunctionExpansion>AnySuitable</InlineFunctionExpansion>
+      <PreprocessorDefinitions>_NDEBUG;_LIB;%(PreprocessorDefinitions)</PreprocessorDefinitions>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -171,48 +171,60 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ProjectReference Include="..\AISystem\AISystem.vcxproj">
+    <ClCompile Include="..\Library\Source\common\eventMessage.cpp" />
+    <ClCompile Include="..\Library\Source\common\fadeController.cpp">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">false</ExcludedFromBuild>
+    </ClCompile>
+    <ClCompile Include="..\Library\Source\gameCamera.cpp" />
+    <ClCompile Include="..\Library\Source\Main.cpp" />
+    <ClCompile Include="..\Library\Source\spel\battleStatus.cpp" />
+    <ClCompile Include="..\Library\Source\spel\command.cpp" />
+    <ClCompile Include="..\Library\Source\spel\commandSpell.cpp" />
+    <ClCompile Include="..\Library\Source\spel\gameSpellRhythm.cpp">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">false</ExcludedFromBuild>
+    </ClCompile>
+    <ClCompile Include="..\Library\Source\spel\mage.cpp" />
+    <ClCompile Include="..\Library\Source\spel\mageSociety.cpp" />
+    <ClCompile Include="..\Library\Source\startUp.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="..\Library\Source\common\eventMessage.h" />
+    <ClInclude Include="..\Library\Source\common\fadeController.h">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">false</ExcludedFromBuild>
+    </ClInclude>
+    <ClInclude Include="..\Library\Source\gameCamera.h" />
+    <ClInclude Include="..\Library\Source\spel\battleStatus.h" />
+    <ClInclude Include="..\Library\Source\spel\command.h" />
+    <ClInclude Include="..\Library\Source\spel\commandSpell.h" />
+    <ClInclude Include="..\Library\Source\spel\gameSpellRhythm.h">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">false</ExcludedFromBuild>
+    </ClInclude>
+    <ClInclude Include="..\Library\Source\spel\mage.h" />
+    <ClInclude Include="..\Library\Source\spel\mageSociety.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="AISystem.vcxproj">
       <Project>{731f586a-1867-4baa-9cd2-cbb04bb062e8}</Project>
     </ProjectReference>
-    <ProjectReference Include="..\Application\Application.vcxproj">
+    <ProjectReference Include="Application.vcxproj">
       <Project>{587beb3c-977d-4497-b261-5693c4481818}</Project>
     </ProjectReference>
-    <ProjectReference Include="..\CoreSystem\CoreSystem.vcxproj">
+    <ProjectReference Include="CoreSystem.vcxproj">
       <Project>{3e4dd5e0-f185-4c2c-a696-2442587a0d56}</Project>
     </ProjectReference>
-    <ProjectReference Include="..\DebugSystem\DebugSystem.vcxproj">
+    <ProjectReference Include="DebugSystem.vcxproj">
       <Project>{131f5954-dd64-43e1-8c2f-ab99daa9edb5}</Project>
     </ProjectReference>
-    <ProjectReference Include="..\GameSystem\GameSystem.vcxproj">
+    <ProjectReference Include="GameSystem.vcxproj">
       <Project>{905ccd21-988f-406b-ba25-b3580db58f1c}</Project>
     </ProjectReference>
-    <ProjectReference Include="..\GraphicsSystem\GraphicsSystem.vcxproj">
+    <ProjectReference Include="GraphicsSystem.vcxproj">
       <Project>{bf57fcf8-4999-46fc-becc-9a6a9fa58e40}</Project>
     </ProjectReference>
-  </ItemGroup>
-  <ItemGroup>
-    <ClInclude Include="..\..\Library\Source\common\eventMessage.h" />
-    <ClInclude Include="..\..\Library\Source\common\fadeController.h" />
-    <ClInclude Include="..\..\Library\Source\gameCamera.h" />
-    <ClInclude Include="..\..\Library\Source\spel\battleStatus.h" />
-    <ClInclude Include="..\..\Library\Source\spel\command.h" />
-    <ClInclude Include="..\..\Library\Source\spel\commandSpell.h" />
-    <ClInclude Include="..\..\Library\Source\spel\gameSpellRhythm.h" />
-    <ClInclude Include="..\..\Library\Source\spel\mage.h" />
-    <ClInclude Include="..\..\Library\Source\spel\mageSociety.h" />
-  </ItemGroup>
-  <ItemGroup>
-    <ClCompile Include="..\..\Library\Source\common\eventMessage.cpp" />
-    <ClCompile Include="..\..\Library\Source\common\fadeController.cpp" />
-    <ClCompile Include="..\..\Library\Source\gameCamera.cpp" />
-    <ClCompile Include="..\..\Library\Source\Main.cpp" />
-    <ClCompile Include="..\..\Library\Source\spel\battleStatus.cpp" />
-    <ClCompile Include="..\..\Library\Source\spel\command.cpp" />
-    <ClCompile Include="..\..\Library\Source\spel\commandSpell.cpp" />
-    <ClCompile Include="..\..\Library\Source\spel\gameSpellRhythm.cpp" />
-    <ClCompile Include="..\..\Library\Source\spel\mage.cpp" />
-    <ClCompile Include="..\..\Library\Source\spel\mageSociety.cpp" />
-    <ClCompile Include="..\..\Library\Source\startUp.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

@@ -7,8 +7,8 @@
 //==========================================================
 
 //--- インクルード部
-#include <AISystem/navMeshBake.h>
-#include <AISystem/AIMapComponent.hpp>
+#include <AISystem/Nav/navMeshBake.h>
+#include <AISystem/Nav/AIMapComponent.hpp>
 #include <GameSystem/Component/Renderer/modelRenderer.h>
 #include <GameSystem/Manager/sceneManager.h>
 #include <GameSystem/Manager/drawSystem.h>

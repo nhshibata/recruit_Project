@@ -6,7 +6,7 @@
 
 //--- インクルード部
 #include "aiSystem.h"
-#include "aiNode.h"
+#include <AISystem/Node/aiNode.h>
 #include <GameSystem/GameObject/gameObject.h>
 
 using namespace AI;

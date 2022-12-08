@@ -40,6 +40,9 @@ void CreateComponentType()
 	mgr.SetComponentSave<CTextRenderer>();
 	mgr.SetComponentSave<CEffekseerRenderer>();
 
+	mgr.SetComponentSave<CAISystem>();
+	mgr.SetComponentSave<CAIAgent>();
+
 	mgr.SetComponentSave<CRenderer>();
 	mgr.SetComponentSave<CLight>();
 	mgr.SetComponentSave<CCollision>();

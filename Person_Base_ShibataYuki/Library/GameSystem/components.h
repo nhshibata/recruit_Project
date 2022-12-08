@@ -32,7 +32,8 @@
 #include <GameSystem/Component/Renderer/effekseerRenderer.h>
 
 //--- serealize, AddComponent ‚·‚éºÝÎß°ÈÝÄ‚ð’Ç‰Á
-
+#include <AISystem/System/aiSystem.h>
+#include <AISystem/System/aiAgent.h>
 
 
 void CreateComponentType();

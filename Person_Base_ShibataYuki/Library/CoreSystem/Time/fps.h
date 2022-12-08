@@ -42,7 +42,7 @@ namespace MySpace
 			};
 		private:
 			//--- メンバ変数
-			CFps* m_pInstance;
+			//CFps* m_pInstance;
 			DWORD m_dwCurrentTime;		// 現在時間
 			DWORD m_dwExecLastTime;		// 静的でない最後時間
 			DWORD m_dwDeltaTime;		// デルタタイム

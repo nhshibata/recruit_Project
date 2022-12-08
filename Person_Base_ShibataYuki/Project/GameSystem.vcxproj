@@ -19,64 +19,103 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="..\..\Library\CoreSystem\File\cerealize.cpp" />
-    <ClCompile Include="..\..\Library\CoreSystem\File\filePath.cpp" />
-    <ClCompile Include="..\..\Library\CoreSystem\File\resourceCSV.cpp" />
-    <ClCompile Include="..\..\Library\CoreSystem\FuncPtr\funcPtr.cpp" />
-    <ClCompile Include="..\..\Library\CoreSystem\FuncPtr\funcPtrManager.cpp" />
-    <ClCompile Include="..\..\Library\CoreSystem\FuncPtr\timeFuncPtr.cpp" />
-    <ClCompile Include="..\..\Library\CoreSystem\Input\gamePad.cpp" />
-    <ClCompile Include="..\..\Library\CoreSystem\Input\input.cpp" />
-    <ClCompile Include="..\..\Library\CoreSystem\Input\Keyboard.cpp" />
-    <ClCompile Include="..\..\Library\CoreSystem\Input\mouse.cpp" />
-    <ClCompile Include="..\..\Library\CoreSystem\Math\MyMath.cpp" />
-    <ClCompile Include="..\..\Library\CoreSystem\Sound\Sound.cpp" />
-    <ClCompile Include="..\..\Library\CoreSystem\Time\fps.cpp" />
-    <ClCompile Include="..\..\Library\CoreSystem\Util\stringConvert.cpp" />
+    <ClInclude Include="..\Library\GameSystem\components.h" />
+    <ClInclude Include="..\Library\GameSystem\Component\BaseComponent.h" />
+    <ClInclude Include="..\Library\GameSystem\Component\Camera\camera.h" />
+    <ClInclude Include="..\Library\GameSystem\Component\Camera\debugCamera.h" />
+    <ClInclude Include="..\Library\GameSystem\Component\Camera\gameCamera.h" />
+    <ClInclude Include="..\Library\GameSystem\Component\Collision\boxCollision.h" />
+    <ClInclude Include="..\Library\GameSystem\Component\Collision\collision.h" />
+    <ClInclude Include="..\Library\GameSystem\Component\Collision\sphereCollision.h" />
+    <ClInclude Include="..\Library\GameSystem\Component\component.h" />
+    <ClInclude Include="..\Library\GameSystem\Component\cursor.h" />
+    <ClInclude Include="..\Library\GameSystem\Component\Light\directionalLight.h" />
+    <ClInclude Include="..\Library\GameSystem\Component\Light\light.h" />
+    <ClInclude Include="..\Library\GameSystem\Component\Renderer\billboardRenderer.h" />
+    <ClInclude Include="..\Library\GameSystem\Component\Renderer\boxRenderer.h" />
+    <ClInclude Include="..\Library\GameSystem\Component\Renderer\effekseerRenderer.h" />
+    <ClInclude Include="..\Library\GameSystem\Component\Renderer\meshRenderer.h" />
+    <ClInclude Include="..\Library\GameSystem\Component\Renderer\modelRenderer.h" />
+    <ClInclude Include="..\Library\GameSystem\Component\Renderer\polygonRenderer.h" />
+    <ClInclude Include="..\Library\GameSystem\Component\Renderer\renderer.h" />
+    <ClInclude Include="..\Library\GameSystem\Component\Renderer\sphereRenderer.h" />
+    <ClInclude Include="..\Library\GameSystem\Component\Renderer\textRenderer.h" />
+    <ClInclude Include="..\Library\GameSystem\Component\Transform\rectTransform.h" />
+    <ClInclude Include="..\Library\GameSystem\Component\Transform\rigidbody.h" />
+    <ClInclude Include="..\Library\GameSystem\Component\Transform\transform.h" />
+    <ClInclude Include="..\Library\GameSystem\Component\Transform\Tween.h" />
+    <ClInclude Include="..\Library\GameSystem\Factory\componentFactory.h" />
+    <ClInclude Include="..\Library\GameSystem\gameInstance.h" />
+    <ClInclude Include="..\Library\GameSystem\GameObject\BaseObject.h" />
+    <ClInclude Include="..\Library\GameSystem\GameObject\gameObject.h" />
+    <ClInclude Include="..\Library\GameSystem\GameObject\layer.h" />
+    <ClInclude Include="..\Library\GameSystem\GameObject\tag.h" />
+    <ClInclude Include="..\Library\GameSystem\GameObject\UIGameObject.h" />
+    <ClInclude Include="..\Library\GameSystem\Manager\collisionSystem.h" />
+    <ClInclude Include="..\Library\GameSystem\Manager\drawSystem.h" />
+    <ClInclude Include="..\Library\GameSystem\Manager\gameObjectManager.h" />
+    <ClInclude Include="..\Library\GameSystem\Manager\instantResourceManager.h" />
+    <ClInclude Include="..\Library\GameSystem\Manager\mapSystemBase.h" />
+    <ClInclude Include="..\Library\GameSystem\Manager\sceneManager.h" />
+    <ClInclude Include="..\Library\GameSystem\propertyCereal.h" />
+    <ClInclude Include="..\Library\GameSystem\Scene\buildScene.h" />
+    <ClInclude Include="..\Library\GameSystem\Scene\gameScene.h" />
+    <ClInclude Include="..\Library\GameSystem\Scene\scene.h" />
+    <ClInclude Include="..\Library\GameSystem\Scene\sceneTransitionDetection.h" />
+    <ClInclude Include="..\Library\GameSystem\Scene\titleScene.h" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="..\..\Library\CoreSystem\File\cerealize.h" />
-    <ClInclude Include="..\..\Library\CoreSystem\File\filePath.h" />
-    <ClInclude Include="..\..\Library\CoreSystem\File\resource.h" />
-    <ClInclude Include="..\..\Library\CoreSystem\File\resourceCSV.h" />
-    <ClInclude Include="..\..\Library\CoreSystem\FuncPtr\funcPtr.h" />
-    <ClInclude Include="..\..\Library\CoreSystem\FuncPtr\funcPtrManager.h" />
-    <ClInclude Include="..\..\Library\CoreSystem\FuncPtr\timeFuncPtr.h" />
-    <ClInclude Include="..\..\Library\CoreSystem\Input\gamePad.h" />
-    <ClInclude Include="..\..\Library\CoreSystem\Input\input.h" />
-    <ClInclude Include="..\..\Library\CoreSystem\Input\Keyboard.h" />
-    <ClInclude Include="..\..\Library\CoreSystem\Input\mouse.h" />
-    <ClInclude Include="..\..\Library\CoreSystem\Math\MyMath.h" />
-    <ClInclude Include="..\..\Library\CoreSystem\Math\myVector.h" />
-    <ClInclude Include="..\..\Library\CoreSystem\property.h" />
-    <ClInclude Include="..\..\Library\CoreSystem\Singleton.h" />
-    <ClInclude Include="..\..\Library\CoreSystem\Sound\Sound.h" />
-    <ClInclude Include="..\..\Library\CoreSystem\Sound\SoundData.h" />
-    <ClInclude Include="..\..\Library\CoreSystem\Sound\SoundData.hpp" />
-    <ClInclude Include="..\..\Library\CoreSystem\system.h" />
-    <ClInclude Include="..\..\Library\CoreSystem\Time\fps.h" />
-    <ClInclude Include="..\..\Library\CoreSystem\Util\cerealCommon.h" />
-    <ClInclude Include="..\..\Library\CoreSystem\Util\define.h" />
-    <ClInclude Include="..\..\Library\CoreSystem\Util\SingletonManager.h" />
-    <ClInclude Include="..\..\Library\CoreSystem\Util\stl.h" />
-    <ClInclude Include="..\..\Library\CoreSystem\Util\stringConvert.h" />
+    <ClCompile Include="..\Library\GameSystem\components.cpp" />
+    <ClCompile Include="..\Library\GameSystem\Component\Camera\camera.cpp" />
+    <ClCompile Include="..\Library\GameSystem\Component\Camera\debugCamera.cpp" />
+    <ClCompile Include="..\Library\GameSystem\Component\Camera\gameCamera.cpp" />
+    <ClCompile Include="..\Library\GameSystem\Component\Collision\boxCollision.cpp" />
+    <ClCompile Include="..\Library\GameSystem\Component\Collision\collision.cpp" />
+    <ClCompile Include="..\Library\GameSystem\Component\Collision\sphereCollision.cpp" />
+    <ClCompile Include="..\Library\GameSystem\Component\component.cpp" />
+    <ClCompile Include="..\Library\GameSystem\Component\cursor.cpp" />
+    <ClCompile Include="..\Library\GameSystem\Component\Light\directionalLight.cpp" />
+    <ClCompile Include="..\Library\GameSystem\Component\Light\light.cpp" />
+    <ClCompile Include="..\Library\GameSystem\Component\Renderer\billboardRenderer.cpp" />
+    <ClCompile Include="..\Library\GameSystem\Component\Renderer\boxRenderer.cpp" />
+    <ClCompile Include="..\Library\GameSystem\Component\Renderer\effekseerRenderer.cpp" />
+    <ClCompile Include="..\Library\GameSystem\Component\Renderer\meshRenderer.cpp" />
+    <ClCompile Include="..\Library\GameSystem\Component\Renderer\modelRenderer.cpp" />
+    <ClCompile Include="..\Library\GameSystem\Component\Renderer\polygonRenderer.cpp" />
+    <ClCompile Include="..\Library\GameSystem\Component\Renderer\renderer.cpp" />
+    <ClCompile Include="..\Library\GameSystem\Component\Renderer\sphereRenderer.cpp" />
+    <ClCompile Include="..\Library\GameSystem\Component\Renderer\textRenderer.cpp" />
+    <ClCompile Include="..\Library\GameSystem\Component\Transform\rectTrabsform.cpp" />
+    <ClCompile Include="..\Library\GameSystem\Component\Transform\rigidbody.cpp" />
+    <ClCompile Include="..\Library\GameSystem\Component\Transform\transform.cpp" />
+    <ClCompile Include="..\Library\GameSystem\Component\Transform\Tween.cpp" />
+    <ClCompile Include="..\Library\GameSystem\Factory\componentFactory.cpp" />
+    <ClCompile Include="..\Library\GameSystem\GameObject\gameObject.cpp" />
+    <ClCompile Include="..\Library\GameSystem\GameObject\tag.cpp" />
+    <ClCompile Include="..\Library\GameSystem\Manager\collisionSystem.cpp" />
+    <ClCompile Include="..\Library\GameSystem\Manager\drawSystem.cpp" />
+    <ClCompile Include="..\Library\GameSystem\Manager\gameObjectManager.cpp" />
+    <ClCompile Include="..\Library\GameSystem\Manager\instantResourceManager.cpp" />
+    <ClCompile Include="..\Library\GameSystem\Manager\sceneManager.cpp" />
+    <ClCompile Include="..\Library\GameSystem\Scene\scene.cpp" />
+    <ClCompile Include="..\Library\GameSystem\Scene\sceneTransitionDetection.cpp" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <VCProjectVersion>15.0</VCProjectVersion>
-    <ProjectGuid>{3E4DD5E0-F185-4C2C-A696-2442587A0D56}</ProjectGuid>
+    <ProjectGuid>{905CCD21-988F-406B-BA25-B3580DB58F1C}</ProjectGuid>
     <Keyword>Win32Proj</Keyword>
-    <RootNamespace>CoreSystem</RootNamespace>
+    <RootNamespace>GameSystem</RootNamespace>
     <WindowsTargetPlatformVersion>10.0.17763.0</WindowsTargetPlatformVersion>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
-    <ConfigurationType>StaticLibrary</ConfigurationType>
+    <ConfigurationType>Application</ConfigurationType>
     <UseDebugLibraries>true</UseDebugLibraries>
     <PlatformToolset>v141</PlatformToolset>
     <CharacterSet>Unicode</CharacterSet>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
-    <ConfigurationType>StaticLibrary</ConfigurationType>
+    <ConfigurationType>Application</ConfigurationType>
     <UseDebugLibraries>false</UseDebugLibraries>
     <PlatformToolset>v141</PlatformToolset>
     <WholeProgramOptimization>true</WholeProgramOptimization>
@@ -116,7 +155,7 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <LinkIncremental>true</LinkIncremental>
     <OutDir>$(SolutionDir)exe\$(Configuration)\</OutDir>
-    <IncludePath>$(SolutionDir)Library\Effekseer;$(SolutionDir)Source;$(SolutionDir)Library;$(IncludePath)</IncludePath>
+    <IncludePath>$(SolutionDir)Library\Effekseer;$(SolutionDir)Library;$(IncludePath);$(IncludePath)</IncludePath>
     <LibraryPath>$(LibraryPath)</LibraryPath>
     <IntDir>$(SolutionDir)Binary\$(ProjectName)\$(Platform)\$(Configuration)\</IntDir>
   </PropertyGroup>
@@ -138,21 +177,17 @@
       <WarningLevel>Level3</WarningLevel>
       <Optimization>Disabled</Optimization>
       <SDLCheck>false</SDLCheck>
-      <PreprocessorDefinitions>BUILD_MODE;_DEBUG;_LIB;%(PreprocessorDefinitions);</PreprocessorDefinitions>
+      <PreprocessorDefinitions>BUILD_MODE;_DEBUG;_LIB;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
-      <PrecompiledHeaderFile>
-      </PrecompiledHeaderFile>
       <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
       <AdditionalIncludeDirectories>$(SolutionDir)..\..\DirectXTex;$(SolutionDir)..\..\Assimp\include;$(SolutionDir)..\..\Assimp;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <AdditionalOptions>/bigobj %(AdditionalOptions)</AdditionalOptions>
       <LanguageStandard>stdcpp17</LanguageStandard>
-      <UndefinePreprocessorDefinitions>
-      </UndefinePreprocessorDefinitions>
       <InlineFunctionExpansion>AnySuitable</InlineFunctionExpansion>
     </ClCompile>
     <Link>
-      <SubSystem>Windows</SubSystem>
+      <SubSystem>Console</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
     </Link>
     <Lib>
@@ -163,33 +198,33 @@
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
-      <PrecompiledHeader>Use</PrecompiledHeader>
+      <PrecompiledHeader>
+      </PrecompiledHeader>
       <WarningLevel>Level3</WarningLevel>
       <Optimization>Disabled</Optimization>
       <SDLCheck>true</SDLCheck>
-      <PreprocessorDefinitions>WIN32;_DEBUG;_LIB;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>WIN32;_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
-      <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
     </ClCompile>
     <Link>
-      <SubSystem>Windows</SubSystem>
+      <SubSystem>Console</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <ClCompile>
-      <PrecompiledHeader>Use</PrecompiledHeader>
+      <PrecompiledHeader>
+      </PrecompiledHeader>
       <WarningLevel>Level3</WarningLevel>
       <Optimization>MaxSpeed</Optimization>
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <SDLCheck>true</SDLCheck>
-      <PreprocessorDefinitions>WIN32;NDEBUG;_LIB;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>WIN32;NDEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
-      <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
     </ClCompile>
     <Link>
-      <SubSystem>Windows</SubSystem>
+      <SubSystem>Console</SubSystem>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
       <GenerateDebugInformation>true</GenerateDebugInformation>
@@ -202,20 +237,17 @@
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <SDLCheck>false</SDLCheck>
-      <PreprocessorDefinitions>BUILD_MODE;NDEBUG;_LIB;%(PreprocessorDefinitions);</PreprocessorDefinitions>
+      <PreprocessorDefinitions>BUILD_MODE;NDEBUG;_LIB;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
-      <PrecompiledHeaderFile>
-      </PrecompiledHeaderFile>
       <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
       <AdditionalIncludeDirectories>$(SolutionDir)..\..\DirectXTex;$(SolutionDir)..\..\Assimp\include;$(SolutionDir)..\..\Assimp;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <AdditionalOptions>/bigobj %(AdditionalOptions)</AdditionalOptions>
       <LanguageStandard>stdcpp17</LanguageStandard>
-      <UndefinePreprocessorDefinitions>
-      </UndefinePreprocessorDefinitions>
       <InlineFunctionExpansion>Default</InlineFunctionExpansion>
+      <PrecompiledHeaderFile />
     </ClCompile>
     <Link>
-      <SubSystem>Windows</SubSystem>
+      <SubSystem>Console</SubSystem>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
       <GenerateDebugInformation>true</GenerateDebugInformation>

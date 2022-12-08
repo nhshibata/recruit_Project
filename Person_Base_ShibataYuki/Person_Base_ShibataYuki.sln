@@ -3,32 +3,37 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 15
 VisualStudioVersion = 15.0.28307.1259
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Application", "Project\Application\Application.vcxproj", "{587BEB3C-977D-4497-B261-5693C4481818}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Person_Base_ShibataYuki", "Project\Person_Base_ShibataYuki.vcxproj", "{8907599B-7E86-4896-ADA8-2F0EAF35EB34}"
 	ProjectSection(ProjectDependencies) = postProject
-		{905CCD21-988F-406B-BA25-B3580DB58F1C} = {905CCD21-988F-406B-BA25-B3580DB58F1C}
-		{131F5954-DD64-43E1-8C2F-AB99DAA9EDB5} = {131F5954-DD64-43E1-8C2F-AB99DAA9EDB5}
-		{3E4DD5E0-F185-4C2C-A696-2442587A0D56} = {3E4DD5E0-F185-4C2C-A696-2442587A0D56}
-		{BF57FCF8-4999-46FC-BECC-9A6A9FA58E40} = {BF57FCF8-4999-46FC-BECC-9A6A9FA58E40}
-	EndProjectSection
-EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "CoreSystem", "Project\CoreSystem\CoreSystem.vcxproj", "{3E4DD5E0-F185-4C2C-A696-2442587A0D56}"
-EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "DebugSystem", "Project\DebugSystem\DebugSystem.vcxproj", "{131F5954-DD64-43E1-8C2F-AB99DAA9EDB5}"
-EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "GameSystem", "Project\GameSystem\GameSystem.vcxproj", "{905CCD21-988F-406B-BA25-B3580DB58F1C}"
-EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "GraphicsSystem", "Project\GraphicsSystem\GraphicsSystem.vcxproj", "{BF57FCF8-4999-46FC-BECC-9A6A9FA58E40}"
-EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Person_Base_ShibataYuki", "Project\Person_Base_ShibataYuki\Person_Base_ShibataYuki.vcxproj", "{8907599B-7E86-4896-ADA8-2F0EAF35EB34}"
-	ProjectSection(ProjectDependencies) = postProject
-		{905CCD21-988F-406B-BA25-B3580DB58F1C} = {905CCD21-988F-406B-BA25-B3580DB58F1C}
 		{587BEB3C-977D-4497-B261-5693C4481818} = {587BEB3C-977D-4497-B261-5693C4481818}
-		{131F5954-DD64-43E1-8C2F-AB99DAA9EDB5} = {131F5954-DD64-43E1-8C2F-AB99DAA9EDB5}
-		{3E4DD5E0-F185-4C2C-A696-2442587A0D56} = {3E4DD5E0-F185-4C2C-A696-2442587A0D56}
+	EndProjectSection
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Application", "Project\Application.vcxproj", "{587BEB3C-977D-4497-B261-5693C4481818}"
+	ProjectSection(ProjectDependencies) = postProject
 		{BF57FCF8-4999-46FC-BECC-9A6A9FA58E40} = {BF57FCF8-4999-46FC-BECC-9A6A9FA58E40}
 	EndProjectSection
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "AISystem", "Project\AISystem\AISystem.vcxproj", "{731F586A-1867-4BAA-9CD2-CBB04BB062E8}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "CoreSystem", "Project\CoreSystem.vcxproj", "{3E4DD5E0-F185-4C2C-A696-2442587A0D56}"
+	ProjectSection(ProjectDependencies) = postProject
+		{731F586A-1867-4BAA-9CD2-CBB04BB062E8} = {731F586A-1867-4BAA-9CD2-CBB04BB062E8}
+	EndProjectSection
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "DebugSystem", "Project\DebugSystem.vcxproj", "{131F5954-DD64-43E1-8C2F-AB99DAA9EDB5}"
+	ProjectSection(ProjectDependencies) = postProject
+		{3E4DD5E0-F185-4C2C-A696-2442587A0D56} = {3E4DD5E0-F185-4C2C-A696-2442587A0D56}
+	EndProjectSection
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "GameSystem", "Project\GameSystem.vcxproj", "{905CCD21-988F-406B-BA25-B3580DB58F1C}"
+	ProjectSection(ProjectDependencies) = postProject
+		{131F5954-DD64-43E1-8C2F-AB99DAA9EDB5} = {131F5954-DD64-43E1-8C2F-AB99DAA9EDB5}
+	EndProjectSection
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "GraphicsSystem", "Project\GraphicsSystem.vcxproj", "{BF57FCF8-4999-46FC-BECC-9A6A9FA58E40}"
+	ProjectSection(ProjectDependencies) = postProject
+		{905CCD21-988F-406B-BA25-B3580DB58F1C} = {905CCD21-988F-406B-BA25-B3580DB58F1C}
+	EndProjectSection
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "AISystem", "Project\AISystem.vcxproj", "{731F586A-1867-4BAA-9CD2-CBB04BB062E8}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -38,6 +43,14 @@ Global
 		Release|x86 = Release|x86
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{8907599B-7E86-4896-ADA8-2F0EAF35EB34}.Debug|x64.ActiveCfg = Debug|x64
+		{8907599B-7E86-4896-ADA8-2F0EAF35EB34}.Debug|x64.Build.0 = Debug|x64
+		{8907599B-7E86-4896-ADA8-2F0EAF35EB34}.Debug|x86.ActiveCfg = Debug|Win32
+		{8907599B-7E86-4896-ADA8-2F0EAF35EB34}.Debug|x86.Build.0 = Debug|Win32
+		{8907599B-7E86-4896-ADA8-2F0EAF35EB34}.Release|x64.ActiveCfg = Release|x64
+		{8907599B-7E86-4896-ADA8-2F0EAF35EB34}.Release|x64.Build.0 = Release|x64
+		{8907599B-7E86-4896-ADA8-2F0EAF35EB34}.Release|x86.ActiveCfg = Release|Win32
+		{8907599B-7E86-4896-ADA8-2F0EAF35EB34}.Release|x86.Build.0 = Release|Win32
 		{587BEB3C-977D-4497-B261-5693C4481818}.Debug|x64.ActiveCfg = Debug|x64
 		{587BEB3C-977D-4497-B261-5693C4481818}.Debug|x64.Build.0 = Debug|x64
 		{587BEB3C-977D-4497-B261-5693C4481818}.Debug|x86.ActiveCfg = Debug|Win32
@@ -78,14 +91,6 @@ Global
 		{BF57FCF8-4999-46FC-BECC-9A6A9FA58E40}.Release|x64.Build.0 = Release|x64
 		{BF57FCF8-4999-46FC-BECC-9A6A9FA58E40}.Release|x86.ActiveCfg = Release|Win32
 		{BF57FCF8-4999-46FC-BECC-9A6A9FA58E40}.Release|x86.Build.0 = Release|Win32
-		{8907599B-7E86-4896-ADA8-2F0EAF35EB34}.Debug|x64.ActiveCfg = Debug|x64
-		{8907599B-7E86-4896-ADA8-2F0EAF35EB34}.Debug|x64.Build.0 = Debug|x64
-		{8907599B-7E86-4896-ADA8-2F0EAF35EB34}.Debug|x86.ActiveCfg = Debug|Win32
-		{8907599B-7E86-4896-ADA8-2F0EAF35EB34}.Debug|x86.Build.0 = Debug|Win32
-		{8907599B-7E86-4896-ADA8-2F0EAF35EB34}.Release|x64.ActiveCfg = Release|x64
-		{8907599B-7E86-4896-ADA8-2F0EAF35EB34}.Release|x64.Build.0 = Release|x64
-		{8907599B-7E86-4896-ADA8-2F0EAF35EB34}.Release|x86.ActiveCfg = Release|Win32
-		{8907599B-7E86-4896-ADA8-2F0EAF35EB34}.Release|x86.Build.0 = Release|Win32
 		{731F586A-1867-4BAA-9CD2-CBB04BB062E8}.Debug|x64.ActiveCfg = Debug|x64
 		{731F586A-1867-4BAA-9CD2-CBB04BB062E8}.Debug|x64.Build.0 = Debug|x64
 		{731F586A-1867-4BAA-9CD2-CBB04BB062E8}.Debug|x86.ActiveCfg = Debug|Win32

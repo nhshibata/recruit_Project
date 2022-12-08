@@ -55,6 +55,7 @@ void CGameSpellRhythm::Awake()
 	//CGameObject::DontDestroy(obj);
 	
 	m_pFade.lock()->SetTypeFunction<CGameSpellRhythm>(CFadeController::E_FadeState::FADE_OUT_START, &CGameSpellRhythm::FadeFuncPtr, this);
+	
 	/*m_pFade.lock()->SetFunction<CGameSpellRhythm>(CFadeController::E_FadeState::FADE_OUT_START, FadeFuncPtr, this, true);
 	m_pFade.lock()->SetFunction(CFadeController::E_FadeState::FADE_IN_START, FadeFuncPtr, true);*/
 }
@@ -123,7 +124,7 @@ void CGameSpellRhythm::FadeFuncPtr()
 {
 	CGameObject::E_ObjectState state = CGameObject::E_ObjectState::WAIT;
 	// fade in/out ŠJŽnŽž‚É‚Í’âŽ~ó‘Ô‚É‚·‚é
-	if (m_pFade.lock()->GetState() == CFadeController::E_FadeState::FADE_IN)
+	if (m_pFade.lock()->GetFadeState() == CFadeController::E_FadeState::FADE_IN)
 		state = CGameObject::E_ObjectState::ACTIVE;
 
 	ObjStateSwitch(state, MySpace::SceneManager::CSceneManager::Get().GetActiveScene());

@@ -19,209 +19,158 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="..\..\Library\GraphicsSystem\DirectX\DXDevice.h" />
-    <ClInclude Include="..\..\Library\GraphicsSystem\Manager\effectManager.h" />
-    <ClInclude Include="..\..\Library\GraphicsSystem\Manager\FontTexture.h" />
-    <ClInclude Include="..\..\Library\GraphicsSystem\Manager\imageResourceManager.h" />
-    <ClInclude Include="..\..\Library\GraphicsSystem\Manager\modelManager.h" />
-    <ClInclude Include="..\..\Library\GraphicsSystem\Manager\resourceMap.h" />
-    <ClInclude Include="..\..\Library\GraphicsSystem\Manager\shaderManager.h" />
-    <ClInclude Include="..\..\Library\GraphicsSystem\Render\AssimpModel.h" />
-    <ClInclude Include="..\..\Library\GraphicsSystem\Render\billboard.h" />
-    <ClInclude Include="..\..\Library\GraphicsSystem\Render\box.h" />
-    <ClInclude Include="..\..\Library\GraphicsSystem\Render\mesh.h" />
-    <ClInclude Include="..\..\Library\GraphicsSystem\Render\number.h">
+    <ClInclude Include="..\Library\GraphicsSystem\DirectX\DXDevice.h" />
+    <ClInclude Include="..\Library\GraphicsSystem\Manager\effectManager.h" />
+    <ClInclude Include="..\Library\GraphicsSystem\Manager\FontTexture.h" />
+    <ClInclude Include="..\Library\GraphicsSystem\Manager\imageResourceManager.h" />
+    <ClInclude Include="..\Library\GraphicsSystem\Manager\modelManager.h" />
+    <ClInclude Include="..\Library\GraphicsSystem\Manager\resourceMap.h" />
+    <ClInclude Include="..\Library\GraphicsSystem\Manager\shaderManager.h" />
+    <ClInclude Include="..\Library\GraphicsSystem\Render\AssimpModel.h" />
+    <ClInclude Include="..\Library\GraphicsSystem\Render\billboard.h" />
+    <ClInclude Include="..\Library\GraphicsSystem\Render\box.h" />
+    <ClInclude Include="..\Library\GraphicsSystem\Render\mesh.h" />
+    <ClInclude Include="..\Library\GraphicsSystem\Render\number.h">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
     </ClInclude>
-    <ClInclude Include="..\..\Library\GraphicsSystem\Render\polygon.h" />
-    <ClInclude Include="..\..\Library\GraphicsSystem\Render\Sphere.h" />
-    <ClInclude Include="..\..\Library\GraphicsSystem\Render\vertex.h" />
-    <ClInclude Include="..\..\Library\GraphicsSystem\Shader\constantBuffer.h" />
-    <ClInclude Include="..\..\Library\GraphicsSystem\Shader\domainShader.h" />
-    <ClInclude Include="..\..\Library\GraphicsSystem\Shader\hullShader.h" />
-    <ClInclude Include="..\..\Library\GraphicsSystem\Shader\meshBuffer.h" />
-    <ClInclude Include="..\..\Library\GraphicsSystem\Shader\pixelShader.h" />
-    <ClInclude Include="..\..\Library\GraphicsSystem\Shader\shader.h" />
-    <ClInclude Include="..\..\Library\GraphicsSystem\Shader\GraphicsBase.h" />
-    <ClInclude Include="..\..\Library\GraphicsSystem\Shader\vertexShader.h" />
-    <ClInclude Include="..\..\Library\GraphicsSystem\Texture\imageResource.h" />
-    <ClInclude Include="..\..\Library\GraphicsSystem\Texture\spriteAnimation.h" />
-    <ClInclude Include="..\..\Library\GraphicsSystem\Texture\Texture.h" />
+    <ClInclude Include="..\Library\GraphicsSystem\Render\polygon.h" />
+    <ClInclude Include="..\Library\GraphicsSystem\Render\Sphere.h" />
+    <ClInclude Include="..\Library\GraphicsSystem\Render\vertex.h" />
+    <ClInclude Include="..\Library\GraphicsSystem\Shader\constantBuffer.h" />
+    <ClInclude Include="..\Library\GraphicsSystem\Shader\domainShader.h" />
+    <ClInclude Include="..\Library\GraphicsSystem\Shader\GraphicsBase.h" />
+    <ClInclude Include="..\Library\GraphicsSystem\Shader\hullShader.h" />
+    <ClInclude Include="..\Library\GraphicsSystem\Shader\meshBuffer.h" />
+    <ClInclude Include="..\Library\GraphicsSystem\Shader\pixelShader.h" />
+    <ClInclude Include="..\Library\GraphicsSystem\Shader\shader.h" />
+    <ClInclude Include="..\Library\GraphicsSystem\Shader\vertexShader.h" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="..\..\Library\GraphicsSystem\DirectX\DXDevice.cpp" />
-    <ClCompile Include="..\..\Library\GraphicsSystem\Manager\effectManager.cpp" />
-    <ClCompile Include="..\..\Library\GraphicsSystem\Manager\FontTexture.cpp" />
-    <ClCompile Include="..\..\Library\GraphicsSystem\Manager\imageResourceManager.cpp" />
-    <ClCompile Include="..\..\Library\GraphicsSystem\Manager\modelManager.cpp" />
-    <ClCompile Include="..\..\Library\GraphicsSystem\Manager\shaderManager.cpp" />
-    <ClCompile Include="..\..\Library\GraphicsSystem\Render\AssimpModel.cpp" />
-    <ClCompile Include="..\..\Library\GraphicsSystem\Render\billboard.cpp" />
-    <ClCompile Include="..\..\Library\GraphicsSystem\Render\box.cpp" />
-    <ClCompile Include="..\..\Library\GraphicsSystem\Render\mesh.cpp" />
-    <ClCompile Include="..\..\Library\GraphicsSystem\Render\number.cpp">
+    <ClCompile Include="..\Library\GraphicsSystem\DirectX\DXDevice.cpp" />
+    <ClCompile Include="..\Library\GraphicsSystem\Manager\effectManager.cpp" />
+    <ClCompile Include="..\Library\GraphicsSystem\Manager\FontTexture.cpp" />
+    <ClCompile Include="..\Library\GraphicsSystem\Manager\imageResourceManager.cpp" />
+    <ClCompile Include="..\Library\GraphicsSystem\Manager\modelManager.cpp" />
+    <ClCompile Include="..\Library\GraphicsSystem\Manager\shaderManager.cpp" />
+    <ClCompile Include="..\Library\GraphicsSystem\Render\AssimpModel.cpp" />
+    <ClCompile Include="..\Library\GraphicsSystem\Render\billboard.cpp" />
+    <ClCompile Include="..\Library\GraphicsSystem\Render\box.cpp" />
+    <ClCompile Include="..\Library\GraphicsSystem\Render\mesh.cpp" />
+    <ClCompile Include="..\Library\GraphicsSystem\Render\number.cpp">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
     </ClCompile>
-    <ClCompile Include="..\..\Library\GraphicsSystem\Render\polygon.cpp" />
-    <ClCompile Include="..\..\Library\GraphicsSystem\Render\Sphere.cpp" />
-    <ClCompile Include="..\..\Library\GraphicsSystem\Shader\constantBuffer.cpp" />
-    <ClCompile Include="..\..\Library\GraphicsSystem\Shader\domainShader.cpp" />
-    <ClCompile Include="..\..\Library\GraphicsSystem\Shader\GraphicsBase.cpp" />
-    <ClCompile Include="..\..\Library\GraphicsSystem\Shader\hullShader.cpp" />
-    <ClCompile Include="..\..\Library\GraphicsSystem\Shader\meshBuffer.cpp" />
-    <ClCompile Include="..\..\Library\GraphicsSystem\Shader\pixelShader.cpp" />
-    <ClCompile Include="..\..\Library\GraphicsSystem\Shader\shader.cpp" />
-    <ClCompile Include="..\..\Library\GraphicsSystem\Shader\vertexShader.cpp" />
-    <ClCompile Include="..\..\Library\GraphicsSystem\Texture\imageResource.cpp" />
-    <ClCompile Include="..\..\Library\GraphicsSystem\Texture\spriteAnimation.cpp" />
-    <ClCompile Include="..\..\Library\GraphicsSystem\Texture\Texture.cpp" />
+    <ClCompile Include="..\Library\GraphicsSystem\Render\polygon.cpp" />
+    <ClCompile Include="..\Library\GraphicsSystem\Render\Sphere.cpp" />
+    <ClCompile Include="..\Library\GraphicsSystem\Shader\constantBuffer.cpp" />
+    <ClCompile Include="..\Library\GraphicsSystem\Shader\domainShader.cpp" />
+    <ClCompile Include="..\Library\GraphicsSystem\Shader\GraphicsBase.cpp" />
+    <ClCompile Include="..\Library\GraphicsSystem\Shader\hullShader.cpp" />
+    <ClCompile Include="..\Library\GraphicsSystem\Shader\meshBuffer.cpp" />
+    <ClCompile Include="..\Library\GraphicsSystem\Shader\pixelShader.cpp" />
+    <ClCompile Include="..\Library\GraphicsSystem\Shader\shader.cpp" />
+    <ClCompile Include="..\Library\GraphicsSystem\Shader\vertexShader.cpp" />
+    <ClCompile Include="..\Library\GraphicsSystem\Texture\imageResource.cpp" />
+    <ClCompile Include="..\Library\GraphicsSystem\Texture\spriteAnimation.cpp" />
+    <ClCompile Include="..\Library\GraphicsSystem\Texture\Texture.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <FxCompile Include="..\..\Data\hlsl\AssimpPixel.hlsl">
-      <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">5.0</ShaderModel>
-      <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Release|x64'">5.0</ShaderModel>
-      <ObjectFileOutput Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">$(SolutionDir)Data\shader\%(Filename).cso</ObjectFileOutput>
-      <ObjectFileOutput Condition="'$(Configuration)|$(Platform)'=='Release|x64'">$(SolutionDir)Data\shader\%(Filename).cso</ObjectFileOutput>
+    <FxCompile Include="..\Library\hlsl\AssimpPixel.hlsl">
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Pixel</ShaderType>
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Pixel</ShaderType>
-    </FxCompile>
-    <FxCompile Include="..\..\Data\hlsl\AssimpVertex.hlsl">
       <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">5.0</ShaderModel>
       <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Release|x64'">5.0</ShaderModel>
       <ObjectFileOutput Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">$(SolutionDir)Data\shader\%(Filename).cso</ObjectFileOutput>
       <ObjectFileOutput Condition="'$(Configuration)|$(Platform)'=='Release|x64'">$(SolutionDir)Data\shader\%(Filename).cso</ObjectFileOutput>
+    </FxCompile>
+    <FxCompile Include="..\Library\hlsl\AssimpVertex.hlsl">
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Vertex</ShaderType>
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Vertex</ShaderType>
+      <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">5.0</ShaderModel>
+      <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Release|x64'">5.0</ShaderModel>
+      <ObjectFileOutput Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">$(SolutionDir)Data\shader\%(Filename).cso</ObjectFileOutput>
+      <ObjectFileOutput Condition="'$(Configuration)|$(Platform)'=='Release|x64'">$(SolutionDir)Data\shader\%(Filename).cso</ObjectFileOutput>
     </FxCompile>
-    <FxCompile Include="..\..\Data\hlsl\DSIsoline.hlsl">
+    <FxCompile Include="..\Library\hlsl\DomainShader.hlsl">
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Domain</ShaderType>
-      <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">5.0</ShaderModel>
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Domain</ShaderType>
+      <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">5.0</ShaderModel>
       <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Release|x64'">5.0</ShaderModel>
       <ObjectFileOutput Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">$(SolutionDir)Data\shader\%(Filename).cso</ObjectFileOutput>
       <ObjectFileOutput Condition="'$(Configuration)|$(Platform)'=='Release|x64'">$(SolutionDir)Data\shader\%(Filename).cso</ObjectFileOutput>
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
     </FxCompile>
-    <FxCompile Include="..\..\Data\hlsl\DSPointToTriangle.hlsl">
+    <FxCompile Include="..\Library\hlsl\DSPointToTriangle.hlsl">
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Domain</ShaderType>
-      <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">5.0</ShaderModel>
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Domain</ShaderType>
-      <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Release|x64'">5.0</ShaderModel>
-      <ObjectFileOutput Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">$(SolutionDir)Data\shader\%(Filename).cso</ObjectFileOutput>
-      <ObjectFileOutput Condition="'$(Configuration)|$(Platform)'=='Release|x64'">$(SolutionDir)Data\shader\%(Filename).cso</ObjectFileOutput>
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">false</ExcludedFromBuild>
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">false</ExcludedFromBuild>
-    </FxCompile>
-    <FxCompile Include="..\..\Data\hlsl\DSQuad.hlsl">
-      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Domain</ShaderType>
-      <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">5.0</ShaderModel>
-      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Domain</ShaderType>
-      <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Release|x64'">5.0</ShaderModel>
-      <ObjectFileOutput Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">$(SolutionDir)Data\shader\%(Filename).cso</ObjectFileOutput>
-      <ObjectFileOutput Condition="'$(Configuration)|$(Platform)'=='Release|x64'">$(SolutionDir)Data\shader\%(Filename).cso</ObjectFileOutput>
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
-    </FxCompile>
-    <FxCompile Include="..\..\Data\hlsl\DSTriangle.hlsl">
-      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Domain</ShaderType>
-      <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">5.0</ShaderModel>
-      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Domain</ShaderType>
-      <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Release|x64'">5.0</ShaderModel>
-      <ObjectFileOutput Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">$(SolutionDir)Data\shader\%(Filename).cso</ObjectFileOutput>
-      <ObjectFileOutput Condition="'$(Configuration)|$(Platform)'=='Release|x64'">$(SolutionDir)Data\shader\%(Filename).cso</ObjectFileOutput>
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
-    </FxCompile>
-    <FxCompile Include="..\..\Data\hlsl\ExpPixel.hlsl">
       <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">5.0</ShaderModel>
       <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Release|x64'">5.0</ShaderModel>
       <ObjectFileOutput Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">$(SolutionDir)Data\shader\%(Filename).cso</ObjectFileOutput>
       <ObjectFileOutput Condition="'$(Configuration)|$(Platform)'=='Release|x64'">$(SolutionDir)Data\shader\%(Filename).cso</ObjectFileOutput>
+    </FxCompile>
+    <FxCompile Include="..\Library\hlsl\ExpPixel.hlsl">
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Pixel</ShaderType>
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Pixel</ShaderType>
-    </FxCompile>
-    <FxCompile Include="..\..\Data\hlsl\ExpVertex.hlsl">
       <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">5.0</ShaderModel>
       <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Release|x64'">5.0</ShaderModel>
       <ObjectFileOutput Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">$(SolutionDir)Data\shader\%(Filename).cso</ObjectFileOutput>
       <ObjectFileOutput Condition="'$(Configuration)|$(Platform)'=='Release|x64'">$(SolutionDir)Data\shader\%(Filename).cso</ObjectFileOutput>
+    </FxCompile>
+    <FxCompile Include="..\Library\hlsl\ExpVertex.hlsl">
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Vertex</ShaderType>
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Vertex</ShaderType>
+      <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">5.0</ShaderModel>
+      <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Release|x64'">5.0</ShaderModel>
+      <ObjectFileOutput Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">$(SolutionDir)Data\shader\%(Filename).cso</ObjectFileOutput>
+      <ObjectFileOutput Condition="'$(Configuration)|$(Platform)'=='Release|x64'">$(SolutionDir)Data\shader\%(Filename).cso</ObjectFileOutput>
     </FxCompile>
-    <FxCompile Include="..\..\Data\hlsl\HSIsoline.hlsl">
+    <FxCompile Include="..\Library\hlsl\HSPointToTriangle.hlsl">
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Hull</ShaderType>
-      <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">5.0</ShaderModel>
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Hull</ShaderType>
+      <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">5.0</ShaderModel>
       <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Release|x64'">5.0</ShaderModel>
       <ObjectFileOutput Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">$(SolutionDir)Data\shader\%(Filename).cso</ObjectFileOutput>
       <ObjectFileOutput Condition="'$(Configuration)|$(Platform)'=='Release|x64'">$(SolutionDir)Data\shader\%(Filename).cso</ObjectFileOutput>
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
     </FxCompile>
-    <FxCompile Include="..\..\Data\hlsl\HSPointToTriangle.hlsl">
+    <FxCompile Include="..\Library\hlsl\HullShader.hlsl">
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Hull</ShaderType>
-      <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">5.0</ShaderModel>
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Hull</ShaderType>
-      <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Release|x64'">5.0</ShaderModel>
-      <ObjectFileOutput Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">$(SolutionDir)Data\shader\%(Filename).cso</ObjectFileOutput>
-      <ObjectFileOutput Condition="'$(Configuration)|$(Platform)'=='Release|x64'">$(SolutionDir)Data\shader\%(Filename).cso</ObjectFileOutput>
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">false</ExcludedFromBuild>
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">false</ExcludedFromBuild>
-    </FxCompile>
-    <FxCompile Include="..\..\Data\hlsl\HSQuad.hlsl">
-      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Hull</ShaderType>
-      <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">5.0</ShaderModel>
-      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Hull</ShaderType>
-      <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Release|x64'">5.0</ShaderModel>
-      <ObjectFileOutput Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">$(SolutionDir)Data\shader\%(Filename).cso</ObjectFileOutput>
-      <ObjectFileOutput Condition="'$(Configuration)|$(Platform)'=='Release|x64'">$(SolutionDir)Data\shader\%(Filename).cso</ObjectFileOutput>
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
-    </FxCompile>
-    <FxCompile Include="..\..\Data\hlsl\HSTriangle.hlsl">
-      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Hull</ShaderType>
-      <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">5.0</ShaderModel>
-      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Hull</ShaderType>
-      <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Release|x64'">5.0</ShaderModel>
-      <ObjectFileOutput Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">$(SolutionDir)Data\shader\%(Filename).cso</ObjectFileOutput>
-      <ObjectFileOutput Condition="'$(Configuration)|$(Platform)'=='Release|x64'">$(SolutionDir)Data\shader\%(Filename).cso</ObjectFileOutput>
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
-    </FxCompile>
-    <FxCompile Include="..\..\Data\hlsl\Pixel.hlsl">
       <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">5.0</ShaderModel>
       <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Release|x64'">5.0</ShaderModel>
       <ObjectFileOutput Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">$(SolutionDir)Data\shader\%(Filename).cso</ObjectFileOutput>
       <ObjectFileOutput Condition="'$(Configuration)|$(Platform)'=='Release|x64'">$(SolutionDir)Data\shader\%(Filename).cso</ObjectFileOutput>
+    </FxCompile>
+    <FxCompile Include="..\Library\hlsl\Pixel.hlsl">
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Pixel</ShaderType>
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Pixel</ShaderType>
-    </FxCompile>
-    <FxCompile Include="..\..\Data\hlsl\Pixel2D.hlsl">
       <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">5.0</ShaderModel>
       <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Release|x64'">5.0</ShaderModel>
       <ObjectFileOutput Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">$(SolutionDir)Data\shader\%(Filename).cso</ObjectFileOutput>
       <ObjectFileOutput Condition="'$(Configuration)|$(Platform)'=='Release|x64'">$(SolutionDir)Data\shader\%(Filename).cso</ObjectFileOutput>
+    </FxCompile>
+    <FxCompile Include="..\Library\hlsl\Pixel2D.hlsl">
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Pixel</ShaderType>
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Pixel</ShaderType>
-    </FxCompile>
-    <FxCompile Include="..\..\Data\hlsl\Vertex.hlsl">
       <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">5.0</ShaderModel>
       <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Release|x64'">5.0</ShaderModel>
       <ObjectFileOutput Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">$(SolutionDir)Data\shader\%(Filename).cso</ObjectFileOutput>
       <ObjectFileOutput Condition="'$(Configuration)|$(Platform)'=='Release|x64'">$(SolutionDir)Data\shader\%(Filename).cso</ObjectFileOutput>
+    </FxCompile>
+    <FxCompile Include="..\Library\hlsl\Vertex.hlsl">
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Vertex</ShaderType>
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Vertex</ShaderType>
-    </FxCompile>
-    <FxCompile Include="..\..\Data\hlsl\Vertex2D.hlsl">
       <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">5.0</ShaderModel>
       <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Release|x64'">5.0</ShaderModel>
       <ObjectFileOutput Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">$(SolutionDir)Data\shader\%(Filename).cso</ObjectFileOutput>
       <ObjectFileOutput Condition="'$(Configuration)|$(Platform)'=='Release|x64'">$(SolutionDir)Data\shader\%(Filename).cso</ObjectFileOutput>
+    </FxCompile>
+    <FxCompile Include="..\Library\hlsl\Vertex2D.hlsl">
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Vertex</ShaderType>
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Vertex</ShaderType>
+      <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">5.0</ShaderModel>
+      <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Release|x64'">5.0</ShaderModel>
+      <ObjectFileOutput Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">$(SolutionDir)Data\shader\%(Filename).cso</ObjectFileOutput>
+      <ObjectFileOutput Condition="'$(Configuration)|$(Platform)'=='Release|x64'">$(SolutionDir)Data\shader\%(Filename).cso</ObjectFileOutput>
     </FxCompile>
   </ItemGroup>
   <PropertyGroup Label="Globals">
