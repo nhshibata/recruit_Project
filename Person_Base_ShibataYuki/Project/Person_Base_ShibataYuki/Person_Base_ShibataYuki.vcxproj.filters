@@ -13,55 +13,66 @@
       <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
       <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
     </Filter>
-    <Filter Include="hyakuasi">
-      <UniqueIdentifier>{682d394d-f1a8-4930-b484-587bfee5bb16}</UniqueIdentifier>
-    </Filter>
     <Filter Include="common">
       <UniqueIdentifier>{502c8b23-2a39-4670-9e91-ac9586946f19}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Spel">
+      <UniqueIdentifier>{114c805e-2d37-48d4-aa1d-fe787bd54dbf}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="..\..\Library\Source\hyakuasi\timer.cpp">
-      <Filter>hyakuasi</Filter>
+    <ClInclude Include="..\..\Library\Source\common\fadeController.h">
+      <Filter>common</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Library\Source\common\eventMessage.h">
+      <Filter>common</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Library\Source\spel\commandSpell.h">
+      <Filter>Spel</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Library\Source\spel\gameSpellRhythm.h">
+      <Filter>Spel</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Library\Source\spel\mage.h">
+      <Filter>Spel</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Library\Source\spel\mageSociety.h">
+      <Filter>Spel</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Library\Source\spel\battleStatus.h">
+      <Filter>Spel</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Library\Source\spel\command.h">
+      <Filter>Spel</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Library\Source\gameCamera.h">
+      <Filter>ヘッダー ファイル</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="..\..\Library\Source\common\fadeController.cpp">
+      <Filter>common</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\Library\Source\hyakuasi\titleUI.cpp">
-      <Filter>hyakuasi</Filter>
+    <ClCompile Include="..\..\Library\Source\common\eventMessage.cpp">
+      <Filter>common</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\Library\Source\hyakuasi\UIAnime.cpp">
-      <Filter>hyakuasi</Filter>
+    <ClCompile Include="..\..\Library\Source\spel\commandSpell.cpp">
+      <Filter>Spel</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\Library\Source\hyakuasi\bulletBase.cpp">
-      <Filter>hyakuasi</Filter>
+    <ClCompile Include="..\..\Library\Source\spel\gameSpellRhythm.cpp">
+      <Filter>Spel</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\Library\Source\hyakuasi\centipede.cpp">
-      <Filter>hyakuasi</Filter>
+    <ClCompile Include="..\..\Library\Source\spel\mage.cpp">
+      <Filter>Spel</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\Library\Source\hyakuasi\enemyBase.cpp">
-      <Filter>hyakuasi</Filter>
+    <ClCompile Include="..\..\Library\Source\spel\mageSociety.cpp">
+      <Filter>Spel</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\Library\Source\hyakuasi\gameCentipedeMarch.cpp">
-      <Filter>hyakuasi</Filter>
+    <ClCompile Include="..\..\Library\Source\spel\battleStatus.cpp">
+      <Filter>Spel</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\Library\Source\hyakuasi\gameUI.cpp">
-      <Filter>hyakuasi</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\Library\Source\hyakuasi\ground.cpp">
-      <Filter>hyakuasi</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\Library\Source\hyakuasi\itemBase.cpp">
-      <Filter>hyakuasi</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\Library\Source\hyakuasi\myCamera.cpp">
-      <Filter>hyakuasi</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\Library\Source\hyakuasi\resultUI.cpp">
-      <Filter>hyakuasi</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\Library\Source\mage.cpp">
-      <Filter>ソース ファイル</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\Library\Source\mageSociety.cpp">
-      <Filter>ソース ファイル</Filter>
+    <ClCompile Include="..\..\Library\Source\spel\command.cpp">
+      <Filter>Spel</Filter>
     </ClCompile>
     <ClCompile Include="..\..\Library\Source\Main.cpp">
       <Filter>ソース ファイル</Filter>
@@ -69,94 +80,8 @@
     <ClCompile Include="..\..\Library\Source\startUp.cpp">
       <Filter>ソース ファイル</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\Library\Source\battleStatus.cpp">
-      <Filter>ソース ファイル</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\Library\Source\command.cpp">
-      <Filter>ソース ファイル</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\Library\Source\commandSpell.cpp">
-      <Filter>ソース ファイル</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\Library\Source\eventMessage.cpp">
-      <Filter>ソース ファイル</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\Library\Source\fadeController.cpp">
-      <Filter>ソース ファイル</Filter>
-    </ClCompile>
     <ClCompile Include="..\..\Library\Source\gameCamera.cpp">
       <Filter>ソース ファイル</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\Library\Source\gameScene.cpp">
-      <Filter>hyakuasi</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\Library\Source\gameSpellRhythm.cpp">
-      <Filter>hyakuasi</Filter>
-    </ClCompile>
-  </ItemGroup>
-  <ItemGroup>
-    <ClInclude Include="..\..\Library\Source\hyakuasi\resultUI.h">
-      <Filter>hyakuasi</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Library\Source\hyakuasi\timer.h">
-      <Filter>hyakuasi</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Library\Source\hyakuasi\titleUI.h">
-      <Filter>hyakuasi</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Library\Source\hyakuasi\UIAnime.h">
-      <Filter>hyakuasi</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Library\Source\hyakuasi\bulletBase.h">
-      <Filter>hyakuasi</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Library\Source\hyakuasi\centipede.h">
-      <Filter>hyakuasi</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Library\Source\hyakuasi\enemyBase.h">
-      <Filter>hyakuasi</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Library\Source\hyakuasi\gameCentipedeMarch.h">
-      <Filter>hyakuasi</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Library\Source\hyakuasi\gameUI.h">
-      <Filter>hyakuasi</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Library\Source\hyakuasi\ground.h">
-      <Filter>hyakuasi</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Library\Source\hyakuasi\itemBase.h">
-      <Filter>hyakuasi</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Library\Source\hyakuasi\myCamera.h">
-      <Filter>hyakuasi</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Library\Source\mage.h">
-      <Filter>ヘッダー ファイル</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Library\Source\mageSociety.h">
-      <Filter>ヘッダー ファイル</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Library\Source\battleStatus.h">
-      <Filter>ヘッダー ファイル</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Library\Source\command.h">
-      <Filter>ヘッダー ファイル</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Library\Source\commandSpell.h">
-      <Filter>ヘッダー ファイル</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Library\Source\eventMessage.h">
-      <Filter>ヘッダー ファイル</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Library\Source\fadeController.h">
-      <Filter>ヘッダー ファイル</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Library\Source\gameCamera.h">
-      <Filter>ヘッダー ファイル</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Library\Source\gameSpellRhythm.h">
-      <Filter>ヘッダー ファイル</Filter>
-    </ClInclude>
   </ItemGroup>
 </Project>

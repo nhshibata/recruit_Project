@@ -412,11 +412,15 @@ void CNavMeshBake::ImGuiDebug()
 	static float line[2] = { 1000, -1000 };
 	if (!ImGui::TreeNode("---NavMesh---"))
 		return;
-	ImGui::Text("%d", (int)m_aNavMap.size());
-	ImGui::DragFloat3("Center", m_vCenter);
-	ImGui::DragInt("Grid", &m_nGrid);
+	ImGui::Text("PointNum:%d", (int)m_aNavMap.size());
+	ImGui::DragFloat3("Center:", m_vCenter);
+	ImGui::DragInt("Grid(x*y)", &m_nGrid);
 	ImGui::DragFloat("Margin", &m_fMargin);
-	ImGui::DragFloat2("Line", line);
+	ImGui::DragFloat2("Line[Start,End]", line);
+	if (ImGui::Button("PointReset"))
+	{
+		m_aNavMap.clear();
+	}
 	ImGui::SameLine();
 	if (ImGui::Button("BakeOn"))
 	{

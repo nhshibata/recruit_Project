@@ -13,7 +13,8 @@
 #include <CoreSystem/Sound/Sound.h>
 
 // ÉQÅ[ÉÄ
-#include <GameSystem/Component/Renderer/meshRenderer.h>
+#include <GameSystem/Component/Renderer/modelRenderer.h>
+#include <GameSystem/Component/Renderer/textRenderer.h>
 #include <GameSystem/Component/Collision/boxCollision.h>
 #include <GameSystem/Component/Light/directionalLight.h>
 #include <gameCamera.h>
@@ -82,10 +83,11 @@ void CGameSpellRhythm::FixedUpdate()
 	{
 		CCamera::GetMain()->SetMain(m_pDebugCamera);
 		m_pDebugCamera.lock()->SetActive(true);
-
+		
 		if (auto com = m_pDebugCamera.lock()->GetComponent<CModelRenderer>(); com)
+		{
 			com->SetActive(true);
-
+		}
 		if (m_pGameCamera.lock())
 		{
 			m_pGameCamera.lock()->SetActive(false);
