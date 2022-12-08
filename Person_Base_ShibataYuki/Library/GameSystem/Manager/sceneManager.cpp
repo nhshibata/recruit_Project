@@ -12,7 +12,7 @@
 #include <GameSystem/Manager/collisionSystem.h>
 #include <GameSystem/Manager/drawSystem.h>
 #include <DebugSystem/imguiManager.h>
-#include <AISystem/navMeshBake.h>
+#include <AISystem/Nav/navMeshBake.h>
 
 #include <CoreSystem/File/cerealize.h>
 

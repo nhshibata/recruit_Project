@@ -15,7 +15,7 @@
 //--- インクルード部
 #include <map>
 #include <memory>
-#include "aiNode.h"
+#include <AISystem/Node/aiNode.h>
 #include <GameSYstem/Component/component.h>
 
 //--- 前方宣言

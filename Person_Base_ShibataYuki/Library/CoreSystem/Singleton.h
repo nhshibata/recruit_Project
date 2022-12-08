@@ -17,25 +17,25 @@ namespace MySpace
 	{
 		//--- クラス定義
 		// 型変換のためだけのｸﾗｽ
-		class CBase
-		{
-		public:
-			void operator=(CBase) = delete;
+		//class CBase
+		//{
+		//public:
+		//	void operator=(CBase) = delete;
 
-			// *@解放処理
-			virtual void Uninit() {};
-		};
+		//	// *@解放処理
+		//	virtual void Uninit() {};
+		//};
 
 		//--- クラス定義
 		template <class T>
-		class CSingleton : public CBase
+		class CSingleton /*: public CBase*/
 		{
 		protected:
 			CSingleton() {}
-
+			//static T* pInstance;
 		public:
 			//--- メンバ関数
-			virtual ~CSingleton() {}
+			~CSingleton() {}
 
 			// 代入禁止
 			void operator=(const CSingleton<T> t) = delete;
@@ -44,6 +44,7 @@ namespace MySpace
 #ifdef LOCAL_PATTERN
 			// 静的変数の使用
 			static inline T& Get() { static T pInstance; return pInstance; }
+			//static inline T& Get() { return *pInstance; }
 #else
 			// 動的に作成
 		private:

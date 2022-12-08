@@ -15,36 +15,45 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="..\..\Library\Application\GameApp.cpp">
+    <ClCompile Include="..\Library\Application\Application.cpp">
       <Filter>ソース ファイル</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\Library\Application\screen.cpp">
+    <ClCompile Include="..\Library\Application\window.cpp">
       <Filter>ソース ファイル</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\Library\Application\window.cpp">
+    <ClCompile Include="..\Library\Application\screen.cpp">
       <Filter>ソース ファイル</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\Library\Application\Application.cpp">
+    <ClCompile Include="..\Library\Application\windowCallback.cpp">
       <Filter>ソース ファイル</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\Library\Application\main.cpp">
+    <ClCompile Include="..\Library\Application\main.cpp">
+      <Filter>ソース ファイル</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Library\Application\GameApp.cpp">
       <Filter>ソース ファイル</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="..\..\Library\Application\GameApp.h">
+    <ClInclude Include="..\Library\Application\windowCallback.h">
       <Filter>ヘッダー ファイル</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\Library\Application\main.h">
+    <ClInclude Include="..\Library\Application\window.h">
       <Filter>ヘッダー ファイル</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\Library\Application\screen.h">
+    <ClInclude Include="..\Library\Application\screen.h">
       <Filter>ヘッダー ファイル</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\Library\Application\window.h">
+    <ClInclude Include="..\Library\Application\main.h">
       <Filter>ヘッダー ファイル</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\Library\Application\Application.h">
+    <ClInclude Include="..\Library\Application\GameApp.h">
+      <Filter>ヘッダー ファイル</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Library\Application\Application.h">
+      <Filter>ヘッダー ファイル</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Library\Application\systemManager.h">
       <Filter>ヘッダー ファイル</Filter>
     </ClInclude>
   </ItemGroup>

@@ -16,8 +16,8 @@
 #include <CoreSystem/Util/cerealCommon.h>
 #include <CoreSystem/Math/MyMath.h>
 #include <Application/screen.h>
-#include <CoreSystem/Time/fps.h>
 #include <memory>
+#include <CoreSystem/Time/fps.h>
 
 //---
 #define LIVE_POINTER			0
@@ -30,7 +30,6 @@ namespace MySpace
 	namespace Game
 	{
 		//--- 前方参照
-		class CGameObject;
 		class CTransform;
 	}
 }
@@ -73,28 +72,30 @@ namespace MySpace
 			std::weak_ptr<CGameObject> m_pOwner;
 			// *@アクティブ状態
 			bool m_bActive;
-#if BUILD_MODE
-			std::string m_Name;
-#endif // BUILD_MODE
 
+#if BUILD_MODE
+			//std::string m_Name;
+#endif // BUILD_MODE
 
 		public:
 			//--- ﾒﾝﾊﾞ関数
 			CComponent();
 			CComponent(std::shared_ptr<CGameObject> owner);
-			virtual ~CComponent() {};
+			virtual ~CComponent();
 
 			//--- 基本
 			// *@ 生成時に呼び出される
-			virtual void Awake() {};
+			virtual void Awake();
 			// *@ 初期化 他コンポーネントの取得などを行う
-			virtual void Init() {};				
+			virtual void Init();
+			// *@ 終了処理
+			virtual void Uninit();
 			// *@ 更新 必ず実装
-			virtual void Update() {};			
+			virtual void Update();
 			// *@ 遅い更新
-			virtual void LateUpdate() {};		
+			virtual void LateUpdate();
 			// *@ 一定時間の更新
-			virtual void FixedUpdate() {};		
+			virtual void FixedUpdate();
 			// *@ 読み込み時呼び出し関数
 			virtual void OnLoad();
 
@@ -103,17 +104,17 @@ namespace MySpace
 			// 実装したい時にオーバーライドする
 
 			// *@ 接し続けているオブジェクトが渡される
-			virtual void OnCollisionStay(CGameObject* obj) {};
+			virtual void OnCollisionStay(CGameObject* obj);
 			// *@ 接し始めたオブジェクトが渡される
-			virtual void OnCollisionEnter(CGameObject* obj) {};
+			virtual void OnCollisionEnter(CGameObject* obj);
 			// *@ 離れたオブジェクトが渡される
-			virtual void OnCollisionExit(CGameObject* obj) {};
+			virtual void OnCollisionExit(CGameObject* obj);
 			// *@ 接し続けているオブジェクトが渡される(トリガー)
-			virtual void OnTriggerStay(CGameObject* obj) {};
+			virtual void OnTriggerStay(CGameObject* obj);
 			// *@ 接し始めたオブジェクトが渡される(トリガー)
-			virtual void OnTriggerEnter(CGameObject* obj) {};
+			virtual void OnTriggerEnter(CGameObject* obj);
 			// *@ 離れたオブジェクトが渡される(トリガー)
-			virtual void OnTriggerExit(CGameObject* obj) {};
+			virtual void OnTriggerExit(CGameObject* obj);
 
 			//--- CGameObject
 			// *@gameobjectｸﾗｽからのAddComponent呼び出し

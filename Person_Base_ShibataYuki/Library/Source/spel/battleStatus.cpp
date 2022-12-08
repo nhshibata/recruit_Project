@@ -7,8 +7,10 @@
 //--- インクルード部
 #include <battleStatus.h>
 #include <GameSystem/Component/Renderer/polygonRenderer.h>
+#include <CoreSystem/Time/fps.h>
 
 using namespace Spell;
+using namespace MySpace::Game;
 
 void CBattleStatus::Awake()
 {

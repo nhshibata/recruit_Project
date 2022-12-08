@@ -1,0 +1,87 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="ソース ファイル">
+      <UniqueIdentifier>{4FC737F1-C7A5-4376-A066-2A32D752A2FF}</UniqueIdentifier>
+      <Extensions>cpp;c;cc;cxx;def;odl;idl;hpj;bat;asm;asmx</Extensions>
+    </Filter>
+    <Filter Include="ヘッダー ファイル">
+      <UniqueIdentifier>{93995380-89BD-4b04-88EB-625FBE52EBFB}</UniqueIdentifier>
+      <Extensions>h;hh;hpp;hxx;hm;inl;inc;ipp;xsd</Extensions>
+    </Filter>
+    <Filter Include="リソース ファイル">
+      <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
+      <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
+    </Filter>
+    <Filter Include="common">
+      <UniqueIdentifier>{502c8b23-2a39-4670-9e91-ac9586946f19}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Spel">
+      <UniqueIdentifier>{114c805e-2d37-48d4-aa1d-fe787bd54dbf}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="..\Library\Source\Main.cpp">
+      <Filter>ソース ファイル</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Library\Source\startUp.cpp">
+      <Filter>ソース ファイル</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Library\Source\gameCamera.cpp">
+      <Filter>ソース ファイル</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Library\Source\spel\gameSpellRhythm.cpp">
+      <Filter>Spel</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Library\Source\spel\mage.cpp">
+      <Filter>Spel</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Library\Source\spel\mageSociety.cpp">
+      <Filter>Spel</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Library\Source\spel\battleStatus.cpp">
+      <Filter>Spel</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Library\Source\spel\command.cpp">
+      <Filter>Spel</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Library\Source\spel\commandSpell.cpp">
+      <Filter>Spel</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Library\Source\common\fadeController.cpp">
+      <Filter>common</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Library\Source\common\eventMessage.cpp">
+      <Filter>common</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="..\Library\Source\gameCamera.h">
+      <Filter>ヘッダー ファイル</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Library\Source\spel\commandSpell.h">
+      <Filter>Spel</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Library\Source\spel\gameSpellRhythm.h">
+      <Filter>Spel</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Library\Source\spel\mage.h">
+      <Filter>Spel</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Library\Source\spel\mageSociety.h">
+      <Filter>Spel</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Library\Source\spel\battleStatus.h">
+      <Filter>Spel</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Library\Source\spel\command.h">
+      <Filter>Spel</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Library\Source\common\eventMessage.h">
+      <Filter>common</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Library\Source\common\fadeController.h">
+      <Filter>common</Filter>
+    </ClInclude>
+  </ItemGroup>
+</Project>

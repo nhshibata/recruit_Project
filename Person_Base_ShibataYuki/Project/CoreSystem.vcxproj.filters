@@ -57,123 +57,120 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="..\..\Library\CoreSystem\File\resourceCSV.h">
-      <Filter>ヘッダー ファイル\File</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Library\CoreSystem\File\resource.h">
-      <Filter>ヘッダー ファイル\File</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Library\CoreSystem\FuncPtr\timeFuncPtr.h">
-      <Filter>ヘッダー ファイル\FuncPtr</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Library\CoreSystem\FuncPtr\funcPtr.h">
-      <Filter>ヘッダー ファイル\FuncPtr</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Library\CoreSystem\FuncPtr\funcPtrManager.h">
-      <Filter>ヘッダー ファイル\FuncPtr</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Library\CoreSystem\Input\Keyboard.h">
-      <Filter>ヘッダー ファイル\Input</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Library\CoreSystem\Input\mouse.h">
-      <Filter>ヘッダー ファイル\Input</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Library\CoreSystem\Input\gamePad.h">
-      <Filter>ヘッダー ファイル\Input</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Library\CoreSystem\Input\input.h">
-      <Filter>ヘッダー ファイル\Input</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Library\CoreSystem\Math\MyMath.h">
-      <Filter>ヘッダー ファイル\Math</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Library\CoreSystem\Util\SingletonManager.h">
-      <Filter>ヘッダー ファイル\Util</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Library\CoreSystem\Util\stl.h">
-      <Filter>ヘッダー ファイル\Util</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Library\CoreSystem\Util\cerealCommon.h">
-      <Filter>ヘッダー ファイル\Util</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\Library\CoreSystem\Singleton.h">
       <Filter>ヘッダー ファイル</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Library\CoreSystem\Time\fps.h">
-      <Filter>ヘッダー ファイル\Time</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Library\CoreSystem\Util\define.h">
-      <Filter>ヘッダー ファイル\Util</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Library\CoreSystem\File\filePath.h">
-      <Filter>ヘッダー ファイル\File</Filter>
     </ClInclude>
     <ClInclude Include="..\..\Library\CoreSystem\system.h">
       <Filter>ヘッダー ファイル</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\Library\CoreSystem\File\cerealize.h">
-      <Filter>ヘッダー ファイル\File</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Library\CoreSystem\Math\myVector.h">
-      <Filter>ヘッダー ファイル\Math</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Library\CoreSystem\Sound\Sound.h">
-      <Filter>ヘッダー ファイル\Sound</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Library\CoreSystem\Sound\SoundData.h">
-      <Filter>ヘッダー ファイル\Sound</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Library\CoreSystem\Sound\SoundData.hpp">
-      <Filter>ヘッダー ファイル\Sound</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\Library\CoreSystem\property.h">
       <Filter>ヘッダー ファイル</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\Library\CoreSystem\Util\stringConvert.h">
+    <ClInclude Include="..\Library\CoreSystem\File\resource.h">
+      <Filter>ソース ファイル\File</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Library\CoreSystem\File\filePath.h">
+      <Filter>ソース ファイル\File</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Library\CoreSystem\File\cerealize.h">
+      <Filter>ソース ファイル\File</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Library\CoreSystem\File\resourceCSV.h">
+      <Filter>ソース ファイル\File</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Library\CoreSystem\FuncPtr\funcPtrManager.h">
+      <Filter>ヘッダー ファイル\FuncPtr</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Library\CoreSystem\FuncPtr\funcPtr.h">
+      <Filter>ヘッダー ファイル\FuncPtr</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Library\CoreSystem\FuncPtr\timeFuncPtr.h">
+      <Filter>ヘッダー ファイル\FuncPtr</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Library\CoreSystem\Input\gamePad.h">
+      <Filter>ヘッダー ファイル\Input</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Library\CoreSystem\Input\Keyboard.h">
+      <Filter>ヘッダー ファイル\Input</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Library\CoreSystem\Input\mouse.h">
+      <Filter>ヘッダー ファイル\Input</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Library\CoreSystem\Input\input.h">
+      <Filter>ヘッダー ファイル\Input</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Library\CoreSystem\Math\myVector.h">
+      <Filter>ヘッダー ファイル\Math</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Library\CoreSystem\Math\MyMath.h">
+      <Filter>ヘッダー ファイル\Math</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Library\CoreSystem\Sound\SoundData.h">
+      <Filter>ヘッダー ファイル\Sound</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Library\CoreSystem\Sound\SoundData.hpp">
+      <Filter>ヘッダー ファイル\Sound</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Library\CoreSystem\Sound\Sound.h">
+      <Filter>ヘッダー ファイル\Sound</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Library\CoreSystem\Time\fps.h">
+      <Filter>ヘッダー ファイル\Time</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Library\CoreSystem\Util\stl.h">
+      <Filter>ヘッダー ファイル\Util</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Library\CoreSystem\Util\stringConvert.h">
+      <Filter>ヘッダー ファイル\Util</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Library\CoreSystem\Util\cerealCommon.h">
+      <Filter>ヘッダー ファイル\Util</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Library\CoreSystem\Util\define.h">
       <Filter>ヘッダー ファイル\Util</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="..\..\Library\CoreSystem\File\resourceCSV.cpp">
-      <Filter>ソース ファイル\File</Filter>
+    <ClCompile Include="..\Library\CoreSystem\File\resourceCSV.cpp">
+      <Filter>ヘッダー ファイル\File</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\Library\CoreSystem\FuncPtr\timeFuncPtr.cpp">
+    <ClCompile Include="..\Library\CoreSystem\File\cerealize.cpp">
+      <Filter>ヘッダー ファイル\File</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Library\CoreSystem\File\filePath.cpp">
+      <Filter>ヘッダー ファイル\File</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Library\CoreSystem\FuncPtr\funcPtrManager.cpp">
       <Filter>ソース ファイル\FuncPtr</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\Library\CoreSystem\FuncPtr\funcPtr.cpp">
+    <ClCompile Include="..\Library\CoreSystem\FuncPtr\funcPtr.cpp">
       <Filter>ソース ファイル\FuncPtr</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\Library\CoreSystem\FuncPtr\funcPtrManager.cpp">
+    <ClCompile Include="..\Library\CoreSystem\FuncPtr\timeFuncPtr.cpp">
       <Filter>ソース ファイル\FuncPtr</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\Library\CoreSystem\Input\gamePad.cpp">
+    <ClCompile Include="..\Library\CoreSystem\Input\input.cpp">
       <Filter>ソース ファイル\Input</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\Library\CoreSystem\Input\input.cpp">
+    <ClCompile Include="..\Library\CoreSystem\Input\gamePad.cpp">
       <Filter>ソース ファイル\Input</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\Library\CoreSystem\Input\Keyboard.cpp">
+    <ClCompile Include="..\Library\CoreSystem\Input\Keyboard.cpp">
       <Filter>ソース ファイル\Input</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\Library\CoreSystem\Input\mouse.cpp">
+    <ClCompile Include="..\Library\CoreSystem\Input\mouse.cpp">
       <Filter>ソース ファイル\Input</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\Library\CoreSystem\Math\MyMath.cpp">
+    <ClCompile Include="..\Library\CoreSystem\Math\MyMath.cpp">
       <Filter>ソース ファイル\Math</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\Library\CoreSystem\Time\fps.cpp">
-      <Filter>ソース ファイル\Time</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\Library\CoreSystem\File\filePath.cpp">
-      <Filter>ソース ファイル\File</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\Library\CoreSystem\File\cerealize.cpp">
-      <Filter>ソース ファイル\File</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\Library\CoreSystem\Sound\Sound.cpp">
+    <ClCompile Include="..\Library\CoreSystem\Sound\Sound.cpp">
       <Filter>ソース ファイル\Sound</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\Library\CoreSystem\Util\stringConvert.cpp">
+    <ClCompile Include="..\Library\CoreSystem\Time\fps.cpp">
+      <Filter>ソース ファイル\Time</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Library\CoreSystem\Util\stringConvert.cpp">
       <Filter>ソース ファイル\Util</Filter>
     </ClCompile>
   </ItemGroup>

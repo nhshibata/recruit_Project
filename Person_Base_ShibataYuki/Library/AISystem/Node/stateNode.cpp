@@ -6,9 +6,9 @@
 
 //--- インクルード部
 #include "stateNode.h"
-#include "stateCondition.h"
+#include <AISystem/stateCondition.h>
 
-#include "aiSystem.h"
+#include <AISystem/System/aiSystem.h>
 #if _DEBUG
 #endif
 

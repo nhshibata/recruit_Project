@@ -5,7 +5,7 @@
 //========================================================
 
 #include "aiAgent.h"
-#include "stateNode.h"
+#include <AISystem/Node/stateNode.h>
 #include <GameSystem/GameObject/gameObject.h>
 #include <GameSystem/Component/Transform/transform.h>
 

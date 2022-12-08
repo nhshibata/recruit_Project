@@ -11,6 +11,7 @@
 #include <GameSystem/GameObject/gameObject.h>
 #include <GameSystem/Component/component.h>
 #include <GameSystem/Manager/sceneManager.h>
+//#include <fadeController.h>
 
 namespace MySpace
 {
@@ -59,6 +60,7 @@ namespace Spell
 		void Init();
 		void Update();
 		void FixedUpdate();
+
 		void Pause();
 		void FadeFuncPtr(void);
 		void ObjStateSwitch(CGameObject::E_ObjectState state, CScene* scene);

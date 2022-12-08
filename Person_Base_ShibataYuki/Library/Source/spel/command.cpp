@@ -10,6 +10,7 @@
 //--- インクルード部
 #include <command.h>
 #include <GameSystem/Component/Renderer/textRenderer.h>
+#include <CoreSystem/Time/fps.h>
 
 using namespace Spell;
 

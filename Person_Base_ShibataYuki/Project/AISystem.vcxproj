@@ -18,6 +18,32 @@
       <Platform>x64</Platform>
     </ProjectConfiguration>
   </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="..\Library\AISystem\Nav\AIMap.cpp" />
+    <ClCompile Include="..\Library\AISystem\Nav\navMeshBake.cpp" />
+    <ClCompile Include="..\Library\AISystem\Node\selectorNode.cpp" />
+    <ClCompile Include="..\Library\AISystem\Node\sequencerNode.cpp" />
+    <ClCompile Include="..\Library\AISystem\Node\stateNode.cpp" />
+    <ClCompile Include="..\Library\AISystem\System\aiAgent.cpp" />
+    <ClCompile Include="..\Library\AISystem\System\aiSystem.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="..\Library\AISystem\aiCondition.h" />
+    <ClInclude Include="..\Library\AISystem\Nav\AIMap.h" />
+    <ClInclude Include="..\Library\AISystem\Nav\AIMapComponent.hpp" />
+    <ClInclude Include="..\Library\AISystem\Nav\navMeshBake.h" />
+    <ClInclude Include="..\Library\AISystem\nodeUtil.h" />
+    <ClInclude Include="..\Library\AISystem\Node\actionNode.h" />
+    <ClInclude Include="..\Library\AISystem\Node\aiNode.h" />
+    <ClInclude Include="..\Library\AISystem\Node\decoratorNode.h" />
+    <ClInclude Include="..\Library\AISystem\Node\parentNode.h" />
+    <ClInclude Include="..\Library\AISystem\Node\selectorNode.h" />
+    <ClInclude Include="..\Library\AISystem\Node\sequencerNode.h" />
+    <ClInclude Include="..\Library\AISystem\Node\stateNode.h" />
+    <ClInclude Include="..\Library\AISystem\stateCondition.h" />
+    <ClInclude Include="..\Library\AISystem\System\aiAgent.h" />
+    <ClInclude Include="..\Library\AISystem\System\aiSystem.h" />
+  </ItemGroup>
   <PropertyGroup Label="Globals">
     <VCProjectVersion>15.0</VCProjectVersion>
     <ProjectGuid>{731F586A-1867-4BAA-9CD2-CBB04BB062E8}</ProjectGuid>
@@ -141,32 +167,6 @@
       <OptimizeReferences>true</OptimizeReferences>
     </Link>
   </ItemDefinitionGroup>
-  <ItemGroup>
-    <ClInclude Include="..\..\Library\AISystem\actionNode.h" />
-    <ClInclude Include="..\..\Library\AISystem\aiAgent.h" />
-    <ClInclude Include="..\..\Library\AISystem\aiCondition.h" />
-    <ClInclude Include="..\..\Library\AISystem\AIMap.h" />
-    <ClInclude Include="..\..\Library\AISystem\AIMapComponent.hpp" />
-    <ClInclude Include="..\..\Library\AISystem\aiNode.h" />
-    <ClInclude Include="..\..\Library\AISystem\aiSystem.h" />
-    <ClInclude Include="..\..\Library\AISystem\decoratorNode.h" />
-    <ClInclude Include="..\..\Library\AISystem\navMeshBake.h" />
-    <ClInclude Include="..\..\Library\AISystem\nodeUtil.h" />
-    <ClInclude Include="..\..\Library\AISystem\parentNode.h" />
-    <ClInclude Include="..\..\Library\AISystem\selectorNode.h" />
-    <ClInclude Include="..\..\Library\AISystem\sequencerNode.h" />
-    <ClInclude Include="..\..\Library\AISystem\stateCondition.h" />
-    <ClInclude Include="..\..\Library\AISystem\stateNode.h" />
-  </ItemGroup>
-  <ItemGroup>
-    <ClCompile Include="..\..\Library\AISystem\aiAgent.cpp" />
-    <ClCompile Include="..\..\Library\AISystem\AIMap.cpp" />
-    <ClCompile Include="..\..\Library\AISystem\aiSystem.cpp" />
-    <ClCompile Include="..\..\Library\AISystem\navMeshBake.cpp" />
-    <ClCompile Include="..\..\Library\AISystem\selectorNode.cpp" />
-    <ClCompile Include="..\..\Library\AISystem\sequencerNode.cpp" />
-    <ClCompile Include="..\..\Library\AISystem\stateNode.cpp" />
-  </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
   </ImportGroup>
