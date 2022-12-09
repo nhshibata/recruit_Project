@@ -1,10 +1,17 @@
 // Assimp用頂点シェーダ (AssimpVertex.hlsl)
-
-#define MAX_BONE_MATRIX	64
+#define INSTANCE            1
+#define MAX_BONE_MATRIX	    64
+#define MAX_WORLD_MATRIX	100
 
 // グローバル
 cbuffer global : register(b0) {
-	matrix	g_mtxWVP;			// ワールド×ビュー×射影行列
+    
+#if INSTANCE
+    matrix  g_mtxVP;            // ビュー×射影行列
+#else
+    matrix	g_mtxWVP;			// ワールド×ビュー×射影行列
+#endif
+    
 	matrix	g_mtxWorld;			// ワールド行列
 	matrix	g_mtxTexture;		// テクスチャ行列
 	float4	g_vCameraPos;		// 視点座標(ワールド空間)
@@ -13,6 +20,14 @@ cbuffer global : register(b0) {
 	float4	g_vLightDiffuse;	// 拡散光
 	float4	g_vLightSpecular;	// 鏡面反射光
 };
+
+#if INSTANCE
+// ワールド行列配列
+cbuffer global_instance : register(b3)
+{
+    matrix g_World[MAX_WORLD_MATRIX];
+};
+#endif
 
 // ボーンのポーズ行列
 cbuffer global_bones : register(b2) {
@@ -26,6 +41,10 @@ struct VS_INPUT {
 	float2	Tex		: TEXCOORD0;
 	uint4	Bone	: BONE_INDEX;	// ボーンのインデックス
 	float4	Weight	: BONE_WEIGHT;	// ボーンの重み
+    
+#if INSTANCE
+    uint	id		: SV_InstanceID;	// インスタンスID
+#endif
 };
 
 struct VS_OUTPUT {
@@ -87,9 +106,18 @@ VS_OUTPUT main(VS_INPUT input)
 {
 	VS_OUTPUT output;
 	SKIN vSkinned = SkinVert(input);
+
+#if INSTANCE
+    float4x4 mWorld = mul(g_mtxWorld, g_World[input.id]);
+    output.Pos = mul(vSkinned.Pos, mul(mWorld, g_mtxVP));
+    output.Tex = mul(float4(input.Tex, 0.0f, 1.0f), g_mtxTexture).xy;
+    output.Normal = mul(vSkinned.Norm, (float3x3) mWorld);
+    output.PosForPS = mul(vSkinned.Pos, mWorld).xyz;
+#else
 	output.Pos = mul(vSkinned.Pos, g_mtxWVP);
 	output.Tex = mul(float4(input.Tex, 0.0f, 1.0f), g_mtxTexture).xy;
 	output.Normal = mul(vSkinned.Norm, (float3x3)g_mtxWorld);
 	output.PosForPS = mul(vSkinned.Pos, g_mtxWorld).xyz;
+#endif
 	return output;
 }
