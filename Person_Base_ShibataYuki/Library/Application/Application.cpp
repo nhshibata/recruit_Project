@@ -46,7 +46,8 @@ bool Application::Init(HINSTANCE h_Instance)
 	// 幅と高さ初期化
 	//CScreen::SetSize(1280.0f, 960.0f);
 
-	// ウインドウ作成
+	//--- ウインドウ作成
+	CWindow::Create();
 	CWindow* window = &CWindow::Get();
 	//window->RegisterClass(h_Instance, WINDOW_CLASS_NAME, CS_OWNDC);
 	window->RegisterClass(h_Instance, WINDOW_CLASS_NAME, CS_CLASSDC);
@@ -72,6 +73,7 @@ bool Application::Init(HINSTANCE h_Instance)
 	m_hInst = h_Instance;
 
 	// 読み込みが必要なシステムの関数を呼び出す
+	CFuncManager::Create();
 
 	return true;
 }
@@ -92,7 +94,10 @@ void Application::Uninit()
 
 	//CWindow::Get().Close(WINDOW_CLASS_NAME, m_hInst);
 	UnregisterClass(WINDOW_CLASS_NAME, m_hInst);
-
+	
+	//--- シングルトンの解放
+	CFuncManager::Destroy();
+	CWindow::Destroy();
 	return;
 }
 
@@ -109,7 +114,8 @@ unsigned long Application::MainLoop()
 	// ゲームの初期化処理
 	gameApp->Init(*this);
 
-	// タイム初期化処理
+	//--- タイム初期化処理
+	CFps::Create();
 	CFps::Get().Init();
 
 	// 無限ループ
@@ -140,6 +146,7 @@ unsigned long Application::MainLoop()
 	}
 
 	CFps::Get().Uninit();
+	CFps::Destroy();
 
 	// ゲームの終了処理
 	gameApp->Uninit(*this);

@@ -49,7 +49,6 @@ void CDrawSystem::Update()
 		});
 
 		m_bIsSortNecessary = false;
-
 	}
 	
 	// 3Dの描画
@@ -91,6 +90,17 @@ void CDrawSystem::Update()
 		// 描画
 		render.lock()->Draw();
 	}
+
+	//--- インスタンシング描画
+	for (auto & draw : m_aInstancingMap)
+	{
+		auto model = CModelManager::Get().GetModel(draw.first);
+		model->DrawInstancing(CDXDevice::Get().GetDeviceContext(), draw.second);
+		draw.second.clear();
+	}
+	// クリア
+	m_aInstancingMap.clear();
+
 
 #if 0
 	if (m_bIsSort)

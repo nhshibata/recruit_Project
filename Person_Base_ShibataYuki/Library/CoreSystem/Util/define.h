@@ -23,7 +23,8 @@
 #endif
 
 
-// C言語のマクロだけで使える#演算子は引数の頭に#をつけると引数の両端にダブルクオーテーションがついて，引数が文字列になる．
+// C言語のマクロだけで使える#演算子は引数の頭に#をつけると引数の両端にダブルクオーテーションがついて，引数が文字列になる
+// 文字列化演算子
 // https://miettal.hatenablog.com/entry/20120624/1340533907
 #define address2str(func) #func
 #define TODO(str) __pragma(message(__FILE__"(" address2str(__LINE__) ") : 【TODO】 " str))

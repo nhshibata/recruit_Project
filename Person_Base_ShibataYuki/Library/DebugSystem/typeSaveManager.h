@@ -11,13 +11,11 @@
 #define __TYPE_SAVE_MANAGER_H__
 
 //--- インクルード部
-#include <CoreSystem/system.h>
+#include <CoreSystem/Singleton.h>
 #include <CoreSystem/Util/stl.h>
 #include <DebugSystem/debug.h>
 #include <GameSystem/GameObject/gameObject.h>
 #include <GameSystem/Component/component.h>		// gameobject用 これがないとcerealでエラーが起きる
-
-//#ifdef BUILD_MODE
 
 namespace MySpace
 {
@@ -72,11 +70,9 @@ namespace MySpace
 		};
 
 		//--- クラス定義
-		// 管理ｸﾗｽ
-		class CTypeSaveManager : public CAppSystem<CTypeSaveManager>
+		class CTypeSaveManager : public CSingleton<CTypeSaveManager>
 		{
 			friend class CSingleton<CTypeSaveManager>;
-			friend class CAppSystem<CTypeSaveManager>;
 		private:
 			//--- エイリアス
 			using StockMap = std::map<std::string, CTypeSaveBase*>;
@@ -85,42 +81,51 @@ namespace MySpace
 			using StockSharedPair = std::pair<std::string, std::shared_ptr<CTypeSaveBase>>;
 
 		private:
-			//--- 静的メンバ変数
+			//--- メンバ変数
 			StockMap g_StockType;
+
 		private:
-			CTypeSaveManager() {};
-		public:
 			//--- メンバ関数
+			CTypeSaveManager() {};
+
+		public:
 			~CTypeSaveManager();
 			void Uninit();
 
-			bool IsType(std::string name);
+			//--- ゲッター・セッター
 
-			// 格納
-			template <class T>
-			void SetType() { 
-				auto add = new CTypeSave<T>();
-				g_StockType.insert(StockPAIR(typeid(T).name(), add)); }
-			
-			template <class T>
-			void SetComponentSave() { 
-				auto add = new CComponentTypeSave<T>();
-				g_StockType.insert(StockPAIR(typeid(T).name(), add)); }
-			
-			// 格納された保存ｸﾗｽの取得
+			// *@格納されたｸﾗｽを名前で取得
 			CTypeSaveBase* GetTypeSave(std::string name) { return g_StockType[name]; }
 
+			// *@所持しているタイプの名前を取得
 			std::vector<std::string> GetTypeNameList();
 
-			StockSharedMap Convert();
-
-			// 生ポインタ生成
+			// *@生ポインタ生成
 			template <class T>
 			T* GetTypeSave();
 
-			// SP生成
+			// 格納
+			template <class T>
+			void SetType() 
+			{ 
+				auto add = new CTypeSave<T>();
+				g_StockType.insert(StockPAIR(typeid(T).name(), add));
+			}
+			
+			template <class T>
+			void SetComponentSave() 
+			{ 
+				auto add = new CComponentTypeSave<T>();
+				g_StockType.insert(StockPAIR(typeid(T).name(), add));
+			}
+			
+			// *@SP生成
 			template <class T>
 			std::shared_ptr<T> MakeType();
+
+			// *@タイプを所持しているか
+			bool IsType(std::string name);
+
 		};
 	}
 }

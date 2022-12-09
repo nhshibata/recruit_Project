@@ -40,7 +40,7 @@ using namespace DirectX;
 using namespace MySpace::Game;
 using namespace MySpace::Graphics;
 
-#define MAX_BONE_MATRIX	64
+#define MAX_BONE_MATRIX		64
 #define MAX_WORLD_MATRIX	100
 
 // シェーダに渡す値
@@ -553,13 +553,16 @@ void CAssimpMesh::Draw(ID3D11DeviceContext* pDC, XMFLOAT4X4& m44World, EByOpacit
 		XMMATRIX mtxTex = XMLoadFloat4x4(&mtxTexture);
 		sg.mTex = XMMatrixTranspose(mtxTex);
 
-#if INSTANCE
-		sg.mVP = mtxView * mtxProj;
+//#if INSTANCE
+//		sg.mVP = mtxView * mtxProj;
+//		sg.mVP = XMMatrixTranspose(sg.mVP);
+//#else
+//		sg.mWVP = mtxWorld * mtxView * mtxProj;
+//		sg.mWVP = XMMatrixTranspose(sg.mWVP);
+//#endif // INSTANCE
+
+		sg.mVP = mtxWorld * mtxView * mtxProj;
 		sg.mVP = XMMatrixTranspose(sg.mVP);
-#else
-		sg.mWVP = mtxWorld * mtxView * mtxProj;
-		sg.mWVP = XMMatrixTranspose(sg.mWVP);
-#endif // INSTANCE
 
 		sg.vEye = XMLoadFloat3(&pCamera->GetPos());
 		CDirectionalLight* pLight = dynamic_cast<CDirectionalLight*>(CLight::Get());
@@ -574,18 +577,10 @@ void CAssimpMesh::Draw(ID3D11DeviceContext* pDC, XMFLOAT4X4& m44World, EByOpacit
 	pDC->PSSetConstantBuffers(0, 1, &m_pConstantBuffer0);
 
 	// 頂点バッファ/インデックス バッファをセット
-#if INSTANCE
-	UINT stride = sizeof(TAssimpVertex);
-	UINT offset = 0;
-	pDC->IASetVertexBuffers(0, 1, &m_pVertexBuffer, &stride, &offset);
-
-#else
 	UINT stride = sizeof(TAssimpVertex);
 	UINT offset = 0;
 	pDC->IASetVertexBuffers(0, 1, &m_pVertexBuffer, &stride, &offset);
 	pDC->IASetIndexBuffer(m_pIndexBuffer, DXGI_FORMAT_R32_UINT, 0);
-#endif // INSTANCE
-
 
 	// マテリアルの各要素をシェーダに渡す
 	if (SUCCEEDED(pDC->Map(m_pConstantBuffer1, 0, D3D11_MAP_WRITE_DISCARD, 0, &pData))) {
@@ -615,11 +610,102 @@ void CAssimpMesh::Draw(ID3D11DeviceContext* pDC, XMFLOAT4X4& m44World, EByOpacit
 	pDC->VSSetConstantBuffers(2, 1, &m_pConstantBufferBone);
 
 	// 描画
-#if INSTANCE
-	pDC->DrawIndexedInstanced(UINT(m_aIndex.size()), MAX_WORLD_MATRIX, 0, 0, 0);
-#else
 	pDC->DrawIndexed(UINT(m_aIndex.size()), 0, 0);
-#endif // INSTANCE
+
+}
+// 描画
+void CAssimpMesh::DrawInstanchid(ID3D11DeviceContext* pDC, XMFLOAT4X4& m44World, INSTANCHING_DATA& aMtxWorld, EByOpacity byOpacity)
+{
+	// ユーザ定義マテリアル
+	TAssimpMaterial* pMaterial = m_pModel->GetMaterial();
+	if (!pMaterial)
+		pMaterial = &m_material;
+	// 透明度による描画切替
+	switch (byOpacity) {
+	case eOpacityOnly:
+		if (pMaterial->Kd.w < 1.0f) return;
+		break;
+	case eTransparentOnly:
+		if (pMaterial->Kd.w >= 1.0f) return;
+		break;
+	default:
+		break;
+	}
+	// テクスチャフラグ
+	XMFLOAT4X4 mtxTexture = m_pModel->GetTextureMatrix();
+	XMUINT4 vFlags(0, 0, 0, 0);
+	if (pMaterial->pTexture) {
+		vFlags.x = 1;
+		if (pMaterial->pTexEmmisive)
+			vFlags.y = 1;
+		if (pMaterial->pTexTransparent)
+			vFlags.z = 1;
+		if (pMaterial->pTexSpecular)
+			vFlags.w = 1;
+	} else {
+		mtxTexture._44 = 0.0f;
+	}
+	// 定数領域更新
+	D3D11_MAPPED_SUBRESOURCE pData;
+	if (SUCCEEDED(pDC->Map(m_pConstantBuffer0, 0, D3D11_MAP_WRITE_DISCARD, 0, &pData))) {
+		SHADER_GLOBAL sg;
+		CCamera* pCamera = CCamera::GetMain();
+		XMMATRIX mtxWorld = XMLoadFloat4x4(&m44World);
+		XMMATRIX mtxView = XMLoadFloat4x4(&pCamera->GetViewMatrix());
+		XMMATRIX mtxProj = XMLoadFloat4x4(&pCamera->GetProjMatrix());
+		sg.mW = XMMatrixTranspose(mtxWorld);
+		XMMATRIX mtxTex = XMLoadFloat4x4(&mtxTexture);
+		sg.mTex = XMMatrixTranspose(mtxTex);
+
+		sg.mVP = mtxView * mtxProj;
+		sg.mVP = XMMatrixTranspose(sg.mVP);
+
+		sg.vEye = XMLoadFloat3(&pCamera->GetPos());
+		CDirectionalLight* pLight = dynamic_cast<CDirectionalLight*>(CLight::Get());
+		sg.vLightDir = XMLoadFloat3(&pLight->GetDir());
+		sg.vLd = XMLoadFloat4(&pLight->GetDiffuse());
+		sg.vLa = XMLoadFloat4(&pLight->GetAmbient());
+		sg.vLs = XMLoadFloat4(&pLight->GetSpecular());
+		memcpy_s(pData.pData, pData.RowPitch, (void*)&sg, sizeof(sg));
+		pDC->Unmap(m_pConstantBuffer0, 0);
+	}
+	pDC->VSSetConstantBuffers(0, 1, &m_pConstantBuffer0);
+	pDC->PSSetConstantBuffers(0, 1, &m_pConstantBuffer0);
+
+	// 頂点バッファ/インデックス バッファをセット
+	UINT stride = sizeof(TAssimpVertex);
+	UINT offset = 0;
+	pDC->IASetVertexBuffers(0, 1, &m_pVertexBuffer, &stride, &offset);
+
+	// マテリアルの各要素をシェーダに渡す
+	if (SUCCEEDED(pDC->Map(m_pConstantBuffer1, 0, D3D11_MAP_WRITE_DISCARD, 0, &pData))) {
+		SHADER_MATERIAL sg;
+		sg.vAmbient = XMLoadFloat4(&pMaterial->Ka);
+		sg.vDiffuse = XMLoadFloat4(&pMaterial->Kd);
+		sg.vSpecular = XMLoadFloat4(&pMaterial->Ks);
+		sg.vEmissive = XMLoadFloat4(&pMaterial->Ke);
+		sg.vFlags = XMLoadUInt4(&vFlags);
+		memcpy_s(pData.pData, pData.RowPitch, (void*)&sg, sizeof(sg));
+		pDC->Unmap(m_pConstantBuffer1, 0);
+	}
+	pDC->PSSetConstantBuffers(1, 1, &m_pConstantBuffer1);
+
+	// テクスチャをシェーダに渡す
+	if (pMaterial->pTexture) {
+		pDC->PSSetShaderResources(0, 1, &pMaterial->pTexture);
+		if (pMaterial->pTexEmmisive)
+			pDC->PSSetShaderResources(1, 1, &pMaterial->pTexEmmisive);
+		if (pMaterial->pTexTransparent)
+			pDC->PSSetShaderResources(2, 1, &pMaterial->pTexTransparent);
+		if (pMaterial->pTexSpecular)
+			pDC->PSSetShaderResources(3, 1, &pMaterial->pTexSpecular);
+	}
+
+	// ボーンをシェーダに渡す
+	pDC->VSSetConstantBuffers(2, 1, &m_pConstantBufferBone);
+
+	// 描画
+	pDC->DrawIndexedInstanced(UINT(m_aIndex.size()), (UINT)aMtxWorld.size(), 0, 0, 0);
 
 }
 
@@ -633,10 +719,6 @@ ID3D11SamplerState* CAssimpModel::m_pSampleLinear;
 // コンストラクタ
 CAssimpModel::CAssimpModel() : m_pMaterial(nullptr), m_pScene(nullptr), m_pAnimator(nullptr)
 {
-
-#if INSTANCE
-	m_pConstantBufferI = nullptr;
-#endif // INSTANCE
 	XMStoreFloat4x4(&m_mtxTexture, XMMatrixIdentity());
 	XMStoreFloat4x4(&m_mtxWorld, XMMatrixIdentity());
 	m_dCurrent = m_dLastPlaying = 0.0;
@@ -668,7 +750,17 @@ bool CAssimpModel::InitShader(ID3D11Device* pDevice)
 #if EST1
 	hr = MySpace::Graphics::LoadShader("AssimpVertex", "AssimpPixel",
 		&m_pVertexShader, &m_pVertexLayout, &m_pPixelShader);
-	if (FAILED(hr)) {
+	if (FAILED(hr)) 
+	{
+#ifdef _DEBUG
+		MessageBoxW(0, L"hlsl読み込み失敗", nullptr, MB_OK);
+#endif
+		return false;
+	}
+
+	hr = LoadVertexShader("AssimpInstancingVertex", &m_pVertexShaderInstancing, &m_pVertexLayout);
+	if (FAILED(hr))
+	{
 #ifdef _DEBUG
 		MessageBoxW(0, L"hlsl読み込み失敗", nullptr, MB_OK);
 #endif
@@ -699,7 +791,6 @@ bool CAssimpModel::InitShader(ID3D11Device* pDevice)
 
 #endif // 1
 
-
 	// テクスチャ用サンプラ作成
 	CD3D11_DEFAULT def;
 	CD3D11_SAMPLER_DESC sd(def);
@@ -714,12 +805,32 @@ bool CAssimpModel::InitShader(ID3D11Device* pDevice)
 		return false;
 	}
 
+#if INSTANCE
+	// コンスタントバッファ インスタンシング用 作成
+	D3D11_BUFFER_DESC cb;
+	ZeroMemory(&cb, sizeof(cb));
+	cb.BindFlags = D3D11_BIND_CONSTANT_BUFFER;
+	cb.ByteWidth = sizeof(SHADER_INSTANCE);
+	cb.CPUAccessFlags = D3D11_CPU_ACCESS_WRITE;
+	cb.MiscFlags = 0;
+	cb.Usage = D3D11_USAGE_DYNAMIC;
+	hr = pDevice->CreateBuffer(&cb, nullptr, &m_pConstantBufferI);
+	if (FAILED(hr))
+	{
+		return false;
+	}
+#endif // INSTANCE
+
 	return true;
 }
 
 // シェーダ終了処理
 void CAssimpModel::UninitShader()
 {
+#if INSTANCE
+	SAFE_RELEASE(m_pConstantBufferI);
+	SAFE_RELEASE(m_pVertexShaderInstancing);
+#endif // INSTANCE
 	SAFE_RELEASE(m_pSampleLinear);
 	SAFE_RELEASE(m_pPixelShader);
 	SAFE_RELEASE(m_pVertexLayout);
@@ -778,23 +889,6 @@ bool CAssimpModel::Load(ID3D11Device* pDevice, ID3D11DeviceContext* pDC, std::st
 
 	ScaleAsset();
 
-#if INSTANCE
-	// コンスタントバッファ インスタンシング用 作成
-	D3D11_BUFFER_DESC cb;
-	ZeroMemory(&cb, sizeof(cb));
-	cb.BindFlags = D3D11_BIND_CONSTANT_BUFFER;
-	cb.ByteWidth = sizeof(SHADER_INSTANCE);
-	cb.CPUAccessFlags = D3D11_CPU_ACCESS_WRITE;
-	cb.MiscFlags = 0;
-	cb.Usage = D3D11_USAGE_DYNAMIC;
-	HRESULT hr = pDevice->CreateBuffer(&cb, nullptr, &m_pConstantBufferI);
-	if (FAILED(hr))
-	{
-		Release();
-		return false;
-	}
-#endif // INSTANCE
-
 	return true;
 }
 
@@ -834,6 +928,38 @@ void CAssimpModel::Draw(ID3D11DeviceContext* pDC, XMFLOAT4X4& mtxWorld, EByOpaci
 	// CShaderManager::EShaderType::PointToTriangle
 	//pDC->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_1_CONTROL_POINT_PATCHLIST);
 #endif
+
+	// プリミティブ形状をセット
+	pDC->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
+	// テクスチャサンプラをセット
+	pDC->PSSetSamplers(0, 1, &m_pSampleLinear);
+
+	// ノード単位で描画
+	aiMatrix4x4* piMatrix = (aiMatrix4x4*)&m_mtxWorld;
+
+	DrawNode(pDC, m_pScene->mRootNode, *piMatrix, byOpacity);
+}
+
+void CAssimpModel::DrawInstancing(ID3D11DeviceContext* pDC, INSTANCHING_DATA& mtxWorld, EByOpacity byOpacity)
+{
+	if (!m_pScene) return;
+	// アニメーション更新
+	//if (m_pAnimator) {
+	//	m_dCurrent += clock() / double(CLOCKS_PER_SEC) - m_dLastPlaying;
+	//	double time = m_dCurrent;
+	//	m_pAnimator->Calculate(time);
+	//	m_dLastPlaying = m_dCurrent;
+	//}
+
+	// 使用するシェーダーの登録	
+#if EST1
+	pDC->VSSetShader(m_pVertexShaderInstancing, nullptr, 0);
+	pDC->PSSetShader(m_pPixelShader, nullptr, 0);
+	// 頂点インプットレイアウトをセット
+	pDC->IASetInputLayout(m_pVertexLayout);
+#else
+#endif
+
 	// プリミティブ形状をセット
 	pDC->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 	// テクスチャサンプラをセット
@@ -841,30 +967,32 @@ void CAssimpModel::Draw(ID3D11DeviceContext* pDC, XMFLOAT4X4& mtxWorld, EByOpaci
 
 #if INSTANCE
 	D3D11_MAPPED_SUBRESOURCE pData;
-	if (SUCCEEDED(pDC->Map(m_pConstantBufferI, 0, D3D11_MAP_WRITE_DISCARD, 0, &pData)))
+	int cnt = 0;
+	//--- 100以上だった時
+	while (cnt < mtxWorld.size())
 	{
-		SHADER_INSTANCE si;
-		for (int i = 0; i < 100; ++i)
+		if (SUCCEEDED(pDC->Map(m_pConstantBufferI, 0, D3D11_MAP_WRITE_DISCARD, 0, &pData)))
 		{
-			XMFLOAT4X4 m = mtxWorld;
-			m._41 += ((i % 10) - 5) * 100.0f;
-			m._43 += ((i / 10) - 5) * 100.0f;
-			si.mWorld[i] = XMMatrixTranspose(XMLoadFloat4x4(&m));
+			SHADER_INSTANCE si;
+			// 本来ここで抜ける
+			for (; cnt < mtxWorld.size(); ++cnt)
+			{
+				si.mWorld[cnt] = XMMatrixTranspose(XMLoadFloat4x4(&mtxWorld[cnt]));
+			}
+			memcpy_s(pData.pData, pData.RowPitch, (void*)&si, sizeof(SHADER_INSTANCE));
+			pDC->Unmap(m_pConstantBufferI, 0);
 		}
-		memcpy_s(pData.pData, pData.RowPitch, (void*)&si, sizeof(SHADER_INSTANCE));
-		pDC->Unmap(m_pConstantBufferI, 0);
-	}
-	pDC->VSSetConstantBuffers(3, 1, &m_pConstantBufferI);
+		pDC->VSSetConstantBuffers(3, 1, &m_pConstantBufferI);
 
-	// ノード単位で描画
-	XMFLOAT4X4 mWorld;
-	XMStoreFloat4x4(&mWorld, XMMatrixIdentity());
-	aiMatrix4x4* piMatrix = (aiMatrix4x4*)&mWorld;
-#else
-	// ノード単位で描画
-	aiMatrix4x4* piMatrix = (aiMatrix4x4*)&m_mtxWorld;
-	DrawNode(pDC, m_pScene->mRootNode, *piMatrix, byOpacity);
+		// ノード単位で描画
+		XMFLOAT4X4 mWorld;
+		XMStoreFloat4x4(&mWorld, XMMatrixIdentity());
+		aiMatrix4x4* piMatrix = (aiMatrix4x4*)&mWorld;
+
+		DrawInstanchidNode(pDC, m_pScene->mRootNode, *piMatrix, byOpacity, mtxWorld);
+	}
 #endif // INSTANCE
+
 }
 
 // 描画
@@ -915,10 +1043,58 @@ void CAssimpModel::DrawNode(ID3D11DeviceContext* pDC, aiNode* piNode, const aiMa
 		DrawNode(pDC, piNode->mChildren[i], piMatrix, byOpacity);
 }
 
+// 描画
+void CAssimpModel::DrawInstanchidNode(ID3D11DeviceContext* pDC, aiNode* piNode, const aiMatrix4x4& piMatrix, 
+									  EByOpacity byOpacity, INSTANCHING_DATA& aMtxWorld)
+{
+	aiMatrix4x4 aiMe;
+	if (m_pAnimator) {
+		aiMe = m_pAnimator->GetGlobalTransform(piNode);
+		aiMe.Transpose();
+	}
+	aiMe *= piMatrix;
+
+	XMFLOAT4X4 mtxWorld(aiMe.a1, aiMe.a2, aiMe.a3, aiMe.a4,
+		aiMe.b1, aiMe.b2, aiMe.b3, aiMe.b4,
+		aiMe.c1, aiMe.c2, aiMe.c3, aiMe.c4,
+		aiMe.d1, aiMe.d2, aiMe.d3, aiMe.d4);
+
+	for (UINT i = 0; i < piNode->mNumMeshes; ++i) {
+		const aiMesh* mesh = m_pScene->mMeshes[piNode->mMeshes[i]];
+		CAssimpMesh& helper = m_aMesh[piNode->mMeshes[i]];
+
+		// ボーンマトリックス更新
+		// (おそらくここで実行するのは不適切だが、解決方法が不明)
+		if (mesh->HasBones() && m_pAnimator) {
+			static float matrices[4 * 4 * MAX_BONE_MATRIX];
+			float* tempmat = matrices;
+			const std::vector<aiMatrix4x4>& boneMats = m_pAnimator->GetBoneMatrices(piNode, i);
+
+			for (UINT a = 0; a < mesh->mNumBones; a++) {
+				const aiMatrix4x4& mat = boneMats[a];
+				*tempmat++ = mat.a1; *tempmat++ = mat.a2; *tempmat++ = mat.a3; *tempmat++ = mat.a4;
+				*tempmat++ = mat.b1; *tempmat++ = mat.b2; *tempmat++ = mat.b3; *tempmat++ = mat.b4;
+				*tempmat++ = mat.c1; *tempmat++ = mat.c2; *tempmat++ = mat.c3; *tempmat++ = mat.c4;
+				*tempmat++ = mat.d1; *tempmat++ = mat.d2; *tempmat++ = mat.d3; *tempmat++ = mat.d4;
+			}
+
+			helper.SetBoneMatrix(pDC, (XMFLOAT4X4*)matrices);
+		} else {
+			static XMFLOAT4X4 identity[MAX_BONE_MATRIX] = { XMFLOAT4X4(1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1) };
+			helper.SetBoneMatrix(pDC, identity);
+		}
+
+		helper.DrawInstanchid(pDC, mtxWorld, aMtxWorld, byOpacity);
+	}
+
+	// 全ての子ノードをレンダリング
+	for (UINT i = 0; i < piNode->mNumChildren; ++i)
+		DrawNode(pDC, piNode->mChildren[i], piMatrix, byOpacity);
+}
+
 // 解放
 void CAssimpModel::Release()
 {
-	SAFE_RELEASE(m_pConstantBufferI);
 	for (int i = 0; i < m_aMesh.size(); ++i) {
 		m_aMesh[i].Release();
 	}

@@ -10,17 +10,17 @@
 
 //--- インクルード部
 #include <d3d11.h>
-#include <CoreSystem/system.h>
+#include <CoreSystem/Singleton.h>
 #include <CoreSystem/Util/stl.h>
 
 namespace MySpace
 {
 	namespace Graphics
 	{
-		class CFontTexture : public CAppSystem< CFontTexture>
+		class CFontTexture : public CSingleton<CFontTexture>
 		{
 			friend class Application;
-			friend class CAppSystem<CFontTexture>;
+			friend class CSingleton<CFontTexture>;
 
 		public:
 			//--- 構造体定義
@@ -34,13 +34,16 @@ namespace MySpace
 				int OffSetX;
 				int OffSetY;
 			};
+
 		private:
-			// ｴｲﾘｱｽ
+			//--- ｴｲﾘｱｽ
 			using CharTexMap = std::map<LPCWSTR, STCharaData>;		// なんの文字か、どんなパラメータか
 			using CharTexPair = std::pair<LPCWSTR, STCharaData>;
 			using FontMap = std::map<std::wstring, CharTexMap>;		// フォント
 			using FontPair = std::pair<std::wstring, CharTexMap>;
+
 		private:
+			//--- メンバ変数
 			HDC m_hdc;					// 
 			HFONT m_hFont;				// 
 			HFONT m_hOldFont;			// 
@@ -55,13 +58,14 @@ namespace MySpace
 
 			HRESULT Init();
 			void Uninit();
+			
+			// *@フォント変更用 TODO:※変更には適していない状態
+			void DesignFont(std::string fontPath, std::wstring fontName);	
 
-			void DesignFont(std::string fontPath, std::wstring fontName);	// フォント変更用 ※変更にはてきしていない状態
-
-			// 文字ﾃｸｽﾁｬの作成(空ならＭＳ Ｐ明朝)
+			// *@文字ﾃｸｽﾁｬの作成(空ならＭＳ Ｐ明朝)
 			// *@引き数:wstring L""
 			CFontTexture::STCharaData CreateTex(LPCWSTR character, std::wstring fontName = std::wstring());
-			// 文字列を受け取り、ﾃｸｽﾁｬを返す
+			// *@文字列を受け取り、ﾃｸｽﾁｬを返す
 			std::vector<CFontTexture::STCharaData> GetString(std::wstring text, std::wstring fontName = std::wstring());	
 
 		};

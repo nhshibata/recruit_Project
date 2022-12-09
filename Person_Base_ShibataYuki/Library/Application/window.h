@@ -1,7 +1,8 @@
 //=========================================================
 // [window.h] 
-// 作成: / /
+// 作成:2022/05/24
 //---------------------------------------------------------
+// ウィンドウｸﾗｽ
 //=========================================================
 
 //--- インクルードガード
@@ -33,11 +34,11 @@ namespace MySpace
 		using namespace MySpace::MyMath;
 
 		//--- クラス定義
-		class CWindow : public CAppSystem<CWindow>
+		class CWindow : public CSingleton<CWindow>
 		{
-			friend class CAppSystem<CWindow>;
 			friend class CSingleton<CWindow>;
 		private:
+			//--- メンバ変数
 			float m_fScreenWidth;
 			float m_fScreenHeight;
 			float m_fClientWidth;
@@ -45,7 +46,9 @@ namespace MySpace
 
 			HWND m_hwnd;
 			MSG m_Message;
-
+		
+		private:
+			//--- メンバ関数
 			CWindow() {};
 			//~CWindow();
 		public:

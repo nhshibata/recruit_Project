@@ -35,9 +35,6 @@
     <ClCompile Include="..\Library\CoreSystem\Util\stringConvert.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="..\..\Library\CoreSystem\property.h" />
-    <ClInclude Include="..\..\Library\CoreSystem\Singleton.h" />
-    <ClInclude Include="..\..\Library\CoreSystem\system.h" />
     <ClInclude Include="..\Library\CoreSystem\File\cerealize.h" />
     <ClInclude Include="..\Library\CoreSystem\File\filePath.h" />
     <ClInclude Include="..\Library\CoreSystem\File\resource.h" />
@@ -51,9 +48,12 @@
     <ClInclude Include="..\Library\CoreSystem\Input\mouse.h" />
     <ClInclude Include="..\Library\CoreSystem\Math\MyMath.h" />
     <ClInclude Include="..\Library\CoreSystem\Math\myVector.h" />
+    <ClInclude Include="..\Library\CoreSystem\property.h" />
+    <ClInclude Include="..\Library\CoreSystem\Singleton.h" />
     <ClInclude Include="..\Library\CoreSystem\Sound\Sound.h" />
     <ClInclude Include="..\Library\CoreSystem\Sound\SoundData.h" />
     <ClInclude Include="..\Library\CoreSystem\Sound\SoundData.hpp" />
+    <ClInclude Include="..\Library\CoreSystem\system.h" />
     <ClInclude Include="..\Library\CoreSystem\Time\fps.h" />
     <ClInclude Include="..\Library\CoreSystem\Util\cerealCommon.h" />
     <ClInclude Include="..\Library\CoreSystem\Util\define.h" />

@@ -226,5 +226,8 @@
     <FxCompile Include="..\Library\hlsl\Pixel.hlsl">
       <Filter>リソース ファイル</Filter>
     </FxCompile>
+    <FxCompile Include="..\Library\hlsl\AssimpInstancingVertex.hlsl">
+      <Filter>リソース ファイル</Filter>
+    </FxCompile>
   </ItemGroup>
 </Project>

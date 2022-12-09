@@ -10,7 +10,7 @@
 // 警告抑止
 #define _CRT_SECURE_NO_WARNINGS
 
-#define _CRTDBG_MAP_ALLOC
+//#define _CRTDBG_MAP_ALLOC
 #define NOMINMAX
 //--- インクルード部
 //#include <Windows.h>
@@ -70,8 +70,9 @@ HRESULT StartUp(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine, i
 	UNREFERENCED_PARAMETER(hPrevInstance);	// 未使用宣言
 	UNREFERENCED_PARAMETER(lpCmdLine);		// 未使用宣言
 
-	_CrtSetDbgFlag(_CRTDBG_ALLOC_MEM_DF | _CRTDBG_LEAK_CHECK_DF);
-
+	// メモリリーク検出
+	//_CrtSetDbgFlag(_CRTDBG_ALLOC_MEM_DF | _CRTDBG_LEAK_CHECK_DF);
+	
 	// コンソール
 #if CONSOLE
 	AllocConsole();
@@ -80,6 +81,10 @@ HRESULT StartUp(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine, i
 
 	//--- アプリケーションの開始
 	HRESULT hr = S_OK;
+
+	//--- 生成
+	Application::Create();
+
 	Application* Appli = &Application::Get();
 	hr = Appli->Init(hInstance);
 
@@ -95,6 +100,9 @@ void ShutDown()
 	//--- 終了
 	Appli->Uninit();
 
+	//--- 破棄
+	Application::Destroy();
+
 #if CONSOLE
 	HANDLE hStdout = GetStdHandle(STD_OUTPUT_HANDLE);
 	_CrtSetReportMode(_CRT_WARN, _CRTDBG_MODE_FILE);
@@ -103,8 +111,8 @@ void ShutDown()
 
 	FreeConsole();
 
-	_CrtDumpMemoryLeaks();
 #endif //!CONSOLE
+	_CrtDumpMemoryLeaks();
 
 }
 void MainLoop()

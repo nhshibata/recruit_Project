@@ -12,7 +12,7 @@
 //--- インクルード部
 #define NOMINMAX
 
-#include <CoreSystem/system.h>
+#include <CoreSystem/Singleton.h>
 #include <GraphicsSystem/Manager/resourceMap.h>
 #include <GraphicsSystem/Render/AssimpModel.h>
 #include <GraphicsSystem/DirectX/DXDevice.h>
@@ -31,27 +31,14 @@ namespace MySpace
 {
 	namespace Graphics
 	{
-		//enum class EModelType
-		//{
-		//	MODEL_PLAYER = 0,	// プレイヤー モデル
-		//	MODEL_SKY,			// スカイドーム
-		//	MODEL_LAND,			// 地面モデル
-		//	NONE,
-		//	MAX,
-		//};
-		//--- 前方参照
-
 		//--- クラス定義
-		class CModelManager : public CAppSystem<CModelManager>, public CResourceMap<std::string, ModelSharedPtr>
+		class CModelManager : public CSingleton<CModelManager>, public CResourceMap<std::string, ModelSharedPtr>
 		{
-			friend class CAppSystem<CModelManager>;
 			friend class CSingleton<CModelManager>;
 		private:
-			
-			//ModelSharedPtr m_pModels[int(EModelType::MAX)];
-			//std::map<std::string, ModelSharedPtr> m_pMapModels;
-
+			//--- メンバ関数
 			CModelManager();
+
 		public:
 			//~CImageResourceManager();
 
@@ -62,16 +49,29 @@ namespace MySpace
 			bool Unload(std::string name);
 			void UnloadAll();
 
-			// モデル取得
-			// なければ読み込み
+			// *@モデル取得
+			// *@なければ読み込み
 			ModelSharedPtr GetModel(std::string name) 
 			{ 
 				if (auto it = m_ResourceMap.find(name); it == m_ResourceMap.end()) {
 					if (!Load(name)) 
-					{ return ModelSharedPtr(); } }
-
-				return m_ResourceMap[name]; 
+					{ 
+						return ModelSharedPtr(); 
+					} 
+				}
+				return m_ResourceMap[name];
 			};
+
+			// *@モデルの使用数取得
+			int GetModelCnt(std::string name)
+			{
+				if (m_ResourceMap.count(name))
+				{
+					return m_ResourceMap[name].use_count();
+				}
+				return 0;
+			}
+
 		};
 
 	}

@@ -15,7 +15,6 @@ using namespace MySpace::Debug;
 
 #define TYPE_PATH		FORDER_DIR(data/.type)
 
-
 //=========================================================
 CTypeSaveManager::~CTypeSaveManager()
 {
@@ -28,6 +27,7 @@ void CTypeSaveManager::Uninit()
 		if ((*it).second)
 			delete (*it).second;
 	}
+	g_StockType.clear();
 }
 bool CTypeSaveManager::IsType(std::string name) {
 	if (auto it = g_StockType.find(name); it != g_StockType.end()) 
@@ -72,17 +72,6 @@ std::shared_ptr<T> CTypeSaveManager::MakeType()
 		return save.MakeType();
 	}
 	return std::shared_ptr<T>;
-}
-CTypeSaveManager::StockSharedMap CTypeSaveManager::Convert()
-{
-	StockSharedMap ret;
-	/*for (auto it = g_StockType.begin(); it != g_StockType.end(); ++it)
-	{
-		std::shared_ptr<CTypeSaveBase> sp = std::make_shared<CTypeSaveBase>((*it).second);
-		ret.insert(StockSharedPair((*it).first, sp));
-	}*/
-
-	return ret;
 }
 
 //#endif BUILD_MODE

@@ -30,7 +30,6 @@
 
 #include <DebugSystem/imguiManager.h>
 #include <DebugSystem/typeSaveManager.h>
-#include <CoreSystem/system.h>
 #include <CoreSystem/Input/input.h>
 #include <CoreSystem/Sound/Sound.h>
 #include <CoreSystem/FuncPtr/funcPtrManager.h>
@@ -54,18 +53,14 @@ void CGameApp::Init(Application& pApp)
 {
 	HWND hWnd = pApp.GetHWnd();
 
-	// デバイスの初期化
+	//--- デバイスの初期化
+	CDXDevice::Create();
 	auto pDX = &CDXDevice::Get();
 	pDX->Init(hWnd, (unsigned int)CScreen::GetWidth(), (unsigned int)CScreen::GetHeight());
+	//--- 変数宣言
 	auto pD = pDX->GetDevice();
 	auto pDc = pDX->GetDeviceContext();
 
-#ifdef BUILD_MODE
-	// imGuiの初期化処理
-	auto imgui = &ImGuiManager::Get();
-	imgui->Init(hWnd, pD, pDc);
-#endif // BUILD_MODE
-	
 	// 入力の初期化
 	CInput::Init();
 	CGamePad::Init();
@@ -78,8 +73,30 @@ void CGameApp::Init(Application& pApp)
 	// 平行光源の初期化
 	// ポストエフェクト?
 	// スカイドーム
+	CTypeSaveManager::Create();
 
-	// シーンの生成
+	//--- ゲーム要素
+	CTagName::Create();
+	CTweenManager::Create();
+
+	// モデル
+	CModelManager::Create();
+	auto model = &CModelManager::Get();
+	model->Init();
+
+	//--- ポリゴン
+	CPolygon::Init(pD);
+
+	//--- ﾃｸｽﾁｬ
+	CImageResourceManager::Create();
+
+	//--- フォント
+	CFontTexture::Create();
+	auto font = &CFontTexture::Get();
+	font->Init();
+
+	//--- シーンの生成
+	CSceneManager::Create();
 	auto scene = &CSceneManager::Get();
 	//CSceneManager::Get()->Init();
 	//auto scene = CSceneManager::Get()->CreateNewScene<CScene>("Title");
@@ -87,20 +104,17 @@ void CGameApp::Init(Application& pApp)
 	scene->Init();
 	scene->CreateNewScene<CScene>("Title");
 
-	// モデル
-	auto model = &CModelManager::Get();
-	model->Init();
-
-	// ポリゴン
-	CPolygon::Init(pD);
-
-	// ｶﾒﾗの生成後
+	//--- エフェクト生成・初期化(ｶﾒﾗの生成後)
+	CEffekseer::Create();
 	auto effect = &CEffekseer::Get();
 	effect->Init(pD, pDc);
 
-	// フォント
-	auto font = &CFontTexture::Get();
-	font->Init();
+#ifdef BUILD_MODE
+	// imGuiの初期化処理
+	ImGuiManager::Create();
+	auto imgui = &ImGuiManager::Get();
+	imgui->Init(hWnd, pD, pDc);
+#endif // BUILD_MODE
 
 	// シェーダー
 	//CShaderManager::Get()->Init();
@@ -108,17 +122,13 @@ void CGameApp::Init(Application& pApp)
 	// 音初期化
 	CSound::Init();
 
-	// 解放処理のため格納しておく
-	/*pApp.MainSystem.Get()->SetSystem(ESystems::TAG, &CTagName::Get());
-	pApp.MainSystem.Get()->SetSystem(ESystems::TWEEN, &CTweenManager::Get());
-	pApp.MainSystem.Get()->SetSystem(ESystems::IMAGE, &CImageResourceManager::Get());
-	pApp.MainSystem.Get()->SetSystem(ESystems::TYPE_SAVE, &CTypeSaveManager::Get());
-	pApp.MainSystem.Get()->SetSystem(ESystems::FUNC_PTR, &CFuncManager::Get());*/
-
 }
 // 解放処理
 void CGameApp::Uninit(Application& pApp)const
 {
+
+	_CrtDumpMemoryLeaks();
+
 	// 音終了
 	CSound::Fin();
 
@@ -131,9 +141,26 @@ void CGameApp::Uninit(Application& pApp)const
 	CSceneManager::Get().Uninit();
 	//CShaderManager::Get()->Uninit();
 	
+	CTypeSaveManager::Get().Uninit();
+
 	// 入力
 	CInput::Fin();
 	CGamePad::Uninit();
+	_CrtDumpMemoryLeaks();
+
+	//--- シングルトン破棄
+	CTweenManager::Destroy();
+	CTagName::Destroy();
+	CImageResourceManager::Create();
+	CFontTexture::Destroy();
+	CEffekseer::Destroy();
+	CModelManager::Destroy();
+	ImGuiManager::Destroy();
+	CSceneManager::Destroy();
+	CTypeSaveManager::Destroy();
+	CDXDevice::Destroy();
+	_CrtDumpMemoryLeaks();
+
 }
 // 通常更新
 void CGameApp::Update(Application& pApp)const
@@ -214,7 +241,7 @@ void CGameApp::BeginRender(Application& pApp)
 	};
 	pDC->OMSetRenderTargets(1, pViews, nullptr);
 
-	CCamera::GetMain()->DrawSkyDome();
+	//CCamera::GetMain()->DrawSkyDome();
 }
 // *@描画後
 void CGameApp::EndRender(Application& pApp)

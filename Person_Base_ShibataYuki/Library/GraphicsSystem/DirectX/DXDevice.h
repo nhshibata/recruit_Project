@@ -14,7 +14,7 @@
 #include <memory>
 #include <wrl/client.h>
 
-#include <CoreSystem/system.h>
+#include <CoreSystem/Singleton.h>
 
 using Microsoft::WRL::ComPtr;
 using MySpace::System::CSingleton;
@@ -42,11 +42,10 @@ namespace MySpace
 		};
 
 		//--- クラス定義
-		class CDXDevice : public CAppSystem<CDXDevice>
+		class CDXDevice : public CSingleton<CDXDevice>
 		{
 
 			friend class CSingleton<CDXDevice>; // Singleton でのインスタンス作成は許可
-			friend class CAppSystem<CDXDevice>; // Singleton でのインスタンス作成は許可
 		private:
 			ComPtr<ID3D11Device>			g_pDevice;				// デバイス
 			ComPtr<ID3D11DeviceContext>		g_pDeviceContext;		// デバイス コンテキスト
