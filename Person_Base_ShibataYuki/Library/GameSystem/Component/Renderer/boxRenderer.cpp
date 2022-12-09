@@ -4,6 +4,7 @@
 #include <GameSystem/Component/Transform/transform.h>
 #include <GameSystem/Manager/sceneManager.h>
 #include <ImGui/imgui.h>
+#include <GraphicsSystem/DirectX/DXDevice.h>
 
 using namespace MySpace::Game;
 using namespace MySpace::Graphics;
@@ -49,6 +50,7 @@ bool CBoxRenderer::Draw()
 #pragma endregion
 
 #pragma region OBB
+	//CDXDevice* dx = &CDXDevice::Get();
 	// 平行移動マトリックス生成
 	Vector3 center = GetCenter();
 	XMMATRIX mMove = XMMatrixTranslation(center.x, center.y, center.z);

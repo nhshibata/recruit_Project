@@ -41,6 +41,10 @@
 
 #define NOMINMAX
 
+#define _CRTDBG_MAP_ALLOC
+#include <cstdlib>
+#include <crtdbg.h>
+
 //--- インクルード部
 #include <Windows.h>
 #include <stdlib.h>
@@ -82,6 +86,10 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 {
 	using namespace MySpace::SceneManager;
 
+	_CrtSetDbgFlag(_CRTDBG_ALLOC_MEM_DF | _CRTDBG_LEAK_CHECK_DF);
+
+	_CrtDumpMemoryLeaks();
+
 	// *@シーン作成時に呼び出すｸﾗｽ
 	// *@静的なシーン作成の場合、動的な作成はファイル書き込みと読み込みを行う
 	// *@通常の関数でもいいような
@@ -105,11 +113,13 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 
 	CMyScene my;
 	// シーン読み込み時呼び出す関数を設定
+	CSceneManager::Create();
 	CSceneManager::Get().SceneLoaded<CMyScene>(&CMyScene::Load, &my);
 	
 	// 開始
 	// ウィンドウの生成などを行う
 	StartUp(hInstance, hPrevInstance, lpCmdLine, nCmdShow);
+	_CrtDumpMemoryLeaks();
 
 	// ゲームループ
 	MainLoop();

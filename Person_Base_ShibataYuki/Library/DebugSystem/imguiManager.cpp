@@ -160,8 +160,8 @@ void ImGuiManager::Update()
 
 	//--- ｶﾒﾗ操作
 	const int e = ImGuiManager::EIsHovered::HOVERED_WINDOW | ImGuiManager::EIsHovered::HOVERED_GIZMO;
-	//if (!ImGuiManager::Get().IsHover(EIsHovered(e)))
-	if (ImGuiManager::Get().GetHover() == EIsHovered::HOVERED_NONE)
+	if (!ImGuiManager::Get().IsHover(EIsHovered(e)))
+	//if (ImGuiManager::Get().GetHover() == EIsHovered::HOVERED_NONE)
 	{
 		if (m_pDebugCamera.lock())
 			m_pDebugCamera.lock()->Update();
@@ -175,6 +175,8 @@ void ImGuiManager::Update()
 	ImGui::Text("Hover->%d", res);
 
 	// スカイドーム描画
+	if (m_pDebugCamera.lock())
+		m_pDebugCamera.lock()->LateUpdate();
 	//m_pDebugCamera.lock()->DrawSkyDome();
 
 	// ログ表示

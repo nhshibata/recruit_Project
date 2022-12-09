@@ -14,7 +14,7 @@
 // --- インクルード部 ---
 //#include <Application/main.h>
 #include <GraphicsSystem/Manager/resourceMap.h>
-#include <CoreSystem/system.h>
+#include <CoreSystem/Singleton.h>
 #include <CoreSystem/Math/MyMath.h>
 #include <CoreSystem/Util/stl.h>
 
@@ -57,10 +57,9 @@ namespace MySpace
 		// クラスの前方参照
 		class CEffekseerParam;	
 		// --- クラス定義 ---
-		class CEffekseer : public CAppSystem<CEffekseer>, public CResourceMap<std::u16string, Effekseer::EffectRef>
+		class CEffekseer : public CSingleton<CEffekseer>, public CResourceMap<std::u16string, Effekseer::EffectRef>
 		{
 			friend class CSingleton<CEffekseer>;
-			friend class CAppSystem<CEffekseer>;
 
 		private:
 			// 頂点シェーダに送る変換行列

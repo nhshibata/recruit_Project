@@ -31,7 +31,6 @@
     <ClCompile Include="..\Library\ImGuizmo\ImGuizmo.cpp" />
     <ClCompile Include="..\Library\ImGuizmo\ImSequencer.cpp" />
     <ClCompile Include="..\Library\ImGui\imgui.cpp" />
-    <ClCompile Include="..\Library\ImGui\imgui_demo.cpp" />
     <ClCompile Include="..\Library\ImGui\imgui_draw.cpp" />
     <ClCompile Include="..\Library\ImGui\imgui_impl_dx11.cpp" />
     <ClCompile Include="..\Library\ImGui\imgui_impl_win32.cpp" />

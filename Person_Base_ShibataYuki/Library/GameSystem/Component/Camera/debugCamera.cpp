@@ -33,7 +33,8 @@ void CDebugCamera::Awake()
 	// メインｶﾒﾗを自分に設定
 	//GetOwner()->GetTagPtr()->CreateTag("DebugCamera");
 	//GetOwner()->SetTag("DebugCamera");
-	SetMain(BaseToDerived<CCamera>());
+	//SetMain(BaseToDerived<CCamera>());
+	ResumeCamera(true);
 }
 void CDebugCamera::Init()
 {
@@ -41,7 +42,6 @@ void CDebugCamera::Init()
 }
 void CDebugCamera::Update()
 {
-
 	// マウス（カーソル)による更新
 	if (GetAsyncKeyState(VK_LBUTTON))
 	{
@@ -90,9 +90,10 @@ void CDebugCamera::Update()
 	POINT pos;
 	GetCursorPos(&pos);
 	CameraMouseMove(pos.x, pos.y);
-
+}
+void CDebugCamera::LateUpdate()
+{
 	CCamera::Update();
-
 }
 void CDebugCamera::CameraMouseMove(int x, int y)
 {

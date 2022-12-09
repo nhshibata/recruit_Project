@@ -10,14 +10,12 @@
 #include <string>
 #include <vector>
 #include <CoreSystem/Util/cerealCommon.h>
-#include <CoreSystem/system.h>
+#include <CoreSystem/Singleton.h>
 
 namespace MySpace
 {
 	namespace Game
 	{
-		using MySpace::System::CAppSystem;
-
 		// 基本的なタグ所持ｸﾗｽ
 		class CDefaultTagChar
 		{
@@ -28,9 +26,8 @@ namespace MySpace
 		};
 
 		// タグの全体管理
-		class CTagName : public CAppSystem<CTagName>
+		class CTagName : public CSingleton<CTagName>
 		{
-			friend class CAppSystem<CTagName>;
 			friend class CSingleton<CTagName>;
 		private:
 			std::vector<std::string> m_tagVec;

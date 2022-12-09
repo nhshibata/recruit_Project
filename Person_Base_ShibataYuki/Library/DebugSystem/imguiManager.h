@@ -3,8 +3,6 @@
 #ifndef __IMGUI_MANAGER_H__
 #define __IMGUI_MANAGER_H__
 
-#include <DebugSystem/debug.h>
-
 #if BUILD_MODE
 
 #include <cctype>
@@ -50,14 +48,13 @@ namespace MySpace
 		using MySpace::Debug::CMyGizmo;
 
 		// ImGui管理クラス
-		class ImGuiManager : public CAppSystem<ImGuiManager>
+		class ImGuiManager : public CSingleton<ImGuiManager>
 		{
-			friend class CAppSystem<ImGuiManager>;
 			friend class CSingleton<ImGuiManager>;
 		public:
 			//--- 列挙体定義
 			// *@マウスの状態を確認するフラグ
-			// *@2進数により複数状態を確認する
+			// *@2進数により複数状態を保持する
 			enum EIsHovered	
 			{
 				MAX_HOVERD = 7,
@@ -86,6 +83,7 @@ namespace MySpace
 			bool m_bEditFlg;							// 編集フラグ
 			std::weak_ptr<CDebugCamera> m_pDebugCamera;	// デバッグ用ｶﾒﾗﾎﾟｲﾝﾀ
 			std::shared_ptr<CGameObject> m_pDebugObj;	// デバッグ用ｶﾒﾗﾎﾟｲﾝﾀを保持するオブジェクト(ここで保持しないと破棄される)
+			
 			MapString m_debugMap;						// デバッグログ用map
 			EIsHovered m_eHover;						// マウス等選択中か列挙体(bit)
 														
@@ -96,7 +94,7 @@ namespace MySpace
 		private:
 			//--- メンバ関数
 			ImGuiManager();
-			~ImGuiManager() {};
+			//~ImGuiManager() {};
 
 			void DispLog();
 
@@ -106,27 +104,40 @@ namespace MySpace
 			void Render();
 			void Uninit();
 
-			void Pause();													// ポーズの処理
+			// *@ポーズの処理
+			void Pause();													
 
-			bool CheckPlayMode();											// 確認
-			inline void DebugStop() { m_bPlayMode = EPlayMode::Release; }	// ImGuiデバッグしない
-			inline void DebugPlay() { m_bPlayMode = EPlayMode::Debug; }		// ImGuiデバッグする
+			// *@確認
+			bool CheckPlayMode();											
+			// *@ImGuiデバッグ停止
+			inline void DebugStop() { m_bPlayMode = EPlayMode::Release; }	
+			// *@ImGuiデバッグ開始
+			inline void DebugPlay() { m_bPlayMode = EPlayMode::Debug; }		
 
 			//--- ゲッター・セッター
-			inline bool GetFlg() { return m_bEditFlg; }						// フラグ管理クラスの返す
-			inline bool GetPause() { return m_bPause; }						// ポーズの有無
-			inline void SetPause(bool flg) { m_bPause = flg; }				// ポーズ切替
+			// *@フラグ管理クラスの返す
+			inline bool GetFlg() { return m_bEditFlg; }						
+			// *@ポーズの有無
+			inline bool GetPause() { return m_bPause; }						
+			// *@ポーズ切替
+			inline void SetPause(bool flg) { m_bPause = flg; }				
 
+			// *@所持インスペクター取得
 			inline std::shared_ptr<CInspector> GetInspector() { return m_pInspector; }
+			// *@所持ヒエラルキー取得
 			inline std::shared_ptr<CHierachy> GetHierarchy() { return m_pHierarchy; }
 
 			//--- マウス等確認
+			// *@マウスの状態取得
 			inline EIsHovered GetHover() { return m_eHover; };
+			// *@指定の状態か確認
 			inline bool IsHover(EIsHovered hover) { return m_eHover & hover; };
+			// *@ビットを立てる
 			inline void UpHover(EIsHovered hover)
 			{
 				m_eHover = static_cast<EIsHovered>(m_eHover | hover);
 			}
+			// *@ビットが立っていたら下す
 			inline void DownHover(EIsHovered hover)
 			{
 				if (m_eHover & hover)

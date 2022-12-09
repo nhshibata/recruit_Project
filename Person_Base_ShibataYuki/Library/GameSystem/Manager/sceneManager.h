@@ -38,7 +38,6 @@ namespace MySpace
 	{
 		using namespace MySpace::Game;
 		using namespace MySpace::System;
-		using MySpace::System::CAppSystem;
 		using MySpace::Game::CGameObject;
 		using MySpace::Game::CComponent;
 		using MySpace::Game::CInstantResourceManager;
@@ -46,9 +45,8 @@ namespace MySpace
 		using AI::CNavMeshBake;
 		
 		//--- クラス定義
-		class CSceneManager : public CAppSystem<CSceneManager>
+		class CSceneManager : public CSingleton<CSceneManager>
 		{
-			friend class CAppSystem<CSceneManager>;
 			friend class CSingleton<CSceneManager>;
 		private:
 			// シリアライズ用ｸﾗｽ
@@ -75,7 +73,7 @@ namespace MySpace
 			};
 #pragma endregion
 
-			// エイリアス
+			//--- エイリアス
 			using SceneList = std::vector<std::shared_ptr<CScene>>;
 
 		private:
@@ -93,9 +91,9 @@ namespace MySpace
 			//--- ﾒﾝﾊﾞ関数
 			CSceneManager();
 
-			// *シーン破棄時に呼び出すための関数
-			// *m_bTransitionをtrue
-			// *再帰呼び出しされる
+			// *@シーン破棄時に呼び出すための関数
+			// *@m_bTransitionをtrue
+			// *@再帰呼び出しされる
 			void* FlagOn(CScene* scene)
 			{
 				m_bTransition = true;
@@ -110,22 +108,22 @@ namespace MySpace
 			void FixedUpdate();
 			void Draw();
 
-			// *CGameObjectManager用
-			// *component内でシーンが破棄された場合、処理を抜ける
-			// *CSceneManager⇒CScene⇒CGameObjectManager(引き数でポインタ与えた方がよかった?もしくはstatic)
+			// *@CGameObjectManager用
+			// *@component内でシーンが破棄された場合、処理を抜ける
+			// *@CSceneManager⇒CScene⇒CGameObjectManager(引き数でポインタ与えた方がよかった?もしくはstatic)
 			bool Escape()
 			{
 				if (m_bTransition) { m_bTransition = false; return true; }
 				return false;
 			}
 
-			// *メインシーン取得(引き数ありでSP取得)
+			// *@メインシーン取得(引き数ありでSP取得)
 			CScene* GetActiveScene() { return m_pCurrentScene.lock().get(); }
-			// *メインシーン取得
+			// *@メインシーン取得
 			std::shared_ptr<CScene> GetActiveScene(int) { return m_pCurrentScene.lock(); }
-			// *メインシーン名前取得
+			// *@メインシーン名前取得
 			std::string GetActiveSceneName() { return m_pCurrentScene.lock()->GetSceneName(); }
-			// *文字列が一致するシーン取得
+			// *@文字列が一致するシーン取得
 			std::shared_ptr<CScene> GetSceneByName(std::string name) 
 			{
 				for (auto & scene : m_pScenes)
@@ -135,16 +133,16 @@ namespace MySpace
 				}
 				return std::shared_ptr<CScene>();
 			}
-			// *全シーンの取得
+			// *@全シーンの取得
 			std::vector<std::shared_ptr<CScene>> GetAllScene() { return m_pScenes; }
 			
-			//--- シーンの読み込み
-			// *通常のシーン切替
+			//--- シーン読み込み関連
+			// *@通常のシーン切替
 			std::weak_ptr<CScene> SceneTransition(std::string name);
-			// *メインシーン切替
+			// *@メインシーン切替
 			std::weak_ptr<CScene> SetActiveScene(std::shared_ptr<CScene> pNextScene);
 
-			// *シーン生成
+			// *@シーン生成
 			template <class T = CScene>
 			CScene* CreateNewScene(std::string name = std::string())
 			{
@@ -155,10 +153,10 @@ namespace MySpace
 				return m_pCurrentScene.lock().get();
 			}
 			
-			// *シーン生成
+			// *@シーン生成
 			std::shared_ptr<CScene> NewScene(std::string name = std::string());
 
-			// 現在シーンに追加
+			// *@現在シーンに追加
 			template <class T>
 			CScene* AddScene()
 			{
@@ -178,8 +176,8 @@ namespace MySpace
 			// *@引き数指定で切替
 			void RemoveScene(std::shared_ptr<CScene> pRemove, std::shared_ptr<CScene> pNext = std::shared_ptr<CScene>());
 		
-			// *リストに追加
-			// *格納できればfalse,既に存在すればtrue
+			// *@リストに追加
+			// *@格納できればfalse,既に存在すればtrue
 			bool AddSceneList(std::shared_ptr<CScene> add)
 			{
 				for (auto & scene : m_pScenes)
@@ -193,29 +191,31 @@ namespace MySpace
 				return true;
 			}
 
+			// *@セーブ
 			void SaveScene(const std::string filename = "none");
+			// *@ロード
 			bool LoadScene(const std::string path);
 
 			//--- シーン遷移時登録関数
-			// *シーン遷移時呼び出し登録
-			// *戻り値:void
-			// *引き数:CScene* prev,CScene* next
+			// *@シーン遷移時呼び出し登録
+			// *@戻り値:void
+			// *@引き数:CScene* prev,CScene* next
 			template <class T>
 			void SceneChanged(void* (T::*func)(CScene*, CScene*), T* ptr)
 			{
 				m_sceneDetection->Changed<T>(func, ptr);
 			}
-			// *シーン生成時呼び出し登録
-			// *戻り値:void
-			// *引き数:CScene* scene, int mode
+			// *@シーン生成時呼び出し登録
+			// *@戻り値:void
+			// *@引き数:CScene* scene, int mode
 			template <class T>
 			void SceneLoaded(void* (T::*func)(CScene*, int), T* ptr)
 			{
 				m_sceneDetection->Loaded<T>(func, ptr);
 			}
-			// *シーン破棄時呼び出し登録
-			// *戻り値:void
-			// *引き数:CScene* scene
+			// *@シーン破棄時呼び出し登録
+			// *@戻り値:void
+			// *@引き数:CScene* scene
 			template <class T>
 			void SceneUnloaded(void* (T::*func)(CScene*), T* ptr)
 			{
@@ -231,6 +231,7 @@ namespace MySpace
 			// *@描画システムの取得
 			inline std::shared_ptr<CDrawSystem> GetDrawSystem() { return m_pDrawSystem; }
 
+			// *@所持NavMeshの取得
 			inline std::shared_ptr<CNavMeshBake> GetNavMesh() { return m_pNavMesh; };
 
 #ifdef BUILD_MODE

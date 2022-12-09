@@ -14,6 +14,7 @@
 
 //--- インクルード部
 #include <GameSystem/Manager/mapSystemBase.h>
+#include <DirectXMath.h>
 
 namespace MySpace
 {
@@ -35,11 +36,13 @@ namespace MySpace
 		private:
 			// エイリアス
 			using RenderWeak = std::vector<std::weak_ptr<CRenderer>>;
-			
+			using InstancingMap = std::map<std::string, std::vector<DirectX::XMFLOAT4X4>>;
+
 		private:
 			//--- メンバ変数
 			bool m_bIsSortNecessary = false;
 			RenderWeak m_pDrawSortList;			// 管理しているmapをソートした結果を入れる変数
+			InstancingMap m_aInstancingMap;
 
 #if BUILD_MODE
 			// 確認用変数
@@ -55,14 +58,14 @@ namespace MySpace
 			void Update();
 
 			//--- 描画するコンポーネント
-			// 登録 override
+			// *@登録 override
 			_NODISCARD int RegistToSystem(std::weak_ptr<CRenderer> render)
 			{
 				int ret = CMapSystemBase::RegistToSystem(render);
 				m_pDrawSortList.push_back(render);
 				return ret;
 			}
-			// 破棄 overlide
+			// *@破棄 overlide
 			std::weak_ptr<CRenderer> ExecutSystem(int idx)
 			{
 				auto release = CMapSystemBase::ExecutSystem(idx).lock();
@@ -79,6 +82,13 @@ namespace MySpace
 				return release;
 			}
 
+			// *@インスタンシング描画のために情報を格納する
+			void SetInstanching(std::string name, DirectX::XMFLOAT4X4 mtx)
+			{
+				m_aInstancingMap[name].push_back(mtx);
+			}
+
+			// *@
 			_NODISCARD inline std::vector<std::weak_ptr<CRenderer>> GetList()
 			{
 				return m_pDrawSortList;

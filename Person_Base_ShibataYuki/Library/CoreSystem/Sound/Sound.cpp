@@ -1,5 +1,6 @@
 // CSoundクラス実装 [Sound.cpp]
 #include <CoreSystem/Sound/Sound.h>
+#include <CoreSystem/Util/define.h>
 
 // 静的リンク ライブラリ
 #pragma comment(lib, "xaudio2.lib")
@@ -9,7 +10,7 @@
 namespace {
 	// グローバル変数
 #include "SoundData.hpp"
-	LPCWSTR g_pszDirSound = L"../../Data/sound/";
+	LPCWSTR g_pszDirSound = FORDER_DIR2(Data/sound/);
 	LPCWSTR g_pszDirBGM = L"bgm/";
 	LPCWSTR g_pszDirSE = L"se/";
 

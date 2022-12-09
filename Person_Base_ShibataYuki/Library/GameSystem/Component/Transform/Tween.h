@@ -13,7 +13,7 @@
 //--- インクルード部
 #include <GameSystem/Component/Transform/transform.h>
 #include <CoreSystem/Math/MyMath.h>
-#include <CoreSystem/system.h>
+#include <CoreSystem/Singleton.h>
 #include <memory>
 
 //namespace MySpace
@@ -250,18 +250,17 @@ namespace MySpace
 	{
 		//using MySpace::Tween::CTween;
 
-		class CTweenManager : public CAppSystem<CTweenManager>
+		class CTweenManager : public CSingleton<CTweenManager>
 		{
 			friend class CSingleton<CTweenManager>;
-			friend class CAppSystem<CTweenManager>;
 
 		private:
 			std::vector<std::shared_ptr<MySpace::TWeen::CTween>> m_pTweenList;
 
 		private:
 			CTweenManager() {};
+
 		public:
-			void Uninit() {}
 			// *@更新
 			// *@なにかしら終了していれば除外される
 			void Update()
@@ -283,7 +282,7 @@ namespace MySpace
 			}
 			// *@型指定による生成
 			template <class T>
-			std::shared_ptr<T> Create(std::weak_ptr<CTransform> ptr)
+			std::shared_ptr<T> CreateTween(std::weak_ptr<CTransform> ptr)
 			{
 				m_pTweenList.push_back(std::make_shared<T>(ptr));
 				return m_pTweenList.back();

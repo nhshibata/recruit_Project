@@ -2,14 +2,16 @@
 // [modelRenderer.h] 
 // 作成: 2022/06/27
 // 更新: 2022/07/04 実装
+// 更新: 2022/12/08 インスタンシングに対応
 //---------------------------------------------------------
 //=========================================================
 
 //--- インクルード部
 #include <GameSystem/Component/Renderer/modelRenderer.h>
 #include <GameSystem/Component/Transform/transform.h>
-#include <GameSystem/Manager/sceneManager.h>
 #include <GameSystem/Component/Light/directionalLight.h>
+#include <GameSystem/Manager/sceneManager.h>
+#include <GameSystem/Manager/drawSystem.h>
 
 #include <GraphicsSystem/DirectX/DXDevice.h>
 #include <DebugSystem/imGuiPackage.h>
@@ -20,8 +22,9 @@ using namespace MySpace::Game;
 using namespace MySpace::Graphics;
 
 CModelRenderer::CModelRenderer(std::shared_ptr<CGameObject> owner)
-	:CMeshRenderer(owner),m_modelName(CHARACTER_PATH(mukade_head.obj)),
-	m_pIndex(nullptr), m_pVertex(nullptr), m_nVertex(0), m_nIndex(0)
+	:CMeshRenderer(owner), m_modelName(CHARACTER_PATH(mukade_head.obj)),
+	m_pIndex(nullptr), m_pVertex(nullptr), m_nVertex(0), m_nIndex(0),
+	m_bInstancing(false)
 {
 	
 }
@@ -31,7 +34,7 @@ CModelRenderer::~CModelRenderer()
 void CModelRenderer::SetModel(std::string name)
 {
 	// ポインタを受け取る
-	if (m_pModel = CModelManager::Get().GetModel(name); m_pModel.lock())
+	if (m_pModel = CModelManager::Get().GetModel(name); m_pModel)
 	{
 		m_modelName = name;
 
@@ -44,7 +47,13 @@ void CModelRenderer::SetModel(std::string name)
 			if (scale < size.z)
 				scale = size.z;
 		}
-		SetBSRadius(m_pModel.lock()->GetRadius() * scale);
+		SetBSRadius(m_pModel->GetRadius() * scale);
+
+		// 自身と管理ｸﾗｽ以外に所有者が居た時
+		if (int num = CModelManager::Get().GetModelCnt(name); num > 2)
+		{
+			m_bInstancing = true;
+		}
 	}
 
 	// 頂点配列、インデックス配列を取得しておく
@@ -66,23 +75,31 @@ void CModelRenderer::Update()
 bool CModelRenderer::Draw()
 {
 	if (!CMeshRenderer::Draw())return false;
-	if (!m_pModel.lock())return false;
+	if (!m_pModel)return false;
 
-	// 不透明描画
 	XMFLOAT4X4 mtx = Transform()->GetWorldMatrix();
+	//--- インスタンシング描画
+	if (m_bInstancing)
+	{
+		// システム側に依頼を出し、まとめて描画してもらう
+		SceneManager::CSceneManager::Get().GetDrawSystem()->SetInstanching(m_modelName, mtx);
+		return true;
+	}
+
+	//--- 不透明描画
 	CLight* pLight = CLight::Get();
 	if (!pLight)return false;
 	pLight->SetDisable(GetLightEnable());	// ライティング無効
 	
-	m_pModel.lock()->Draw(CDXDevice::Get().GetDeviceContext(), mtx, EByOpacity::eOpacityOnly);
+	m_pModel->Draw(CDXDevice::Get().GetDeviceContext(), mtx, EByOpacity::eOpacityOnly);
 
 	pLight->SetEnable();	// ライティング有効
 
-	// 半透明部分描画
+	//--- 半透明部分描画
 	CDXDevice::Get().SetZBuffer(false);
 	CDXDevice::Get().SetBlendState(static_cast<int>(EBlendState::BS_ALPHABLEND));
 
-	m_pModel.lock()->Draw(CDXDevice::Get().GetDeviceContext(), mtx, EByOpacity::eTransparentOnly);
+	m_pModel->Draw(CDXDevice::Get().GetDeviceContext(), mtx, EByOpacity::eTransparentOnly);
 
 	CDXDevice::Get().SetZBuffer(true);			// αブレンディング無効
 	CDXDevice::Get().SetBlendState(static_cast<int>(EBlendState::BS_NONE));		// 光源有効
@@ -93,9 +110,9 @@ bool CModelRenderer::Draw(int no)
 {
 	XMFLOAT4X4 mtx = Transform()->GetWorldMatrix();
 	
-	if (!m_pModel.lock())return false;
-	m_pModel.lock()->Draw(CDXDevice::Get().GetDeviceContext(), mtx, EByOpacity::eOpacityOnly);
-	m_pModel.lock()->Draw(CDXDevice::Get().GetDeviceContext(), mtx);
+	if (!m_pModel)return false;
+	m_pModel->Draw(CDXDevice::Get().GetDeviceContext(), mtx, EByOpacity::eOpacityOnly);
+	m_pModel->Draw(CDXDevice::Get().GetDeviceContext(), mtx);
 
 	return true;
 }
@@ -108,7 +125,7 @@ void CModelRenderer::FinVertexArray()
 void CModelRenderer::InitVertexArray()
 {
 	FinVertexArray();
-	CAssimpModel* pModel = m_pModel.lock().get();
+	CAssimpModel* pModel = m_pModel.get();
 	if (!pModel) return;
 	pModel->GetVertexCount(&m_nVertex, &m_nIndex);
 	m_pVertex = new TAssimpVertex[m_nVertex];

@@ -61,7 +61,7 @@ namespace MySpace
 			void Awake();
 			void Init();					// 初期化 他コンポーネントの取得などを行う
 			void Update();					// 更新
-			//void LateUpdate();			// 遅い更新
+			void LateUpdate();			// 遅い更新
 
 			void CameraMouseMove(int x, int y);
 #ifdef BUILD_MODE
