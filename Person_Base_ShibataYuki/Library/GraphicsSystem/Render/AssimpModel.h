@@ -241,6 +241,12 @@ private:
 	static ID3D11PixelShader* m_pPixelShader;
 	static ID3D11SamplerState* m_pSampleLinear;
 
+#define INSTANCE 1
+#if INSTANCE
+	ID3D11Buffer* m_pConstantBufferI;
+#endif // INSTANCE
+
+
 public:
 	CAssimpModel();
 	virtual ~CAssimpModel();

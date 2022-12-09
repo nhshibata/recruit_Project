@@ -31,7 +31,7 @@ using namespace MySpace::Graphics;
 //*****************************************************************************
 // シェーダに渡す値
 struct SHADER_GLOBAL {
-	DirectX::XMMATRIX	mWVP;		// ワールド×ビュー×射影行列(転置行列)
+	DirectX::XMMATRIX	mVP;		// ワールド×ビュー×射影行列(転置行列)
 	DirectX::XMMATRIX	mW;			// ワールド行列(転置行列)
 	DirectX::XMMATRIX	mTex;		// テクスチャ行列(転置行列)
 };
@@ -238,7 +238,7 @@ void CMesh::Draw(ID3D11ShaderResourceView* pTexture, XMFLOAT4X4* mWorld)
 	SHADER_GLOBAL cb;
 	DirectX::XMMATRIX mtxWorld = XMLoadFloat4x4(&m_mWorld);
 	CCamera* pCamera = CCamera::GetMain();
-	cb.mWVP = XMMatrixTranspose(mtxWorld * XMLoadFloat4x4(&pCamera->GetViewMatrix()) * XMLoadFloat4x4(&pCamera->GetProjMatrix()));
+	cb.mVP = XMMatrixTranspose(mtxWorld * XMLoadFloat4x4(&pCamera->GetViewMatrix()) * XMLoadFloat4x4(&pCamera->GetProjMatrix()));
 	cb.mW = XMMatrixTranspose(mtxWorld);
 	
 	//CShaderManager::Get().ConstantWrite("SHADER_GLOBAL", &cb);
