@@ -15,7 +15,6 @@ using namespace MySpace::System;
 using namespace MySpace::Graphics;
 using namespace MySpace::Game;
 
-
 void CInstantResourceManager::Load()
 {
 	// √∏Ω¡¨ì«Ç›çûÇ›
@@ -42,4 +41,10 @@ void CInstantResourceManager::Save()
 	m_TexList = CImageResourceManager::Get().GetNameList();
 	m_ModelList = CModelManager::Get().GetNameList();
 	m_EffectList = CEffekseer::Get().GetNameList();
+}
+void CInstantResourceManager::SceneUnload()
+{
+	CImageResourceManager::Get().SceneUnload();
+	CModelManager::Get().SceneUnload();
+	//CEffekseer::Get().GetNameList();
 }

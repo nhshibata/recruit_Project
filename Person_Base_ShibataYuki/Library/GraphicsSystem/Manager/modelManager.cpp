@@ -52,22 +52,52 @@ bool CModelManager::Load(std::string name)
 	{
 		return false;
 	}
-	m_ResourceMap.insert(CModelManager::Pair(name, addModel));
+	m_aResourceMap.insert(CModelManager::Pair(name, addModel));
 
 	return true;
 }
 bool CModelManager::Unload(std::string name)
 {
-	m_ResourceMap[name]->Release();
-	m_ResourceMap[name].reset();
+	m_aResourceMap[name]->Release();
+	m_aResourceMap[name].reset();
 	return true;
 }
 void CModelManager::UnloadAll()
 {
-	for (auto it = m_ResourceMap.begin(); it != m_ResourceMap.end(); ++it)
+	for (auto it = m_aResourceMap.begin(); it != m_aResourceMap.end(); ++it)
 	{
 		(*it).second->Release();
 		(*it).second.reset();
 	}
-	m_ResourceMap.clear();
+	m_aResourceMap.clear();
+}
+
+int CModelManager::SceneUnload()
+{
+#if _DEBUG	// 確認
+	int cnt = static_cast<int>(m_aResourceMap.size());
+	for (auto & image : m_aResourceMap)
+	{
+		// 所持権が自身しか持っていなければ解放
+		if (image.second.use_count() == 1)
+		{
+			image.second->Release();
+			image.second.reset();
+			--cnt;
+		}
+	}
+	return cnt;
+#else
+	for (auto & image : m_ResourceMap)
+	{
+		// 所持権が自身しか持っていなければ解放
+		if (image.second.use_count() == 1)
+		{
+			image.second->Unload();
+			image.second.reset();
+		}
+	}
+#endif // _DEBUG
+
+	return 0;
 }

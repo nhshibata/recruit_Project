@@ -2,9 +2,9 @@
 
 // グローバル
 cbuffer global : register(b0) {
-	matrix g_mWVP;
-	matrix g_mWorld;
-	matrix g_mTexture;
+	matrix g_mWVP;          // ワールド×ビュー×射影行列
+	matrix g_mWorld;        // ワールド行列
+    matrix g_mTexture; 
 };
 
 // パラメータ
@@ -26,11 +26,13 @@ struct VS_OUTPUT {
 VS_OUTPUT main(VS_INPUT input)
 {
 	VS_OUTPUT output;
-	float4 P = float4(input.Position, 1.0f);
-	output.Position = mul(P, g_mWVP);
-	output.Pos4PS = mul(P, g_mWorld).xyz;
-	output.Normal = mul(float4(input.Normal, 0.0f), g_mWorld).xyz;
-	output.TexCoord = mul(float4(input.TexCoord, 0.0f, 1.0f), g_mTexture).xy;
-	output.Diffuse = input.Diffuse;
+
+    float4 P = float4(input.Position, 1.0f);
+    output.Position = mul(P, g_mWVP);
+    output.Pos4PS = mul(P, g_mWorld).xyz;
+    output.Normal = mul(float4(input.Normal, 0.0f), g_mWorld).xyz;
+    output.TexCoord = mul(float4(input.TexCoord, 0.0f, 1.0f), g_mTexture).xy;
+    output.Diffuse = input.Diffuse;
+    
 	return output;
 }

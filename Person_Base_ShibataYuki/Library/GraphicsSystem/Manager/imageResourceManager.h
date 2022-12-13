@@ -38,6 +38,7 @@ namespace MySpace
 			bool Load(std::string name);
 			bool Unload(std::string name);
 			void UnloadAll();
+			int SceneUnload();
 
 			ImageSharedPtr GetResource(std::string name);
 		};

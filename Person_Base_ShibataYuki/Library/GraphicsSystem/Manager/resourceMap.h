@@ -20,22 +20,29 @@ namespace MySpace
 		class CResourceMap
 		{
 		public:
+			//--- エイリアス
 			using Map = std::map<T1, T2>;
 			using Pair = std::pair<T1, T2>;
+
 		protected:
-			Map m_ResourceMap;
+			//--- メンバ変数
+			Map m_aResourceMap;
+
 		public:
+			//--- メンバ関数
 			virtual bool Load(T1 name) = 0;
 
 			std::vector<T1> GetNameList() 
 			{
 				std::vector<T1> ret;
-				for (auto it = m_ResourceMap.begin(); it != m_ResourceMap.end(); ++it)
+				for (auto it = m_aResourceMap.begin(); it != m_aResourceMap.end(); ++it)
 				{
 					ret.push_back((*it).first);
 				}
 				return ret;
 			}
+
+			virtual int SceneUnload() { return 0; };
 		};
 	}
 }

@@ -114,6 +114,12 @@
     <ClInclude Include="..\Library\GraphicsSystem\DirectX\DXDevice.h">
       <Filter>ヘッダー ファイル\DirectX</Filter>
     </ClInclude>
+    <ClInclude Include="..\Library\GraphicsSystem\DirectX\renderTarget.h">
+      <Filter>ヘッダー ファイル\DirectX</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Library\GraphicsSystem\DirectX\depthStencil.h">
+      <Filter>ヘッダー ファイル\DirectX</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\Library\GraphicsSystem\Texture\Texture.cpp">
@@ -188,6 +194,12 @@
     <ClCompile Include="..\Library\GraphicsSystem\DirectX\DXDevice.cpp">
       <Filter>ソース ファイル\DirectX</Filter>
     </ClCompile>
+    <ClCompile Include="..\Library\GraphicsSystem\DirectX\renderTarget.cpp">
+      <Filter>ソース ファイル\DirectX</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Library\GraphicsSystem\DirectX\depthStencil.cpp">
+      <Filter>ソース ファイル\DirectX</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <FxCompile Include="..\Library\hlsl\Pixel2D.hlsl">
@@ -227,6 +239,9 @@
       <Filter>リソース ファイル</Filter>
     </FxCompile>
     <FxCompile Include="..\Library\hlsl\AssimpInstancingVertex.hlsl">
+      <Filter>リソース ファイル</Filter>
+    </FxCompile>
+    <FxCompile Include="..\Library\hlsl\InstancingVertex.hlsl">
       <Filter>リソース ファイル</Filter>
     </FxCompile>
   </ItemGroup>

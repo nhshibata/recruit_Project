@@ -53,25 +53,28 @@ namespace MySpace
 				ST_FRAME():nAnimNo(0),nFrame(4) {}
 			};
 		private:	
+			//--- メンバ変数
 			int m_nSplitX;			// 分割
 			int m_nSplitY;			// 分割
 			int m_nAnimNo;			// 現在番号
 			int m_nCnt;				// 
 			std::vector<ST_FRAME> m_stParam;
 
-			ImageWeakPtr m_pImage;		// ﾃｸｽﾁｬ取得用	取得してなくても描画できるように
+			ImageSharedPtr m_pImage;		// ﾃｸｽﾁｬ取得用	取得してなくても描画できるように
 			std::string m_ImageName;	// ﾃｸｽﾁｬ名
+
 		public:
+			//--- メンバ関数
 			CSpriteAnimation();
 			~CSpriteAnimation();
 			void Update();
 
-			inline void SetImagePtr(ImageWeakPtr image) { m_pImage = image; };
+			inline void SetImagePtr(ImageSharedPtr image) { m_pImage = image; };
 			void SetImage(std::string name);
 
 			inline ImageWeakPtr GetImage() { return m_pImage; }
 			inline std::string GetImageName() { return m_ImageName; }
-			inline ID3D11ShaderResourceView* GetTexture() { return m_pImage.lock() ? m_pImage.lock()->GetSRV() : nullptr; }
+			inline ID3D11ShaderResourceView* GetTexture() { return m_pImage.get() ? m_pImage->GetSRV() : nullptr; }
 			Vector2 GetUV();
 			Vector2 GetUV(int no);
 			Vector2 GetFrameSize();

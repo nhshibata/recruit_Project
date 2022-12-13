@@ -1,0 +1,35 @@
+
+Tab
+
+    if (ImGui::BeginTabBar("##tabs", ImGuiTabBarFlags_None))
+        ImGui::EndTabBar();
+
+
+if (ImGui::BeginTabItem("Fonts"))
+
+ImGui::EndTabItem();
+
+
+            ImGui::PushItemWidth(ImGui::GetFontSize() * 8);
+            ImGui::PopItemWidth();
+
+ if (ImGui::DragFloat("window scale", &window_scale, 0.005f, MIN_SCALE, MAX_SCALE, "%.2f", ImGuiSliderFlags_AlwaysClamp)) // Scale only this window
+
+ImGui::SetWindowFontScale(window_scale);
+ImGui::DragFloat("global scale", &io.FontGlobalScale, 0.005f, MIN_SCALE, MAX_SCALE, "%.2f", ImGuiSliderFlags_AlwaysClamp); // Scale everything
+
+
+            ImGui::ListBox("listbox", &item_current, items, IM_ARRAYSIZE(items), 4);
+
+
+
+
+
+
+
+
+
+
+
+
+

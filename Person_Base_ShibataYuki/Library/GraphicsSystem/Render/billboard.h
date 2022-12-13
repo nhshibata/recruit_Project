@@ -39,14 +39,21 @@ namespace MySpace
 					cereal::make_nvp("billboard", cereal::base_class<CMesh>(this))
 				);
 			}
+		private:
+			Matrix4x4 m_mtxTexture;
+
 		public:
 			CBillboard();
 			~CBillboard();
 
 			HRESULT Init();
 			void Update(Vector3 pos, Vector2 size);
-			void Draw(ID3D11ShaderResourceView* pTexture = nullptr, XMFLOAT4X4* mWorld = nullptr) { CMesh::Draw(pTexture, mWorld); };
-			void Draw(ID3D11ShaderResourceView* tex, CSpriteAnimation* sprite = nullptr);
+
+			void SetTextureMatrix(XMFLOAT4X4 mtx) { m_mtxTexture = mtx; }
+			XMFLOAT4X4 GetTextureMatrix() { return m_mtxTexture; }
+
+			//void Draw(ID3D11ShaderResourceView* pTexture = nullptr, XMFLOAT4X4* mWorld = nullptr) { CMesh::Draw(pTexture, mWorld); };
+			//void Draw(ID3D11ShaderResourceView* tex, CSpriteAnimation* sprite = nullptr);
 		};
 	}
 }

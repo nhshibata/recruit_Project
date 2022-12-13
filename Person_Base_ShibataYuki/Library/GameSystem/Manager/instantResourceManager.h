@@ -41,10 +41,12 @@ namespace MySpace
 			RESOURCE_LIST m_TexList;
 			RESOURCE_LIST m_ModelList;
 			EFFECT_RESOURCE_LIST m_EffectList;
+
 		public:
 			//--- ÉÅÉìÉoä÷êî
 			void Load();
 			void Save();
+			void SceneUnload();
 
 			inline RESOURCE_LIST GetTex() { return m_TexList; }
 			inline RESOURCE_LIST GetModel() { return m_ModelList; }

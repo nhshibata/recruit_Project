@@ -27,6 +27,7 @@ CPolygonRenderer::CPolygonRenderer(std::shared_ptr<CGameObject> owner)
 }
 CPolygonRenderer::~CPolygonRenderer()
 {
+
 	m_pSprite.reset();
 }
 void CPolygonRenderer::Awake()

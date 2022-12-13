@@ -968,29 +968,26 @@ void CAssimpModel::DrawInstancing(ID3D11DeviceContext* pDC, INSTANCHING_DATA& mt
 #if INSTANCE
 	D3D11_MAPPED_SUBRESOURCE pData;
 	int cnt = 0;
-	//--- 100以上だった時
-	while (cnt < mtxWorld.size())
+	if (SUCCEEDED(pDC->Map(m_pConstantBufferI, 0, D3D11_MAP_WRITE_DISCARD, 0, &pData)))
 	{
-		if (SUCCEEDED(pDC->Map(m_pConstantBufferI, 0, D3D11_MAP_WRITE_DISCARD, 0, &pData)))
+		SHADER_INSTANCE si;
+		// 本来ここで抜ける
+		for (; cnt < mtxWorld.size(); ++cnt)
 		{
-			SHADER_INSTANCE si;
-			// 本来ここで抜ける
-			for (; cnt < mtxWorld.size(); ++cnt)
-			{
-				si.mWorld[cnt] = XMMatrixTranspose(XMLoadFloat4x4(&mtxWorld[cnt]));
-			}
-			memcpy_s(pData.pData, pData.RowPitch, (void*)&si, sizeof(SHADER_INSTANCE));
-			pDC->Unmap(m_pConstantBufferI, 0);
+			si.mWorld[cnt] = XMMatrixTranspose(XMLoadFloat4x4(&mtxWorld[cnt]));
 		}
-		pDC->VSSetConstantBuffers(3, 1, &m_pConstantBufferI);
-
-		// ノード単位で描画
-		XMFLOAT4X4 mWorld;
-		XMStoreFloat4x4(&mWorld, XMMatrixIdentity());
-		aiMatrix4x4* piMatrix = (aiMatrix4x4*)&mWorld;
-
-		DrawInstanchidNode(pDC, m_pScene->mRootNode, *piMatrix, byOpacity, mtxWorld);
+		memcpy_s(pData.pData, pData.RowPitch, (void*)&si, sizeof(SHADER_INSTANCE));
+		pDC->Unmap(m_pConstantBufferI, 0);
 	}
+	pDC->VSSetConstantBuffers(3, 1, &m_pConstantBufferI);
+
+	// ノード単位で描画
+	XMFLOAT4X4 mWorld;
+	XMStoreFloat4x4(&mWorld, XMMatrixIdentity());
+	aiMatrix4x4* piMatrix = (aiMatrix4x4*)&mWorld;
+
+	DrawInstanchidNode(pDC, m_pScene->mRootNode, *piMatrix, byOpacity, mtxWorld);
+	
 #endif // INSTANCE
 
 }
@@ -1089,7 +1086,7 @@ void CAssimpModel::DrawInstanchidNode(ID3D11DeviceContext* pDC, aiNode* piNode, 
 
 	// 全ての子ノードをレンダリング
 	for (UINT i = 0; i < piNode->mNumChildren; ++i)
-		DrawNode(pDC, piNode->mChildren[i], piMatrix, byOpacity);
+		DrawInstanchidNode(pDC, piNode->mChildren[i], piMatrix, byOpacity, aMtxWorld);
 }
 
 // 解放

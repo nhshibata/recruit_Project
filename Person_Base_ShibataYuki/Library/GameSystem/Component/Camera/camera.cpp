@@ -90,6 +90,7 @@ void CCamera::Awake()
 	//m_pSky.lock()->SetModel(FORDER_DIR(Data/model/SkyDome/sky.fbx));
 	m_pSky.lock()->SetModel(FORDER_DIR(Data/model/SkyDome/sky2.fbx));
 	m_pSky.lock()->SetBSRadius(1000);
+	m_pSky.lock()->SetVisible(false);
 	Transform()->SetScale({ 10, 10, 10 });
 
 	// tagÇÃê›íË
@@ -169,7 +170,9 @@ void CCamera::DrawSkyDome()
 	//CDXDevice::Get().SetZBuffer(true);
 	//CDXDevice::Get().SetBlendState(static_cast<int>(EBlendState::BS_NONE));
 
-	m_pSky.lock()->Draw();
+	m_pSky.lock()->SetVisible(true);
+	m_pSky.lock()->Draw(0);
+	m_pSky.lock()->SetVisible(false);
 
 }
 void CCamera::SetWorldMatrix(DirectX::XMFLOAT4X4& mtxWorld)

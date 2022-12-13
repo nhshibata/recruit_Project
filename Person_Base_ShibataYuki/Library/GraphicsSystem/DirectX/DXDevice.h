@@ -71,10 +71,10 @@ namespace MySpace
 			HRESULT Init(HWND hWnd, unsigned int Width, unsigned int Height, bool full = false);
 			void Uninit();
 
-			// デバイス取得
+			// *@デバイス取得
 			inline ID3D11Device* GetDevice() { return g_pDevice.Get(); }
 			
-			// デバイス コンテキスト取得
+			// *@デバイス コンテキスト取得
 			inline ID3D11DeviceContext* GetDeviceContext() { return g_pDeviceContext.Get(); }
 
 			inline IDXGISwapChain* GetSwapChain() { return g_pSwapChain.Get(); }
@@ -95,17 +95,17 @@ namespace MySpace
 
 			inline D3D11_VIEWPORT* GetViewPort() { return m_viewPort.get(); };
 
-			// 深度バッファ有効無効制御
+			// *@深度バッファ有効無効制御
 			inline void SetZBuffer(bool bEnable)
 			{
 				g_pDeviceContext->OMSetDepthStencilState((bEnable) ? nullptr : g_pDSS[1].Get(), 0);
 			}
-			// 深度バッファ更新有効無効制御
+			// *@深度バッファ更新有効無効制御
 			inline void SetZWrite(bool bEnable)
 			{
 				g_pDeviceContext->OMSetDepthStencilState((bEnable) ? nullptr : g_pDSS[0].Get(), 0);
 			}
-			// ブレンド ステート設定
+			// *@ブレンド ステート設定
 			inline void SetBlendState(int nBlendState)
 			{
 				if (nBlendState >= 0 && nBlendState < (int)EBlendState::MAX_BLENDSTATE) 
@@ -114,13 +114,22 @@ namespace MySpace
 					g_pDeviceContext->OMSetBlendState(g_pBlendState[nBlendState].Get(), blendFactor, 0xffffffff);
 				}
 			}
-			// カリング設定
+			// *@カリング設定
 			inline void SetCullMode(int nCullMode)
 			{
 				if (nCullMode >= 0 && nCullMode < (int)ECullMode::MAX_CULLMODE) 
 				{
 					g_pDeviceContext->RSSetState(g_pRs[nCullMode].Get());
 				}
+			}
+
+			// *@描画先の変更
+			// *@nullptrで通常に戻す
+			void SwitchRender(ID3D11RenderTargetView* pRTV, ID3D11DepthStencilView* pDSV)
+			{
+				GetDeviceContext()->OMSetRenderTargets(1,
+												 pRTV ? &pRTV : g_pRenderTargetView.GetAddressOf(),
+												 pDSV ? pDSV : g_pDepthStencilView.Get());
 			}
 		};
 	}

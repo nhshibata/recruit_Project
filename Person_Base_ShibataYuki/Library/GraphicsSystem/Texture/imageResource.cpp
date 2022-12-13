@@ -11,9 +11,9 @@ using namespace MySpace::System;
 using namespace MySpace::Graphics;
 
 CImageResource::CImageResource()
-	:res(nullptr), srv(nullptr)
+	: m_pSRV(nullptr)
 {
-
+	//res = nullptr;
 }
 CImageResource::~CImageResource()
 {
@@ -26,7 +26,7 @@ bool CImageResource::Load(std::string name)
 	ID3D11DeviceContext* devicecontext = CDXDevice::Get().GetDeviceContext();
 
 	//bool sts = CreateSRVfromFile(name.c_str(), device, devicecontext, &res, &srv);
-	HRESULT sts = CreateTextureFromFile(device, name.c_str(), &srv);
+	HRESULT sts = CreateTextureFromFile(device, name.c_str(), &m_pSRV);
 	// miss
 	if (FAILED(sts)){
 		return false;
@@ -39,8 +39,8 @@ bool CImageResource::Load(std::string name)
 
 void CImageResource::Unload()
 {
-	if (srv != nullptr) {
-		srv->Release();
+	if (m_pSRV != nullptr) {
+		m_pSRV->Release();
 	}
 	/*if (res != nullptr) {
 		res->Release();

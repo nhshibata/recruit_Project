@@ -205,8 +205,20 @@ void CGameApp::InputUpdate()
 // •`‰æ
 void CGameApp::Draw(Application& pApp)
 {
-	// •`‰æ€”õ
-	BeginRender(pApp);
+	//--- •`‰ææİ’è
+	BeginRender(pApp);	// •`‰æ€”õ
+	if (ImGuiManager::Get().IsSceneRender())
+	{
+		ImGuiManager::Get().SceneRenderClear();
+		ImGuiManager::Get().SceneRender();
+	}
+	else
+	{
+		auto pDX = &CDXDevice::Get();
+		pDX->SwitchRender(nullptr, nullptr);
+	}
+	
+	CCamera::GetMain()->DrawSkyDome();
 
 	// ƒIƒuƒWƒFƒNƒg‚ª‘¶İ‚µ‚È‚¢‚Æ‚«
 	if (CCamera::GetMain() && CLight::Get())
@@ -216,6 +228,13 @@ void CGameApp::Draw(Application& pApp)
 
 		// effect
 		CEffekseer::Get().Draw();
+	}
+
+	//--- •`‰ææØ‘Ö
+	if (ImGuiManager::Get().IsSceneRender())
+	{
+		auto pDX = &CDXDevice::Get();
+		pDX->SwitchRender(nullptr, nullptr);
 	}
 
 #ifdef BUILD_MODE
@@ -236,17 +255,14 @@ void CGameApp::BeginRender(Application& pApp)
 	pDC->ClearDepthStencilView(pDX->GetDepthStencilView(),
 		D3D11_CLEAR_DEPTH | D3D11_CLEAR_STENCIL, 1.0f, 0);
 
-	ID3D11RenderTargetView* pViews[] = {
+	/*ID3D11RenderTargetView* pViews[] = {
 		pDX->GetRenderTargetView()
-	};
-	pDC->OMSetRenderTargets(1, pViews, nullptr);
-
-	//CCamera::GetMain()->DrawSkyDome();
+	};*/
+	//pDC->OMSetRenderTargets(1, pViews, nullptr);
 }
 // *@•`‰æŒã
 void CGameApp::EndRender(Application& pApp)
 {
-	// •`‰æŒãXV
 	auto pDX = &CDXDevice::Get();
 	pDX->SetCullMode((int)ECullMode::CULLMODE_NONE);
 	pDX->GetSwapChain()->Present(0, 0);

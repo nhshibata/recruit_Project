@@ -48,26 +48,27 @@ namespace MySpace
 			bool Load(std::string name);
 			bool Unload(std::string name);
 			void UnloadAll();
+			int SceneUnload();
 
 			// *@モデル取得
 			// *@なければ読み込み
 			ModelSharedPtr GetModel(std::string name) 
 			{ 
-				if (auto it = m_ResourceMap.find(name); it == m_ResourceMap.end()) {
+				if (auto it = m_aResourceMap.find(name); it == m_aResourceMap.end()) {
 					if (!Load(name)) 
 					{ 
 						return ModelSharedPtr(); 
 					} 
 				}
-				return m_ResourceMap[name];
+				return m_aResourceMap[name];
 			};
 
 			// *@モデルの使用数取得
-			int GetModelCnt(std::string name)
+			inline int GetModelCnt(std::string name)
 			{
-				if (m_ResourceMap.count(name))
+				if (m_aResourceMap.count(name))
 				{
-					return m_ResourceMap[name].use_count();
+					return m_aResourceMap[name].use_count();
 				}
 				return 0;
 			}

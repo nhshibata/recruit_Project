@@ -103,6 +103,11 @@ namespace MySpace
 			//static CFps* Get() { return m_pInstance; };
 
 #if BUILD_MODE
+		private:
+			int m_nDebugFPS = FPS;
+			DWORD m_dwDebugSlow;
+
+		public:
 			void ImGuiDebug();
 #endif // BUILD_MODE
 

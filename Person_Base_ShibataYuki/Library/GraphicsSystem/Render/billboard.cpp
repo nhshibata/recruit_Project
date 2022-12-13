@@ -101,34 +101,8 @@ void CBillboard::Update(Vector3 pos, Vector2 size)
 	//if (GetMaterial()->m_Diffuse.x > 1)
 	//	GetMaterial()->m_Diffuse.x = 0;
 }
-
-void CBillboard::Draw(ID3D11ShaderResourceView* pTex, CSpriteAnimation* pSprite)
-{
-	//CDXDevice::Get().SetZBuffer(false);
-	CDXDevice::Get().SetBlendState(static_cast<int>(EBlendState::BS_ALPHABLEND));
-	CLight::Get()->SetDisable();
-
-	// ﾃｸｽﾁｬマッピング更新
-	if (pTex && pSprite)
-	{
-		auto uvSize = pSprite->GetFrameSize();
-		auto uv = pSprite->GetUV();
-		XMFLOAT4X4 mtxTexture;
-		XMMATRIX mtxTex = XMMatrixScaling(
-			uvSize.x,
-			uvSize.y, 1.0f);
-		mtxTex = XMMatrixMultiply(mtxTex, XMMatrixTranslation(
-			uv.x,
-			uv.y, 0.0f));
-		XMStoreFloat4x4(&mtxTexture, mtxTex);
-		//XMStoreFloat4x4(&mtxTexture, XMMatrixIdentity());
-		CMesh::Draw(pTex, &mtxTexture);
-	}
-	else 
-	{
-		CMesh::Draw(pTex);
-	}
-	//CDXDevice::Get().SetZBuffer(true);			
-	CLight::Get()->SetEnable();// 光源有効
-	CDXDevice::Get().SetBlendState(static_cast<int>(EBlendState::BS_NONE));		// αブレンディング無効
-}
+//
+//void CBillboard::Draw(ID3D11ShaderResourceView* pTex, CSpriteAnimation* pSprite)
+//{
+//	
+//}

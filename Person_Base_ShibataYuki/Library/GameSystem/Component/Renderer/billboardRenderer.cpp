@@ -7,6 +7,8 @@
 #include <GameSystem/Component/Renderer/billboardRenderer.h>
 #include <GameSystem/Component/Transform/transform.h>
 #include <GameSystem/Manager/sceneManager.h>
+#include <GameSystem/Component/Light/directionalLight.h>
+
 #include <DebugSystem/imGuiPackage.h>
 #include <CoreSystem/File/filePath.h>
 
@@ -22,6 +24,7 @@ CBillboardRenderer::CBillboardRenderer(std::shared_ptr<CGameObject> owner)
 }
 CBillboardRenderer::~CBillboardRenderer()
 {
+	m_pBillboard->Fin();
 	m_pBillboard.reset();
 	m_pSprite.reset();
 }
@@ -55,8 +58,35 @@ bool CBillboardRenderer::Draw()
 {
 	if (!CMeshRenderer::Draw())
 		return false;
+
+	//CDXDevice::Get().SetZBuffer(false);
+	CDXDevice::Get().SetBlendState(static_cast<int>(EBlendState::BS_ALPHABLEND));
+	CLight::Get()->SetDisable();
 	
-	m_pBillboard->Draw(m_pSprite->GetTexture(), m_pSprite.get());
+	// ﾃｸｽﾁｬマッピング更新
+	if (m_pSprite->GetTexture() && m_pSprite)
+	{
+		auto uvSize = m_pSprite->GetFrameSize();
+		auto uv = m_pSprite->GetUV();
+		XMFLOAT4X4 mtxTexture;
+		XMMATRIX mtxTex = XMMatrixScaling(
+			uvSize.x,
+			uvSize.y, 1.0f);
+		mtxTex = XMMatrixMultiply(mtxTex, XMMatrixTranslation(
+			uv.x,
+			uv.y, 0.0f));
+		XMStoreFloat4x4(&mtxTexture, mtxTex);
+		//XMStoreFloat4x4(&mtxTexture, XMMatrixIdentity());
+		m_pBillboard->SetTextureMatrix(mtxTexture);
+		SetInstancing(m_pBillboard.get(), m_pSprite->GetImageName());
+	}
+	else
+	{
+		SetInstancing(m_pBillboard.get());
+	}
+	//CDXDevice::Get().SetZBuffer(true);			
+	CLight::Get()->SetEnable();// 光源有効
+	CDXDevice::Get().SetBlendState(static_cast<int>(EBlendState::BS_NONE));		// αブレンディング無効
 	
 	return true;
 }

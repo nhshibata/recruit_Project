@@ -83,6 +83,12 @@ namespace MySpace
 
 #ifdef BUILD_MODE
 
+		private:
+			//--- ImGui表示用(パス内の各拡張子を取得する)
+			static inline std::vector<std::string> m_aXModelList;
+			static inline std::vector<std::string> m_aObjModelList;
+			static inline std::vector<std::string> m_aFbxModelList;
+		public:
 			virtual void ImGuiDebug();
 
 #endif // BUILD_MODE

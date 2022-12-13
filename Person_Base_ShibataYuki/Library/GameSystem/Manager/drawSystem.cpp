@@ -18,6 +18,9 @@
 #include <GameSystem/Component/Renderer/meshRenderer.h>
 #include <GraphicsSystem/Manager/effectManager.h>
 #include <GraphicsSystem/Manager/modelManager.h>
+#include <GraphicsSystem/Render/billboard.h>
+#include <GraphicsSystem/Manager/imageResourceManager.h>
+
 
 using namespace MySpace::Game;
 
@@ -68,7 +71,7 @@ void CDrawSystem::Update()
 #endif // _DEBUG
 
 		// Meshｺﾝﾎﾟｰﾈﾝﾄ(および継承)か確認
-		if (auto mesh = render.lock()->BaseToDerived<CMeshRenderer>().get(); mesh)
+		if (auto mesh = render.lock()->BaseToDerived<CMeshRenderer>().get(); mesh && m_bFrustum)
 		{	
 			float fRadius = 0.0f;
 			auto mW = mesh->Transform()->GetWorldMatrix();
@@ -92,14 +95,71 @@ void CDrawSystem::Update()
 	}
 
 	//--- インスタンシング描画
-	for (auto & draw : m_aInstancingMap)
+	CLight* pLight = CLight::Get();
+	pLight->SetDisable(false);	// ライティング無効
+	for (auto & draw : m_aInstancingModelMap)
 	{
 		auto model = CModelManager::Get().GetModel(draw.first);
+		// 100以上の時
+		// インスタンシングには100しか領域を確保していないため、100以上の場合は一旦区切る
+		if (draw.second.size() >= 100)
+		{
+			std::vector<DirectX::XMFLOAT4X4> inData;
+			for (int idxCnt = 0; idxCnt < static_cast<int>(draw.second.size()); ++idxCnt)
+			{
+				int idx = idxCnt % 100;
+				if (idxCnt != 0 && idx == 100-1)
+				{
+					model->DrawInstancing(CDXDevice::Get().GetDeviceContext(), inData);
+					inData.clear();
+					continue;
+				}
+				inData[idx] = draw.second[idx];
+			}
+			// 次へ
+			draw.second.clear();
+			continue;
+		}
+
 		model->DrawInstancing(CDXDevice::Get().GetDeviceContext(), draw.second);
 		draw.second.clear();
+
+#if _DEBUG
+		++m_nInstancingCnt;
+#endif // _DEBUG
+
 	}
 	// クリア
-	m_aInstancingMap.clear();
+	m_aInstancingModelMap.clear();
+
+	//--- メッシュインスタンシング
+	int cnt = 0;
+	for (auto & mesh : m_aInstancingMesh)
+	{
+		if (mesh.second.size() == 0)// 一応確認
+			continue;
+#if _DEBUG
+		++m_nInstancingCnt;
+#endif // _DEBUG
+
+		// ビルボードか確認
+		CBillboard* bill = dynamic_cast<CBillboard*>(mesh.second[0]);
+		if (bill)
+		{
+			auto image = CImageResourceManager::Get().GetResource(mesh.first);
+			auto tex = image ? image->GetSRV() : NULL;
+			CMesh::DrawInstancing(mesh.second, tex, &bill->GetTextureMatrix());
+		}
+		else
+		{
+			CMesh::DrawInstancing(mesh.second);
+		}
+	}
+	m_aInstancingMesh.clear();	// クリア
+
+	pLight->SetEnable();		// ライティング有効
+	CDXDevice::Get().SetZBuffer(true);			
+	//CDXDevice::Get().SetBlendState(static_cast<int>(EBlendState::BS_NONE));		// αブレンディング無効
 
 
 #if 0
@@ -156,18 +216,26 @@ void CDrawSystem::Update()
 
 void CDrawSystem::ImGuiDebug()
 {
-	if (!ImGui::TreeNode("---Draw---"))
-		return;
+	/*if (!ImGui::TreeNode("---Draw---"))
+		return;*/
 	ImGui::Text(u8"---Draw---");
 	ImGui::Text(u8"描画リスト数 : %d", m_pDrawSortList.size());
 	ImGui::Text(u8"描画OK数 : %d", m_nDrawCnt);
 	ImGui::SameLine();
 	ImGui::Text(u8"描画スキップ数 : %d", m_nSkipCnt);
+	ImGui::SameLine();
+	ImGui::Checkbox("ON/OFF", (bool*)&m_bFrustum);
+	ImGui::Text(u8"インスタンシング数 : %d", m_nInstancingCnt);
 	ImGui::Checkbox(u8"描画ソートON", &m_bIsSortNecessary);
-	
-	ImGui::TreePop();
+
+	ImGui::Text("Resource/Model:%d", CModelManager::Get().GetNameList().size());
+	ImGui::Text("Resource/Image:%d", CImageResourceManager::Get().GetNameList().size());
+	ImGui::Text("Resource/Effekseer:%d", CEffekseer::Get().GetNameList().size());
+
+	//ImGui::TreePop();
 	//--- 次のフレーム用初期化
 	m_nDrawCnt = 0;
 	m_nSkipCnt = 0;
+	m_nInstancingCnt = 0;
 }
 #endif
