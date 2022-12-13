@@ -35,6 +35,11 @@ namespace MySpace
 		class CGameObject;
 		class CDebugCamera;
 	}
+	namespace Graphics
+	{
+		class CRenderTarget;
+		class CDepthStencil;
+	}
 }
 #pragma endregion
 
@@ -46,6 +51,8 @@ namespace MySpace
 		using MySpace::Game::CGameObject;
 		using MySpace::Game::CDebugCamera;
 		using MySpace::Debug::CMyGizmo;
+		using MySpace::Graphics::CRenderTarget;
+		using MySpace::Graphics::CDepthStencil;
 
 		// ImGui管理クラス
 		class ImGuiManager : public CSingleton<ImGuiManager>
@@ -85,27 +92,28 @@ namespace MySpace
 			std::shared_ptr<CGameObject> m_pDebugObj;	// デバッグ用ｶﾒﾗﾎﾟｲﾝﾀを保持するオブジェクト(ここで保持しないと破棄される)
 			
 			MapString m_debugMap;						// デバッグログ用map
-			EIsHovered m_eHover;						// マウス等選択中か列挙体(bit)
+			EIsHovered m_eHover = EIsHovered::HOVERED_NONE;	// マウス等選択中か列挙体(bit)
+			bool m_bSceneRender;						// シーンレンダーフラグ
 														
 			std::shared_ptr<CInspector> m_pInspector;	// インスペクター
 			std::shared_ptr<CHierachy> m_pHierarchy;	// ヒエラルキー
 			std::shared_ptr<CMyGizmo> m_pGizmo;			// ギズモ
+			std::shared_ptr<CRenderTarget> m_pRT;		// レンダーターゲット
+			std::shared_ptr<CDepthStencil> m_pDS;		// デプスステンシル
 
 		private:
 			//--- メンバ関数
 			ImGuiManager();
 			//~ImGuiManager() {};
-
 			void DispLog();
+			// *@ポーズ処理
+			void Pause();													
 
 		public:
 			void Init(HWND hWnd, ID3D11Device* device, ID3D11DeviceContext* context);
 			void Update();
 			void Render();
 			void Uninit();
-
-			// *@ポーズの処理
-			void Pause();													
 
 			// *@確認
 			bool CheckPlayMode();											
@@ -156,6 +164,13 @@ namespace MySpace
 				}
 				m_debugMap.insert(MapStringPair(log, 0));
 			};
+
+			ID3D11RenderTargetView* GetRTV();
+			ID3D11DepthStencilView* GetDSV();
+			void SceneRender();
+			void SceneRenderClear();
+			bool IsSceneRender() { return m_bSceneRender; }
+
 		};
 	}
 }

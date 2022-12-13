@@ -57,6 +57,9 @@ namespace MySpace
 			CMeshMaterial m_MeshMaterial;	// 
 			int m_nStaticMode;				// *@staticó‘Ô
 
+		protected:
+			void SetInstancing(CMesh* mesh, std::string name = std::string());
+
 		public:
 			//--- ƒƒ“ƒoŠÖ”
 			CMeshRenderer();

@@ -14,7 +14,8 @@ CSphereRenderer::CSphereRenderer(std::shared_ptr<CGameObject> ptr)
 }
 CSphereRenderer::~CSphereRenderer()
 {
-
+	m_pBSphere->Fin();
+	m_pBSphere.reset();
 }
 void CSphereRenderer::Awake()
 {	
@@ -44,7 +45,9 @@ bool CSphereRenderer::Draw()
 	if (!m_pBSphere)return false;
 
 	m_pBSphere->SetWorld(&mW);
-	m_pBSphere->Draw();
+	this->SetInstancing(m_pBSphere.get());
+
+	//m_pBSphere->Draw();
 	return true;
 }
 HRESULT CSphereRenderer::SetSphere(float radius)
@@ -56,7 +59,7 @@ HRESULT CSphereRenderer::SetSphere(float radius)
 	m_fRadius = radius;
 	
 	// TODO: •ªŠ„”
-	hr = m_pBSphere->Init(18, 8, m_fRadius);
+	hr = m_pBSphere->Init(16, 8, m_fRadius);
 	if (FAILED(hr))
 	{
 		m_pBSphere->Fin();

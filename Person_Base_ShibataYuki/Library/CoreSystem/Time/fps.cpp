@@ -158,36 +158,31 @@ void CFps::SetSlow(const int nSlowfps, const int nTime)
 
 void CFps::ImGuiDebug()
 {
-	static int fps = FPS;
-	static DWORD slow;
 	//--- 情報表示
-	if (!ImGui::TreeNode("FPS"))
-		return;
-
 	ImGui::Checkbox(u8"更新フレーム", &m_bUpdate);
 	
 	ImGui::Text(u8"現在のDeltaTime : %.5f", CFps::Get().DeltaTime());
 	ImGui::Text(u8"現在のUnScaleDeltaTime : %.5f", CFps::Get().UnScaleDeltaTime());
 	ImGui::Text(u8"現在のTimeScale : %.5f", CFps::Get().GetTimeScale());
-	ImGui::Text(u8"現在のCount : %d", CFps::Get().GetFPSCount() / 1000);
+	ImGui::Text(u8"現在のCount : %d", CFps::Get().GetFPSCount());
 
 	//--- 設定
 	if (ImGui::Button(u8"FPS Set"))
-		SetSlow(fps);
+		SetSlow(m_nDebugFPS);
 	ImGui::SameLine();
-	ImGui::DragInt(u8"FPS 分割数", &fps, 1, 1, 60);
+	ImGui::DragInt(u8"FPS 分割数", &m_nDebugFPS, 1, 1, 60);
 
 	if(ImGui::InputFloat(u8"TimeScale", &m_fTimeScale))
 		SetTimeScale(m_fTimeScale);
 
 	ImGui::DragInt(u8"HitStop", &m_nHitStopFrame);
 	
-	ImGui::DragInt(u8"スロー時間", (int*)&slow);
+	ImGui::DragInt(u8"スロー時間", (int*)&m_dwDebugSlow);
 	
 	ImGui::SameLine();
 	if (ImGui::Button(u8"SlowOK?"))
 	{
-		m_dwSlowTime = slow;
+		m_dwSlowTime = m_dwDebugSlow;
 	}
 	if (ImGui::Button(u8"Slow ON/OFF"))
 	{
@@ -197,7 +192,6 @@ void CFps::ImGuiDebug()
 	ImGui::Checkbox(u8"Fixed Update", &m_FixedData.m_bUpdate);
 	ImGui::SameLine();
 	ImGui::Text(u8"Fixed Time : %d", m_FixedData.m_dwFixedTime);
-	ImGui::TreePop();
 }
 
 #endif // BUILD_MODE

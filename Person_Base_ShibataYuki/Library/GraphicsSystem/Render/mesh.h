@@ -15,6 +15,7 @@
 #include <CoreSystem/Util/define.h>
 #include <CoreSystem/Math/MyMath.h>
 
+
 namespace MySpace
 {
 	namespace Graphics
@@ -59,6 +60,13 @@ namespace MySpace
 				m_Emissive = emi;
 				m_Power = pow;
 			}
+			float GetFloat()
+			{
+				return m_Diffuse.x + m_Diffuse.y + m_Diffuse.z + m_Diffuse.w +
+					m_Ambient.x + m_Ambient.y + m_Ambient.z + m_Ambient.w +
+					m_Specular.x + m_Specular.y + m_Specular.z + m_Specular.w +
+					m_Emissive.x + m_Emissive.y + m_Emissive.z + m_Emissive.w;
+			}
 		};
 
 		class CMesh
@@ -100,23 +108,38 @@ namespace MySpace
 			static ID3D11VertexShader* m_pVertexShader;	// 頂点シェーダ
 			static ID3D11InputLayout* m_pInputLayout;	// 頂点フォーマット
 			static ID3D11PixelShader* m_pPixelShader;	// ピクセルシェーダ
+			static inline ID3D11VertexShader* m_pInstancingVertexShader;	// 頂点シェーダ
+			static inline ID3D11Buffer* m_pConstantBufferI;
 
 		public:
+			//--- メンバ関数
 			CMesh();
 			virtual ~CMesh();
 
+			//--- 静的メンバ関数
 			static HRESULT InitShader();
 			static void FinShader();
 
 			HRESULT Init(const VERTEX_3D vertexWk[], int nVertex, int indexWk[], int nIndex);
 			virtual void Fin();
+			// *@描画
 			virtual void Draw(ID3D11ShaderResourceView* m_pTexture = nullptr, XMFLOAT4X4* mWorld = nullptr);
+			// *@インスタンシング描画
+			static void DrawInstancing(std::vector<CMesh*> aMesh, ID3D11ShaderResourceView* m_pTexture = nullptr, 
+									   XMFLOAT4X4* mWorld = nullptr);
+			// *@インスタンシング描画
+			// *@CMeshを一つだけ用
+			void DrawInstancing(std::vector<XMFLOAT4X4> aWorld);
 
-			void SetWorld(XMFLOAT4X4* pWorld) { m_mWorld = *pWorld; }
+			//--- ゲッター・セッター
+			inline CMeshMaterial* GetMaterial() { return &m_material; }
+			inline int GetIndexNum()const { return m_nNumIndex; }
+			//inline XMFLOAT4X4 GetWorld() { return m_mWorld; }
+
+			inline void SetWorld(XMFLOAT4X4* pWorld) { m_mWorld = *pWorld; }
 			void SetMaterial(const CMeshMaterial* pMaterial);
-			void SetDiffuse(MySpace::MyMath::Vector4 vDiffuse) { m_material.m_Diffuse = vDiffuse; }
+			inline void SetDiffuse(MySpace::MyMath::Vector4 vDiffuse) { m_material.m_Diffuse = vDiffuse; }
 
-			CMeshMaterial* GetMaterial() { return &m_material; }
 		};
 	}
 }

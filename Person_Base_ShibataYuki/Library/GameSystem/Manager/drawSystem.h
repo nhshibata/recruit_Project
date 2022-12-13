@@ -22,6 +22,10 @@ namespace MySpace
 	{
 		class CRenderer;
 	}
+	namespace Graphics
+	{
+		class CMesh;
+	}
 }
 
 namespace MySpace
@@ -29,6 +33,7 @@ namespace MySpace
 	namespace Game
 	{
 		using MySpace::Game::CRenderer;
+		using MySpace::Graphics::CMesh;
 
 		//--- クラス定義
 		class CDrawSystem : public CMapSystemBase<std::weak_ptr<CRenderer>>
@@ -37,17 +42,21 @@ namespace MySpace
 			// エイリアス
 			using RenderWeak = std::vector<std::weak_ptr<CRenderer>>;
 			using InstancingMap = std::map<std::string, std::vector<DirectX::XMFLOAT4X4>>;
+			using InstancingMeshMap = std::map<std::string, std::vector<CMesh*>>;
 
 		private:
 			//--- メンバ変数
 			bool m_bIsSortNecessary = false;
 			RenderWeak m_pDrawSortList;			// 管理しているmapをソートした結果を入れる変数
-			InstancingMap m_aInstancingMap;
+			InstancingMap m_aInstancingModelMap;
+			InstancingMeshMap m_aInstancingMesh;
 
 #if BUILD_MODE
 			// 確認用変数
 			int m_nSkipCnt;
 			int m_nDrawCnt;
+			int m_nInstancingCnt;
+			bool m_bFrustum = true;
 #endif // _DEBUG
 
 		private:
@@ -83,9 +92,15 @@ namespace MySpace
 			}
 
 			// *@インスタンシング描画のために情報を格納する
-			void SetInstanching(std::string name, DirectX::XMFLOAT4X4 mtx)
+			inline void SetInstanchingModel(std::string name, DirectX::XMFLOAT4X4 mtx)
 			{
-				m_aInstancingMap[name].push_back(mtx);
+				m_aInstancingModelMap[name].push_back(mtx);
+			}
+			
+			// *@インスタンシング描画のために情報を格納する
+			inline void SetInstanchingMesh(std::string name, CMesh* mesh)
+			{
+				m_aInstancingMesh[name].push_back(mesh);
 			}
 
 			// *@

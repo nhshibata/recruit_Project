@@ -2,12 +2,13 @@
 // [imageResource.h] 
 // 作成:2022/06/19
 //---------------------------------------------------------
+// ﾃｸｽﾁｬ保持ｸﾗｽ
+// 
 //=========================================================
 
 //--- インクルードガード
 #ifndef __IMAGE_RESOURCE_H__
 #define __IMAGE_RESOURCE_H__
-
 
 //--- インクルード部
 #include <GraphicsSystem/DirectX/DXDevice.h>
@@ -34,15 +35,20 @@ namespace MySpace
 		class CImageResource
 		{
 		private:
-			ID3D11ShaderResourceView* srv;
-			ID3D11Resource* res;
+		protected:
+			//--- メンバ変数
+			ID3D11ShaderResourceView* m_pSRV;
+			ID3D11Texture2D* m_pTex;
+			//ID3D11Resource* res;
+
 		public:
+			//--- メンバ関数
 			CImageResource();
 			~CImageResource();
 
 			// ゲッター・セッター
-			inline ID3D11ShaderResourceView* GetSRV() const { return srv; }
-			inline ID3D11Resource* GetRES() const { return res; }
+			inline ID3D11ShaderResourceView* GetSRV() const { return m_pSRV; }
+			//inline ID3D11Resource* GetRES() const { return res; }
 
 			bool Load(std::string _fileName);
 			void Unload();

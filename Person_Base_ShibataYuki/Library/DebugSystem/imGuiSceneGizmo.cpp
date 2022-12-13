@@ -140,5 +140,4 @@ void CMyGizmo::EditTransform(const CCamera& camera, CTransform* editTransform)
 		ImGuizmo::ViewManipulate((float*)&viewMatrix, 8, ImVec2(io.DisplaySize.x, io.DisplaySize.y), ImVec2(128, 128), 0x10101010);
 	}
 
-
 }

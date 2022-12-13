@@ -145,12 +145,12 @@ void CEffekseer::Init(ID3D11Device* device, ID3D11DeviceContext* context)
 }
 void CEffekseer::Uninit()
 {
-	auto it = m_ResourceMap.begin();
-	for (; it != m_ResourceMap.end(); ++it)
+	auto it = m_aResourceMap.begin();
+	for (; it != m_aResourceMap.end(); ++it)
 	{
 		(*it).second.Reset();
 	}
-	m_ResourceMap.clear();
+	m_aResourceMap.clear();
 	
 	// ShutDown the manager
 	// マネージャーの破棄
@@ -279,12 +279,12 @@ void CEffekseer::SetMatrix(Effekseer::Matrix43* mtx, XMFLOAT4X4 XMmtx)
 // kari
 bool CEffekseer::Load(std::u16string fileName)
 {
-	if (m_ResourceMap.find(fileName.c_str()) != m_ResourceMap.end())
+	if (m_aResourceMap.find(fileName.c_str()) != m_aResourceMap.end())
 	{
 		return false;
 	}
 	
-	m_ResourceMap.insert(EffectMapPair(fileName.c_str(), Effekseer::Effect::Create(m_manager, fileName.c_str())
+	m_aResourceMap.insert(EffectMapPair(fileName.c_str(), Effekseer::Effect::Create(m_manager, fileName.c_str())
 	));
 	return true;
 }
@@ -317,14 +317,14 @@ bool CEffekseer::Load(std::vector<std::string> EffectName, std::vector<std::u16s
 int CEffekseer::Play(std::u16string effectName, XMFLOAT3 pos)
 {
 	// 設定されたエフェクトじゃなければ処理を返す
-	if (m_ResourceMap.find(effectName) == m_ResourceMap.end())	// findの返値が終端なら処理を返す
+	if (m_aResourceMap.find(effectName) == m_aResourceMap.end())	// findの返値が終端なら処理を返す
 	{
 		return -1;
 	}
 	// 再生
-	Effekseer::Handle handle = m_manager->Play(m_ResourceMap[effectName], pos.x, pos.y, pos.z);
-	m_effectParam.push_back(CEffekseerParam(&m_ResourceMap[effectName], handle,
-		m_ResourceMap[effectName]->CalculateTerm().TermMax));
+	Effekseer::Handle handle = m_manager->Play(m_aResourceMap[effectName], pos.x, pos.y, pos.z);
+	m_effectParam.push_back(CEffekseerParam(&m_aResourceMap[effectName], handle,
+		m_aResourceMap[effectName]->CalculateTerm().TermMax));
 
 	return handle;
 }
@@ -332,14 +332,14 @@ int CEffekseer::Play(std::u16string effectName, XMFLOAT3 pos)
 int CEffekseer::Play(std::u16string effectName, XMFLOAT3 pos, XMFLOAT3 size, XMFLOAT4 rot)
 {
 	// 設定されたエフェクトじゃなければ処理を返す
-	if (m_ResourceMap.find(effectName) == m_ResourceMap.end())	// findの返値が終端なら処理を返す
+	if (m_aResourceMap.find(effectName) == m_aResourceMap.end())	// findの返値が終端なら処理を返す
 	{
 		return -1;
 	}
 	// 再生
-	Effekseer::Handle handle = m_manager->Play(m_ResourceMap[effectName], pos.x, pos.y, pos.z);
+	Effekseer::Handle handle = m_manager->Play(m_aResourceMap[effectName], pos.x, pos.y, pos.z);
 	// パラメータ生成。エフェクトのポインタと再生したエフェクトのハンドルを渡す
-	m_effectParam.push_back(CEffekseerParam(&m_ResourceMap[effectName], handle, m_ResourceMap[effectName]->CalculateTerm().TermMax));
+	m_effectParam.push_back(CEffekseerParam(&m_aResourceMap[effectName], handle, m_aResourceMap[effectName]->CalculateTerm().TermMax));
 	m_effectParam.back().SetPos(pos);
 	m_effectParam.back().SetScale(size);
 	m_effectParam.back().SetRot(rot);

@@ -19,7 +19,9 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="..\Library\GraphicsSystem\DirectX\depthStencil.h" />
     <ClInclude Include="..\Library\GraphicsSystem\DirectX\DXDevice.h" />
+    <ClInclude Include="..\Library\GraphicsSystem\DirectX\renderTarget.h" />
     <ClInclude Include="..\Library\GraphicsSystem\Manager\effectManager.h" />
     <ClInclude Include="..\Library\GraphicsSystem\Manager\FontTexture.h" />
     <ClInclude Include="..\Library\GraphicsSystem\Manager\imageResourceManager.h" />
@@ -47,7 +49,9 @@
     <ClInclude Include="..\Library\GraphicsSystem\Shader\vertexShader.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="..\Library\GraphicsSystem\DirectX\depthStencil.cpp" />
     <ClCompile Include="..\Library\GraphicsSystem\DirectX\DXDevice.cpp" />
+    <ClCompile Include="..\Library\GraphicsSystem\DirectX\renderTarget.cpp" />
     <ClCompile Include="..\Library\GraphicsSystem\Manager\effectManager.cpp" />
     <ClCompile Include="..\Library\GraphicsSystem\Manager\FontTexture.cpp" />
     <ClCompile Include="..\Library\GraphicsSystem\Manager\imageResourceManager.cpp" />
@@ -144,6 +148,14 @@
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Hull</ShaderType>
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Hull</ShaderType>
       <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">5.0</ShaderModel>
+      <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Release|x64'">5.0</ShaderModel>
+      <ObjectFileOutput Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">$(SolutionDir)Data\shader\%(Filename).cso</ObjectFileOutput>
+      <ObjectFileOutput Condition="'$(Configuration)|$(Platform)'=='Release|x64'">$(SolutionDir)Data\shader\%(Filename).cso</ObjectFileOutput>
+    </FxCompile>
+    <FxCompile Include="..\Library\hlsl\InstancingVertex.hlsl">
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Vertex</ShaderType>
+      <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">5.0</ShaderModel>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Vertex</ShaderType>
       <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Release|x64'">5.0</ShaderModel>
       <ObjectFileOutput Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">$(SolutionDir)Data\shader\%(Filename).cso</ObjectFileOutput>
       <ObjectFileOutput Condition="'$(Configuration)|$(Platform)'=='Release|x64'">$(SolutionDir)Data\shader\%(Filename).cso</ObjectFileOutput>

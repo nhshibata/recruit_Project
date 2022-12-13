@@ -16,7 +16,8 @@ CBoxRenderer::CBoxRenderer(std::shared_ptr<CGameObject> ptr)
 }
 CBoxRenderer::~CBoxRenderer()
 {
-
+	m_pBBox->Fin();
+	m_pBBox.reset();
 }
 void CBoxRenderer::Awake()
 {
@@ -46,7 +47,6 @@ bool CBoxRenderer::Draw()
 	//if (!m_pBBox)return false;
 
 	//m_pBBox->SetWorld(&mW);
-	//m_pBBox->Draw();
 #pragma endregion
 
 #pragma region OBB
@@ -61,8 +61,10 @@ bool CBoxRenderer::Draw()
 	XMFLOAT4X4 mW;
 	XMStoreFloat4x4(&mW, mWorld);
 	m_pBBox->SetWorld(&mW);
-	m_pBBox->Draw();
 #pragma endregion
+
+	this->SetInstancing(m_pBBox.get());
+	//m_pBBox->Draw();
 
 	return true;
 }

@@ -9,6 +9,7 @@
 #include <GameSystem/Component/Transform/transform.h>
 #include <GameSystem/GameObject/gameObject.h>
 #include <GameSystem/Manager/sceneManager.h>
+#include <GameSystem/Manager/drawSystem.h>
 #include <ImGui/imgui.h>
 
 using namespace MySpace::Game;
@@ -52,6 +53,22 @@ bool CMeshRenderer::Draw()
 Vector3 CMeshRenderer::GetCenter(int n) 
 {
 	return m_vCenter + Transform()->GetPos(); 
+}
+void CMeshRenderer::SetInstancing(CMesh* mesh, std::string name)
+{
+	auto sys = SceneManager::CSceneManager::Get().GetDrawSystem();
+	//--- インスタンシング依頼
+	if (!name.empty())
+	{
+		sys->SetInstanchingMesh(name, mesh);
+	}
+	else
+	{
+		sys->SetInstanchingMesh(
+			std::string(std::to_string(mesh->GetIndexNum()) + std::to_string(mesh->GetMaterial()->GetFloat())),
+			mesh
+		);
+	}
 }
 
 #if BUILD_MODE

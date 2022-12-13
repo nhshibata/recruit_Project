@@ -1,3 +1,8 @@
+//==========================================================
+
+
+
+//--- インクルード部
 #include <DebugSystem/imguiManager.h>
 #include <DebugSystem/hierarchy.h>
 #include <DebugSystem/inspector.h>
@@ -16,6 +21,8 @@
 #include <GameSystem/Manager/gameObjectManager.h>
 #include <GameSystem/Manager/drawSystem.h>
 #include <GraphicsSystem/Manager/imageResourceManager.h>
+#include <GraphicsSystem/DirectX/renderTarget.h>
+#include <GraphicsSystem/DirectX/depthStencil.h>
 
 #include <GameSystem/Component/Camera/camera.h>
 #include <GameSystem/Component/Camera/debugCamera.h>
@@ -35,6 +42,7 @@ ImGuiManager::ImGuiManager()
 	m_bPause = false;
 	m_bOneFlame = false;
 	m_bEditFlg = false;
+	m_bSceneRender = false;
 }
 // オーナーのデバッグフラグ確認
 bool ImGuiManager::CheckPlayMode()
@@ -65,6 +73,8 @@ void ImGuiManager::Init(HWND hWnd, ID3D11Device* device, ID3D11DeviceContext* co
 	m_pHierarchy = std::make_shared<CHierachy>();
 	m_pGizmo = std::make_shared<CMyGizmo>();
 	m_pGizmo->Init();
+	m_pDS = std::make_shared<CDepthStencil>();
+	m_pRT = std::make_shared<CRenderTarget>();
 	
 	// デバッグカメラの生成
 	{
@@ -84,6 +94,8 @@ void ImGuiManager::Uninit()
 	m_pHierarchy->Uninit();
 	m_pInspector.reset();
 	m_pHierarchy.reset();
+	m_pDS.reset();
+	m_pRT.reset();
 
 	ImGui_ImplDX11_Shutdown();
 	ImGui_ImplWin32_Shutdown();
@@ -92,6 +104,10 @@ void ImGuiManager::Uninit()
 // ImGuiの更新処理
 void ImGuiManager::Update() 
 {
+	if (CInput::GetKeyTrigger(VK_P))
+	{
+		m_bSceneRender ^= true;
+	}
 	// ON/OFF
 	if (CInput::GetKeyTrigger(VK_I))
 	{
@@ -119,33 +135,76 @@ void ImGuiManager::Update()
 	// 現在シーン取得
 	SceneManager::CScene* scene = CSceneManager::Get().GetActiveScene();
 	
-	// 左上表示
+	//--- SceneView表示
+	if (m_bSceneRender)
+	{
+		ImGui::SetNextWindowPos(ImVec2(CScreen::GetWidth()*0.15f, 0), ImGuiCond_::ImGuiCond_Always);
+		ImGui::SetNextWindowSize(ImVec2(CScreen::GetWidth()*0.65f, CScreen::GetHeight()*0.65f), ImGuiCond_::ImGuiCond_Always);
+		ImGui::Begin("SceneView");
+		ImGui::Image(m_pRT->GetSRV(), ImVec2(CScreen::GetWidth()*0.65f, CScreen::GetHeight()*0.65f));
+		ImGui::End();
+	}
+
+	// 左表示
 	ImGui::PushStyleColor(ImGuiCol_TitleBgActive, ImVec4(0.0f, 0.7f, 0.2f, 1.0f));
-	ImGui::SetNextWindowPos(ImVec2(20, 300), ImGuiCond_Once);
+	ImGui::SetNextWindowPos(ImVec2(0, 300), ImGuiCond_Once);
 	ImGui::SetNextWindowSize(ImVec2(300, 300), ImGuiCond_Once);
 	ImGui::Begin(u8"ステータス", &m_bEditFlg, ImGuiWindowFlags_::ImGuiWindowFlags_MenuBar);
-
-	if (auto selectObj = m_pInspector->GetSelectObject().lock(); selectObj)
-		m_pGizmo->EditTransform(*CCamera::GetMain(), selectObj->GetTransform());
-
-	// SceneManager表示
-	CSceneManager::Get().ImguiDebug();
-	// 変更されている可能性があるため再取得
-	scene = CSceneManager::Get().GetActiveScene();
-
-	// シーン名表示
-	ImGui::Text(u8"現在のシーン名 : %s", scene->GetSceneName().c_str());
-	ImGui::Text(u8"オブジェクト数 : %d", CSceneManager::Get().GetActiveScene()->GetObjManager()->GetList().size());
-
-	// フレームレート表示
-	ImGui::Text(u8"現在のFPS : %.1f FPS", ImGui::GetIO().Framerate);
-	CFps::Get().ImGuiDebug();	
+	ImGui::BeginTabBar("##tabs", ImGuiTabBarFlags_None);
 	
-	// 描画の確認
-	CSceneManager::Get().GetDrawSystem()->ImGuiDebug();
+	//--- 基本
+	if (ImGui::BeginTabItem("Base"))
+	{
+		ImGui::Checkbox("RenderSwitch", &m_bSceneRender);
 
-	// NavMesh
-	CSceneManager::Get().GetNavMesh()->ImGuiDebug();
+		// シーン名表示
+		ImGui::Text(u8"現在のシーン名 : %s", scene->GetSceneName().c_str());
+		ImGui::Text(u8"オブジェクト数 : %d", CSceneManager::Get().GetActiveScene()->GetObjManager()->GetList().size());
+
+		// フレームレート表示
+		ImGui::Text(u8"現在のFPS : %.1f FPS", ImGui::GetIO().Framerate);
+		ImGui::EndTabItem();	// とじる
+	}
+
+	//--- SceneManager表示
+	if (ImGui::BeginTabItem("SceneManager"))
+	{
+		CSceneManager::Get().ImGuiDebug();
+		// 変更されている可能性があるため再取得
+		scene = CSceneManager::Get().GetActiveScene();
+		ImGui::EndTabItem();	// とじる
+	}
+	
+	//--- FPS情報
+	if (ImGui::BeginTabItem("FPS"))
+	{
+		CFps::Get().ImGuiDebug();
+		ImGui::EndTabItem();	// とじる
+	}
+	
+	//--- 描画の確認
+	if (ImGui::BeginTabItem("DrawSystem"))
+	{
+		CSceneManager::Get().GetDrawSystem()->ImGuiDebug();
+		ImGui::EndTabItem();	// とじる
+	}
+	
+	//--- NavMesh
+	if (ImGui::BeginTabItem("NavMesh"))
+	{
+		CSceneManager::Get().GetNavMesh()->ImGuiDebug();		
+		ImGui::EndTabItem();	// とじる
+	}
+
+	//--- ギズモ表示
+	if (auto selectObj = m_pInspector->GetSelectObject().lock(); selectObj)
+	{
+		if (ImGui::BeginTabItem("Gizmo"))
+		{
+			m_pGizmo->EditTransform(*CCamera::GetMain(), selectObj->GetTransform());
+			ImGui::EndTabItem();// とじる
+		}
+	}
 
 	//--- マウス状態確認
 	if(ImGui::IsDragDropPayloadBeingAccepted())
@@ -174,18 +233,20 @@ void ImGuiManager::Update()
 	}
 	ImGui::Text("Hover->%d", res);
 
-	// スカイドーム描画
-	if (m_pDebugCamera.lock())
-		m_pDebugCamera.lock()->LateUpdate();
-	//m_pDebugCamera.lock()->DrawSkyDome();
-
-	// ログ表示
+	//--- ログ表示
 	DispLog();
 	
 	// 関数ポインタ表示
 
+	//--- タブを閉じる
+	ImGui::EndTabBar();
+
 	ImGui::End();
 	ImGui::PopStyleColor();
+
+	//--- デバッグカメラマトリックス更新
+	if (m_pDebugCamera.lock())
+		m_pDebugCamera.lock()->LateUpdate();
 
 	return;
 }
@@ -198,7 +259,15 @@ void ImGuiManager::Render()
 
 	ImGui::Render();
 	ImGui_ImplDX11_RenderDrawData(ImGui::GetDrawData());
+
+	ImGuiIO& io = ImGui::GetIO();
+	if (io.ConfigFlags & ImGuiConfigFlags_::ImGuiConfigFlags_ViewportsEnable)
+	{
+		ImGui::UpdatePlatformWindows();
+		ImGui::RenderPlatformWindowsDefault();
+	}
 }
+
 // ポーズの処理
 void ImGuiManager::Pause()
 {
@@ -246,6 +315,7 @@ void ImGuiManager::Pause()
 
 	ImGui::End();
 }
+
 void ImGuiManager::DispLog()
 {
 	/*DebugLog("aaa");
@@ -267,6 +337,29 @@ void ImGuiManager::DispLog()
 		ImGui::Text(u8"%s", cstr);
 	}
 	//ImGui::End();
+}
+
+ID3D11RenderTargetView* ImGuiManager::GetRTV()
+{
+	return m_pRT->GetView();
+}
+ID3D11DepthStencilView* ImGuiManager::GetDSV()
+{
+	return m_pDS->GetView();
+}
+void ImGuiManager::SceneRender()
+{
+	auto pDX = &CDXDevice::Get();
+	//--- 描画先の変更
+	pDX->SwitchRender(m_pRT->GetView(), m_pDS->GetView());
+}
+void ImGuiManager::SceneRenderClear()
+{
+	float ClearColor[4] = { 0.117647f, 0.254902f, 0.352941f, 1.0f };
+
+	//--- 情報をリセット
+	m_pRT->Clear(ClearColor);
+	m_pDS->Clear();
 }
 
 #endif

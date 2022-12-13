@@ -59,16 +59,16 @@ namespace MySpace
 				template <typename Archive>
 				void save(Archive & archive, std::uint32_t const version) const
 				{
-					archive(CEREAL_NVP(m_SceneName), CEREAL_NVP(m_GameObjectManager), CEREAL_NVP(m_resource));
+					archive(CEREAL_NVP(m_SceneName), CEREAL_NVP(m_aGameObjectManager), CEREAL_NVP(m_resource));
 				}
 				template <typename Archive>
 				void load(Archive & archive, std::uint32_t const version)
 				{
-					archive(CEREAL_NVP(m_SceneName), CEREAL_NVP(m_GameObjectManager), CEREAL_NVP(m_resource));
+					archive(CEREAL_NVP(m_SceneName), CEREAL_NVP(m_aGameObjectManager), CEREAL_NVP(m_resource));
 				}
 			public:
 				std::string m_SceneName;
-				std::list<std::shared_ptr<CGameObject> > m_GameObjectManager;
+				std::list<std::shared_ptr<CGameObject> > m_aGameObjectManager;
 				CInstantResourceManager m_resource;
 			};
 #pragma endregion
@@ -79,9 +79,10 @@ namespace MySpace
 		private:
 			//--- メンバ変数	
 			std::weak_ptr<CScene> m_pCurrentScene;
-			SceneList m_pScenes;
+			SceneList m_aScenes;
 			std::string m_currentPath;
 			std::shared_ptr<CSceneTransitionDetection> m_sceneDetection;
+
 			std::shared_ptr<CCollisionSystem> m_pCollisionSystem;
 			std::shared_ptr<CDrawSystem> m_pDrawSystem;
 			std::shared_ptr<CNavMeshBake> m_pNavMesh;
@@ -126,7 +127,7 @@ namespace MySpace
 			// *@文字列が一致するシーン取得
 			std::shared_ptr<CScene> GetSceneByName(std::string name) 
 			{
-				for (auto & scene : m_pScenes)
+				for (auto & scene : m_aScenes)
 				{
 					if (scene->GetSceneName() == name) 
 						return scene;
@@ -134,7 +135,7 @@ namespace MySpace
 				return std::shared_ptr<CScene>();
 			}
 			// *@全シーンの取得
-			std::vector<std::shared_ptr<CScene>> GetAllScene() { return m_pScenes; }
+			std::vector<std::shared_ptr<CScene>> GetAllScene() { return m_aScenes; }
 			
 			//--- シーン読み込み関連
 			// *@通常のシーン切替
@@ -180,14 +181,14 @@ namespace MySpace
 			// *@格納できればfalse,既に存在すればtrue
 			bool AddSceneList(std::shared_ptr<CScene> add)
 			{
-				for (auto & scene : m_pScenes)
+				for (auto & scene : m_aScenes)
 				{
 					if (scene == add)
 					{
 						return false;
 					}
 				}
-				m_pScenes.push_back(add);
+				m_aScenes.push_back(add);
 				return true;
 			}
 
@@ -235,8 +236,10 @@ namespace MySpace
 			inline std::shared_ptr<CNavMeshBake> GetNavMesh() { return m_pNavMesh; };
 
 #ifdef BUILD_MODE
-
-			void ImguiDebug();
+		private:
+			char m_cDebugSceneName[256] = "none";
+		public:
+			void ImGuiDebug();
 
 #endif // BUILED_MODE
 		};

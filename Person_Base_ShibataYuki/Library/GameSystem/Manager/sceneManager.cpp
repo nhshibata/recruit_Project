@@ -39,7 +39,7 @@ void CSceneManager::Init()
 }
 void CSceneManager::Uninit()
 {
-	for (auto & scene : m_pScenes)
+	for (auto & scene : m_aScenes)
 	{
 		scene->GetObjManager()->AllUninit();
 		scene->Uninit();
@@ -48,12 +48,12 @@ void CSceneManager::Uninit()
 	m_sceneDetection.reset();
 	m_pCollisionSystem.reset();
 	m_pDrawSystem.reset();
-	m_pScenes.clear();
+	m_aScenes.clear();
 }
 void CSceneManager::Update()
 {
 	//for (SceneList::iterator scene = m_pScenes.begin(); scene != m_pScenes.end(); ++scene)
-	for (auto & scene : m_pScenes)
+	for (auto & scene : m_aScenes)
 	{
 		scene->Update();
 	}
@@ -63,14 +63,14 @@ void CSceneManager::Update()
 }
 void CSceneManager::FixedUpdate()
 {
-	for (auto & scene : m_pScenes)
+	for (auto & scene : m_aScenes)
 	{
 		scene->FixedUpdate();
 	}
 }
 void CSceneManager::Draw()
 {
-	for (auto & scene : m_pScenes)
+	for (auto & scene : m_aScenes)
 	{
 		scene->Draw();
 	}
@@ -123,23 +123,29 @@ std::shared_ptr<CScene> CSceneManager::NewScene(std::string name)
 // シーン破棄
 void CSceneManager::RemoveScene(std::shared_ptr<CScene> pRemove, std::shared_ptr<CScene> pNext)
 {
-	// メインの切替
+	//--- メインの切替
 	if (pNext)
 	{
 		m_pCurrentScene = pNext;
 		m_sceneDetection->Call(pRemove.get(), pNext.get());	// 関数ポインタ呼び出し
 		AddSceneList(pNext);
 	}
-	// 配列からの除外
-	if (auto it = std::find(m_pScenes.begin(), m_pScenes.end(), pRemove); it != m_pScenes.end())
+	//--- 配列からの除外
+	if (auto it = std::find(m_aScenes.begin(), m_aScenes.end(), pRemove); it != m_aScenes.end())
 	{
-		m_sceneDetection->Call(pRemove.get());	// 破棄
+		m_sceneDetection->Call(pRemove.get());	// 破棄呼び出し
+		pRemove->Uninit();						// 解放
+		{
+			CInstantResourceManager instant;
+			instant.SceneUnload();
+		}
 		pRemove.reset();
-		m_pScenes.erase(it);
+		m_aScenes.erase(it);
 	}
+	//--- アクティブシーンがなければ設定
 	if (!m_pCurrentScene.lock() && !pNext)
 	{
-		m_pCurrentScene = m_pScenes.front();
+		m_pCurrentScene = m_aScenes.front();
 	}
 }
 void CSceneManager::SaveScene(const std::string filename)
@@ -176,7 +182,7 @@ void CSceneManager::SaveScene(const std::string filename)
 		for (auto & obj : objs)
 		{
 			if (obj->GetTransform()->GetParent().lock())continue;	// 親が居れば
-			saveData->m_GameObjectManager.emplace_back(obj);
+			saveData->m_aGameObjectManager.emplace_back(obj);
 		}
 		// シリアライズ
 		sirial.OutputFile(filename, filePathName, saveData);
@@ -211,12 +217,12 @@ bool CSceneManager::LoadScene(std::string path)
 	}
 
 	// 読み込みと代入
-	sceneData->m_resource.Load();													// ロードしたResourceを読み込み
+	sceneData->m_resource.Load();											// ロードしたResourceを読み込み
 	newScene->SetSceneName(sceneData->m_SceneName);							// 名前設定
-	newScene->GetObjManager()->SetObjList(sceneData->m_GameObjectManager);	// オブジェクト設定
+	newScene->GetObjManager()->SetObjList(sceneData->m_aGameObjectManager);	// オブジェクト設定
 
 	// ロード時処理
-	for (auto & obj : sceneData->m_GameObjectManager)
+	for (auto & obj : sceneData->m_aGameObjectManager)
 	{
 		obj->OnLoad();
 	}
@@ -226,15 +232,17 @@ bool CSceneManager::LoadScene(std::string path)
 
 #ifdef BUILD_MODE
 
-void CSceneManager::ImguiDebug()
+void CSceneManager::ImGuiDebug()
 {
-	static char sceneName[256] = "none";
+	//--- 情報表示
+	if (!ImGui::TreeNode("--- Scene ---"))
+		return;
 
 	if (ImGui::BeginMenuBar()) 
 	{
 		if (ImGui::BeginMenu(u8"Scene"))
 		{
-			for (SceneList::iterator it = m_pScenes.begin(); it != m_pScenes.end(); ++it)
+			for (SceneList::iterator it = m_aScenes.begin(); it != m_aScenes.end(); ++it)
 			{
 				if (ImGui::MenuItem((*it)->GetSceneName().c_str()))
 				{
@@ -251,16 +259,18 @@ void CSceneManager::ImguiDebug()
 		newScene->CreateEmptyScene();
 	}
 
-	ImGui::InputText("u8シーン遷移名", sceneName, 256);
+	ImGui::InputText(u8"シーン遷移名", m_cDebugSceneName, 256);
 	ImGui::SameLine();
 	if (ImGui::Button("change scene"))
 	{
-		auto i = SceneTransition(sceneName).lock().get();
+		auto i = SceneTransition(m_cDebugSceneName).lock().get();
 	}
 	//if (ImGui::Button("add scene"))
 	//{
 	//	CScene* newScene = AddScene<CScene>();
 	//}
+
+	ImGui::TreePop();
 }
 
 #endif // BUILD_MODE

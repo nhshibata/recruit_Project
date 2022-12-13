@@ -30,6 +30,11 @@ CModelRenderer::CModelRenderer(std::shared_ptr<CGameObject> owner)
 }
 CModelRenderer::~CModelRenderer()
 {
+	if (m_pModel)
+	{
+		// 所有権の放棄
+		m_pModel.reset();
+	}
 }
 void CModelRenderer::SetModel(std::string name)
 {
@@ -79,10 +84,11 @@ bool CModelRenderer::Draw()
 
 	XMFLOAT4X4 mtx = Transform()->GetWorldMatrix();
 	//--- インスタンシング描画
-	if (m_bInstancing)
+	// 自身と管理以外が所持しているか確認
+	if (m_bInstancing || CModelManager::Get().GetModelCnt(m_modelName) > 2)
 	{
 		// システム側に依頼を出し、まとめて描画してもらう
-		SceneManager::CSceneManager::Get().GetDrawSystem()->SetInstanching(m_modelName, mtx);
+		SceneManager::CSceneManager::Get().GetDrawSystem()->SetInstanchingModel(m_modelName, mtx);
 		return true;
 	}
 
@@ -111,8 +117,24 @@ bool CModelRenderer::Draw(int no)
 	XMFLOAT4X4 mtx = Transform()->GetWorldMatrix();
 	
 	if (!m_pModel)return false;
+
+	//--- 不透明描画
+	CLight* pLight = CLight::Get();
+	if (!pLight)return false;
+	pLight->SetDisable(GetLightEnable());	// ライティング無効
+
 	m_pModel->Draw(CDXDevice::Get().GetDeviceContext(), mtx, EByOpacity::eOpacityOnly);
-	m_pModel->Draw(CDXDevice::Get().GetDeviceContext(), mtx);
+
+	pLight->SetEnable();	// ライティング有効
+
+	//--- 半透明部分描画
+	CDXDevice::Get().SetZBuffer(false);
+	CDXDevice::Get().SetBlendState(static_cast<int>(EBlendState::BS_ALPHABLEND));
+
+	m_pModel->Draw(CDXDevice::Get().GetDeviceContext(), mtx, EByOpacity::eTransparentOnly);
+
+	CDXDevice::Get().SetZBuffer(true);			// αブレンディング無効
+	CDXDevice::Get().SetBlendState(static_cast<int>(EBlendState::BS_NONE));		// 光源有効
 
 	return true;
 }
@@ -288,25 +310,22 @@ bool CModelRenderer::CollisionLineSegment(XMFLOAT3 vP0, XMFLOAT3 vP1, XMFLOAT3* 
 void CModelRenderer::ImGuiDebug()
 {
 	using namespace MySpace::Debug;
-	static std::vector<std::string> s_XModelList;
-	static std::vector<std::string> s_ObjModelList;
-	static std::vector<std::string> s_FbxModelList;
 
 	CMeshRenderer::ImGuiDebug();
 
-	if (s_XModelList.empty() && s_ObjModelList.empty() && s_FbxModelList.empty() || ImGui::Button("モデル reload"))
+	if (m_aXModelList.empty() && m_aObjModelList.empty() && m_aFbxModelList.empty() || ImGui::Button("モデル reload"))
 	{
 		MySpace::System::CFilePath file;
-		s_XModelList = file.GetAllFileName(MODEL_PATH, ".x");
-		s_ObjModelList = file.GetAllFileName(MODEL_PATH, ".obj");
-		s_FbxModelList = file.GetAllFileName(MODEL_PATH, ".fbx");
+		m_aXModelList = file.GetAllFileName(MODEL_PATH, ".x");
+		m_aObjModelList = file.GetAllFileName(MODEL_PATH, ".obj");
+		m_aFbxModelList = file.GetAllFileName(MODEL_PATH, ".fbx");
 	}
 
 	// 名前入力
 	m_modelName = InputString(m_modelName, u8"設定モデル");
 
 	// モデル
-	if (auto name = DispMenuBar(s_XModelList, "xFile"); !name.empty())
+	if (auto name = DispMenuBar(m_aXModelList, "xFile"); !name.empty())
 	{
 		m_modelName = name;
 
@@ -314,7 +333,7 @@ void CModelRenderer::ImGuiDebug()
 		m_pModel = CModelManager::Get().GetModel(name);
 	}
 	
-	if (auto name = DispMenuBar(s_ObjModelList, "objFile"); !name.empty())
+	if (auto name = DispMenuBar(m_aObjModelList, "objFile"); !name.empty())
 	{
 		m_modelName = name;
 
@@ -322,7 +341,7 @@ void CModelRenderer::ImGuiDebug()
 		m_pModel = CModelManager::Get().GetModel(name);
 	}
 	
-	if (auto name = DispMenuBar(s_FbxModelList, "fbxFile"); !name.empty())
+	if (auto name = DispMenuBar(m_aFbxModelList, "fbxFile"); !name.empty())
 	{
 		m_modelName = name;
 

@@ -11,6 +11,7 @@
 
 #include <GameSystem/Component/Camera/camera.h>
 #include <GameSystem/Component/Light/directionalLight.h>
+#include <CoreSystem/Math/MyMath.h>
 
 using namespace MySpace::Game;
 using namespace MySpace::System;
@@ -20,11 +21,12 @@ using namespace MySpace::Graphics;
 //*****************************************************************************
 // マクロ定義
 //*****************************************************************************
-#define M_DIFFUSE		MySpace::MyMath::Vector4(1.0f,1.0f,1.0f,1.0f)
-#define M_SPECULAR		MySpace::MyMath::Vector4(0.1f,0.1f,0.1f,1.0f)
-#define M_POWER			(0.0f)
-#define M_AMBIENT		MySpace::MyMath::Vector4(1.0f,1.0f,1.0f,1.0f)
-#define M_EMISSIVE		MySpace::MyMath::Vector4(0.0f,0.0f,0.0f,1.0f)
+#define M_DIFFUSE				MySpace::MyMath::Vector4(1.0f,1.0f,1.0f,1.0f)
+#define M_SPECULAR				MySpace::MyMath::Vector4(0.1f,0.1f,0.1f,1.0f)
+#define M_POWER					(0.0f)
+#define M_AMBIENT				MySpace::MyMath::Vector4(1.0f,1.0f,1.0f,1.0f)
+#define M_EMISSIVE				MySpace::MyMath::Vector4(0.0f,0.0f,0.0f,1.0f)
+#define MAX_MESH_INSTANCING		1024
 
 //*****************************************************************************
 // 構造体定義
@@ -47,6 +49,18 @@ struct SHADER_GLOBAL2 {
 	XMVECTOR	vDiffuse;	// ディフューズ色
 	XMVECTOR	vSpecular;	// スペキュラ色(+スペキュラ強度)
 	XMVECTOR	vEmissive;	// エミッシブ色
+};
+
+struct SHADER_MESH_INSTANCING
+{
+	DirectX::XMMATRIX mWorld[MAX_MESH_INSTANCING];
+	SHADER_MESH_INSTANCING()
+	{
+		for (int i = 0; i < MAX_MESH_INSTANCING; i++)
+		{
+			this->mWorld[i] = XMMatrixIdentity();
+		}
+	}
 };
 
 // 静的メンバ
@@ -85,6 +99,10 @@ HRESULT CMesh::InitShader()
 	};
 #if 1
 	hr = LoadShader("Vertex", "Pixel", &m_pVertexShader, &m_pInputLayout, &m_pPixelShader, layout, _countof(layout));
+	if (FAILED(hr)) {
+		return hr;
+	}
+	hr = LoadShader("InstancingVertex", "Pixel", &m_pInstancingVertexShader, &m_pInputLayout, &m_pPixelShader, layout, _countof(layout));
 	if (FAILED(hr)) {
 		return hr;
 	}
@@ -131,6 +149,18 @@ HRESULT CMesh::InitShader()
 		return hr;
 	}
 
+	// コンスタントバッファ インスタンシング用 作成
+	D3D11_BUFFER_DESC cb;
+	ZeroMemory(&cb, sizeof(cb));
+	cb.BindFlags = D3D11_BIND_CONSTANT_BUFFER;
+	cb.ByteWidth = sizeof(SHADER_MESH_INSTANCING);
+	cb.CPUAccessFlags = D3D11_CPU_ACCESS_WRITE;
+	cb.MiscFlags = 0;
+	cb.Usage = D3D11_USAGE_DYNAMIC;
+	hr = pDevice->CreateBuffer(&cb, nullptr, &m_pConstantBufferI);
+	if (FAILED(hr))
+		return false;
+
 	return hr;
 }
 
@@ -147,6 +177,7 @@ void CMesh::FinShader()
 	SAFE_RELEASE(m_pInputLayout);
 	// 頂点シェーダ解放
 	SAFE_RELEASE(m_pVertexShader);
+	SAFE_RELEASE(m_pConstantBufferI);
 }
 
 // 初期化
@@ -238,7 +269,8 @@ void CMesh::Draw(ID3D11ShaderResourceView* pTexture, XMFLOAT4X4* mWorld)
 	SHADER_GLOBAL cb;
 	DirectX::XMMATRIX mtxWorld = XMLoadFloat4x4(&m_mWorld);
 	CCamera* pCamera = CCamera::GetMain();
-	cb.mVP = XMMatrixTranspose(mtxWorld * XMLoadFloat4x4(&pCamera->GetViewMatrix()) * XMLoadFloat4x4(&pCamera->GetProjMatrix()));
+	//cb.mVP = XMMatrixTranspose(mtxWorld * XMLoadFloat4x4(&pCamera->GetViewMatrix()) * XMLoadFloat4x4(&pCamera->GetProjMatrix()));
+	cb.mVP = XMMatrixTranspose(XMLoadFloat4x4(&pCamera->GetViewMatrix()) * XMLoadFloat4x4(&pCamera->GetProjMatrix()));
 	cb.mW = XMMatrixTranspose(mtxWorld);
 	
 	//CShaderManager::Get().ConstantWrite("SHADER_GLOBAL", &cb);
@@ -286,6 +318,186 @@ void CMesh::Draw(ID3D11ShaderResourceView* pTexture, XMFLOAT4X4* mWorld)
 
 	// ポリゴンの描画
 	pDeviceContext->DrawIndexed(m_nNumIndex, 0, 0);
+}
+
+// 描画
+void CMesh::DrawInstancing(std::vector<CMesh*> aMesh, ID3D11ShaderResourceView* pTexture, XMFLOAT4X4* mWorld)
+{
+	// シェーダ設定
+	ID3D11DeviceContext* pDeviceContext = CDXDevice::Get().GetDeviceContext();
+	pDeviceContext->VSSetShader(m_pInstancingVertexShader, nullptr, 0);
+	pDeviceContext->PSSetShader(m_pPixelShader, nullptr, 0);
+	pDeviceContext->IASetInputLayout(m_pInputLayout);
+	//CShaderManager::Get().BindPS("Pixel");
+	//CShaderManager::Get().BindVS("Vertex");
+
+	// 頂点バッファをセット
+	UINT stride = sizeof(VERTEX_3D);
+	UINT offset = 0;
+	pDeviceContext->IASetVertexBuffers(0, 1, &aMesh[0]->m_pVertexBuffer, &stride, &offset);
+	// インデックスバッファをセット
+	pDeviceContext->IASetIndexBuffer(aMesh[0]->m_pIndexBuffer, DXGI_FORMAT_R32_UINT, 0);
+
+	pDeviceContext->PSSetSamplers(0, 1, &m_pSamplerState);
+	// 追加
+	if (pTexture)
+		pDeviceContext->PSSetShaderResources(0, 1, &pTexture);
+
+	SHADER_GLOBAL cb;
+	//DirectX::XMMATRIX mtxWorld = XMLoadFloat4x4(&m_mWorld);
+	CCamera* pCamera = CCamera::GetMain();
+	//cb.mVP = XMMatrixTranspose(mtxWorld * XMLoadFloat4x4(&pCamera->GetViewMatrix()) * XMLoadFloat4x4(&pCamera->GetProjMatrix()));
+	cb.mVP = XMMatrixTranspose(XMLoadFloat4x4(&pCamera->GetViewMatrix()) * XMLoadFloat4x4(&pCamera->GetProjMatrix()));
+	//cb.mW = XMMatrixTranspose(mtxWorld);
+	
+	//CShaderManager::Get().ConstantWrite("SHADER_GLOBAL", &cb);
+	//CShaderManager::Get().BindCB("SHADER_GLOBAL");
+
+	if (mWorld)
+	{
+		cb.mTex = XMMatrixTranspose(XMLoadFloat4x4(mWorld));
+	}
+	else
+	{
+		XMFLOAT4X4 mTex(1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0);
+		DirectX::XMMATRIX mtxTex = XMLoadFloat4x4(&mTex);
+		cb.mTex = XMMatrixTranspose(mtxTex);
+	}
+	pDeviceContext->UpdateSubresource(m_pConstantBuffer[0], 0, nullptr, &cb, 0, 0);
+	pDeviceContext->VSSetConstantBuffers(0, 1, &m_pConstantBuffer[0]);
+	SHADER_GLOBAL2 cb2;
+	cb2.vEye = XMLoadFloat3(&pCamera->GetPos());
+	CDirectionalLight* pLight = dynamic_cast<CDirectionalLight*>(CLight::Get());
+	cb2.vLightDir = XMLoadFloat3(&pLight->GetDir());
+	cb2.vLa = XMLoadFloat4(&pLight->GetAmbient());
+	cb2.vLd = XMLoadFloat4(&pLight->GetDiffuse());
+	cb2.vLs = XMLoadFloat4(&pLight->GetSpecular());
+	cb2.vDiffuse = XMLoadFloat4(&aMesh[0]->m_material.m_Diffuse);
+	cb2.vAmbient = XMVectorSet(aMesh[0]->m_material.m_Ambient.x, aMesh[0]->m_material.m_Ambient.y, aMesh[0]->m_material.m_Ambient.z, (pTexture != nullptr) ? 1.f : 0.f);
+	cb2.vSpecular = XMVectorSet(aMesh[0]->m_material.m_Specular.x, aMesh[0]->m_material.m_Specular.y, aMesh[0]->m_material.m_Specular.z, aMesh[0]->m_material.m_Power);
+	cb2.vEmissive = XMLoadFloat4(&aMesh[0]->m_material.m_Emissive);
+	pDeviceContext->UpdateSubresource(m_pConstantBuffer[1], 0, nullptr, &cb2, 0, 0);
+	pDeviceContext->PSSetConstantBuffers(1, 1, &m_pConstantBuffer[1]);
+
+	//CShaderManager::Get().ConstantWrite("SHADER_GLOBAL2", &cb2);
+	//CShaderManager::Get().BindCB("SHADER_GLOBAL2");
+
+	D3D11_MAPPED_SUBRESOURCE pData;
+	int cnt = 0;
+	if (SUCCEEDED(pDeviceContext->Map(m_pConstantBufferI, 0, D3D11_MAP_WRITE_DISCARD, 0, &pData)))
+	{
+		SHADER_MESH_INSTANCING si;
+		// 本来ここで抜ける
+		for (; cnt < aMesh.size(); ++cnt)
+		{
+			si.mWorld[cnt] = XMMatrixTranspose(XMLoadFloat4x4(&aMesh[cnt]->m_mWorld));
+		}
+		memcpy_s(pData.pData, pData.RowPitch, (void*)&si, sizeof(SHADER_MESH_INSTANCING));
+		pDeviceContext->Unmap(m_pConstantBufferI, 0);
+	}
+	pDeviceContext->VSSetConstantBuffers(1, 1, &m_pConstantBufferI);
+
+	// プリミティブ形状をセット
+	static const D3D11_PRIMITIVE_TOPOLOGY pt[] = {
+		D3D11_PRIMITIVE_TOPOLOGY_TRIANGLESTRIP,	// 0なら三角形ストリップ
+		D3D11_PRIMITIVE_TOPOLOGY_POINTLIST,
+		D3D11_PRIMITIVE_TOPOLOGY_LINELIST,
+		D3D11_PRIMITIVE_TOPOLOGY_LINESTRIP,
+		D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST,
+		D3D11_PRIMITIVE_TOPOLOGY_TRIANGLESTRIP,
+	};
+	pDeviceContext->IASetPrimitiveTopology(pt[0]);
+
+	// ポリゴンの描画
+	pDeviceContext->DrawIndexedInstanced(static_cast<UINT>(aMesh[0]->m_nNumIndex), static_cast<UINT>(aMesh.size()), 0, 0, 0);
+}
+
+void CMesh::DrawInstancing(std::vector<XMFLOAT4X4> aWorld)
+{
+	// シェーダ設定
+	ID3D11DeviceContext* pDeviceContext = CDXDevice::Get().GetDeviceContext();
+	pDeviceContext->VSSetShader(m_pInstancingVertexShader, nullptr, 0);
+	pDeviceContext->PSSetShader(m_pPixelShader, nullptr, 0);
+	pDeviceContext->IASetInputLayout(m_pInputLayout);
+	//CShaderManager::Get().BindPS("Pixel");
+	//CShaderManager::Get().BindVS("Vertex");
+
+	// 頂点バッファをセット
+	UINT stride = sizeof(VERTEX_3D);
+	UINT offset = 0;
+	pDeviceContext->IASetVertexBuffers(0, 1, &m_pVertexBuffer, &stride, &offset);
+	// インデックスバッファをセット
+	pDeviceContext->IASetIndexBuffer(m_pIndexBuffer, DXGI_FORMAT_R32_UINT, 0);
+
+	pDeviceContext->PSSetSamplers(0, 1, &m_pSamplerState);
+	pDeviceContext->PSSetShaderResources(0, 1, nullptr);
+
+	SHADER_GLOBAL cb;
+	//DirectX::XMMATRIX mtxWorld = XMLoadFloat4x4(&m_mWorld);
+	CCamera* pCamera = CCamera::GetMain();
+	//cb.mVP = XMMatrixTranspose(mtxWorld * XMLoadFloat4x4(&pCamera->GetViewMatrix()) * XMLoadFloat4x4(&pCamera->GetProjMatrix()));
+	cb.mVP = XMMatrixTranspose(XMLoadFloat4x4(&pCamera->GetViewMatrix()) * XMLoadFloat4x4(&pCamera->GetProjMatrix()));
+	//cb.mW = XMMatrixTranspose(mtxWorld);
+
+	//CShaderManager::Get().ConstantWrite("SHADER_GLOBAL", &cb);
+	//CShaderManager::Get().BindCB("SHADER_GLOBAL");
+
+	{
+		XMFLOAT4X4 mTex(1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0);
+		DirectX::XMMATRIX mtxTex = XMLoadFloat4x4(&mTex);
+		cb.mTex = XMMatrixTranspose(mtxTex);
+	}
+	pDeviceContext->UpdateSubresource(m_pConstantBuffer[0], 0, nullptr, &cb, 0, 0);
+	pDeviceContext->VSSetConstantBuffers(0, 1, &m_pConstantBuffer[0]);
+	SHADER_GLOBAL2 cb2;
+	cb2.vEye = XMLoadFloat3(&pCamera->GetPos());
+	CDirectionalLight* pLight = dynamic_cast<CDirectionalLight*>(CLight::Get());
+	cb2.vLightDir = XMLoadFloat3(&pLight->GetDir());
+	cb2.vLa = XMLoadFloat4(&pLight->GetAmbient());
+	cb2.vLd = XMLoadFloat4(&pLight->GetDiffuse());
+	cb2.vLs = XMLoadFloat4(&pLight->GetSpecular());
+	cb2.vDiffuse = XMLoadFloat4(&m_material.m_Diffuse);
+	cb2.vAmbient = XMVectorSet(m_material.m_Ambient.x, m_material.m_Ambient.y, m_material.m_Ambient.z, (nullptr) ? 1.f : 0.f);
+	cb2.vSpecular = XMVectorSet(m_material.m_Specular.x, m_material.m_Specular.y, m_material.m_Specular.z, m_material.m_Power);
+	cb2.vEmissive = XMLoadFloat4(&m_material.m_Emissive);
+	pDeviceContext->UpdateSubresource(m_pConstantBuffer[1], 0, nullptr, &cb2, 0, 0);
+	pDeviceContext->PSSetConstantBuffers(1, 1, &m_pConstantBuffer[1]);
+
+	//CShaderManager::Get().ConstantWrite("SHADER_GLOBAL2", &cb2);
+	//CShaderManager::Get().BindCB("SHADER_GLOBAL2");
+
+	// プリミティブ形状をセット
+	static const D3D11_PRIMITIVE_TOPOLOGY pt[] = {
+		D3D11_PRIMITIVE_TOPOLOGY_TRIANGLESTRIP,	// 0なら三角形ストリップ
+		D3D11_PRIMITIVE_TOPOLOGY_POINTLIST,
+		D3D11_PRIMITIVE_TOPOLOGY_LINELIST,
+		D3D11_PRIMITIVE_TOPOLOGY_LINESTRIP,
+		D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST,
+		D3D11_PRIMITIVE_TOPOLOGY_TRIANGLESTRIP,
+	};
+	pDeviceContext->IASetPrimitiveTopology(pt[0]);
+
+	//--- データセット
+	D3D11_MAPPED_SUBRESOURCE pData;
+	int cnt = 0;
+	if (cnt < aWorld.size())
+	{
+		if (SUCCEEDED(pDeviceContext->Map(m_pConstantBufferI, 0, D3D11_MAP_WRITE_DISCARD, 0, &pData)))
+		{
+			SHADER_MESH_INSTANCING si;
+			// 本来ここで抜ける
+			for (; cnt < aWorld.size(); ++cnt)
+			{
+				si.mWorld[cnt] = XMMatrixTranspose(XMLoadFloat4x4(&aWorld[cnt]));
+			}
+			memcpy_s(pData.pData, pData.RowPitch, (void*)&si, sizeof(SHADER_MESH_INSTANCING));
+			pDeviceContext->Unmap(m_pConstantBufferI, 0);
+		}
+		pDeviceContext->VSSetConstantBuffers(1, 1, &m_pConstantBufferI);
+
+		// ポリゴンの描画
+		pDeviceContext->DrawIndexedInstanced(static_cast<UINT>(m_nNumIndex), static_cast<UINT>(aWorld.size()), 0, 0, 0);
+	}
 }
 
 // マテリアル設定

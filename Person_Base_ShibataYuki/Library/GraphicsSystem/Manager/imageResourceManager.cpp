@@ -23,8 +23,8 @@ void CImageResourceManager::Uninit()
 bool CImageResourceManager::Load(std::string name)
 {
 	// 読み込み済みか確認
-	auto it = m_ResourceMap.find(name);
-	if (it != m_ResourceMap.end())
+	auto it = m_aResourceMap.find(name);
+	if (it != m_aResourceMap.end())
 		return true;
 	// 作成
 	std::shared_ptr<CImageResource> tex = std::make_shared<CImageResource>();
@@ -35,33 +35,33 @@ bool CImageResourceManager::Load(std::string name)
 		return false;
 	}
 	// 格納
-	m_ResourceMap.insert(IMAGE_PAIR(name, tex));
+	m_aResourceMap.insert(IMAGE_PAIR(name, tex));
 	return true;
 }
 bool CImageResourceManager::Unload(std::string name)
 {
-	auto it = m_ResourceMap.find(name);
-	if (it != m_ResourceMap.end())
+	auto it = m_aResourceMap.find(name);
+	if (it != m_aResourceMap.end())
 	{
-		m_ResourceMap[name].reset();	// 所有権の破棄
-		m_ResourceMap.erase(name);		// リストからの除外
+		m_aResourceMap[name].reset();	// 所有権の破棄
+		m_aResourceMap.erase(name);		// リストからの除外
 		return true;
 	}
 	return false;
 }
 void CImageResourceManager::UnloadAll()
 {
-	for (auto it = m_ResourceMap.begin(); it != m_ResourceMap.end(); ++it)
+	for (auto it = m_aResourceMap.begin(); it != m_aResourceMap.end(); ++it)
 	{
 		it->second.reset();
 	}
-	m_ResourceMap.clear();
+	m_aResourceMap.clear();
 }
 // 画像を渡す
 ImageSharedPtr CImageResourceManager::GetResource(std::string name)
 {
-	auto it = m_ResourceMap.find(name);
-	if (it == m_ResourceMap.end())
+	auto it = m_aResourceMap.find(name);
+	if (it == m_aResourceMap.end())
 	{
 		if (!Load(name))
 		{
@@ -70,5 +70,34 @@ ImageSharedPtr CImageResourceManager::GetResource(std::string name)
 		}
 	}
 
-	return m_ResourceMap[name];
+	return m_aResourceMap[name];
+}
+int CImageResourceManager::SceneUnload()
+{
+#if _DEBUG	// 確認
+	int cnt = static_cast<int>(m_aResourceMap.size());
+	for (auto & image : m_aResourceMap)
+	{
+		// 所持権が自身しか持っていなければ解放
+		if (image.second.use_count() == 1)
+		{
+			image.second->Unload();
+			image.second.reset();
+			--cnt;
+		}
+	}
+	return cnt;
+#else
+	for (auto & image : m_ResourceMap)
+	{
+		// 所持権が自身しか持っていなければ解放
+		if (image.second.use_count() == 1)
+		{
+			image.second->Unload();
+			image.second.reset();
+		}
+	}
+#endif // _DEBUG
+
+	return 0;
 }

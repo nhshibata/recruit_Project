@@ -41,8 +41,6 @@ namespace MySpace
 			std::string m_SceneName;
 			std::weak_ptr<CScene> m_spPtr;
 
-		
-			
 		public:
 			//--- “› ﬁä÷êî
 			CScene();
