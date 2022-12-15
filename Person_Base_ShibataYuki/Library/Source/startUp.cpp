@@ -41,9 +41,9 @@
 
 #define NOMINMAX
 
-#define _CRTDBG_MAP_ALLOC
-#include <cstdlib>
-#include <crtdbg.h>
+//#define _CRTDBG_MAP_ALLOC
+//#include <cstdlib>
+//#include <crtdbg.h>
 
 //--- インクルード部
 #include <Windows.h>
