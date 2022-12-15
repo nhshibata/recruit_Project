@@ -106,8 +106,8 @@ namespace MySpace
 			void Init();
 			void Uninit();
 			void Update();
-			void FixedUpdate();
-			void Draw();
+			void FixedUpdateScene();
+			void DrawScene();
 
 			// *@CGameObjectManager用
 			// *@component内でシーンが破棄された場合、処理を抜ける

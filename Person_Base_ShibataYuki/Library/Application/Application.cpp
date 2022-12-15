@@ -112,7 +112,7 @@ unsigned long Application::MainLoop()
 	//CFuncManager::Get();
 
 	// ゲームの初期化処理
-	gameApp->Init(*this);
+	gameApp->Init();
 
 	//--- タイム初期化処理
 	CFps::Create();
@@ -126,7 +126,7 @@ unsigned long Application::MainLoop()
 
 		// 固定時間更新
 		if (!CFps::Get().IsFixedUpdate())
-			gameApp->FixedUpdate(*this);
+			gameApp->FixedUpdate();
 
 		// 一定時間の更新
 		if (!CFps::Get().IsUpdate())
@@ -139,17 +139,17 @@ unsigned long Application::MainLoop()
 		CFuncManager::Get().Update();
 
 		// ｹﾞｰﾑ更新
-		gameApp->Update(*this);
+		gameApp->Update();
 
 		// ｹﾞｰﾑ描画
-		gameApp->Draw(*this);
+		gameApp->Draw();
 	}
 
 	CFps::Get().Uninit();
 	CFps::Destroy();
 
 	// ゲームの終了処理
-	gameApp->Uninit(*this);
+	gameApp->Uninit();
 	delete gameApp;
 	
 	// 終了メッセージ

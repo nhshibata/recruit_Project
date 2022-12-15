@@ -114,8 +114,31 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 	CMyScene my;
 	// シーン読み込み時呼び出す関数を設定
 	CSceneManager::Create();
-	CSceneManager::Get().SceneLoaded<CMyScene>(&CMyScene::Load, &my);
+	CSceneManager::Get().SceneLoaded<CMyScene>(&CMyScene::Load, &my);	
+
+#if !_DEBUG
+	HRESULT hr = S_OK;
+
+	//--- 生成
+	Application::Create();
+
+	Application* Appli = &Application::Get();
+	hr = Appli->Init(hInstance);
+
+	//--- ウィンドウ表示
+	ShowWindow(Appli->GetHWnd(), nCmdShow);
+	UpdateWindow(Appli->GetHWnd());
 	
+	//--- 更新
+	Appli->MainLoop();
+
+	//--- 終了
+	Appli->Uninit();
+
+	//--- 破棄
+	Application::Destroy();
+
+#else
 	// 開始
 	// ウィンドウの生成などを行う
 	StartUp(hInstance, hPrevInstance, lpCmdLine, nCmdShow);
@@ -126,6 +149,8 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 
 	// 終了
 	ShutDown();
+
+#endif // _DEBUG
 
 	return 0;
 }

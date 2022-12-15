@@ -49,9 +49,9 @@ CGameApp::~CGameApp()
 {
 }
 // 初期化
-void CGameApp::Init(Application& pApp)
+void CGameApp::Init()
 {
-	HWND hWnd = pApp.GetHWnd();
+	HWND hWnd = Application::Get().GetHWnd();
 
 	//--- デバイスの初期化
 	CDXDevice::Create();
@@ -124,7 +124,7 @@ void CGameApp::Init(Application& pApp)
 
 }
 // 解放処理
-void CGameApp::Uninit(Application& pApp)const
+void CGameApp::Uninit()const
 {
 
 	//_CrtDumpMemoryLeaks();
@@ -163,7 +163,7 @@ void CGameApp::Uninit(Application& pApp)const
 
 }
 // 通常更新
-void CGameApp::Update(Application& pApp)const
+void CGameApp::Update()
 {
 	// 音更新
 	CSound::Update();
@@ -188,10 +188,10 @@ void CGameApp::Update(Application& pApp)const
 	CEffekseer::Get().Update();
 }
 // 定期更新
-void CGameApp::FixedUpdate(Application& pApp)const
+void CGameApp::FixedUpdate()const
 {
 	// 一定時間の更新
-	CSceneManager::Get().FixedUpdate();
+	CSceneManager::Get().FixedUpdateScene();
 }
 // 入力更新
 void CGameApp::InputUpdate()
@@ -203,10 +203,10 @@ void CGameApp::InputUpdate()
 	Keyboad::Update();
 }
 // 描画
-void CGameApp::Draw(Application& pApp)
+void CGameApp::Draw()
 {
 	//--- 描画先設定
-	BeginRender(pApp);	// 描画準備
+	BeginRender();	// 描画準備
 	if (ImGuiManager::Get().IsSceneRender())
 	{
 		ImGuiManager::Get().SceneRenderClear();
@@ -224,7 +224,7 @@ void CGameApp::Draw(Application& pApp)
 	if (CCamera::GetMain() && CLight::Get())
 	{
 		// シーンの描画
-		CSceneManager::Get().Draw();
+		CSceneManager::Get().DrawScene();
 
 		// effect
 		CEffekseer::Get().Draw();
@@ -245,10 +245,10 @@ void CGameApp::Draw(Application& pApp)
 #endif // BUILD_MODE
 
 	// 描画後更新
-	EndRender(pApp);
+	EndRender();
 }
 // *@描画前
-void CGameApp::BeginRender(Application& pApp)
+void CGameApp::BeginRender()
 {
 	float ClearColor[4] = { 0.117647f, 0.254902f, 0.352941f, 1.0f };
 	auto pDX = &CDXDevice::Get();
@@ -263,7 +263,7 @@ void CGameApp::BeginRender(Application& pApp)
 	//pDC->OMSetRenderTargets(1, pViews, nullptr);
 }
 // *@描画後
-void CGameApp::EndRender(Application& pApp)
+void CGameApp::EndRender()
 {
 	auto pDX = &CDXDevice::Get();
 	pDX->SetCullMode((int)ECullMode::CULLMODE_NONE);

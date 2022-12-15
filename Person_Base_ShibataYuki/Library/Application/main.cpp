@@ -67,8 +67,8 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 
 HRESULT StartUp(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine, int nCmdShow)
 {
-	UNREFERENCED_PARAMETER(hPrevInstance);	// 未使用宣言
-	UNREFERENCED_PARAMETER(lpCmdLine);		// 未使用宣言
+	//UNREFERENCED_PARAMETER(hPrevInstance);	// 未使用宣言
+	//UNREFERENCED_PARAMETER(lpCmdLine);		// 未使用宣言
 
 	// メモリリーク検出
 	//_CrtSetDbgFlag(_CRTDBG_ALLOC_MEM_DF | _CRTDBG_LEAK_CHECK_DF);
@@ -111,8 +111,8 @@ void ShutDown()
 
 	FreeConsole();
 
-#endif //!CONSOLE
 	_CrtDumpMemoryLeaks();
+#endif //!CONSOLE
 
 }
 void MainLoop()

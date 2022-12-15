@@ -174,7 +174,7 @@
     <ClCompile Include="..\Library\Source\common\eventMessage.cpp" />
     <ClCompile Include="..\Library\Source\common\fadeController.cpp">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">false</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
     </ClCompile>
     <ClCompile Include="..\Library\Source\gameCamera.cpp" />
     <ClCompile Include="..\Library\Source\Main.cpp" />
@@ -183,19 +183,25 @@
     <ClCompile Include="..\Library\Source\spel\commandSpell.cpp" />
     <ClCompile Include="..\Library\Source\spel\gameSpellRhythm.cpp">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">false</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
     </ClCompile>
     <ClCompile Include="..\Library\Source\spel\mage.cpp" />
     <ClCompile Include="..\Library\Source\spel\mageSociety.cpp" />
-    <ClCompile Include="..\Library\Source\spel\partner.cpp" />
-    <ClCompile Include="..\Library\Source\spel\partnerNode.cpp" />
+    <ClCompile Include="..\Library\Source\spel\partner.cpp">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
+    </ClCompile>
+    <ClCompile Include="..\Library\Source\spel\partnerNode.cpp">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
+    </ClCompile>
     <ClCompile Include="..\Library\Source\startUp.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\Library\Source\common\eventMessage.h" />
     <ClInclude Include="..\Library\Source\common\fadeController.h">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">false</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
     </ClInclude>
     <ClInclude Include="..\Library\Source\gameCamera.h" />
     <ClInclude Include="..\Library\Source\spel\battleStatus.h" />
@@ -203,12 +209,18 @@
     <ClInclude Include="..\Library\Source\spel\commandSpell.h" />
     <ClInclude Include="..\Library\Source\spel\gameSpellRhythm.h">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">false</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
     </ClInclude>
     <ClInclude Include="..\Library\Source\spel\mage.h" />
     <ClInclude Include="..\Library\Source\spel\mageSociety.h" />
-    <ClInclude Include="..\Library\Source\spel\partner.h" />
-    <ClInclude Include="..\Library\Source\spel\partnerNode.h" />
+    <ClInclude Include="..\Library\Source\spel\partner.h">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
+    </ClInclude>
+    <ClInclude Include="..\Library\Source\spel\partnerNode.h">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="AISystem.vcxproj">
