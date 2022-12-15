@@ -108,6 +108,7 @@ void CDebugCamera::CameraMouseMove(int x, int y)
 	// ƒ}ƒEƒX‚ÌˆÚ“®—Ê
 	float mouseMoveX = x - (float)m_oldMousePos.x;
 	float mouseMoveY = y - (float)m_oldMousePos.y;
+
 #if 1
 	Vector3 pos = CCamera::GetPos();
 	XMVECTOR vPos = XMVectorSet(pos.x, pos.y, pos.z, 0.0f);
@@ -148,8 +149,8 @@ void CDebugCamera::CameraMouseMove(int x, int y)
 		vUp = DirectX::XMVector3Cross(
 			DirectX::XMVector3Normalize(DirectX::XMVectorScale(rotPos, -1.0f)), rotAxis);
 		DirectX::XMStoreFloat3(&m_vUp, DirectX::XMVector3Normalize(vUp));
+		break;
 	}
-	break;
 	case ECameraMode::CAM_MODE_TRACK:
 	{
 		float farZ = GetFarZ() / 1000;
@@ -163,16 +164,17 @@ void CDebugCamera::CameraMouseMove(int x, int y)
 		DirectX::XMVECTOR vMove = DirectX::XMVectorAdd(DirectX::XMVectorScale(side, farMoveX * rate), DirectX::XMVectorScale(vUp, farMoveY * rate));
 		DirectX::XMStoreFloat3(&pos, DirectX::XMVectorAdd(vPos, vMove));
 		DirectX::XMStoreFloat3(&m_vTarget, DirectX::XMVectorAdd(vLook, vMove));
-	}
 	break;
+	}
 	case ECameraMode::CAM_MODE_DOLLY:
 	{
 		XMStoreFloat3(&pos, DirectX::XMVectorAdd(vPos, DirectX::XMVectorScale(vFront, focus * mouseMoveY * 0.01f)));
+	break;
 	}
+	default:
 	break;
 	}
 
-	//CCamera::SetPos(pos);
 	Transform()->SetPos(pos);
 
 #endif // 1

@@ -23,6 +23,7 @@ namespace AI
 	class CStateNode : public CAINode
 	{
 	private:
+		//--- エイリアス
 		using StateCondition = std::shared_ptr<CStateCondition>;
 		using StateMachine = std::vector<StateCondition>;
 

@@ -1,8 +1,18 @@
-//==========================================================
-
-
+//=========================================================
+// [imGuiManager.cpp]
+// 作成:2022/07/10
+//---------------------
+// ImGui管理ｸﾗｽ
+//=========================================================
 
 //--- インクルード部
+#include <ImGui/imgui_impl_win32.h>
+#include <ImGui/imgui_impl_dx11.h>
+#include <ImGui/imgui_internal.h>
+#include <ImGui/imstb_rectpack.h>
+#include <ImGui/imstb_textedit.h>
+#include <ImGui/imstb_truetype.h>
+
 #include <DebugSystem/imguiManager.h>
 #include <DebugSystem/hierarchy.h>
 #include <DebugSystem/inspector.h>
@@ -41,7 +51,7 @@ ImGuiManager::ImGuiManager()
 {
 	m_bPause = false;
 	m_bOneFlame = false;
-	m_bEditFlg = false;
+	m_bEditFlg = true;
 	m_bSceneRender = false;
 }
 // オーナーのデバッグフラグ確認
@@ -117,20 +127,20 @@ void ImGuiManager::Update()
 	if (!m_bEditFlg)
 		return;
 
-	//imGuiの更新処理
+	//--- imGuiの更新処理
 	ImGui_ImplDX11_NewFrame();
 	ImGui_ImplWin32_NewFrame();
 	ImGui::NewFrame();
 	ImGuizmo::BeginFrame();
 
-	ImGuiManager::Get().DownHover(ImGuiManager::EIsHovered::HOVERED_WINDOW);
+	m_eHover = EMouseHovered::HOVERED_NONE;
 
-	// ポーズ
+	//--- ポーズ
 	Pause();
 
-	// デバッグ実行
-	m_pInspector->Update();
-	m_pHierarchy->Update();
+	//--- デバッグ実行
+	m_pInspector->Update(this);
+	m_pHierarchy->Update(this);
 	
 	// 現在シーン取得
 	SceneManager::CScene* scene = CSceneManager::Get().GetActiveScene();
@@ -152,6 +162,9 @@ void ImGuiManager::Update()
 	ImGui::Begin(u8"ステータス", &m_bEditFlg, ImGuiWindowFlags_::ImGuiWindowFlags_MenuBar);
 	ImGui::BeginTabBar("##tabs", ImGuiTabBarFlags_None);
 	
+	//--- 状態取得セット
+	HoverStateSet();
+
 	//--- 基本
 	if (ImGui::BeginTabItem("Base"))
 	{
@@ -199,34 +212,34 @@ void ImGuiManager::Update()
 	//--- ギズモ表示
 	if (auto selectObj = m_pInspector->GetSelectObject().lock(); selectObj)
 	{
+		m_pGizmo->ViewGizmo(this, *CCamera::GetMain(), selectObj->GetTransform());
 		if (ImGui::BeginTabItem("Gizmo"))
 		{
-			m_pGizmo->EditTransform(*CCamera::GetMain(), selectObj->GetTransform());
+			m_pGizmo->EditTransform(this);
 			ImGui::EndTabItem();// とじる
 		}
 	}
 
 	//--- マウス状態確認
 	if(ImGui::IsDragDropPayloadBeingAccepted())
-		UpHover(EIsHovered::HOVERED_DRAG);
+		UpHover(EMouseHovered::HOVERED_DRAG);
 
 	if (ImGui::IsAnyItemHovered()) 
 	{
-		UpHover(EIsHovered::HOVERED_ITEM);
+		UpHover(EMouseHovered::HOVERED_ITEM);
 	}
 	else
-		DownHover(EIsHovered::HOVERED_ITEM);
+		DownHover(EMouseHovered::HOVERED_ITEM);
 
 	//--- ｶﾒﾗ操作
-	const int e = ImGuiManager::EIsHovered::HOVERED_WINDOW | ImGuiManager::EIsHovered::HOVERED_GIZMO;
-	if (!ImGuiManager::Get().IsHover(EIsHovered(e)))
-	//if (ImGuiManager::Get().GetHover() == EIsHovered::HOVERED_NONE)
+	const int e = EMouseHovered::HOVERED_WINDOW | EMouseHovered::HOVERED_GIZMO | EMouseHovered::HOVERED_ITEM | EMouseHovered::HOVERED_DRAG;
+	if (!ImGuiManager::Get().IsHover(EMouseHovered(e)))
 	{
 		if (m_pDebugCamera.lock())
 			m_pDebugCamera.lock()->Update();
 	}
 	int res = 0;
-	for (int cnt = 1; cnt < sizeof(EIsHovered) ; cnt++)
+	for (int cnt = 1; cnt < sizeof(EMouseHovered) ; cnt++)
 	{
 		res += m_eHover & (1 << cnt) ? 1 : 0;
 		res *= 10;
@@ -274,8 +287,9 @@ void ImGuiManager::Pause()
 	if (!m_bEditFlg)
 		return;
 
-	ImGui::SetNextWindowPos(ImVec2((float)CScreen::GetWidth() / 2 - 300 / 2, (float)0));   //画面位置を外部から取得できるようにする
-	ImGui::SetNextWindowSize(ImVec2(420, 120), ImGuiCond_Once);
+	//画面位置を外部から取得できるようにする
+	ImGui::SetNextWindowPos(ImVec2((float)CScreen::GetWidth()*0.75f, (float)CScreen::GetHeight()*0.85f));
+	ImGui::SetNextWindowSize(ImVec2(320, 120), ImGuiCond_Once);
 	ImGui::Begin(u8"Pause", &m_bPause);
 
 	ImGui::Text(u8"stop[L]");
@@ -318,41 +332,73 @@ void ImGuiManager::Pause()
 
 void ImGuiManager::DispLog()
 {
-	/*DebugLog("aaa");
-	DebugLog("bbb");
-	*/
-	
 	//ImGui::SetNextWindowPos(ImVec2(120, 60), ImGuiCond_::ImGuiCond_Once);
 	//ImGui::SetNextWindowSize(ImVec2(500, 400), ImGuiCond_::ImGuiCond_Once);
 	//ImGui::Begin(u8"Log");
 	ImGui::Text(u8"Log");
-	ImGui::SameLine();
-	auto it = m_debugMap.begin();
-	for (; it != m_debugMap.end(); ++it)
+	
+	auto it = m_aDebugMap.begin();
+	for (int cnt = 0; it != m_aDebugMap.end(); ++it, ++cnt)
 	{
 		auto str = (*it).first;
 		auto cstr = (*it).first.c_str();
+		
 		ImGui::Text(u8"%d", (*it).second);
 		ImGui::SameLine();
 		ImGui::Text(u8"%s", cstr);
 	}
+
 	//ImGui::End();
+}
+
+void ImGuiManager::HoverStateSet()
+{
+
+	if (ImGui::IsWindowHovered())
+	{
+		ImGuiManager::Get().UpHover(ImGuiManager::EMouseHovered::HOVERED_WINDOW);
+		DebugLog("Window Hover");
+	}
+	if (ImGui::IsAnyItemHovered())
+	{
+		ImGuiManager::Get().UpHover(ImGuiManager::EMouseHovered::HOVERED_ITEM);
+		DebugLog("Item Hover");
+	}
+	if (ImGui::IsDragDropPayloadBeingAccepted())
+	{
+		ImGuiManager::Get().UpHover(ImGuiManager::EMouseHovered::HOVERED_DRAG);
+		DebugLog("Drag");
+	}
+	if (ImGui::IsAnyItemActive())
+	{
+		ImGuiManager::Get().UpHover(ImGuiManager::EMouseHovered::HOVERED_ITEM);
+		DebugLog("Item Active");
+	}
+
+	if (ImGui::IsItemClicked())
+	{
+		DebugLog("Item Click");
+	}
+
 }
 
 ID3D11RenderTargetView* ImGuiManager::GetRTV()
 {
 	return m_pRT->GetView();
 }
+
 ID3D11DepthStencilView* ImGuiManager::GetDSV()
 {
 	return m_pDS->GetView();
 }
+
 void ImGuiManager::SceneRender()
 {
 	auto pDX = &CDXDevice::Get();
 	//--- 描画先の変更
 	pDX->SwitchRender(m_pRT->GetView(), m_pDS->GetView());
 }
+
 void ImGuiManager::SceneRenderClear()
 {
 	float ClearColor[4] = { 0.117647f, 0.254902f, 0.352941f, 1.0f };
@@ -360,6 +406,14 @@ void ImGuiManager::SceneRenderClear()
 	//--- 情報をリセット
 	m_pRT->Clear(ClearColor);
 	m_pDS->Clear();
+}
+
+void ImGuiManager::SceneGizmo()
+{
+	if (auto selectObj = m_pInspector->GetSelectObject().lock(); selectObj)
+	{
+		m_pGizmo->ViewGizmo(this, *CCamera::GetMain(), selectObj->GetTransform());
+	}
 }
 
 #endif

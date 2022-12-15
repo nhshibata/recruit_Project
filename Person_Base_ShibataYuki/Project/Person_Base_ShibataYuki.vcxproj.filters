@@ -54,6 +54,12 @@
     <ClCompile Include="..\Library\Source\common\eventMessage.cpp">
       <Filter>common</Filter>
     </ClCompile>
+    <ClCompile Include="..\Library\Source\spel\partner.cpp">
+      <Filter>Spel</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Library\Source\spel\partnerNode.cpp">
+      <Filter>Spel</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\Library\Source\gameCamera.h">
@@ -82,6 +88,12 @@
     </ClInclude>
     <ClInclude Include="..\Library\Source\common\fadeController.h">
       <Filter>common</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Library\Source\spel\partner.h">
+      <Filter>Spel</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Library\Source\spel\partnerNode.h">
+      <Filter>Spel</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

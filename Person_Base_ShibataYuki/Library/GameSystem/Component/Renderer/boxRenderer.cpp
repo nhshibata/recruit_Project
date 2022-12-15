@@ -1,5 +1,12 @@
+//=========================================================
+// [boxRenderer.cpp] 
+// 作成: 2022/06/27
+// 更新: 2022/12/10 インスタンシング描画対応
+//---------------------------------------------------------
+// 3D描画
+//=========================================================
 
-
+//--- インクルード部
 #include <GameSystem/Component/Renderer/boxRenderer.h>
 #include <GameSystem/Component/Transform/transform.h>
 #include <GameSystem/Manager/sceneManager.h>
@@ -10,7 +17,7 @@ using namespace MySpace::Game;
 using namespace MySpace::Graphics;
 
 CBoxRenderer::CBoxRenderer(std::shared_ptr<CGameObject> ptr)
-	:CMeshRenderer(ptr), m_vSize(50, 50, 50),m_pBBox(nullptr)
+	:CMeshRenderer(ptr), m_vSize(1, 1, 1), m_pBBox(nullptr)
 {
 	SetBox(m_vSize);
 }
@@ -63,6 +70,7 @@ bool CBoxRenderer::Draw()
 	m_pBBox->SetWorld(&mW);
 #pragma endregion
 
+	//--- インスタンシング描画依頼
 	this->SetInstancing(m_pBBox.get());
 	//m_pBBox->Draw();
 

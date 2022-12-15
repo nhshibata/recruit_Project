@@ -20,6 +20,10 @@ namespace MySpace
 	{
 		class CGameObject;
 	}
+	namespace Debug
+	{
+		class ImGuiManager;
+	}
 }
 #pragma endregion
 		
@@ -71,7 +75,7 @@ namespace MySpace
 			_NODISCARD std::list<T> MovingInList(std::list<T> list, T newT, int index);
 			// *@子要素の表示
 			// *@孫の表示などを行うため、再帰する
-			void DispChild(std::weak_ptr<MySpace::Game::CGameObject> obj);
+			void DispChild(MySpace::Debug::ImGuiManager* manager, std::weak_ptr<MySpace::Game::CGameObject> obj);
 
 		public:
 			CHierachy();
@@ -79,7 +83,7 @@ namespace MySpace
 
 			void Init();
 			void Uninit();
-			void Update();
+			void Update(MySpace::Debug::ImGuiManager*);
 
 			void SetPath(std::string name) { m_savePath = name; };
 			// *sceneファイルの再取得

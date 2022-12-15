@@ -88,12 +88,12 @@ int CModelManager::SceneUnload()
 	}
 	return cnt;
 #else
-	for (auto & image : m_ResourceMap)
+	for (auto & image : m_aResourceMap)
 	{
 		// ŠŽŒ ‚ªŽ©g‚µ‚©Ž‚Á‚Ä‚¢‚È‚¯‚ê‚Î‰ð•ú
 		if (image.second.use_count() == 1)
 		{
-			image.second->Unload();
+			image.second->Release();
 			image.second.reset();
 		}
 	}

@@ -35,7 +35,7 @@
 
 #endif // !_DEBUG
 
-#define EFFECT_PATH				u"../../Data/effect/"
+#define EFFECT_PATH				u"../Data/effect/"
 //#define EFFECT_PATH(name)  std::u16string("a")
 //#define EFFECT_PATH3(name)  u\FORDER_DIR(Data/effect/\name)
 

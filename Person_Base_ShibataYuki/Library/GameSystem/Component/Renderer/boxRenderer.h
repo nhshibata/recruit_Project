@@ -1,11 +1,17 @@
-
+//=========================================================
+// [boxRenderer.h] 
+// 作成: 2022/06/27
+// 更新: 2022/12/10 インスタンシング描画対応
+//---------------------------------------------------------
+// 3D描画
+//=========================================================
 
 #ifndef __BOX_RENDERER_COMPONENT_H__
 #define __BOX_RENDERER_COMPONENT_H__
 
+//--- インクルード部
 #include <GraphicsSystem/Render/box.h>
 #include <GameSystem/Component/Renderer/meshRenderer.h>
-
 
 namespace MySpace
 {
