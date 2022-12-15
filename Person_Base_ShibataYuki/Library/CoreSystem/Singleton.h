@@ -40,15 +40,18 @@ namespace MySpace
 			// 代入禁止
 			void operator=(const CSingleton<T> t) = delete;
 
-#define LOCAL_PATTERN 0
+#define LOCAL_PATTERN !_DEBUG
 #if LOCAL_PATTERN
 			//--- 静的変数の使用
 			static inline T& Get() { static T pInstance; return pInstance; }
-			//static inline T& Get() { return *pInstance; }
+			// *@シングルトン破棄
+			static inline void Create() {  };
+			// *@シングルトン破棄
+			static inline void Destroy() { }
 #else
 			//--- 動的に作成
 		private:
-			static inline T* m_pInstance;
+			static inline T* m_pInstance = nullptr;
 
 		public:
 			// *@シングルトン取得

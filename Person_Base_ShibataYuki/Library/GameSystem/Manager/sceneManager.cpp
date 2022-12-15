@@ -61,14 +61,14 @@ void CSceneManager::Update()
 	// “–‚½‚è”»’è‚ÌŠm”F
 	m_pCollisionSystem->CollisionCheck();
 }
-void CSceneManager::FixedUpdate()
+void CSceneManager::FixedUpdateScene()
 {
 	for (auto & scene : m_aScenes)
 	{
 		scene->FixedUpdate();
 	}
 }
-void CSceneManager::Draw()
+void CSceneManager::DrawScene()
 {
 	for (auto & scene : m_aScenes)
 	{
