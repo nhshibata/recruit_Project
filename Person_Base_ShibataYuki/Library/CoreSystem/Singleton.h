@@ -40,7 +40,7 @@ namespace MySpace
 			// ‘ã“ü‹Ö~
 			void operator=(const CSingleton<T> t) = delete;
 
-#define LOCAL_PATTERN !_DEBUG
+#define LOCAL_PATTERN _DEBUG
 #if LOCAL_PATTERN
 			//--- Ã“I•Ï”‚Ìg—p
 			static inline T& Get() { static T pInstance; return pInstance; }
