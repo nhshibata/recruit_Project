@@ -1,10 +1,16 @@
-
+//=========================================================
+// [imGuiManager.h]
+// 作成:2022/07/10
+//---------------------
+// ImGui管理ｸﾗｽ
+//=========================================================
 
 #ifndef __IMGUI_MANAGER_H__
 #define __IMGUI_MANAGER_H__
 
 #if BUILD_MODE
 
+//--- インクルード部
 #include <cctype>
 #include <stdio.h>
 #include <CoreSystem/Util/stl.h>
@@ -12,12 +18,6 @@
 #include <CoreSystem/system.h>
 
 #include <ImGui/imgui.h>
-#include <ImGui/imgui_impl_win32.h>
-#include <ImGui/imgui_impl_dx11.h>
-#include <ImGui/imgui_internal.h>
-#include <ImGui/imstb_rectpack.h>
-#include <ImGui/imstb_textedit.h>
-#include <ImGui/imstb_truetype.h>
 
 #include "D3D11.h"
 
@@ -62,7 +62,7 @@ namespace MySpace
 			//--- 列挙体定義
 			// *@マウスの状態を確認するフラグ
 			// *@2進数により複数状態を保持する
-			enum EIsHovered	
+			enum EMouseHovered	
 			{
 				MAX_HOVERD = 7,
 				HOVERED_NONE	= 0,
@@ -79,7 +79,7 @@ namespace MySpace
 				Debug,
 				Release,
 			};
-
+			//--- エイリアス
 			using MapString = std::map<std::string, int>;
 			using MapStringPair = std::pair<std::string, int>;
 
@@ -88,11 +88,11 @@ namespace MySpace
 			bool m_bPause;								// ポーズ
 			bool m_bOneFlame;							// 1フレーム進行
 			bool m_bEditFlg;							// 編集フラグ
-			std::weak_ptr<CDebugCamera> m_pDebugCamera;	// デバッグ用ｶﾒﾗﾎﾟｲﾝﾀ
 			std::shared_ptr<CGameObject> m_pDebugObj;	// デバッグ用ｶﾒﾗﾎﾟｲﾝﾀを保持するオブジェクト(ここで保持しないと破棄される)
+			std::weak_ptr<CDebugCamera> m_pDebugCamera;	// デバッグ用ｶﾒﾗﾎﾟｲﾝﾀ
 			
-			MapString m_debugMap;						// デバッグログ用map
-			EIsHovered m_eHover = EIsHovered::HOVERED_NONE;	// マウス等選択中か列挙体(bit)
+			MapString m_aDebugMap;						// デバッグログ用map
+			EMouseHovered m_eHover = EMouseHovered::HOVERED_NONE;	// マウス等選択中か列挙体(bit)
 			bool m_bSceneRender;						// シーンレンダーフラグ
 														
 			std::shared_ptr<CInspector> m_pInspector;	// インスペクター
@@ -105,6 +105,7 @@ namespace MySpace
 			//--- メンバ関数
 			ImGuiManager();
 			//~ImGuiManager() {};
+			// *@ログ表示
 			void DispLog();
 			// *@ポーズ処理
 			void Pause();													
@@ -137,38 +138,43 @@ namespace MySpace
 
 			//--- マウス等確認
 			// *@マウスの状態取得
-			inline EIsHovered GetHover() { return m_eHover; };
+			inline EMouseHovered GetHover() { return m_eHover; };
 			// *@指定の状態か確認
-			inline bool IsHover(EIsHovered hover) { return m_eHover & hover; };
+			inline bool IsHover(EMouseHovered hover) { return m_eHover & hover; };
 			// *@ビットを立てる
-			inline void UpHover(EIsHovered hover)
+			inline void UpHover(EMouseHovered hover)
 			{
-				m_eHover = static_cast<EIsHovered>(m_eHover | hover);
+				m_eHover = static_cast<EMouseHovered>(m_eHover | hover);
 			}
 			// *@ビットが立っていたら下す
-			inline void DownHover(EIsHovered hover)
+			inline void DownHover(EMouseHovered hover)
 			{
 				if (m_eHover & hover)
 				{
-					m_eHover = static_cast<EIsHovered>(m_eHover ^ hover);
+					m_eHover = static_cast<EMouseHovered>(m_eHover ^ hover);
 				}
 			}
+			// *@マウス状態取得用関数セット
+			void HoverStateSet();
 
+			// *@ログ表示
 			void DebugLog(std::string log)
 			{
-				auto it = m_debugMap.find(log);
-				if (it != m_debugMap.end())
+				auto it = m_aDebugMap.find(log);
+				if (it != m_aDebugMap.end())
 				{
 					it->second = it->second + 1;
 					return;
 				}
-				m_debugMap.insert(MapStringPair(log, 0));
+				m_aDebugMap.insert(MapStringPair(log, 0));
 			};
 
+			//--- レンダーターゲット関連
 			ID3D11RenderTargetView* GetRTV();
 			ID3D11DepthStencilView* GetDSV();
 			void SceneRender();
 			void SceneRenderClear();
+			void SceneGizmo();
 			bool IsSceneRender() { return m_bSceneRender; }
 
 		};

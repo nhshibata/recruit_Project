@@ -45,7 +45,7 @@ void CInspector::Uninit()
 {
 
 }
-void CInspector::Update()
+void CInspector::Update(ImGuiManager* manager)
 {
 	ImGui::PushStyleColor(ImGuiCol_TitleBgActive, ImVec4(0.0f, 0.7f, 0.2f, 1.0f));
 	ImGui::PushStyleColor(ImGuiCol_TitleBg, ImVec4(0.0f, 0.3f, 0.1f, 1.0f));
@@ -69,11 +69,7 @@ void CInspector::Update()
 	// ƒƒjƒ…[•\Ž¦
 	DispPopUpMenuObject();
 	
-	if (ImGui::IsWindowHovered())
-	{	
-		ImGuiManager::Get().UpHover(ImGuiManager::EIsHovered::HOVERED_WINDOW);
-		ImGui::Text("aiueu");
-	}
+	manager->HoverStateSet();
 
 	if (ImGui::BeginMenuBar())
 	{
@@ -85,6 +81,7 @@ void CInspector::Update()
 				m_isComponent = !m_isComponent;
 			}
 
+			// FIXME:Îß²ÝÀºËß°‚µ‚Ä‚é‚Ì‚Ý–â‘è‚ ‚è
 			if (ImGui::MenuItem("Copy"))
 			{
 				CopyGameObject();

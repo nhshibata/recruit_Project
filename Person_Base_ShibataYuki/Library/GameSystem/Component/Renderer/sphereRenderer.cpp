@@ -1,4 +1,12 @@
+//=========================================================
+// [sphereRenderer.cpp]
+// 作成: 2022/06/27
+// 更新: 2022/12/10 インスタンシング描画対応
+//---------------------------------------------------------
+// 3D描画
+//=========================================================
 
+//--- インクルード部
 #include <GameSystem/Component/Renderer/sphereRenderer.h>
 #include <GameSystem/Component/Transform/transform.h>
 #include <GameSystem/Manager/sceneManager.h>
@@ -8,7 +16,7 @@
 using namespace MySpace::Game;
 
 CSphereRenderer::CSphereRenderer(std::shared_ptr<CGameObject> ptr)
-	:CMeshRenderer(ptr), m_fRadius(50),m_pBSphere(nullptr)
+	:CMeshRenderer(ptr), m_fRadius(1),m_pBSphere(nullptr)
 {
 	SetSphere(m_fRadius);
 }
@@ -17,22 +25,30 @@ CSphereRenderer::~CSphereRenderer()
 	m_pBSphere->Fin();
 	m_pBSphere.reset();
 }
+
 void CSphereRenderer::Awake()
 {	
-	if (!m_pBSphere)SetSphere(m_fRadius);
+	if (!m_pBSphere)
+		SetSphere(m_fRadius);
 }
+
 void CSphereRenderer::Init()
 {
 	CMeshRenderer::Init();
 }
+
 void CSphereRenderer::Update()
 {
 	CMeshRenderer::Update();
-	
 }
+
 bool CSphereRenderer::Draw()
 {
-	if (!CMeshRenderer::Draw())return false;
+	if (!CMeshRenderer::Draw())
+		return false;
+	if (!m_pBSphere)
+		return false;
+
 	m_pBSphere->SetMaterial(GetMaterial());
 
 	XMVECTOR vCenter = XMLoadFloat3(&GetCenter());
@@ -42,14 +58,16 @@ bool CSphereRenderer::Draw()
 	mWorld = XMMatrixTranslationFromVector(vCenter);
 	XMFLOAT4X4 mW;
 	XMStoreFloat4x4(&mW, mWorld);
-	if (!m_pBSphere)return false;
 
 	m_pBSphere->SetWorld(&mW);
+
+	//--- インスタンシング描画依頼
 	this->SetInstancing(m_pBSphere.get());
 
 	//m_pBSphere->Draw();
 	return true;
 }
+
 HRESULT CSphereRenderer::SetSphere(float radius)
 {
 	HRESULT hr = S_OK;

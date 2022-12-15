@@ -187,6 +187,8 @@
     </ClCompile>
     <ClCompile Include="..\Library\Source\spel\mage.cpp" />
     <ClCompile Include="..\Library\Source\spel\mageSociety.cpp" />
+    <ClCompile Include="..\Library\Source\spel\partner.cpp" />
+    <ClCompile Include="..\Library\Source\spel\partnerNode.cpp" />
     <ClCompile Include="..\Library\Source\startUp.cpp" />
   </ItemGroup>
   <ItemGroup>
@@ -205,6 +207,8 @@
     </ClInclude>
     <ClInclude Include="..\Library\Source\spel\mage.h" />
     <ClInclude Include="..\Library\Source\spel\mageSociety.h" />
+    <ClInclude Include="..\Library\Source\spel\partner.h" />
+    <ClInclude Include="..\Library\Source\spel\partnerNode.h" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="AISystem.vcxproj">

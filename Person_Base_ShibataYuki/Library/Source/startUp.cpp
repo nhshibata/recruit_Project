@@ -86,9 +86,9 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 {
 	using namespace MySpace::SceneManager;
 
-	_CrtSetDbgFlag(_CRTDBG_ALLOC_MEM_DF | _CRTDBG_LEAK_CHECK_DF);
+	//_CrtSetDbgFlag(_CRTDBG_ALLOC_MEM_DF | _CRTDBG_LEAK_CHECK_DF);
 
-	_CrtDumpMemoryLeaks();
+	//_CrtDumpMemoryLeaks();
 
 	// *@シーン作成時に呼び出すｸﾗｽ
 	// *@静的なシーン作成の場合、動的な作成はファイル書き込みと読み込みを行う
@@ -119,7 +119,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 	// 開始
 	// ウィンドウの生成などを行う
 	StartUp(hInstance, hPrevInstance, lpCmdLine, nCmdShow);
-	_CrtDumpMemoryLeaks();
+	//_CrtDumpMemoryLeaks();
 
 	// ゲームループ
 	MainLoop();

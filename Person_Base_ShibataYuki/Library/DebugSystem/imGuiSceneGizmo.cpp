@@ -25,13 +25,15 @@ void CMyGizmo::Init()
 	m_CurrentGizmoOperation = ImGuizmo::TRANSLATE;
 	m_CurrentGizmoMode = ImGuizmo::LOCAL;
 	ImGuizmo::AllowAxisFlip(false);
-
+	
 }
-void CMyGizmo::EditTransform(const CCamera& camera, CTransform* editTransform)
+
+void CMyGizmo::ViewGizmo(ImGuiManager* manager, const CCamera& camera, CTransform* editTransform)
 {
 	Matrix4x4 matrix = editTransform->GetWorldMatrix();
 	//ImGuizmo::SetDrawlist();
 	
+	//--- 状態変更
 	if (GetAsyncKeyState('W'))
 		m_CurrentGizmoOperation = ImGuizmo::TRANSLATE;
 	if (GetAsyncKeyState('E'))
@@ -39,57 +41,19 @@ void CMyGizmo::EditTransform(const CCamera& camera, CTransform* editTransform)
 	if (GetAsyncKeyState('R')) // r Key
 		m_CurrentGizmoOperation = ImGuizmo::SCALE;
 
-	//--- 状態変更
-	if (ImGui::RadioButton(u8"Translate", m_CurrentGizmoOperation == ImGuizmo::TRANSLATE))
-		m_CurrentGizmoOperation = ImGuizmo::TRANSLATE;
-	ImGui::SameLine();
-	if (ImGui::RadioButton(u8"Rotate", m_CurrentGizmoOperation == ImGuizmo::ROTATE))
-		m_CurrentGizmoOperation = ImGuizmo::ROTATE;
-	ImGui::SameLine();
-	if (ImGui::RadioButton(u8"Scale", m_CurrentGizmoOperation == ImGuizmo::SCALE))
-	{
-		m_CurrentGizmoOperation = ImGuizmo::SCALE;
-		m_CurrentGizmoMode = ImGuizmo::LOCAL;
-	}
-
 	XMFLOAT4X4 oldMatrix = matrix;
 	XMFLOAT3 matrixTranslation, matrixRotation, matrixScale;
 	// マトリックスから情報を得る
 	ImGuizmo::DecomposeMatrixToComponents((float*)oldMatrix.m, (float*)&matrixTranslation, (float*)&matrixRotation, (float*)&matrixScale);
 	// slider + input
-	ImGui::DragFloat3("Tr", (float*)&matrixTranslation);
+	/*ImGui::DragFloat3("Tr", (float*)&matrixTranslation);
 	ImGui::DragFloat3("Rt", (float*)&matrixRotation);
-	ImGui::DragFloat3("Sc", (float*)&matrixScale);
+	ImGui::DragFloat3("Sc", (float*)&matrixScale);*/
 	ImGuizmo::RecomposeMatrixFromComponents((float*)&matrixTranslation, (float*)&matrixRotation, (float*)&matrixScale, (float*)oldMatrix.m);
 
 	//--- ﾛｰｶﾙ・ﾜｰﾙﾄﾞ
-	if (m_CurrentGizmoOperation != ImGuizmo::SCALE)
-	{
-		if (ImGui::RadioButton("Local", m_CurrentGizmoMode == ImGuizmo::LOCAL))
-			m_CurrentGizmoMode = ImGuizmo::LOCAL;
-		ImGui::SameLine();
-		if (ImGui::RadioButton("World", m_CurrentGizmoMode == ImGuizmo::WORLD))
-			m_CurrentGizmoMode = ImGuizmo::WORLD;
-	}
 	if (ImGui::IsKeyPressed(83) || ImGui::IsKeyPressed(ImGuiKey_::ImGuiKey_Enter) || GetAsyncKeyState(VK_LSHIFT))
 		m_bUseSnap = !m_bUseSnap;
-	ImGui::Checkbox("Snap", &m_bUseSnap);
-	ImGui::SameLine();
-	switch (m_CurrentGizmoOperation)
-	{
-	case ImGuizmo::TRANSLATE:
-	//snap = config.mSnapTranslation;
-	ImGui::InputFloat3("Snap", &m_vSnapMove.x);
-	break;
-	case ImGuizmo::ROTATE:
-	//snap = config.mSnapRotation;
-	ImGui::InputFloat("Angle Snap", &m_vSnapMove.x);
-	break;
-	case ImGuizmo::SCALE:
-	//snap = config.mSnapScale;
-	ImGui::InputFloat("Scale Snap", &m_vSnapMove.x);
-	break;
-	}
 
 	ImGuiIO& io = ImGui::GetIO();
 	//--- ビューポート
@@ -110,7 +74,7 @@ void CMyGizmo::EditTransform(const CCamera& camera, CTransform* editTransform)
 	ImGuizmo::DecomposeMatrixToComponents((float*)&oldMatrix.m, (float*)&oldTrans, (float*)&oldRot, (float*)&oldScal);
 
 	XMFLOAT4X4 local = worldMatrix;
-	// 親がいる
+	//--- 親がいる
 	if (auto obj = editTransform->GetParent();obj.lock())
 	{
 		// ワールド座標の逆行列(lcal)
@@ -124,20 +88,74 @@ void CMyGizmo::EditTransform(const CCamera& camera, CTransform* editTransform)
 
 	// 行列設定
 	editTransform->SetWorldMatrix(localTrans, localRot, localScal);
-
-	// 選択状態設定
+	
+	//--- 選択状態設定
 	if (ImGuizmo::IsUsing())
 	{
-		ImGuiManager::Get().UpHover(ImGuiManager::EIsHovered::HOVERED_GIZMO);
+		manager->UpHover(ImGuiManager::EMouseHovered::HOVERED_GIZMO);
 	}
 	else
-		ImGuiManager::Get().DownHover(ImGuiManager::EIsHovered::HOVERED_GIZMO);
+		manager->DownHover(ImGuiManager::EMouseHovered::HOVERED_GIZMO);
 
-	//--- ｶﾒﾗの姿勢
-	auto viewMatrix = CCamera::GetMain()->GetViewMatrix().m;
+	auto viewMatrix = CCamera::GetMain()->GetViewMatrix().m;	// ｶﾒﾗの姿勢
+
+	//--- ギズモの表示
 	//if (CScreen::ScreenJudg(Vector3(view._41, view._42, view._43)))
 	{
-		ImGuizmo::ViewManipulate((float*)&viewMatrix, 8, ImVec2(io.DisplaySize.x, io.DisplaySize.y), ImVec2(128, 128), 0x10101010);
+		ImGuizmo::ViewManipulate(&viewMatrix[0][0], 8, ImVec2(io.DisplaySize.x, io.DisplaySize.y), ImVec2(128, 128), 0x10101010);
 	}
+
+}
+
+void CMyGizmo::EditTransform(MySpace::Debug::ImGuiManager* manager)
+{
+	manager->HoverStateSet();
+
+	if (ImGui::RadioButton(u8"Translate", m_CurrentGizmoOperation == ImGuizmo::TRANSLATE))
+		m_CurrentGizmoOperation = ImGuizmo::TRANSLATE;
+	ImGui::SameLine();
+	if (ImGui::RadioButton(u8"Rotate", m_CurrentGizmoOperation == ImGuizmo::ROTATE))
+		m_CurrentGizmoOperation = ImGuizmo::ROTATE;
+	ImGui::SameLine();
+	if (ImGui::RadioButton(u8"Scale", m_CurrentGizmoOperation == ImGuizmo::SCALE))
+	{
+		m_CurrentGizmoOperation = ImGuizmo::SCALE;
+		m_CurrentGizmoMode = ImGuizmo::LOCAL;
+	}
+
+	if (m_CurrentGizmoOperation != ImGuizmo::SCALE)
+	{
+		if (ImGui::RadioButton("Local", m_CurrentGizmoMode == ImGuizmo::LOCAL))
+			m_CurrentGizmoMode = ImGuizmo::LOCAL;
+		ImGui::SameLine();
+		if (ImGui::RadioButton("World", m_CurrentGizmoMode == ImGuizmo::WORLD))
+			m_CurrentGizmoMode = ImGuizmo::WORLD;
+	}
+
+	ImGui::Checkbox("Snap", &m_bUseSnap);
+	ImGui::SameLine();
+	switch (m_CurrentGizmoOperation)
+	{
+		case ImGuizmo::TRANSLATE:
+			//snap = config.mSnapTranslation;
+			ImGui::InputFloat3("Snap", &m_vSnapMove.x);
+			break;
+		case ImGuizmo::ROTATE:
+			//snap = config.mSnapRotation;
+			ImGui::InputFloat("Angle Snap", &m_vSnapMove.x);
+			break;
+		case ImGuizmo::SCALE:
+			//snap = config.mSnapScale;
+			ImGui::InputFloat("Scale Snap", &m_vSnapMove.x);
+			break;
+	}
+
+	auto viewMatrix = CCamera::GetMain()->GetViewMatrix().m;	// ｶﾒﾗの姿勢
+	auto projMatrix = CCamera::GetMain()->GetProjMatrix().m;	// プロジェクション行列
+	XMFLOAT4X4 mtx;												// 初期値
+	DirectX::XMStoreFloat4x4(&mtx, DirectX::XMMatrixIdentity());
+	//--- グリッドの表示
+	ImGuizmo::DrawGrid(&viewMatrix[0][0], &projMatrix[0][0], &mtx.m[0][0], 1000);
+	//ImGuizmo::DrawCubes(&viewMatrix[0][0], &projMatrix[0][0], &mtx.m[0][0], 1);
 
 }

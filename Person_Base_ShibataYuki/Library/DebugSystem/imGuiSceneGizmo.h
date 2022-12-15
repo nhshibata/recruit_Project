@@ -24,6 +24,11 @@ namespace MySpace
 		class CCamera;
 		class CTransform;
 	}
+
+	namespace Debug
+	{
+		class ImGuiManager;
+	}
 }
 #pragma endregion
 
@@ -39,6 +44,7 @@ namespace MySpace
 		class CMyGizmo
 		{
 		private:
+			//--- メンバ変数
 			ImGuizmo::OPERATION m_CurrentGizmoOperation;				// 移動・回転・拡縮状態
 			ImGuizmo::MODE m_CurrentGizmoMode;							// ローカル or ワールド
 			bool m_bUseSnap = true;										// snap状態
@@ -47,10 +53,12 @@ namespace MySpace
 			float m_aBoundsSnapMove[3] = { 0.1f,0.1f,0.1f };			// snap時ではない時の移動量
 			bool m_bBoundSizing = false;
 			bool m_bBoundSizingSnap = false;
-		public:
 
+		public:
+			//--- メンバ関数
 			void Init();
-			void EditTransform(const CCamera& camera, CTransform* editObj);
+			void ViewGizmo(MySpace::Debug::ImGuiManager* manager, const CCamera& camera, CTransform* editObj);
+			void EditTransform(MySpace::Debug::ImGuiManager* manager);
 		};
 	}
 }

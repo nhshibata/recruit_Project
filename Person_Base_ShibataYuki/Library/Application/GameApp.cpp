@@ -127,7 +127,7 @@ void CGameApp::Init(Application& pApp)
 void CGameApp::Uninit(Application& pApp)const
 {
 
-	_CrtDumpMemoryLeaks();
+	//_CrtDumpMemoryLeaks();
 
 	// 音終了
 	CSound::Fin();
@@ -146,7 +146,7 @@ void CGameApp::Uninit(Application& pApp)const
 	// 入力
 	CInput::Fin();
 	CGamePad::Uninit();
-	_CrtDumpMemoryLeaks();
+	//_CrtDumpMemoryLeaks();
 
 	//--- シングルトン破棄
 	CTweenManager::Destroy();
@@ -159,7 +159,7 @@ void CGameApp::Uninit(Application& pApp)const
 	CSceneManager::Destroy();
 	CTypeSaveManager::Destroy();
 	CDXDevice::Destroy();
-	_CrtDumpMemoryLeaks();
+	//_CrtDumpMemoryLeaks();
 
 }
 // 通常更新
@@ -230,6 +230,8 @@ void CGameApp::Draw(Application& pApp)
 		CEffekseer::Get().Draw();
 	}
 
+	ImGuiManager::Get().SceneGizmo();
+
 	//--- 描画先切替
 	if (ImGuiManager::Get().IsSceneRender())
 	{
@@ -238,7 +240,7 @@ void CGameApp::Draw(Application& pApp)
 	}
 
 #ifdef BUILD_MODE
-	// ImGuiの描画
+	//--- ImGuiの描画
 	ImGuiManager::Get().Render();
 #endif // BUILD_MODE
 

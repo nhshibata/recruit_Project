@@ -88,7 +88,7 @@ int CImageResourceManager::SceneUnload()
 	}
 	return cnt;
 #else
-	for (auto & image : m_ResourceMap)
+	for (auto & image : m_aResourceMap)
 	{
 		// ŠŒ ‚ª©g‚µ‚©‚Á‚Ä‚¢‚È‚¯‚ê‚Î‰ğ•ú
 		if (image.second.use_count() == 1)

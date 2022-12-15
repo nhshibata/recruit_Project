@@ -13,6 +13,7 @@
 #ifndef __DECORATOR_NODE_H__
 #define __DECORATOR_NODE_H__
 
+//--- íËêîíËã`
 #define AID_DEFINITION_IS_ACTION				bool IsExecute(AI::CAISystem* sys)
 #define AID_IMPLEMENTATION_IS_ACTION(type)		bool type##::IsExecute(AI::CAISystem* sys)
 

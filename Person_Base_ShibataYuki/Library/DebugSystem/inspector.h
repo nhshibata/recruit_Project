@@ -29,6 +29,11 @@ namespace MySpace
 		class CGameObject;
 		class CRectTransform;
 	}
+	
+	namespace Debug
+	{
+		class ImGuiManager;
+	}
 }
 #pragma endregion
 
@@ -79,7 +84,7 @@ namespace MySpace
 
 			void Init();
 			void Uninit();
-			void Update();
+			void Update(MySpace::Debug::ImGuiManager*);
 			void Draw();
 
 			_NODISCARD inline std::weak_ptr<CGameObject> GetSelectObject() { return  m_spViewObj; }

@@ -53,7 +53,7 @@ void CHierachy::Init()
 void CHierachy::Uninit()
 {
 }
-void CHierachy::Update()
+void CHierachy::Update(ImGuiManager* manager)
 {
 	ImGui::PushStyleColor(ImGuiCol_TitleBgActive, ImVec4(0.0f, 0.7f, 0.2f, 1.0f));
 	ImGui::PushStyleColor(ImGuiCol_TitleBg, ImVec4(0.0f, 0.3f, 0.1f, 1.0f));
@@ -66,10 +66,7 @@ void CHierachy::Update()
 	if (!CSceneManager::Get().GetActiveScene())
 		return;
 
-	if (ImGui::IsWindowHovered())
-	{
-		ImGuiManager::Get().UpHover(ImGuiManager::EIsHovered::HOVERED_WINDOW);
-	}
+	ImGuiManager::Get().HoverStateSet();
 
 	//--- メニューバー
 	if (ImGui::BeginMenuBar())
@@ -88,55 +85,56 @@ void CHierachy::Update()
 			}
 			ImGui::EndMenu();
 		}
+
 		//--- オブジェクト生成
 		if (ImGui::BeginMenu("GameObject"))
 		{
 			if (ImGui::MenuItem("Empty"))
 			{
 				auto obj = CSceneManager::Get().GetActiveScene()->GetObjManager()->CreateGameObject();
-				ImGuiManager::Get().GetInspector()->SetSelectGameObject(obj);
+				manager->GetInspector()->SetSelectGameObject(obj);
 			}
 			if (ImGui::MenuItem("Model"))
 			{
 				auto obj = CGameObject::CreateObject().lock();
 				obj->AddComponent<CModelRenderer>();
 				// ｺﾝﾎﾟｰﾈﾝﾄの追加後
-				ImGuiManager::Get().GetInspector()->SetSelectGameObject(obj);
+				manager->GetInspector()->SetSelectGameObject(obj);
 			}
 			if (ImGui::MenuItem("Billboard"))
 			{
 				auto obj = CGameObject::CreateObject().lock();
 				obj->AddComponent<Game::CBillboardRenderer>();
 				// ｺﾝﾎﾟｰﾈﾝﾄの追加後
-				ImGuiManager::Get().GetInspector()->SetSelectGameObject(obj);
+				manager->GetInspector()->SetSelectGameObject(obj);
 			}
 			if (ImGui::MenuItem("Sphere"))
 			{
 				auto obj = CGameObject::CreateObject().lock();
 				obj->AddComponent<Game::CSphereRenderer>();
 				// ｺﾝﾎﾟｰﾈﾝﾄの追加後
-				ImGuiManager::Get().GetInspector()->SetSelectGameObject(obj);
+				manager->GetInspector()->SetSelectGameObject(obj);
 			}
 			if (ImGui::MenuItem("Box"))
 			{
 				auto obj = CGameObject::CreateObject().lock();
 				obj->AddComponent<Game::CBoxRenderer>();
 				// ｺﾝﾎﾟｰﾈﾝﾄの追加後
-				ImGuiManager::Get().GetInspector()->SetSelectGameObject(obj);
+				manager->GetInspector()->SetSelectGameObject(obj);
 			}
 			if (ImGui::MenuItem("Polygon"))
 			{
 				auto obj = CGameObject::CreateObject().lock();
 				obj->AddComponent<Game::CPolygonRenderer>();
 				// ｺﾝﾎﾟｰﾈﾝﾄの追加後
-				ImGuiManager::Get().GetInspector()->SetSelectGameObject(obj);
+				manager->GetInspector()->SetSelectGameObject(obj);
 			}
 			if (ImGui::MenuItem("Text"))
 			{
 				auto obj = CGameObject::CreateObject().lock();
 				obj->AddComponent<Game::CTextRenderer>();
 				// ｺﾝﾎﾟｰﾈﾝﾄの追加後
-				ImGuiManager::Get().GetInspector()->SetSelectGameObject(obj);
+				manager->GetInspector()->SetSelectGameObject(obj);
 			}
 			ImGui::EndMenu();
 		}
@@ -166,7 +164,7 @@ void CHierachy::Update()
 		// 選択ボタン、ウィンドウ表示
 		if (ImGui::Button(object->GetName().c_str()) )
 		{
-			ImGuiManager::Get().GetInspector()->SetSelectGameObject(object);
+			manager->GetInspector()->SetSelectGameObject(object);
 			break;
 		}
 
@@ -181,7 +179,7 @@ void CHierachy::Update()
 			object->GetTransform()->AddChild(select->lock()->GetComponent<CTransform>());
 
 		//--- 子要素の表示
-		DispChild(object);
+		DispChild(manager, object);
 	}
 	
 	ImGui::End();
@@ -249,7 +247,7 @@ void CHierachy::DispSaveLoadMenu()
 }
 
 #pragma region GAME_OBJECT
-void CHierachy::DispChild(std::weak_ptr<MySpace::Game::CGameObject> object)
+void CHierachy::DispChild(ImGuiManager* manager, std::weak_ptr<MySpace::Game::CGameObject> object)
 {
 	bool select = false;
 
@@ -276,7 +274,7 @@ void CHierachy::DispChild(std::weak_ptr<MySpace::Game::CGameObject> object)
 #pragma region CHILD
 				if (select = ImGui::Button(childName); select)
 				{
-					ImGuiManager::Get().GetInspector()->SetSelectGameObject(child);
+					manager->GetInspector()->SetSelectGameObject(child);
 				}
 
 				// ドラッグ設定
@@ -293,7 +291,7 @@ void CHierachy::DispChild(std::weak_ptr<MySpace::Game::CGameObject> object)
 				//ImGui::SameLine();
 				//--- 子要素を更に表示(再帰)
 				//if (auto childObj = child.lock()->GetTransform()->GetChild(0); childObj.lock())
-				DispChild(child.lock());
+				DispChild(manager, child.lock());
 
 				//ImGui::Separator();
 

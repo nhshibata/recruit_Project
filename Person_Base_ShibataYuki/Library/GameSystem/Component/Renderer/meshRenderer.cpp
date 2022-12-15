@@ -31,11 +31,9 @@ CMeshRenderer::CMeshRenderer(std::shared_ptr<CGameObject> owner)
 }
 CMeshRenderer::~CMeshRenderer()
 {
-
 }
 void CMeshRenderer::Awake()
 {
-
 }
 void CMeshRenderer::Init()
 {
@@ -44,7 +42,6 @@ void CMeshRenderer::Init()
 }
 void CMeshRenderer::Update()
 {
-
 }
 bool CMeshRenderer::Draw()
 {
