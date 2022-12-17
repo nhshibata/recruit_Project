@@ -11,7 +11,7 @@
 #define __PARENT_NODE_H__
 
 //--- インクルード部
-#include "aiNode.h"
+#include <AISystem/Node/aiNode.h>
 #include <vector>
 
 namespace AI
@@ -27,7 +27,8 @@ namespace AI
 		ChildNode m_Child;
 
 	public:
-		
+		//--- メンバ関数
+
 		// *@確認
 		virtual bool IsTransition(CAISystem* sys) { return true; };
 

@@ -5,9 +5,10 @@
 // ssk先生参考
 //=========================================================
 
-//--- インクルード部
+//--- 警告抑止
 #define _CRT_SECURE_NO_WARNINGS
 
+//--- インクルード部
 #include <GraphicsSystem/Manager/shaderManager.h>
 #include <GraphicsSystem/DirectX/DXDevice.h>
 #include <d3dcompiler.h>
@@ -18,6 +19,7 @@
 
 using namespace MySpace::Graphics;
 
+//--- 静的変数
 static LPCWSTR g_pszCSODir = FORDER_DIR2(Data\\shader\\);
 static std::string g_szCSODir = FORDER_DIR(Data/shader/);
 const char* g_szShaderList[] = {
@@ -45,6 +47,7 @@ inline bool loadBinaryFile(std::vector<char>* pOut, const char* filepath)
 	file.read(pOut->data(), fileLength);
 	return true;
 }
+
 CShaderManager::CShaderManager()
 	:m_fTessellationAmount(24.0f)
 {
@@ -53,7 +56,7 @@ CShaderManager::CShaderManager()
 HRESULT CShaderManager::Init()
 {
 	HRESULT hr = S_OK;
-	auto device = CDXDevice::Get().GetDevice();
+	auto device = CDXDevice::Get()->GetDevice();
 
 	for (int cnt = 0 ; cnt < static_cast<int>(EShaderType::MAX); ++cnt)
 	{
@@ -157,7 +160,7 @@ bool CShaderManager::SetShaderParameters(
 	float tessellationAmount)
 {
 	HRESULT hr = S_OK;
-	ID3D11DeviceContext * pDC = CDXDevice::Get().GetDeviceContext();
+	ID3D11DeviceContext * pDC = CDXDevice::Get()->GetDeviceContext();
 	D3D11_MAPPED_SUBRESOURCE mappedResource;
 	//unsigned int bufferNumber;
 	MatrixBufferType* dataPtr;
@@ -236,7 +239,7 @@ void CShaderManager::Render(EShaderType etype, std::string cb, std::string vs, s
 }
 void CShaderManager::EndRender()
 {
-	ID3D11DeviceContext* pDC = CDXDevice::Get().GetDeviceContext();
+	ID3D11DeviceContext* pDC = CDXDevice::Get()->GetDeviceContext();
 	pDC->VSSetConstantBuffers(0, 1, nullptr);
 	//pDC->VSSetShader(nullptr, nullptr, 0);
 	//pDC->IASetInputLayout(nullptr);

@@ -9,7 +9,7 @@
 #define __SCENE_MANAGER_H__
 
 //--- インクルード部
-#include <CoreSystem/system.h>
+#include <CoreSystem/Singleton.h>
 #include <CoreSystem/Util/cerealCommon.h>
 
 #include <GameSystem/Scene/scene.h>
@@ -80,9 +80,9 @@ namespace MySpace
 			//--- メンバ変数	
 			std::weak_ptr<CScene> m_pCurrentScene;
 			SceneList m_aScenes;
-			std::string m_currentPath;
-			std::shared_ptr<CSceneTransitionDetection> m_sceneDetection;
+			std::string m_currentPath = std::string();
 
+			std::shared_ptr<CSceneTransitionDetection> m_sceneDetection;
 			std::shared_ptr<CCollisionSystem> m_pCollisionSystem;
 			std::shared_ptr<CDrawSystem> m_pDrawSystem;
 			std::shared_ptr<CNavMeshBake> m_pNavMesh;
@@ -98,7 +98,7 @@ namespace MySpace
 			void* FlagOn(CScene* scene)
 			{
 				m_bTransition = true;
-				CSceneManager::Get().SceneUnloaded<CSceneManager>(&CSceneManager::FlagOn, this);
+				CSceneManager::Get()->SceneUnloaded<CSceneManager>(&CSceneManager::FlagOn, this);
 					//std::bind(&CSceneManager::FlagOn, this, std::placeholders::_1));
 				return nullptr;
 			}

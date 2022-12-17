@@ -22,6 +22,7 @@ namespace MySpace
 		private:
 
 		public:
+			//--- ƒƒ“ƒoŠÖ”
 			CGraphicsBase() = default;
 			virtual ~CGraphicsBase() = default;
 

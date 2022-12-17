@@ -41,10 +41,10 @@ void CSpriteAnimation::Update()
 void CSpriteAnimation::SetImage(std::string name)
 {
 	// 管理クラスからポインタを受け取る
-	//if (CImageResourceManager::Get().Load(name))
+	//if (CImageResourceManager::Get()->Load(name))
 	{
 		m_ImageName = name;
-		m_pImage = CImageResourceManager::Get().GetResource(m_ImageName);
+		m_pImage = CImageResourceManager::Get()->GetResource(m_ImageName);
 	}
 }
 Vector2 CSpriteAnimation::GetUV(int no)

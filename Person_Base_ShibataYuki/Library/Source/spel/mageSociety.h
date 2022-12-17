@@ -26,6 +26,7 @@ namespace Spell
 	{
 	public:
 		static constexpr const char* TAG_NAME = "MageSociety";
+
 	private:
 		std::vector<std::weak_ptr<CMage>> m_spMages;
 

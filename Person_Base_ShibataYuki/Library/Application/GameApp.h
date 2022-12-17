@@ -21,6 +21,7 @@ namespace MySpace
 		class CGameApp
 		{
 		private:
+			//--- ƒƒ“ƒoŠÖ”
 			void BeginRender();
 			void EndRender();
 			

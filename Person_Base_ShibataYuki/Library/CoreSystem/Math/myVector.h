@@ -279,7 +279,7 @@ namespace MySpace
 				archive(CEREAL_NVP(x), CEREAL_NVP(y), CEREAL_NVP(z), CEREAL_NVP(w));
 			}
 		public:
-			Vector4() {};
+			Vector4() { x = y = z = w = 0; };
 			Vector4(float x1, float y1, float z1, float w1) { x = x1; y = y1; z = z1; w = w1; };
 			Vector4(float x1, float y1, float z1) { x = x1; y = y1; z = z1; w = 1; };
 			~Vector4() {};
@@ -339,7 +339,12 @@ namespace MySpace
 					CEREAL_NVP(_41), CEREAL_NVP(_42), CEREAL_NVP(_43), CEREAL_NVP(_44));
 			}
 		public:
-			Matrix4x4() {};
+			Matrix4x4() {
+				_11 = 0.0f; _12 = 0.0f; _13 = 0.0f; _14 = 0.0f;
+				_21 = 0.0f; _22 = 0.0f; _23 = 0.0f; _24 = 0.0f;
+				_31 = 0.0f; _32 = 0.0f; _33 = 0.0f; _34 = 0.0f;
+				_41 = 0.0f; _42 = 0.0f; _43 = 0.0f; _44 = 0.0f;
+			};
 			Matrix4x4(XMFLOAT4X4 mt) {
 				_11 = mt._11; _12 = mt._12; _13 = mt._13; _14 = mt._14;
 				_21 = mt._21; _22 = mt._22; _23 = mt._23; _24 = mt._24;
@@ -383,6 +388,14 @@ namespace MySpace
 				_31 *= mt._31; _32 *= mt._32; _33 *= mt._33; _34 *= mt._34;
 				_41 *= mt._41; _42 *= mt._42; _43 *= mt._43; _44 *= mt._44;
 			}
+
+			Matrix4x4 Identity() {
+				_11 = 1.0f; _12 = 0.0f; _13 = 0.0f; _14 = 0.0f;
+				_21 = 0.0f; _22 = 1.0f; _23 = 0.0f; _24 = 0.0f;
+				_31 = 0.0f; _32 = 0.0f; _33 = 1.0f; _34 = 0.0f;
+				_41 = 0.0f; _42 = 0.0f; _43 = 0.0f; _44 = 1.0f;
+				return *this;
+			};
 		};
 
 		class Quaternion : public XMFLOAT4
@@ -431,13 +444,22 @@ namespace MySpace
 
 			
 			void operator=(XMFLOAT4 c) { r = c.x; g = c.y; b = c.z; a = c.w; }
+			void operator=(XMFLOAT3 c) { r = c.x; g = c.y; b = c.z; }
 			void operator+=(Color c) { r += c.r; g += c.g; b += c.b; a += c.a; }
 			void operator-=(Color c) { r -= c.r; g -= c.g; b -= c.b; a -= c.a; }
 			void operator/=(Color c) { r /= c.r; g /= c.g; b /= c.b; a /= c.a; }
 			void operator*=(Color c) { r *= c.r; g *= c.g; b *= c.b; a *= c.a; }
 
+			//--- ”äŠr
+			bool operator==(XMFLOAT3 c) { return (r == c.x && g == c.y && b == c.z); }
+			bool operator==(XMFLOAT4 c) { return (r == c.x && g == c.y && b == c.z && a == c.w); }
+			bool operator!=(XMFLOAT3 c) { return !(*this == c); }
+			bool operator!=(XMFLOAT4 c) { return !(*this == c); }
+
 			// *@Vector4Žó‚¯“n‚µ
 			Vector4 operator()()	 { return Vector4(r, g, b, a); }
+
+			//--- ‰‰ŽZ
 			Color operator+(Color c) { return Color(r + c.r, g + c.g, b + c.b, a + c.a); }
 			Color operator-(Color c) { return Color(r - c.r, g - c.g, b - c.b, a - c.a); }
 			Color operator/(Color c) { return Color(r / c.r, g / c.g, b / c.b, a / c.a); }
@@ -452,6 +474,23 @@ namespace MySpace
 			{
 				return (this->r == color.r && this->g == color.g && this->b == color.b && this->a == color.a);
 			}
+
+			static inline Color Red()
+			{
+				return Color(1.0f, 0.0f, 0.0f, 1.0f);
+			}
+			
+			static inline Color Blue()
+			{
+				return Color(0.0f, 1.0f, 0.0f, 1.0f);
+			}
+			
+			static inline Color Blue()
+			{
+				return Color(0.0f, 0.0f, 1.0f, 1.0f);
+			}
+
+
 		};
 
 	}

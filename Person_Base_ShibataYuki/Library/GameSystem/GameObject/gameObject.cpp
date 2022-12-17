@@ -1,10 +1,12 @@
 //=========================================================
-// ゲームオブジェクト : 基底クラス
+// [CGameObject.cpp]
 //---------------------------------------------------------
 // 作成:2022/04/19 (火曜日)
 // 更新:2022/05/11 タグが一致するオブジェクトを全て取得する関数作成
 //			課題: 同一のコンポーネントを使う場合、mapは適切ではない
-// 更新:2022/11/14 コピーコンストラクタを改造、同一のコンポーネントを生成するように
+// 更新:2022/11/14 コピーコンストラクタを改造、同一のコンポーネントを生成するように変更
+//---------------------------------------------------------
+// ゲームオブジェクト : 基底クラス
 // 
 //=========================================================
 
@@ -38,15 +40,15 @@ static inline void CheckObj(CGameObject* obj)
 CGameObject::CGameObject()
 	:m_eState(E_ObjectState::ACTIVE)
 {
-	m_Tag = std::make_shared<CTag>();
-	m_Layer = std::make_shared<CLayer>();
+	m_pTag = std::make_shared<CTag>();
+	m_pLayer = std::make_shared<CLayer>();
 }
 CGameObject::CGameObject(std::string name)
 	:m_eState(E_ObjectState::ACTIVE)
 {
 	SetName(name);
-	m_Tag = std::make_shared<CTag>();
-	m_Layer = std::make_shared<CLayer>();
+	m_pTag = std::make_shared<CTag>();
+	m_pLayer = std::make_shared<CLayer>();
 }
 // コピーコンストラクタ
 CGameObject::CGameObject(const CGameObject & object)
@@ -57,10 +59,10 @@ CGameObject::CGameObject(const CGameObject & object)
 	this->m_objName = object.m_objName;
 #endif // BUILD_MODE
 
-	this->m_Transform = object.m_Transform;
+	this->m_pTransform = object.m_pTransform;
 	this->m_eState = object.m_eState;
-	this->m_Layer = object.m_Layer;
-	this->m_Tag = object.m_Tag;
+	this->m_pLayer = object.m_pLayer;
+	this->m_pTag = object.m_pTag;
 	//this->m_pComponent = object.m_pComponent;
 	// ｺﾝﾎﾟｰﾈﾝﾄの名前から同じｺﾝﾎﾟｰﾈﾝﾄを追加
 	// TODO: 各ｺﾝﾎﾟｰﾈﾝﾄの値のｺﾋﾟｰは行えない
@@ -81,7 +83,7 @@ CGameObject::~CGameObject()
 }
 void CGameObject::OnLoad()
 {
-	m_Transform = GetComponent<CTransform>();
+	m_pTransform = GetComponent<CTransform>();
 
 	// コンポーネントのロード呼び出し
 	for (COMPONENT::iterator it = m_pComponent.begin(); it != m_pComponent.end(); ++it)
@@ -95,10 +97,10 @@ void CGameObject::OnLoad()
 void CGameObject::Awake()
 {
 	// Awakeはｺﾝﾎﾟｰﾈﾝﾄ追加時に呼び出される仕様
-	if (m_Transform.lock())
+	if (m_pTransform.lock())
 		return;
 
-	m_Transform = AddComponent<CTransform>();
+	m_pTransform = AddComponent<CTransform>();
 }
 // *初期化
 // *オブジェクトやコンポーネントを探すならここ
@@ -204,7 +206,7 @@ void CGameObject::SetTag(const std::string tag)
 	if(auto scene = GetScene(); scene)
 		scene->GetObjManager()->TagMove(tag, GetPtr());
 
-	m_Tag->SetTag(tag);
+	m_pTag->SetTag(tag);
 };
 // 衝突
 void CGameObject::OnCollisionEnter(CGameObject* obj)
@@ -261,7 +263,7 @@ void CGameObject::OnTriggerExit(CGameObject* obj)
 //--- 静的メンバ関数
 std::weak_ptr<CGameObject> CGameObject::FindGameObject(std::string name)
 {
-	for (auto & scene : CSceneManager::Get().GetAllScene()) 
+	for (auto & scene : CSceneManager::Get()->GetAllScene()) 
 	{
 		auto obj = scene->GetObjManager()->FindGameObj(name.c_str());
 		if (obj.lock()) 
@@ -273,7 +275,7 @@ std::weak_ptr<CGameObject> CGameObject::FindGameObject(std::string name)
 }
 std::weak_ptr<CGameObject> CGameObject::FindGameObjectWithTag(std::string tag)
 {
-	for (auto & scene : CSceneManager::Get().GetAllScene())
+	for (auto & scene : CSceneManager::Get()->GetAllScene())
 	{
 		auto obj = scene->GetObjManager()->FindGameObjWithTag(tag);
 		if (obj.lock())
@@ -286,7 +288,7 @@ std::weak_ptr<CGameObject> CGameObject::FindGameObjectWithTag(std::string tag)
 std::list<std::weak_ptr<CGameObject>> CGameObject::FindGameObjectsWithTag(std::string tag)
 {
 	std::list<std::weak_ptr<CGameObject>> ret;
-	for (auto & scene : CSceneManager::Get().GetAllScene())
+	for (auto & scene : CSceneManager::Get()->GetAllScene())
 	{
 		auto objs = scene->GetObjManager()->FindGameObjctsWithTag(tag);
 		// 格納
@@ -299,7 +301,7 @@ std::list<std::weak_ptr<CGameObject>> CGameObject::FindGameObjectsWithTag(std::s
 }
 std::weak_ptr<CGameObject> CGameObject::FindGameObjectWithTag(CTag tag)
 {
-	for (auto & scene : CSceneManager::Get().GetAllScene())
+	for (auto & scene : CSceneManager::Get()->GetAllScene())
 	{
 		auto obj = scene->GetObjManager()->FindGameObjWithTag(tag);
 		if (obj.lock())
@@ -312,7 +314,7 @@ std::weak_ptr<CGameObject> CGameObject::FindGameObjectWithTag(CTag tag)
 std::list<std::weak_ptr<CGameObject>> CGameObject::FindGameObjectsWithTag(CTag tag)
 {
 	std::list<std::weak_ptr<CGameObject>> retList;
-	for (auto & scene : CSceneManager::Get().GetAllScene())
+	for (auto & scene : CSceneManager::Get()->GetAllScene())
 	{
 		auto obj = scene->GetObjManager()->FindGameObjWithTag(tag);
 		if (obj.lock())
@@ -325,15 +327,15 @@ std::list<std::weak_ptr<CGameObject>> CGameObject::FindGameObjectsWithTag(CTag t
 std::weak_ptr<CGameObject> CGameObject::CreateObject(CGameObject* pObj)
 {
 #ifdef _DEBUG
-	auto scene = CSceneManager::Get().GetActiveScene();
+	auto scene = CSceneManager::Get()->GetActiveScene();
 #endif // _DEBUG
 	
 	// ｺﾋﾟｰではない生成
 	if (!pObj) 
 	{
-		return CSceneManager::Get().GetActiveScene()->GetObjManager()->CreateGameObject();
+		return CSceneManager::Get()->GetActiveScene()->GetObjManager()->CreateGameObject();
 	}
-	return CSceneManager::Get().GetActiveScene()->GetObjManager()->CreateGameObject(pObj);
+	return CSceneManager::Get()->GetActiveScene()->GetObjManager()->CreateGameObject(pObj);
 }
 // 作るだけで管理は受け取った側に委任
 std::shared_ptr<CGameObject> CGameObject::CreateDebugObject(std::shared_ptr<CGameObject> pObj)
@@ -351,7 +353,7 @@ void CGameObject::Destroy(std::weak_ptr<CGameObject> pObj)
 	// 破棄状態に変更
 	// manager更新時の確認で破棄される
 	pObj.lock()->SetState(E_ObjectState::DESTROY);
-	/*for (auto & scene : CSceneManager::Get().GetAllScene())
+	/*for (auto & scene : CSceneManager::Get()->GetAllScene())
 	{
 		if (scene->GetObjManager()->DestroyObject(pObj))
 		{
@@ -361,7 +363,7 @@ void CGameObject::Destroy(std::weak_ptr<CGameObject> pObj)
 }
 void CGameObject::DontDestroy(std::weak_ptr<CGameObject> pObj)
 {
-	CSceneManager::Get().GetActiveScene()->GetObjManager()->DontDestroy(pObj);
+	CSceneManager::Get()->GetActiveScene()->GetObjManager()->DontDestroy(pObj);
 }
 
 #ifdef BUILD_MODE
@@ -395,7 +397,7 @@ void CGameObject::ImGuiDebug()
 	{
 		if (ImGui::BeginMenu(u8"tag"))
 		{
-			auto tagList = CTagName::Get().GetList();
+			auto tagList = CTagName::Get()->GetList();
 			for (int state = 0; state < static_cast<int>(tagList.size()); ++state)
 			{
 				auto tagName = tagList[state].c_str();

@@ -7,11 +7,11 @@
 // Decoratorパターン
 //========================================================
 
-//--- インクルード部
-#include "aiNode.h"
-
 #ifndef __DECORATOR_NODE_H__
 #define __DECORATOR_NODE_H__
+
+//--- インクルード部
+#include <AISystem/Node/aiNode.h>
 
 //--- 定数定義
 #define AID_DEFINITION_IS_ACTION				bool IsExecute(AI::CAISystem* sys)

@@ -29,6 +29,7 @@ using namespace MySpace::Graphics;
 
 // コンストラクタ
 CEffekseer::CEffekseer()
+	:m_vLight(0,0,0,0), m_vParameter(0,0,0,0),m_nTimer(0), m_mMatrix()
 {
 }
 // デストラクタ
@@ -89,9 +90,9 @@ void CEffekseer::Init(ID3D11Device* device, ID3D11DeviceContext* context)
 	CCamera* pCamera = CCamera::GetMain();
 	if (!pCamera) { hr = E_FAIL; return; }
 
-	DirectX::XMStoreFloat4x4(&m_vsMatrix.world, DirectX::XMMatrixIdentity());
-	DirectX::XMStoreFloat4x4(&m_vsMatrix.view, pCamera->GetLookAtMatrix());
-	DirectX::XMStoreFloat4x4(&m_vsMatrix.proj, pCamera->GetProjectionMatrix());
+	DirectX::XMStoreFloat4x4(&m_mMatrix.world, DirectX::XMMatrixIdentity());
+	DirectX::XMStoreFloat4x4(&m_mMatrix.view, pCamera->GetLookAtMatrix());
+	DirectX::XMStoreFloat4x4(&m_mMatrix.proj, pCamera->GetProjectionMatrix());
 
 	//// シェーダ読み込み
 	//HRESULT hr = S_OK;
@@ -247,15 +248,15 @@ void CEffekseer::Draw()
 	m_renderer->SetTime(m_nTimer++ / 60.0f);	// 内部の時間を進める
 
 	// 描画
-	CDXDevice::Get().SetZBuffer(false);
-	CDXDevice::Get().SetBlendState((int)EBlendState::BS_ALPHABLEND);
+	CDXDevice::Get()->SetZBuffer(false);
+	CDXDevice::Get()->SetBlendState((int)EBlendState::BS_ALPHABLEND);
 	m_renderer->BeginRendering();			// 描画開始
 
 	m_manager->Draw();
 
 	m_renderer->EndRendering();				// 描画終了
-	CDXDevice::Get().SetBlendState((int)EBlendState::BS_NONE);
-	CDXDevice::Get().SetZBuffer(true);
+	CDXDevice::Get()->SetBlendState((int)EBlendState::BS_NONE);
+	CDXDevice::Get()->SetZBuffer(true);
 }
 
 void CEffekseer::SetMatrix(Effekseer::Matrix43* mtx, XMFLOAT4X4 XMmtx)
@@ -364,11 +365,11 @@ int CEffekseer::Move(int handle, XMFLOAT3 pos)
 
 	// 移動
 	Effekseer::Matrix43 mtx;
-	m_vsMatrix.view._41 = pos.x;
-	m_vsMatrix.view._42 = pos.y;
-	m_vsMatrix.view._43 = pos.z;
+	m_mMatrix.view._41 = pos.x;
+	m_mMatrix.view._42 = pos.y;
+	m_mMatrix.view._43 = pos.z;
 	// Effekseerの構造体に変換
-	SetMatrix(&mtx, m_vsMatrix.view);
+	SetMatrix(&mtx, m_mMatrix.view);
 	m_manager->SetMatrix(handle, mtx);		// 行列設定
 	
 	return handle;

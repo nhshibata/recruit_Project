@@ -45,8 +45,8 @@ namespace Spell
 		Command	command;					// キー格納(0~)
 
 		//--- メンバ関数
-		STSpell() {};
-		STSpell(std::vector<int> n, std::string sz, EAttributte e, EType type)
+		STSpell() :spellName(std::string()), eAttribute(EAttributte::BLUE), eType(EType::ATK), command(0) {};
+		STSpell(std::string sz, EAttributte e, EType type, std::vector<int> n = std::vector<int>())
 			:spellName(sz), eAttribute(e),eType(type), command(n)
 		{};
 		
@@ -82,7 +82,7 @@ namespace Spell
 		//--- メンバ変数
 		CCommandStock* m_pStock;
 		std::map<int, STSpell> m_SpellMap;	// 列挙体で管理できるように
-		STSpell* m_pMagic = nullptr;
+		STSpell* m_pMagic;
 	public:
 		CProperty<int> Considered;	 // みなし
 		CProperty<bool> Execution;	// 実行フラグ
@@ -92,7 +92,7 @@ namespace Spell
 		_NODISCARD int SpellCheck(std::vector<int> list, std::vector<int> check);
 		_NODISCARD std::vector<bool> SpellCheckConsidered(std::vector<int> list, std::vector<int> check);
 	public:
-		CCommandSpell() {};
+		CCommandSpell() : m_pMagic(nullptr), m_pStock(nullptr) {};
 		CCommandSpell(std::shared_ptr<CGameObject> owner) :MySpace::Game::CComponent(owner)
 		{};
 		~CCommandSpell() {};

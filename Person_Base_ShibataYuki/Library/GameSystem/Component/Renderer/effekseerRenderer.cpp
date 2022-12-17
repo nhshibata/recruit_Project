@@ -24,6 +24,7 @@ using namespace MySpace::Graphics;
 // コンストラクタ
 CEffekseerRenderer::CEffekseerRenderer(std::shared_ptr<CGameObject> owner)
 	:CRenderer(owner),m_bLoop(false),m_fAngle(0.0f),m_nHandle(-1),m_pEffekseer(nullptr)
+	,m_EffectName(std::u16string())
 {
 	
 }
@@ -33,7 +34,7 @@ CEffekseerRenderer::~CEffekseerRenderer()
 }
 void CEffekseerRenderer::Awake()
 {
-	m_pEffekseer = &CEffekseer::Get();
+	m_pEffekseer = CEffekseer::Get();
 }
 void CEffekseerRenderer::Init()
 {
@@ -43,7 +44,7 @@ void CEffekseerRenderer::Init()
 void CEffekseerRenderer::Update()
 {
 #if BUILD_MODE
-	if (!m_bRead || Debug::ImGuiManager::Get().CheckPlayMode())
+	if (!m_bRead || Debug::ImGuiManager::Get()->CheckPlayMode())
 		return;
 #endif // 0
 

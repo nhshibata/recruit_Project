@@ -23,8 +23,8 @@ using namespace MySpace::Game;
 
 // コンストラクタ
 CSceneManager::CSceneManager()
+	:m_bTransition(false), m_currentPath(std::string())
 {
-	m_currentPath = SCENE_PATH + std::string("Title.scene");
 	m_sceneDetection = std::make_shared<CSceneTransitionDetection>();
 	m_pCollisionSystem = std::make_shared<CCollisionSystem>();
 	m_pDrawSystem = std::make_shared<CDrawSystem>();
@@ -32,6 +32,7 @@ CSceneManager::CSceneManager()
 }
 void CSceneManager::Init()
 {
+	m_currentPath = SCENE_PATH + std::string("Title.scene");
 	// 関数設定
 	SceneUnloaded<CSceneManager>(&CSceneManager::FlagOn, this);
 	//m_pCurrentScene.lock()->Init();

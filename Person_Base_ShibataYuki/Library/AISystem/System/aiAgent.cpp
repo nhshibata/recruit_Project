@@ -4,7 +4,7 @@
 // ì¬:2022/11/24
 //========================================================
 
-#include "aiAgent.h"
+#include <AISystem/System/aiAgent.h>
 #include <AISystem/Node/stateNode.h>
 #include <GameSystem/GameObject/gameObject.h>
 #include <GameSystem/Component/Transform/transform.h>

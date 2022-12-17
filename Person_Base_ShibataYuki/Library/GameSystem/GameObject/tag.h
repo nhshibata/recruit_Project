@@ -30,8 +30,10 @@ namespace MySpace
 		{
 			friend class CSingleton<CTagName>;
 		private:
+			//--- メンバ変数
 			std::vector<std::string> m_tagVec;
 		private:
+			//--- メンバ関数
 			CTagName();
 			~CTagName();
 
@@ -39,12 +41,10 @@ namespace MySpace
 			void LoadSystem();
 			void SaveSystem();
 
-			std::vector<std::string> GetList() 
-			{
-				return m_tagVec; 
-			}
+			inline std::vector<std::string> GetList() {	return m_tagVec; }
 
-			int Find(std::string name)
+			// *@インデックス取得
+			_NODISCARD int Find(std::string name)
 			{
 				int id = 0;
 				for (std::vector<std::string>::iterator it = m_tagVec.begin(); it != m_tagVec.end(); ++it, ++id)
@@ -54,13 +54,15 @@ namespace MySpace
 				return -1;
 			}
 
-			// 登録完了 / 必要なし
+			// *@タグ生成(登録)
+			// *@登録完了 / 必要なし
 			bool CreateTag(std::string name) 
 			{
 				if (Find(name) == -1) { m_tagVec.push_back(name); return true; }
 				return false;
 			}
 
+			// *@idからstring取得
 			std::string GetTag(int id)
 			{
 				if (m_tagVec.size() <= id) { return "null"; }return m_tagVec[id];
@@ -91,7 +93,7 @@ namespace MySpace
 		private:
 			//--- メンバ関数
 			// 代入
-			inline int GetID(std::string name) { return CTagName::Get().Find(name); }
+			inline int GetID(std::string name) { return CTagName::Get()->Find(name); }
 		public:
 			CTag();
 			CTag(std::string name);
@@ -101,13 +103,13 @@ namespace MySpace
 			// なければ生成。どちらにせよ登録される
 			bool CreateTag(std::string name) 
 			{ 
-				bool ret = CTagName::Get().CreateTag(name);
+				bool ret = CTagName::Get()->CreateTag(name);
 				SetTag(name);
 				return ret;
 			}
 
 			//--- セッター・ゲッター
-			inline std::string GetTag() { return CTagName::Get().GetTag(m_nTagID); }
+			inline std::string GetTag() { return CTagName::Get()->GetTag(m_nTagID); }
 			// ※注意 
 			// 事前にCreateTag関数を呼び出す必要あり
 			// 登録、生成されていなければ-1が入る
@@ -118,7 +120,7 @@ namespace MySpace
 			// *@return (完全一致:1, 部分一致:2, 一致なし:0)
 			int Compare(std::string name)
 			{
-				if (auto tag = CTagName::Get().GetTag(m_nTagID); name == tag) { return true; }
+				if (auto tag = CTagName::Get()->GetTag(m_nTagID); name == tag) { return true; }
 				else if (tag.find(name) != std::string::npos) { return 2; }
 				return false; 
 			}

@@ -17,23 +17,23 @@ CCollisionSystem::CCollisionSystem()
 }
 CCollisionSystem::~CCollisionSystem()
 {
-	m_intMap.clear();
+	m_aIntMap.clear();
 }
 // REVIEW: 改善の余地あり
 void CCollisionSystem::CollisionCheck()
 {
-	if (m_intMap.size() == 0)
+	if (m_aIntMap.size() == 0)
 		return;
 	
 	//--- 当たり判定を行うｺﾝﾎﾟｰﾈﾝﾄを選別する
 	COLLISION_VEC list;
-	auto it = m_intMap.begin();
+	auto it = m_aIntMap.begin();
 	auto first_col = (*it).second;
 
 	// 最初がnullなら探索
 	if (!first_col.lock())
 	{
-		for (it = m_intMap.begin(); it != m_intMap.end(); ++it)
+		for (it = m_aIntMap.begin(); it != m_aIntMap.end(); ++it)
 		{
 			if ((*it).second.lock())
 				first_col = (*it).second;
@@ -41,7 +41,7 @@ void CCollisionSystem::CollisionCheck()
 	}
 	list.push_back(first_col);
 
-	for (auto it = m_intMap.begin(); it != m_intMap.end(); ++it)
+	for (auto it = m_aIntMap.begin(); it != m_aIntMap.end(); ++it)
 	{
 		// 同一のオブジェクトは判定しない
 		if (first_col.lock() == (*it).second.lock())
@@ -90,12 +90,12 @@ void CCollisionSystem::CollisionCheck()
 
 	// 離れたオブジェクトを確認
 	// 配列からの除外
-	for (it = m_intMap.begin(); it != m_intMap.end();)
+	for (it = m_aIntMap.begin(); it != m_aIntMap.end();)
 	{	
 		// null確認
 		if (!(*it).second.lock())
 		{
-			it = m_intMap.erase((it));
+			it = m_aIntMap.erase((it));
 			continue;
 		}
 		// Active確認

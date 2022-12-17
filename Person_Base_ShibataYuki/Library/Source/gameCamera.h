@@ -23,8 +23,9 @@ namespace Spell
 		float m_fShakeTime;
 
 	public:
-		CGameCamera() {};
-		CGameCamera(std::shared_ptr<CGameObject> owner) :CCamera(owner){};
+		CGameCamera():m_fShakeTime(0), m_fOffset(0) {};
+		CGameCamera(std::shared_ptr<CGameObject> owner) :CCamera(owner), m_fShakeTime(0), m_fOffset(0)
+		{};
 		~CGameCamera() {};
 
 		void Awake();

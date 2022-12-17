@@ -16,11 +16,17 @@ using namespace MySpace::Game;
 using namespace MySpace::Graphics;
 
 CMeshRenderer::CMeshRenderer() 
-	:m_vCenter(0, 0, 0), m_bLightEnable(true),m_nStaticMode(static_cast<int>(EStaticMode::NONE))
+	:m_vCenter(0, 0, 0), m_bLightEnable(true), m_fBSRadius(1),m_nStaticMode(static_cast<int>(EStaticMode::NONE))
 {
+	m_MeshMaterial = CMeshMaterial(
+		Vector4(0.0f, 1.0f, 0.0f, 0.3f),
+		Vector4(0.0f, 1.0f, 0.0f, 0.3f),
+		Vector4(0.0f, 0.0f, 0.0f, 1.0f),
+		Vector4(0.0f, 0.0f, 0.0f, 1.0f),
+		1.0f);
 }
 CMeshRenderer::CMeshRenderer(std::shared_ptr<CGameObject> owner)
-	: CRenderer(owner), m_vCenter(0,0,0), m_bLightEnable(true), m_nStaticMode(static_cast<int>(EStaticMode::NONE))
+	: CRenderer(owner), m_vCenter(0,0,0), m_bLightEnable(true), m_fBSRadius(1), m_nStaticMode(static_cast<int>(EStaticMode::NONE))
 {
 	m_MeshMaterial = CMeshMaterial(
 		Vector4(0.0f, 1.0f, 0.0f, 0.3f),
@@ -53,7 +59,7 @@ Vector3 CMeshRenderer::GetCenter(int n)
 }
 void CMeshRenderer::SetInstancing(CMesh* mesh, std::string name)
 {
-	auto sys = SceneManager::CSceneManager::Get().GetDrawSystem();
+	auto sys = SceneManager::CSceneManager::Get()->GetDrawSystem();
 	//--- インスタンシング依頼
 	if (!name.empty())
 	{

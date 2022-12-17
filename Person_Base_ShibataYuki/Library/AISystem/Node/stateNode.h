@@ -11,14 +11,16 @@
 #define __STATE_NODE_H__
 
 //--- インクルード部
-#include "aiNode.h"
+#include <AISystem/Node/aiNode.h>
 #include <vector>
 
 namespace AI
 {
-	//--- 前方宣言
+
+#pragma region ForwardDeclaration
 	class CAISystem;
 	class CStateCondition;
+#pragma endregion
 
 	class CStateNode : public CAINode
 	{

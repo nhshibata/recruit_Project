@@ -82,7 +82,7 @@ namespace MySpace
 
 		private:
 			//--- メンバ変数
-			StockMap g_StockType;
+			StockMap m_aStockType;
 
 		private:
 			//--- メンバ関数
@@ -95,7 +95,7 @@ namespace MySpace
 			//--- ゲッター・セッター
 
 			// *@格納されたｸﾗｽを名前で取得
-			CTypeSaveBase* GetTypeSave(std::string name) { return g_StockType[name]; }
+			CTypeSaveBase* GetTypeSave(std::string name) { return m_aStockType[name]; }
 
 			// *@所持しているタイプの名前を取得
 			std::vector<std::string> GetTypeNameList();
@@ -109,14 +109,14 @@ namespace MySpace
 			void SetType() 
 			{ 
 				auto add = new CTypeSave<T>();
-				g_StockType.insert(StockPAIR(typeid(T).name(), add));
+				m_aStockType.insert(StockPAIR(typeid(T).name(), add));
 			}
 			
 			template <class T>
 			void SetComponentSave() 
 			{ 
 				auto add = new CComponentTypeSave<T>();
-				g_StockType.insert(StockPAIR(typeid(T).name(), add));
+				m_aStockType.insert(StockPAIR(typeid(T).name(), add));
 			}
 			
 			// *@SP生成

@@ -16,6 +16,7 @@ using namespace MySpace::System;
 //using namespace MySpace::SceneManager;
 
 CDebugCamera::CDebugCamera()
+	:m_eMode(ECameraMode::CAM_MODE_NONE), m_oldMousePos({ 0 }), m_bMouse(true)
 {
 }
 CDebugCamera::CDebugCamera(std::shared_ptr<CGameObject> owner)
@@ -26,6 +27,7 @@ CDebugCamera::~CDebugCamera()
 {
 
 }
+
 void CDebugCamera::Awake()
 {
 	CCamera::Awake();
@@ -36,10 +38,12 @@ void CDebugCamera::Awake()
 	//SetMain(BaseToDerived<CCamera>());
 	ResumeCamera(true);
 }
+
 void CDebugCamera::Init()
 {
 	CCamera::Init();
 }
+
 void CDebugCamera::Update()
 {
 	// マウス（カーソル)による更新
@@ -91,10 +95,12 @@ void CDebugCamera::Update()
 	GetCursorPos(&pos);
 	CameraMouseMove(pos.x, pos.y);
 }
+
 void CDebugCamera::LateUpdate()
 {
 	CCamera::Update();
 }
+
 void CDebugCamera::CameraMouseMove(int x, int y)
 {
 	// カメラを動かす状態か確認

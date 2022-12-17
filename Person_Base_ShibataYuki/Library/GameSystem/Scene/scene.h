@@ -36,7 +36,7 @@ namespace MySpace
 			friend class MySpace::SceneManager::CSceneManager;
 		protected:
 			//--- メンバ変数
-			std::shared_ptr<CGameObjectManager> m_objeManager;
+			std::shared_ptr<CGameObjectManager> m_pObjeManager;		// GameObject所持
 
 			std::string m_SceneName;
 			std::weak_ptr<CScene> m_spPtr;
@@ -57,10 +57,10 @@ namespace MySpace
 
 			//--- セッター・ゲッター
 			inline const std::string& GetSceneName() { return m_SceneName; }
-			inline CGameObjectManager* GetObjManager() { return m_objeManager.get(); }
+			inline CGameObjectManager* GetObjManager() { return m_pObjeManager.get(); }
 
 			inline void SetSceneName(const std::string name) { m_SceneName = name; }
-			inline void SetObjManager(std::shared_ptr<CGameObjectManager> mgr) { m_objeManager.reset(); m_objeManager = mgr; }
+			inline void SetObjManager(std::shared_ptr<CGameObjectManager> mgr) { m_pObjeManager.reset(); m_pObjeManager = mgr; }
 		};
 	}
 }

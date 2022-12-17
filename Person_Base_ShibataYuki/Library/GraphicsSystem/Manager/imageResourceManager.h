@@ -4,7 +4,6 @@
 //---------------------------------------------------------
 //=========================================================
 
-
 //--- インクルードガード
 #ifndef __IMAGE_RESOURCE_MANAGER_H__
 #define __IMAGE_RESOURCE_MANAGER_H__
@@ -40,6 +39,7 @@ namespace MySpace
 			void UnloadAll();
 			int SceneUnload();
 
+			// *@リソース取得
 			ImageSharedPtr GetResource(std::string name);
 		};
 

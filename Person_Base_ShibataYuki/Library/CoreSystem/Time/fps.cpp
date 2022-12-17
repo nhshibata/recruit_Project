@@ -16,21 +16,24 @@ using namespace MySpace::System;
 
 // コンストラクタ
 CFps::CFps()
-	:m_nSlowFramPerSec(60), m_dwExecLastTime(0), m_eSlow(ESlow::SLOW_NONE), m_bUpdate(true)
+	:m_nSlowFramPerSec(60), m_dwExecLastTime(0), m_eSlow(ESlow::SLOW_NONE), m_bUpdate(true), m_dwCurrentTime(0),
+	m_dwDeltaTime(0), m_dwSlowTime(0), m_fTimeScale(1.0f),m_nHitStopFrame(0), m_dwDebugSlow(0), m_nDebugFPS(FPS)
 {
+#ifdef BUILD_MODE
+	m_dwFPSLastTime = 0;
+	m_dwFrameCount = 0;
+	m_nCountFPS = 0;
 	
-}
-// 引数付きコンストラクタ
-CFps::CFps(int nSlowfps)
-	: m_nSlowFramPerSec(60), m_dwExecLastTime(0), m_eSlow(ESlow::SLOW_NONE), m_bUpdate(true)
-{
-	SetSlow(nSlowfps);
+#endif // DEBUG
+
+	SetSlow(FPS);
 }
 // デストラクタ
 CFps::~CFps()
 {
 	Uninit();
 }
+
 void CFps::Init()
 {
 	// 精度を上げる
@@ -43,6 +46,7 @@ void CFps::Init()
 #endif // BUILD_MODE
 	srand(::GetTickCount());
 }
+
 void CFps::Uninit()
 {
 	// 精度を戻す
@@ -161,10 +165,10 @@ void CFps::ImGuiDebug()
 	//--- 情報表示
 	ImGui::Checkbox(u8"更新フレーム", &m_bUpdate);
 	
-	ImGui::Text(u8"現在のDeltaTime : %.5f", CFps::Get().DeltaTime());
-	ImGui::Text(u8"現在のUnScaleDeltaTime : %.5f", CFps::Get().UnScaleDeltaTime());
-	ImGui::Text(u8"現在のTimeScale : %.5f", CFps::Get().GetTimeScale());
-	ImGui::Text(u8"現在のCount : %d", CFps::Get().GetFPSCount());
+	ImGui::Text(u8"現在のDeltaTime : %.5f", CFps::Get()->DeltaTime());
+	ImGui::Text(u8"現在のUnScaleDeltaTime : %.5f", CFps::Get()->UnScaleDeltaTime());
+	ImGui::Text(u8"現在のTimeScale : %.5f", CFps::Get()->GetTimeScale());
+	ImGui::Text(u8"現在のCount : %d", CFps::Get()->GetFPSCount());
 
 	//--- 設定
 	if (ImGui::Button(u8"FPS Set"))

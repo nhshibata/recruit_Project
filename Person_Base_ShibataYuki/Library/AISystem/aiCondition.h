@@ -7,13 +7,16 @@
 #ifndef __AI_CONDITION_H__
 #define __AI_CONDITION_H__
 
+//--- インクルード部
 #include <functional>
 #include <vector>
 
 namespace AI
 {
-	//--- 前方宣言
+
+#pragma region ForwardDeclaration
 	class CAISystem;
+#pragma endregion
 
 	class CAICondition
 	{
@@ -33,6 +36,8 @@ namespace AI
 		std::vector<STLFunc> m_Functions;
 
 	public:
+		//--- メンバ関数
+
 		// *@実行できるか関数確認
 		// *@複数ある場合、全ての条件を満たさなければならない
 		bool IsTransition(CAISystem* ptr)

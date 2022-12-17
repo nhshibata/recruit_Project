@@ -60,8 +60,8 @@ namespace MySpace
 		class CEffekseer : public CSingleton<CEffekseer>, public CResourceMap<std::u16string, Effekseer::EffectRef>
 		{
 			friend class CSingleton<CEffekseer>;
-
 		private:
+			//--- 構造体定義
 			// 頂点シェーダに送る変換行列
 			struct Matrix
 			{
@@ -77,9 +77,9 @@ namespace MySpace
 
 			// --- メンバ変数 ---
 			//static CEffekseer* m_pInstance;
-			DirectX::XMFLOAT4 m_psLight;
-			DirectX::XMFLOAT4 m_psParameter;
-			Matrix m_vsMatrix;
+			DirectX::XMFLOAT4 m_vLight;
+			DirectX::XMFLOAT4 m_vParameter;
+			Matrix m_mMatrix;
 
 			EffekseerRendererDX11::RendererRef m_renderer;
 			Effekseer::ManagerRef m_manager;
@@ -132,7 +132,8 @@ namespace MySpace
 			CEffekseerParam() :m_vPos(0, 0, 0), m_vRot(0, 0, 0, 0), m_vScale(1, 1, 1)
 			{};
 			CEffekseerParam(Effekseer::EffectRef* effect, Effekseer::Handle handle, int time)
-				:m_vPos(0, 0, 0), m_vRot(0, 0, 0, 0), m_vScale(1, 1, 1), m_pEffect(effect), m_handle(handle), m_nCurrentFream(0), m_nMaxFream(time)
+				:m_vPos(0, 0, 0), m_vRot(0, 0, 0, 0), m_vScale(1, 1, 1), m_pEffect(effect), 
+				m_handle(handle), m_nCurrentFream(0), m_nMaxFream(time)
 			{};
 			~CEffekseerParam()
 			{};

@@ -38,7 +38,7 @@ namespace MySpace
 
 		protected:
 			std::weak_ptr<CTransform> m_pTarget;
-			bool m_bEnd = false;
+			bool m_bEnd;
 			float m_fMoveTime;
 			float m_fWaitTime;
 
@@ -46,8 +46,8 @@ namespace MySpace
 			void SetEnd(bool flg) { m_bEnd = flg; }
 
 		public:
-			CTween() :m_fMoveTime(0), m_fWaitTime(0) {};
-			CTween(std::weak_ptr<CTransform> ptr) :m_pTarget(ptr), m_fMoveTime(0), m_fWaitTime(0) {
+			CTween() :m_fMoveTime(0), m_fWaitTime(0), m_bEnd(false){};
+			CTween(std::weak_ptr<CTransform> ptr) :m_pTarget(ptr), m_fMoveTime(0), m_fWaitTime(0), m_bEnd(false){
 
 			};
 			virtual ~CTween() {};
@@ -68,10 +68,13 @@ namespace MySpace
 
 		class CUniformMove : public CTween
 		{
+			//--- メンバ変数
 			Vector3 m_vInitPos;
 			Vector3 m_vDestPos;
 			Vector3 m_vVel;
+
 		public:
+			//--- メンバ関数
 			CUniformMove() {};
 			CUniformMove(std::weak_ptr<CTransform> ptr) : CTween(ptr) { }
 			~CUniformMove() {};
@@ -255,7 +258,7 @@ namespace MySpace
 			friend class CSingleton<CTweenManager>;
 
 		private:
-			std::vector<std::shared_ptr<MySpace::TWeen::CTween>> m_pTweenList;
+			std::vector<std::shared_ptr<MySpace::TWeen::CTween>> m_aTweenList;
 
 		private:
 			CTweenManager() {};
@@ -265,27 +268,27 @@ namespace MySpace
 			// *@なにかしら終了していれば除外される
 			void Update()
 			{
-				for (int cnt = 0; cnt < static_cast<int>(m_pTweenList.size()); ++cnt)
+				for (int cnt = 0; cnt < static_cast<int>(m_aTweenList.size()); ++cnt)
 				{
 					// 終了
-					if (m_pTweenList[cnt]->IsEnd())
+					if (m_aTweenList[cnt]->IsEnd())
 					{
-						if (cnt + 1 < static_cast<int>(m_pTweenList.size()))
+						if (cnt + 1 < static_cast<int>(m_aTweenList.size()))
 						{
-							m_pTweenList[cnt] = m_pTweenList.back();
-							m_pTweenList.pop_back();
+							m_aTweenList[cnt] = m_aTweenList.back();
+							m_aTweenList.pop_back();
 						}
 					}
 					
-					m_pTweenList[cnt]->Update();
+					m_aTweenList[cnt]->Update();
 				}
 			}
 			// *@型指定による生成
 			template <class T>
 			std::shared_ptr<T> CreateTween(std::weak_ptr<CTransform> ptr)
 			{
-				m_pTweenList.push_back(std::make_shared<T>(ptr));
-				return m_pTweenList.back();
+				m_aTweenList.push_back(std::make_shared<T>(ptr));
+				return m_aTweenList.back();
 			}
 		};
 	}

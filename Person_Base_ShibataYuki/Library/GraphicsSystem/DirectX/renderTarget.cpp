@@ -13,6 +13,7 @@ using namespace MySpace::Graphics;
 
 
 CRenderTarget::CRenderTarget(DXGI_FORMAT format, UINT width, UINT height)
+	:m_pRTV(nullptr)
 {
 	HRESULT hr = Create(format, width, height);
 }
@@ -42,7 +43,7 @@ HRESULT CRenderTarget::Create(DXGI_FORMAT format, UINT width, UINT height)
 	D3D11_SUBRESOURCE_DATA data = {};
 	data.pSysMem = nullptr;
 	data.SysMemPitch = desc.Width * 4;
-	hr = CDXDevice::Get().GetDevice()->CreateTexture2D(&desc, nullptr, &m_pTex);
+	hr = CDXDevice::Get()->GetDevice()->CreateTexture2D(&desc, nullptr, &m_pTex);
 	if (FAILED(hr))
 	{
 		return hr;
@@ -54,7 +55,7 @@ HRESULT CRenderTarget::Create(DXGI_FORMAT format, UINT width, UINT height)
 	srvDesc.ViewDimension = D3D11_SRV_DIMENSION_TEXTURE2D;
 	srvDesc.Texture2D.MipLevels = 1;
 	// ¶¬
-	hr = CDXDevice::Get().GetDevice()->CreateShaderResourceView(m_pTex, &srvDesc, &m_pSRV);
+	hr = CDXDevice::Get()->GetDevice()->CreateShaderResourceView(m_pTex, &srvDesc, &m_pSRV);
 	if (FAILED(hr))
 	{
 		return hr;
@@ -66,7 +67,7 @@ HRESULT CRenderTarget::Create(DXGI_FORMAT format, UINT width, UINT height)
 	rtvDesc.ViewDimension = D3D11_RTV_DIMENSION_TEXTURE2D;
 
 	// ¶¬
-	hr = CDXDevice::Get().GetDevice()->CreateRenderTargetView(m_pTex, &rtvDesc, &m_pRTV);
+	hr = CDXDevice::Get()->GetDevice()->CreateRenderTargetView(m_pTex, &rtvDesc, &m_pRTV);
 	if (FAILED(hr))
 	{
 		return hr;
@@ -83,5 +84,5 @@ void CRenderTarget::Release()
 
 void CRenderTarget::Clear(float* color)
 {
-	CDXDevice::Get().GetDeviceContext()->ClearRenderTargetView(GetView(), color);
+	CDXDevice::Get()->GetDeviceContext()->ClearRenderTargetView(GetView(), color);
 }

@@ -24,14 +24,15 @@ namespace MySpace
 		class CPolygon
 		{
 		private:
+			//--- メンバ変数
 			static ID3D11ShaderResourceView* m_pTexture;	// テクスチャへのポインタ
 
 			static VERTEX_2D m_vertexWk[NUM_VERTEX];		// 頂点情報格納ワーク
 
-			static XMFLOAT3 m_vPos;							// ポリゴンの移動量
-			static XMFLOAT3 m_vAngle;						// ポリゴンの回転量
-			static XMFLOAT3 m_vScale;						// ポリゴンのサイズ
-			static XMFLOAT4 m_vColor;						// ポリゴンの頂点カラー
+			static Vector3 m_vPos;							// ポリゴンの移動量
+			static Vector3 m_vAngle;						// ポリゴンの回転量
+			static Vector3 m_vScale;						// ポリゴンのサイズ
+			static Color m_vColor;						// ポリゴンの頂点カラー
 			static bool m_bInvalidate;						// 頂点データ更新フラグ
 
 			static XMFLOAT2 m_vPosTexFrame;					// UV座標
@@ -50,6 +51,8 @@ namespace MySpace
 			static XMFLOAT4X4 m_mTex;						// テクスチャ変換行列
 
 		private:
+
+			//--- メンバ関数
 			static HRESULT MakeVertex(ID3D11Device* pDevice);
 			static void SetVertex(void);
 
@@ -58,67 +61,64 @@ namespace MySpace
 			static void Fin();
 			static void Draw(ID3D11DeviceContext* pDeviceContext);
 
-			// *テクスチャの設定
+			// *@テクスチャの設定
 			static inline void SetTexture(ID3D11ShaderResourceView* pTexture)
 			{
 				m_pTexture = pTexture;
 				m_mTex._44 = (m_pTexture) ? 1.0f : 0.0f;
 			}
-			// *表示座標の設定
+			// *@表示座標の設定
 			static inline  void SetPos(float fX, float fY) { m_vPos.x = fX; m_vPos.y = fY; }
-			// *表示座標の設定
+			// *@表示座標の設定
 			static inline  void SetPos(Vector2 pos) { m_vPos.x = pos.x; m_vPos.y = pos.y; }
 
-			// *表示サイズの設定
+			// *@表示サイズの設定
 			static inline void SetSize(float fScaleX, float fScaleY) { m_vScale.x = fScaleX; m_vScale.y = fScaleY; }
-			// *表示サイズの設定
+			// *@表示サイズの設定
 			static inline void SetSize(Vector2 size) { m_vScale.x = size.x; m_vScale.y = size.y; }
 
-			// *表示角度の設定(単位:度)
+			// *@表示角度の設定(単位:度)
 			static inline void SetAngle(float fAngle) { m_vAngle.z = fAngle; }
 
-			// *左上テクスチャ座標の設定 (0.0≦fU＜1.0, 0.0≦fV＜1.0)
+			// *@左上テクスチャ座標の設定 (0.0≦fU＜1.0, 0.0≦fV＜1.0)
 			static inline void SetUV(float fU, float fV) { m_vPosTexFrame.x = fU; m_vPosTexFrame.y = fV; }
 			static inline void SetUV(XMFLOAT2 uv) { m_vPosTexFrame = uv; }
 
-			// *テクスチャフレームサイズの設定 (0.0＜fWidth≦1.0, 0.0＜fHeight≦1.0)
+			// *@テクスチャフレームサイズの設定 (0.0＜fWidth≦1.0, 0.0＜fHeight≦1.0)
 			static inline void SetFrameSize(float fWidth, float fHeight) { m_vSizeTexFrame.x = fWidth; m_vSizeTexFrame.y = fHeight; }
-			// *テクスチャフレームサイズの設定 (0.0＜fWidth≦1.0, 0.0＜fHeight≦1.0)
+			// *@テクスチャフレームサイズの設定 (0.0＜fWidth≦1.0, 0.0＜fHeight≦1.0)
 			static inline void SetFrameSize(XMFLOAT2 size) { m_vSizeTexFrame = size; }
 
-			// *頂点カラーの設定
+			// *@頂点カラーの設定
 			static inline void SetColor(float fRed, float fGreen, float fBlue) { SetColor(XMFLOAT3(fRed, fGreen, fBlue)); }
-			// *頂点カラーの設定
+			// *@頂点カラーの設定
 			static inline void SetColor(XMFLOAT3 vColor)
 			{
-				if (vColor.x != m_vColor.x || vColor.y != m_vColor.y || vColor.z != m_vColor.z) 
+				if (m_vColor != vColor)
 				{
-					m_vColor.x = vColor.x;
-					m_vColor.y = vColor.y;
-					m_vColor.z = vColor.z;
+					m_vColor = vColor;
 					m_bInvalidate = true;
 				}
 			}
 
-			// *不透明度の設定
+			// *@不透明度の設定
 			static inline void SetAlpha(float fAlpha)
 			{
-				if (fAlpha != m_vColor.w)
-				{
-					m_vColor.w = fAlpha;
-					m_bInvalidate = true;
-				}
+				if (fAlpha == m_vColor.a)
+					return;
+				m_vColor.a = fAlpha;
+				m_bInvalidate = true;
 			}
 
-			// *頂点カラーの設定
+			// *@頂点カラーの設定
 			static inline void SetColor(float fRed, float fGreen, float fBlue, float fAlpha)
 			{
 				SetColor(XMFLOAT4(fRed, fGreen, fBlue, fAlpha));
 			}
-			// *頂点カラーの設定
+			// *@頂点カラーの設定
 			static inline void SetColor(XMFLOAT4 vColor)
 			{
-				if (vColor.x != m_vColor.x || vColor.y != m_vColor.y || vColor.z != m_vColor.z || vColor.w != m_vColor.w)
+				if (m_vColor != vColor)
 				{
 					m_vColor = vColor;
 					m_bInvalidate = true;

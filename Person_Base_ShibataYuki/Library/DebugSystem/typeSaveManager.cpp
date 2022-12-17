@@ -22,15 +22,15 @@ CTypeSaveManager::~CTypeSaveManager()
 }
 void CTypeSaveManager::Uninit()
 {
-	for (auto it = g_StockType.begin(); it != g_StockType.end(); ++it)
+	for (auto it = m_aStockType.begin(); it != m_aStockType.end(); ++it)
 	{
 		if ((*it).second)
 			delete (*it).second;
 	}
-	g_StockType.clear();
+	m_aStockType.clear();
 }
 bool CTypeSaveManager::IsType(std::string name) {
-	if (auto it = g_StockType.find(name); it != g_StockType.end()) 
+	if (auto it = m_aStockType.find(name); it != m_aStockType.end()) 
 		return true;
 
 	return false;
@@ -38,8 +38,8 @@ bool CTypeSaveManager::IsType(std::string name) {
 std::vector<std::string> CTypeSaveManager::GetTypeNameList()
 {
 	std::vector<std::string> list;
-	auto it = g_StockType.begin();
-	for (; it != g_StockType.end(); ++it)
+	auto it = m_aStockType.begin();
+	for (; it != m_aStockType.end(); ++it)
 	{
 		list.push_back((*it).first);
 	}
@@ -48,8 +48,8 @@ std::vector<std::string> CTypeSaveManager::GetTypeNameList()
 template <class T>
 T* CTypeSaveManager::GetTypeSave()
 {
-	auto it = g_StockType.begin();
-	for (; it != g_StockType.end(); ++it)
+	auto it = m_aStockType.begin();
+	for (; it != m_aStockType.end(); ++it)
 	{
 		// キャスト
 		CTypeSave<T> save = dynamic_cast<T>(*it);
@@ -63,8 +63,8 @@ T* CTypeSaveManager::GetTypeSave()
 template <class T>
 std::shared_ptr<T> CTypeSaveManager::MakeType()
 {
-	auto it = g_StockType.begin();
-	for (; it != g_StockType.end(); ++it)
+	auto it = m_aStockType.begin();
+	for (; it != m_aStockType.end(); ++it)
 	{
 		// キャスト
 		CTypeSave<T> save = dynamic_cast<T>(*it);

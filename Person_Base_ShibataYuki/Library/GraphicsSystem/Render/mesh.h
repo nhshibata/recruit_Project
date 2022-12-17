@@ -15,7 +15,6 @@
 #include <CoreSystem/Util/define.h>
 #include <CoreSystem/Math/MyMath.h>
 
-
 namespace MySpace
 {
 	namespace Graphics
@@ -25,7 +24,7 @@ namespace MySpace
 		class CMeshMaterial 
 		{
 		private:
-			// シリアライズ
+			//--- シリアライズ
 			friend class cereal::access;
 			template<class Archive>
 			void save(Archive& archive) const
@@ -46,12 +45,16 @@ namespace MySpace
 				);
 			}
 		public:
+			//--- メンバ変数
 			Vector4 m_Diffuse;		// Diffuse color RGBA
 			Vector4 m_Ambient;		// Ambient color RGB
-			Vector4 m_Specular;	// Specular 'shininess'
-			Vector4 m_Emissive;	// Emissive color RGB
+			Vector4 m_Specular;		// Specular 'shininess'
+			Vector4 m_Emissive;		// Emissive color RGB
 			float		m_Power;		// Sharpness if specular highlight
-			CMeshMaterial() {};
+
+		public:
+			//--- メンバ関数
+			CMeshMaterial():m_Power(0){};
 			CMeshMaterial(Vector4 diff, Vector4 amb, Vector4 spe, Vector4 emi, float pow)
 			{
 				m_Diffuse = diff;
@@ -72,7 +75,7 @@ namespace MySpace
 		class CMesh
 		{
 		private:
-			// シリアライズ
+			//--- シリアライズ
 			friend class cereal::access;
 			template<class Archive>
 			void save(Archive& archive) const
@@ -91,6 +94,7 @@ namespace MySpace
 				);
 			}
 		private:
+			//--- メンバ変数
 			ID3D11Buffer* m_pVertexBuffer;	// 頂点バッファインターフェースへのポインタ
 			ID3D11Buffer* m_pIndexBuffer;	// インデックスバッファインターフェースへのポインタ
 			
@@ -122,13 +126,14 @@ namespace MySpace
 
 			HRESULT Init(const VERTEX_3D vertexWk[], int nVertex, int indexWk[], int nIndex);
 			virtual void Fin();
+
 			// *@描画
 			virtual void Draw(ID3D11ShaderResourceView* m_pTexture = nullptr, XMFLOAT4X4* mWorld = nullptr);
 			// *@インスタンシング描画
 			static void DrawInstancing(std::vector<CMesh*> aMesh, ID3D11ShaderResourceView* m_pTexture = nullptr, 
 									   XMFLOAT4X4* mWorld = nullptr);
 			// *@インスタンシング描画
-			// *@CMeshを一つだけ用
+			// *@CMesh一つで複数描画したい用
 			void DrawInstancing(std::vector<XMFLOAT4X4> aWorld);
 
 			//--- ゲッター・セッター

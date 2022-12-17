@@ -37,7 +37,7 @@ CVertexShader::~CVertexShader()
 }
 void CVertexShader::Bind(UINT slot)
 {
-	ID3D11DeviceContext* pDC = CDXDevice::Get().GetDeviceContext();
+	ID3D11DeviceContext* pDC = CDXDevice::Get()->GetDeviceContext();
 	pDC->VSSetShader(m_Shader, nullptr, 0);
 	pDC->IASetInputLayout(m_Layout);
 }
@@ -58,7 +58,7 @@ HRESULT CVertexShader::Make(std::string fileName, const D3D11_INPUT_ELEMENT_DESC
 	fread(pData, fileSize, 1, fp);
 	fclose(fp);
 
-	ID3D11Device* pDevice = CDXDevice::Get().GetDevice();
+	ID3D11Device* pDevice = CDXDevice::Get()->GetDevice();
 
 	hr = pDevice->CreateVertexShader(pData, fileSize, nullptr, &m_Shader);
 	if (FAILED(hr))

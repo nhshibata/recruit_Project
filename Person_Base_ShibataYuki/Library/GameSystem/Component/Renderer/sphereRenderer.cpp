@@ -51,9 +51,9 @@ bool CSphereRenderer::Draw()
 
 	m_pBSphere->SetMaterial(GetMaterial());
 
+	//--- マトリックス設定
 	XMVECTOR vCenter = XMLoadFloat3(&GetCenter());
 	XMMATRIX mWorld = XMLoadFloat4x4(&Transform()->GetWorldMatrix());
-
 	vCenter = XMVector3TransformCoord(vCenter, mWorld);
 	mWorld = XMMatrixTranslationFromVector(vCenter);
 	XMFLOAT4X4 mW;

@@ -4,19 +4,17 @@
 //---------------------------------------------------------
 //=========================================================
 
-
 //--- インクルードガード
 #ifndef __MODEL_MANAGER_H__
 #define __MODEL_MANAGER_H__
 
-//--- インクルード部
 #define NOMINMAX
 
+//--- インクルード部
 #include <CoreSystem/Singleton.h>
 #include <GraphicsSystem/Manager/resourceMap.h>
 #include <GraphicsSystem/Render/AssimpModel.h>
 #include <GraphicsSystem/DirectX/DXDevice.h>
-#include <map>
 
 namespace MySpace
 {

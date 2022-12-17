@@ -8,8 +8,8 @@
 #ifndef __DEX_DEVICE_H__
 #define __DEX_DEVICE_H__
 
-//--- インクルード部
 #define NOMINMAX
+//--- インクルード部
 #include <d3d11.h>
 #include <memory>
 #include <wrl/client.h>
@@ -23,6 +23,7 @@ namespace MySpace
 {
 	namespace Graphics
 	{
+		//--- 列挙体定義
 		enum class EBlendState : int
 		{
 			BS_NONE = 0,							// 半透明合成無し
@@ -44,7 +45,6 @@ namespace MySpace
 		//--- クラス定義
 		class CDXDevice : public CSingleton<CDXDevice>
 		{
-
 			friend class CSingleton<CDXDevice>; // Singleton でのインスタンス作成は許可
 		private:
 			ComPtr<ID3D11Device>			g_pDevice;				// デバイス

@@ -40,9 +40,11 @@ namespace MySpace
 				);
 			}
 		private:
+			//--- ƒƒ“ƒo•Ï”
 			std::shared_ptr<CSphere> m_pBSphere;
 			float m_fRadius;
 		public:
+			//--- ƒƒ“ƒoŠÖ”
 			CSphereRenderer() :m_fRadius(100) {};
 			CSphereRenderer(std::shared_ptr<CGameObject> ptr);
 			virtual ~CSphereRenderer();

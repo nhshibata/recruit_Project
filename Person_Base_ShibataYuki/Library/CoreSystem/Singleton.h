@@ -43,7 +43,7 @@ namespace MySpace
 #define LOCAL_PATTERN _DEBUG
 #if LOCAL_PATTERN
 			//--- 静的変数の使用
-			static inline T& Get() { static T pInstance; return pInstance; }
+			static inline T* Get() { static T pInstance; return &pInstance; }
 			// *@シングルトン破棄
 			static inline void Create() {  };
 			// *@シングルトン破棄
@@ -55,7 +55,7 @@ namespace MySpace
 
 		public:
 			// *@シングルトン取得
-			static inline T& Get() { return *m_pInstance; }
+			static inline T* Get() { return m_pInstance; }
 			// *@シングルトン破棄
 			static inline void Create() { if (m_pInstance)return; m_pInstance = new T(); };
 			// *@シングルトン破棄

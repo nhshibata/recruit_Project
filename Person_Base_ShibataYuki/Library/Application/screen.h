@@ -19,11 +19,16 @@ namespace MySpace
 	{
 		class CScreen
 		{
+		private:
+			//--- メンバ変数
 			static float m_fWidth;
 			static float m_fHeight;
 			static Matrix4x4 m_mtxScreen;		// スクリーン座標変換用
 			
 		public:
+			//--- メンバ関数
+
+			//--- ゲッター・セッター
 			static inline float GetWidth() { return m_fWidth; };
 			static inline float GetHeight() { return m_fHeight; };
 			static inline float GetHalfWidth() { return m_fWidth/2; };
@@ -31,7 +36,8 @@ namespace MySpace
 			static inline Vector2 GetSize() { return Vector2(m_fWidth, m_fHeight); };
 			static inline void SetSize(Vector2 size) { m_fWidth = size.x; m_fHeight = size.y; SetScreenMatrix(m_fWidth, m_fHeight); };
 			static inline void SetSize(float x, float y) { m_fWidth = x; m_fHeight = y; SetScreenMatrix(m_fWidth, m_fHeight); };
-			// スクリーン行列更新
+			
+			// *@スクリーン行列更新
 			static void SetScreenMatrix(float width,float height)
 			{
 				m_mtxScreen = Matrix4x4(
@@ -42,7 +48,7 @@ namespace MySpace
 				);
 			}
 
-			// 3D座標からスクリーン座標へ
+			// *@3D座標からスクリーン座標へ
 			static Vector2 ConvertWorldToScreen(Vector3 pos)
 			{
 				//Vector2 ret;
@@ -52,7 +58,7 @@ namespace MySpace
 
 				return Vector2(xy.m128_f32[0], xy.m128_f32[1]);
 			};
-			// 画面内かどうか
+			// *@画面内かどうか
 			static bool ScreenJudg(Vector3 pos)
 			{
 				auto scrPos = ConvertWorldToScreen(pos);
@@ -63,7 +69,7 @@ namespace MySpace
 				}
 				return false;
 			}
-			// 画面内かどうか
+			// *@画面内かどうか
 			static bool ScreenJudg(Vector2 pos)
 			{
 				if (m_fWidth / 2 >= pos.x && -m_fWidth / 2 <= pos.x)
@@ -100,7 +106,7 @@ namespace MySpace
 				return ret;
 			}
 
-			// 画面からの距離(-の値)
+			// *@画面からの距離(-の値)
 			static Vector2 DistanceFromScreen(Vector3 pos)
 			{
 				Vector2 ret;

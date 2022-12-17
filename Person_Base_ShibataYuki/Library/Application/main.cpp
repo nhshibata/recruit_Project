@@ -85,7 +85,7 @@ HRESULT StartUp(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine, i
 	//--- 生成
 	Application::Create();
 
-	Application* Appli = &Application::Get();
+	Application* Appli = Application::Get();
 	hr = Appli->Init(hInstance);
 
 	//--- ウィンドウ表示
@@ -95,7 +95,7 @@ HRESULT StartUp(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine, i
 }
 void ShutDown()
 {
-	Application* Appli = &Application::Get();
+	Application* Appli = Application::Get();
 
 	//--- 終了
 	Appli->Uninit();
@@ -117,7 +117,7 @@ void ShutDown()
 }
 void MainLoop()
 {
-	Application* Appli = &Application::Get();
+	Application* Appli = Application::Get();
 
 	//--- 更新
 	Appli->MainLoop();

@@ -16,34 +16,34 @@ void CreateComponentType()
 	ones = false;
 
 	// instanceÇÃälìæ
-	CTypeSaveManager& mgr = CTypeSaveManager::Get();
+	CTypeSaveManager* mgr = CTypeSaveManager::Get();
 
 	// ê∂ê¨	
-	mgr.SetComponentSave<CTransform>();
-	mgr.SetComponentSave<CRectTransform>();
-	mgr.SetComponentSave<CRigidbody>();
+	mgr->SetComponentSave<CTransform>();
+	mgr->SetComponentSave<CRectTransform>();
+	mgr->SetComponentSave<CRigidbody>();
 
-	mgr.SetComponentSave<CCamera>();
-	mgr.SetComponentSave<CGameCamera>();
-	mgr.SetComponentSave<CDebugCamera>();
+	mgr->SetComponentSave<CCamera>();
+	mgr->SetComponentSave<CGameCamera>();
+	mgr->SetComponentSave<CDebugCamera>();
 
-	mgr.SetComponentSave<CDirectionalLight>();
-	mgr.SetComponentSave<CSphereCollision>();
-	mgr.SetComponentSave<CBoxCollision>();
+	mgr->SetComponentSave<CDirectionalLight>();
+	mgr->SetComponentSave<CSphereCollision>();
+	mgr->SetComponentSave<CBoxCollision>();
 
-	mgr.SetComponentSave<CMeshRenderer>();
-	mgr.SetComponentSave<CBillboardRenderer>();
-	mgr.SetComponentSave<CPolygonRenderer>();
-	mgr.SetComponentSave<CSphereRenderer>();
-	mgr.SetComponentSave<CBoxRenderer>();
-	mgr.SetComponentSave<CModelRenderer>();
-	mgr.SetComponentSave<CTextRenderer>();
-	mgr.SetComponentSave<CEffekseerRenderer>();
+	mgr->SetComponentSave<CMeshRenderer>();
+	mgr->SetComponentSave<CBillboardRenderer>();
+	mgr->SetComponentSave<CPolygonRenderer>();
+	mgr->SetComponentSave<CSphereRenderer>();
+	mgr->SetComponentSave<CBoxRenderer>();
+	mgr->SetComponentSave<CModelRenderer>();
+	mgr->SetComponentSave<CTextRenderer>();
+	mgr->SetComponentSave<CEffekseerRenderer>();
 
-	mgr.SetComponentSave<CAISystem>();
-	mgr.SetComponentSave<CAIAgent>();
+	mgr->SetComponentSave<CAISystem>();
+	mgr->SetComponentSave<CAIAgent>();
 
-	mgr.SetComponentSave<CRenderer>();
-	mgr.SetComponentSave<CLight>();
-	mgr.SetComponentSave<CCollision>();
+	mgr->SetComponentSave<CRenderer>();
+	mgr->SetComponentSave<CLight>();
+	mgr->SetComponentSave<CCollision>();
 }

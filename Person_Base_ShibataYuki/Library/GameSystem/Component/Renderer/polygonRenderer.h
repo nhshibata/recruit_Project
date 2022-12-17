@@ -16,8 +16,6 @@
 #include <GameSystem/Component/Transform/rectTransform.h>
 #include <GraphicsSystem/Texture/spriteAnimation.h>
 
-
-
 namespace MySpace
 {
 	namespace Game

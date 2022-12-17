@@ -7,6 +7,7 @@
 #ifndef __MOUSE_H__
 #define __MOUSE_H__
 
+//--- インクルード部
 #include <CoreSystem/Math/MyMath.h>
 
 namespace MySpace
@@ -18,6 +19,7 @@ namespace MySpace
 		class Mouse
 		{
 		public:
+			//--- 列挙体定義
 			enum EButton
 			{
 				Left,
@@ -27,20 +29,21 @@ namespace MySpace
 			};
 
 		private:
-			static Vector2 m_vCursorPos;
-			static Vector2 m_vPrevCursorPos;
-			static Vector2 m_vClientPos;
-			static Vector2 m_vVel;
-			static float m_fWheel;
-			static bool m_bWheel;
-
-			static bool curState[(int)EButton::MAX];
-			static bool mouseState[(int)EButton::MAX];
-			static bool mouseStateTrigger[(int)EButton::MAX];
-			static bool mouseStateRelease[(int)EButton::MAX];
+			//--- メンバ変数
+			static inline Vector2 m_vCursorPos;
+			static inline Vector2 m_vPrevCursorPos;
+			static inline Vector2 m_vClientPos;
+			static inline Vector2 m_vVel;
+			static inline float m_fWheel;
+			static inline bool m_bWheel;
+			
+			static inline bool curState[(int)EButton::MAX];
+			static inline bool mouseState[(int)EButton::MAX];
+			static inline bool mouseStateTrigger[(int)EButton::MAX];
+			static inline bool mouseStateRelease[(int)EButton::MAX];
 
 		public:
-
+			//--- メンバ関数
 			static void Initialize();
 			static void Update();
 			static void SetButtonDown(EButton button);

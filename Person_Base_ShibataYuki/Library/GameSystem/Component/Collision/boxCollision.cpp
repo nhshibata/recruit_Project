@@ -19,7 +19,7 @@ using namespace MySpace::Game;
 
 //
 CBoxCollision::CBoxCollision(std::shared_ptr<CGameObject> owner, Vector3 size)
-	: CCollision(owner),m_vSize(size)
+	: CCollision(owner),m_vSize(size), m_bOBBMode(true)
 {
 #if BUILD_MODE
 	m_pDebugBox = std::make_shared<CBox>();

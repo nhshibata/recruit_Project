@@ -12,7 +12,6 @@
 #include <GameSystem/Component/Renderer/renderer.h>
 #include <GraphicsSystem/Manager/effectManager.h>
 
-
 namespace MySpace
 {
 	namespace Game
@@ -48,8 +47,11 @@ namespace MySpace
 
 		public:
 			//--- メンバ関数
-			CEffekseerRenderer() {};
+			CEffekseerRenderer()
+				:m_pEffekseer(nullptr), m_nHandle(-1), m_EffectName(std::u16string()),m_bLoop(false),m_fAngle(0)
+			{};
 			CEffekseerRenderer(std::shared_ptr<CGameObject> owner);
+			// *@コピーコンストラクタ
 			CEffekseerRenderer(const CEffekseerRenderer & copy) {
 				this->m_pEffekseer = copy.m_pEffekseer;
 				this->m_nHandle = copy.m_nHandle;

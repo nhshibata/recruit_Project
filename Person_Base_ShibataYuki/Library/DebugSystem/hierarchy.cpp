@@ -38,7 +38,7 @@ using namespace MySpace::SceneManager;
 using namespace MySpace::Game;
 
 CHierachy::CHierachy()
-	:m_bLoadSaveWindow(false)
+	:m_bLoadSaveWindow(false), m_savePath(), m_loadPath()
 {
 	m_loadPath = FORDER_DIR(Data/scene);
 	LoadScenePathList();
@@ -63,10 +63,10 @@ void CHierachy::Update(ImGuiManager* manager)
 	ImGui::Begin(u8"Hierarchy", &flg, ImGuiWindowFlags_MenuBar);
 
 	// シーンが存在していなければ処理しない
-	if (!CSceneManager::Get().GetActiveScene())
+	if (!CSceneManager::Get()->GetActiveScene())
 		return;
 
-	ImGuiManager::Get().HoverStateSet();
+	ImGuiManager::Get()->HoverStateSet();
 
 	//--- メニューバー
 	if (ImGui::BeginMenuBar())
@@ -76,7 +76,7 @@ void CHierachy::Update(ImGuiManager* manager)
 		{
 			if (ImGui::MenuItem("New Scene"))
 			{
-				CSceneManager::Get().CreateNewScene<CScene>();
+				CSceneManager::Get()->CreateNewScene<CScene>();
 			}
 			ImGui::Separator();
 			if (ImGui::MenuItem("Load/Save"))
@@ -91,7 +91,7 @@ void CHierachy::Update(ImGuiManager* manager)
 		{
 			if (ImGui::MenuItem("Empty"))
 			{
-				auto obj = CSceneManager::Get().GetActiveScene()->GetObjManager()->CreateGameObject();
+				auto obj = CSceneManager::Get()->GetActiveScene()->GetObjManager()->CreateGameObject();
 				manager->GetInspector()->SetSelectGameObject(obj);
 			}
 			if (ImGui::MenuItem("Model"))
@@ -145,7 +145,7 @@ void CHierachy::Update(ImGuiManager* manager)
 	DispSearch();
 
 	//--- GameObject表示
-	auto objList = CSceneManager::Get().GetActiveScene()->GetObjManager()->GetList();
+	auto objList = CSceneManager::Get()->GetActiveScene()->GetObjManager()->GetList();
 	// ゲームオブジェクト名の表示と子要素の表示
 	for (const auto & object : objList)
 	{
@@ -169,7 +169,7 @@ void CHierachy::Update(ImGuiManager* manager)
 		}
 
 		// ドラッグ設定
-		//if (ImGuiManager::Get().GetInspector()->GetSelectObject().lock() == object)
+		//if (ImGuiManager::Get()->GetInspector()->GetSelectObject().lock() == object)
 		{
 			DragDropSource<CGameObject::PtrWeak>(CHierachy::DESC_SELECT_OBJ, object->GetName(), object);
 		}
@@ -230,7 +230,7 @@ void CHierachy::DispSaveLoadMenu()
 
 	if (ImGui::Button("Load"))
 	{
-		CSceneManager::Get().LoadScene(m_loadPath);
+		CSceneManager::Get()->LoadScene(m_loadPath);
 	}
 	ImGui::Separator();
 
@@ -241,7 +241,7 @@ void CHierachy::DispSaveLoadMenu()
 	m_savePath = InputString(m_savePath, u8"saveFile");
 	if (ImGui::Button(u8"Save"))
 	{
-		CSceneManager::Get().SaveScene(m_savePath);
+		CSceneManager::Get()->SaveScene(m_savePath);
 	}
 	ImGui::End();
 }
@@ -278,7 +278,7 @@ void CHierachy::DispChild(ImGuiManager* manager, std::weak_ptr<MySpace::Game::CG
 				}
 
 				// ドラッグ設定
-				//if (ImGuiManager::Get().GetInspector()->GetSelectObject().lock() == object.lock())
+				//if (ImGuiManager::Get()->GetInspector()->GetSelectObject().lock() == object.lock())
 				{
 					DragDropSource<CGameObject::PtrWeak>(CHierachy::DESC_SELECT_OBJ, child.lock()->GetName(), child);
 				}

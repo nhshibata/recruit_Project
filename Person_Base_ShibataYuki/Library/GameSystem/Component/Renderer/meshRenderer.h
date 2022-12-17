@@ -46,6 +46,7 @@ namespace MySpace
 			{
 				NONE = 0,
 				NONE_MOVE = 1 << 0,
+				DYNAMIC,
 				MAX
 			};
 
@@ -54,8 +55,8 @@ namespace MySpace
 			Vector3 m_vCenter;				// *@中心座標
 			bool m_bLightEnable;			// *@ライト有効フラグ
 			float m_fBSRadius = 1;			// *@バウンディングスフィア
-			CMeshMaterial m_MeshMaterial;	// 
 			int m_nStaticMode;				// *@static状態
+			CMeshMaterial m_MeshMaterial;
 
 		protected:
 			void SetInstancing(CMesh* mesh, std::string name = std::string());
@@ -83,9 +84,6 @@ namespace MySpace
 			inline void SetCenter(Vector3 value) { m_vCenter = value; }
 			inline void SetBSRadius(const float value) { m_fBSRadius = value; };
 			inline void SetStatic(EStaticMode value) { m_nStaticMode = static_cast<int>(value); }
-
-			// over ride
-			//void SetMaterial(CMeshMaterial mat) { m_MeshMaterial = mat; };
 
 #if BUILD_MODE
 

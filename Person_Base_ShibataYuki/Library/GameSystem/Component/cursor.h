@@ -52,6 +52,7 @@ namespace MySpace
 			void Init();
 			void Update();
 
+			// *@インプット状態反転
 			void InputSwitch() { m_bInput ^= true; };
 
 			//--- セッター・ゲッター

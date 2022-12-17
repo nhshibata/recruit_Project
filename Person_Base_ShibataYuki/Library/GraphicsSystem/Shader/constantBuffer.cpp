@@ -26,7 +26,7 @@ CConstantBuffer::~CConstantBuffer()
 }
 void CConstantBuffer::Bind(UINT slot)
 {
-	ID3D11DeviceContext* pDC = CDXDevice::Get().GetDeviceContext();
+	ID3D11DeviceContext* pDC = CDXDevice::Get()->GetDeviceContext();
 	switch (m_eType)
 	{
 	case CConstantBuffer::EType::Vertex:
@@ -47,13 +47,13 @@ void CConstantBuffer::Bind(UINT slot)
 }
 void CConstantBuffer::Write(void* data)
 {
-	ID3D11DeviceContext* pDC = CDXDevice::Get().GetDeviceContext();
+	ID3D11DeviceContext* pDC = CDXDevice::Get()->GetDeviceContext();
 	pDC->UpdateSubresource(m_pBuffer, 0, nullptr, data, 0, 0);
 }
 HRESULT CConstantBuffer::Make(UINT size, UINT slot, EType type, D3D11_SUBRESOURCE_DATA* init)
 {
 	HRESULT hr = S_OK;
-	ID3D11Device * pD = CDXDevice::Get().GetDevice();
+	ID3D11Device * pD = CDXDevice::Get()->GetDevice();
 	D3D11_BUFFER_DESC bd;
 	ZeroMemory(&bd, sizeof(bd));
 	bd.ByteWidth = static_cast<UINT>(size) + (size % 16 == 0 ? 0 : 16 - size % 16);

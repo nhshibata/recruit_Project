@@ -22,13 +22,14 @@ CSphereCollision::CSphereCollision(std::shared_ptr<CGameObject> owner, float rad
 	m_pDebugSphere->Init(16, 8, radius);
 #endif //
 }
-//
+
 CSphereCollision::~CSphereCollision()
 {
 #if BUILD_MODE
 	m_pDebugSphere.reset();
 #endif // BUILD_MODE
 }
+
 bool CSphereCollision::Sphere(Vector3 Apos, float Ar, Vector3 Bpos, float Br)
 {
 	float dx = Apos.x - Bpos.x;

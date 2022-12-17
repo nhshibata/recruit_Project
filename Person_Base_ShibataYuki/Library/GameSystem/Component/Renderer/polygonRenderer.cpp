@@ -62,8 +62,8 @@ bool CPolygonRenderer::Draw()
 	if (!CRenderer::Draw())return false;
 
 	// ‘O€”õ
-	CDXDevice::Get().SetZBuffer(false);
-	CDXDevice::Get().SetBlendState(static_cast<int>(EBlendState::BS_ALPHABLEND));
+	CDXDevice::Get()->SetZBuffer(false);
+	CDXDevice::Get()->SetBlendState(static_cast<int>(EBlendState::BS_ALPHABLEND));
 
 	// •`‰æ
 	CPolygon::SetColor(GetColor(1));
@@ -77,7 +77,7 @@ bool CPolygonRenderer::Draw()
 		CPolygon::SetTexture(m_pSprite->GetImage().lock()->GetSRV());
 	else
 		CPolygon::SetTexture(NULL);
-	CPolygon::Draw(CDXDevice::Get().GetDeviceContext());
+	CPolygon::Draw(CDXDevice::Get()->GetDeviceContext());
 
 	// İ’è‚Ì‰Šú‰»
 	CPolygon::SetColor(0,0,0,1);
@@ -88,8 +88,8 @@ bool CPolygonRenderer::Draw()
 	CPolygon::SetFrameSize(1.0f, 1.0f);
 	CPolygon::SetTexture(NULL);
 	
-	CDXDevice::Get().SetZBuffer(true);
-	CDXDevice::Get().SetBlendState(static_cast<int>(EBlendState::BS_NONE));
+	CDXDevice::Get()->SetZBuffer(true);
+	CDXDevice::Get()->SetBlendState(static_cast<int>(EBlendState::BS_NONE));
 
 	return true;
 }

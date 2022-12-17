@@ -8,13 +8,11 @@
 
 using namespace MySpace::System;
 
-//
 CFuncPtr::CFuncPtr(PTR ptr)
 	:m_Func(ptr)
 {
-
 }
-//
+
 CFuncPtr::~CFuncPtr()
 {
 	m_Func = nullptr;

@@ -1,7 +1,9 @@
 //=========================================================
 // [BaseObject.cpp]
-// 基底クラス
+//---------------------
 // 作成:2022/06/07
+//---------------------
+// 基底クラス
 // スマートポインタを使いやすくするために作成したｸﾗｽ
 //=========================================================
 
@@ -13,7 +15,6 @@
 #include <typeinfo>
 #include <CoreSystem/Util/stl.h>
 #include <CoreSystem/Util/cerealCommon.h>
-#include <DebugSystem/debug.h>
 
 namespace MySpace
 {
@@ -37,8 +38,9 @@ namespace MySpace
 				archive(CEREAL_NVP(m_objName), CEREAL_NVP(m_spThisPtr));
 			}
 		public:
-			//--- 再定義
+			//--- エイリアス
 			using Ptr = std::weak_ptr<T>;
+
 		protected:
 			//--- メンバ変数
 			std::string m_objName = std::string();	// 名前
@@ -61,20 +63,16 @@ namespace MySpace
 			void SetName(std::string name) { m_objName = name; };
 			type_info& GetType() { return typeid(*this); }
 
-			// <Summary>
+			
 			// NOTE: オブジェクト、コンポーネント生成時にポインタを渡さなければいけない
-			// </Summary>
+			// *@SP設定
 			void SetPtr(Ptr ptr) { m_spThisPtr = ptr; }
 
-			// <Summary>
-			// weakPtrの取得
-			// </Summary>
+			// *@weakPtr取得
 			Ptr GetPtr() { return m_spThisPtr; }
 
-			// <Summary>
-			// weakPtr限定
-			// 配列にあるか確認
-			// </Summary>
+			// *@weakPtr限定
+			// *@配列にあるか確認
 			template <class T2, class S>
 			bool IsPtrIn(T2 ptr, S obj) {
 				auto it = ptr.begin();
@@ -85,9 +83,7 @@ namespace MySpace
 				return false;
 			}
 
-			// <Summary>
-			// list限定
-			// </Summary>
+			// *@list限定
 			template <class T1>
 			bool IsPtrIn(std::list<T1> ptr, T1 obj) {
 				auto it = ptr.begin();
@@ -100,16 +96,9 @@ namespace MySpace
 			}
 
 #ifdef BUILD_MODE
-		protected:
-			//bool m_bDebug;
 		public:
 			// デバッグ関係
 			virtual void ImGuiDebug() {};
-			//void SetDebug(bool flg) { m_bDebug = flg; }
-			//bool GetDebug() { return m_bDebug; }
-			//bool SwitchDebug() { m_bDebug ^= true; return m_bDebug; }
-			//bool* GetDebugAdress() { return &m_bDebug; }
-			//static void SetScene(const const CScene* pScene) { m_pScene = pScene; }
 #endif // BUILD_MODE
 		};
 	}

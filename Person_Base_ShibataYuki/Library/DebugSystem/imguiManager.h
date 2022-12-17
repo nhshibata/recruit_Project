@@ -15,7 +15,6 @@
 #include <stdio.h>
 #include <CoreSystem/Util/stl.h>
 #include <CoreSystem/Util/define.h>
-#include <CoreSystem/system.h>
 
 #include <ImGui/imgui.h>
 
@@ -88,12 +87,13 @@ namespace MySpace
 			bool m_bPause;								// ポーズ
 			bool m_bOneFlame;							// 1フレーム進行
 			bool m_bEditFlg;							// 編集フラグ
+			
+			EMouseHovered m_eHover;						// マウス等選択中か列挙体(bit)
+			bool m_bSceneRender;						// シーンレンダーフラグ
+			MapString m_aDebugMap;						// デバッグログ用map
+			
 			std::shared_ptr<CGameObject> m_pDebugObj;	// デバッグ用ｶﾒﾗﾎﾟｲﾝﾀを保持するオブジェクト(ここで保持しないと破棄される)
 			std::weak_ptr<CDebugCamera> m_pDebugCamera;	// デバッグ用ｶﾒﾗﾎﾟｲﾝﾀ
-			
-			MapString m_aDebugMap;						// デバッグログ用map
-			EMouseHovered m_eHover = EMouseHovered::HOVERED_NONE;	// マウス等選択中か列挙体(bit)
-			bool m_bSceneRender;						// シーンレンダーフラグ
 														
 			std::shared_ptr<CInspector> m_pInspector;	// インスペクター
 			std::shared_ptr<CHierachy> m_pHierarchy;	// ヒエラルキー

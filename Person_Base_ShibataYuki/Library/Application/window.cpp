@@ -4,6 +4,7 @@
 //---------------------------------------------------------
 //=========================================================
 
+//--- インクルード部
 #include <Application/window.h>
 #include <CoreSystem/Input/mouse.h>
 #include <ImGui/imgui.h>
@@ -13,15 +14,13 @@ using namespace MySpace::System;
 
 //--- 定数定義
 
-//--- 静的メンバ変数
-
+//--- プロトタイプ宣言
 IMGUI_IMPL_API LRESULT ImGui_ImplWin32_WndProcHandler(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam);
 LRESULT ImGui_WndProc(HWND hwnd, UINT message, WPARAM wParam, LPARAM lParam);
 
 
 LRESULT CALLBACK WndProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lparam)
 {
-	
 	// コールバックが設定されていなければ終了
 	ImGui_WndProc(hwnd, msg, wParam, lparam);
 	

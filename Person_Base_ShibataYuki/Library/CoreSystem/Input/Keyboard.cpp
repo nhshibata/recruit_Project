@@ -3,14 +3,10 @@
 // 作成:2022/06/26
 //=========================================================
 
+//--- インクルード部
 #include <CoreSystem/Input/Keyboard.h>
 
-
 using namespace MySpace::Input;
-
-//BYTE Keyboad::keyState[NUM_KEY_MAX];
-//BYTE Keyboad::keyStateTrigger[NUM_KEY_MAX];
-//BYTE Keyboad::keyStateRelease[NUM_KEY_MAX];
 
 void Keyboad::Update()
 {

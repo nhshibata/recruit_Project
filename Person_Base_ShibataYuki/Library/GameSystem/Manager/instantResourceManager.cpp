@@ -18,33 +18,33 @@ using namespace MySpace::Game;
 void CInstantResourceManager::Load()
 {
 	// ﾃｸｽﾁｬ読み込み
-	for (auto it = m_TexList.begin(); it != m_TexList.end(); ++it)
+	for (auto it = m_aTexList.begin(); it != m_aTexList.end(); ++it)
 	{
-		CImageResourceManager::Get().Load(*it);
+		CImageResourceManager::Get()->Load(*it);
 	}
 	
 	// モデル読み込み
-	for (auto it = m_ModelList.begin(); it != m_ModelList.end(); ++it)
+	for (auto it = m_aModelList.begin(); it != m_aModelList.end(); ++it)
 	{
-		CModelManager::Get().Load(*it);
+		CModelManager::Get()->Load(*it);
 	}
 
 	// エフェクト読み込み
-	for (auto it = m_EffectList.begin(); it != m_EffectList.end(); ++it)
+	for (auto it = m_aEffectList.begin(); it != m_aEffectList.end(); ++it)
 	{
-		CEffekseer::Get().Load(*it);
+		CEffekseer::Get()->Load(*it);
 	}
 }
 void CInstantResourceManager::Save()
 {
 	// 引き渡し用に格納
-	m_TexList = CImageResourceManager::Get().GetNameList();
-	m_ModelList = CModelManager::Get().GetNameList();
-	m_EffectList = CEffekseer::Get().GetNameList();
+	m_aTexList = CImageResourceManager::Get()->GetNameList();
+	m_aModelList = CModelManager::Get()->GetNameList();
+	m_aEffectList = CEffekseer::Get()->GetNameList();
 }
 void CInstantResourceManager::SceneUnload()
 {
-	CImageResourceManager::Get().SceneUnload();
-	CModelManager::Get().SceneUnload();
-	//CEffekseer::Get().GetNameList();
+	CImageResourceManager::Get()->SceneUnload();
+	CModelManager::Get()->SceneUnload();
+	//CEffekseer::Get()->GetNameList();
 }

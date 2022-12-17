@@ -7,13 +7,13 @@
 // 
 //=========================================================
 
-
 //--- インクルードガード
 #ifndef __APPLICATION_H__
 #define __APPLICATION_H__
 
-//--- インクルード部
 #define NOMINMAX
+
+//--- インクルード部
 #include <windows.h>
 #include <windef.h>
 #include <d3d11.h>
@@ -24,15 +24,7 @@
 #include <CoreSystem/Singleton.h>
 #include <CoreSystem/property.h>
 
-//#pragma comment(lib, "winmm.lib")	// winmm.libを使用する
 
-namespace MySpace
-{
-	namespace System
-	{
-		class CSystemManager;
-	}
-}
 using MySpace::System::CSingleton;
 
 //--- クラス定義
@@ -48,19 +40,16 @@ private:
 	//--- メンバ関数
 	Application() {};									// コンストラクタ
 	~Application() {};									// デストラクタ
-
-	//Application(const Application&);					// コピー
-	//Application& operator = (const Application&) {}		// =
-
 public:
 	bool Init(HINSTANCE h_cpInstance);					// システム有効化
 	
 	void Uninit();										// システム無効化
 	unsigned long MainLoop();							// メインループ
 
-	// メンバ取得関数
+	//--- ゲッター・セッター
 	inline HWND GetHWnd() { return m_hWnd; };			// ウィンドウハンドル
 	inline HINSTANCE GetHInst() { return m_hInst; };	// インスタンスハンドル
+	
 	ID3D11Device* GetDevice();
 	ID3D11DeviceContext* GetDeviceContext();
 

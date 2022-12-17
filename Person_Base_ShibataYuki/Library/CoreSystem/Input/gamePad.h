@@ -51,16 +51,17 @@ namespace MySpace
 				MAX
 			};
 		private:
-		private:
-			static XINPUT_STATE m_XInputState;				//XBOXコントローラーの状態を格納する
-			static XINPUT_VIBRATION m_Vibration;			//XBOXコントローラーのバイブレーション
-			static bool g_bEnable;
+			//--- メンバ変数
+			static inline XINPUT_STATE m_XInputState;				//XBOXコントローラーの状態を格納する
+			static inline XINPUT_VIBRATION m_Vibration;				//XBOXコントローラーのバイブレーション
+			static inline bool g_bEnable;
 
-			static BYTE m_PadState[(int)EButton::MAX];			// コントローラーの入力情報
-			static BYTE m_PadTrigger[(int)EButton::MAX];	// コントローラーのトリガー
-			static BYTE m_PadRelease[(int)EButton::MAX];	// コントローラーのリリース
+			static inline BYTE m_aPadState[(int)EButton::MAX];		// コントローラーの入力情報
+			static inline BYTE m_aPadTrigger[(int)EButton::MAX];	// コントローラーのトリガー
+			static inline BYTE m_aPadRelease[(int)EButton::MAX];	// コントローラーのリリース
 
 		public:
+			//--- メンバ関数
 			CGamePad();
 			~CGamePad();
 

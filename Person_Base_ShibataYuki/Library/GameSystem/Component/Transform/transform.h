@@ -64,9 +64,9 @@ namespace MySpace
 			Vector3 m_vRot;			// 角度
 			Vector3 m_vDestRot;		// 目標角度
 			Vector3 m_vScale;		// 大きさ
-			Matrix4x4 m_mWorldMtx;
-			Matrix4x4 m_mLocalMtx;
-			Quaternion m_Rot;
+			Matrix4x4 m_mWorldMtx;	// ワールドマトリックス
+			Matrix4x4 m_mLocalMtx;	// ローカルマトリックス
+			Quaternion m_Rot;		// クォータニオン
 
 		protected:
 			std::weak_ptr<CTransform> m_pParent;					// 親オブジェクト
@@ -78,7 +78,6 @@ namespace MySpace
 
 		public:
 			CTransform();
-			// *@ 親オブジェクトを教える
 			CTransform(std::shared_ptr<CGameObject> owner);
 			~CTransform();
 
@@ -102,28 +101,28 @@ namespace MySpace
 			inline void SetRot(Vector3 value)					{ m_vRot = value; };
 			inline void SetDestRot(Vector3 value)				{ m_vDestRot = value; };
 			inline void SetScale(Vector3 value)					{ m_vScale = value; };
-			inline void SetWorldQuaternion(const Quaternion &  rotation);
-			inline void SetLocalQuaternion(const Quaternion &  rotation);
+			inline void SetWorldQuaternion(const Quaternion & rotation);
+			inline void SetLocalQuaternion(const Quaternion & rotation);
 			void SetWorldMatrix(Vector3 translate, Vector3 rot, Vector3 scale);
 			inline void SetWorldMatrix(const XMFLOAT4X4 value)	{ m_mWorldMtx = value; }
 			inline void SetLocalMatrix(const XMFLOAT4X4 value)	{ m_mLocalMtx = value; }
 
 			//--- 親子関係
-			// *@ 親オブジェクト取得
-			_NODISCARD inline std::weak_ptr<CTransform> GetParent()		{ return m_pParent; };				// 親を返す
-			// *@ 子オブジェクト取得
+			// *@親オブジェクト取得
+			_NODISCARD inline std::weak_ptr<CTransform> GetParent()		{ return m_pParent; };
+			// *@子オブジェクト取得
 			_NODISCARD inline 
 				std::vector<std::weak_ptr<CTransform>> GetChilds()		{ return m_pChilds; }
-			// *@ 子オブジェクト取得
+			// *@子オブジェクト取得
 			_NODISCARD std::weak_ptr<CTransform> GetChild(int no);
 			// *@要素数を返す
 			_NODISCARD inline int GetChildCount()						{ return static_cast<int>(m_pChilds.size()); };
 
-			// *@ 親要素追加
+			// *@親要素追加
 			inline void SetParent(std::weak_ptr<CTransform> parent)		{ m_pParent = parent; }
-			// *@ 子要素追加
+			// *@子要素追加
 			void AddChild(std::weak_ptr<CTransform> child);
-			// *@ 子要素除外
+			// *@子要素除外
 			void RemoveChild(std::weak_ptr<CTransform> child)
 			{
 				for (auto it = m_pChilds.begin(); it != m_pChilds.end(); ++it)
@@ -135,7 +134,7 @@ namespace MySpace
 					}
 				}
 			}
-			// 親子関係解消
+			// *@親子関係解消
 			void ParentDissolved()
 			{
 				if (!m_pParent.lock())

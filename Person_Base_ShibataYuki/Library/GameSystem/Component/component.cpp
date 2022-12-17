@@ -47,9 +47,9 @@ void CComponent::OnLoad()
 {
 #ifdef _DEBUG
 	/*auto owner = m_pOwner.lock();
-	if (m_spThisPtr.lock())
+	if (m_pSelfPtr.lock())
 	{
-		[[maybe_unused]] auto name = m_spThisPtr.lock()->GetName();
+		[[maybe_unused]] auto name = m_pSelfPtr.lock()->GetName();
 	}*/
 #endif // _DEBUG
 }

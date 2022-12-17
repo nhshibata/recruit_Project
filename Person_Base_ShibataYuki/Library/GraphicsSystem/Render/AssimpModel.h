@@ -1,7 +1,14 @@
+//==========================================================
 // Assimpライブラリ用モデルクラス定義 [AssimpModel.h]
+//--------------------
+// ほぼ先生のコード
+// インスタンシング描画は追加
+//==========================================================
 #pragma once
 #define NOMINMAX
 //#define D3DCOMPILER
+
+//--- インクルード部
 #include <map>
 #include <vector>
 #include <windows.h>
@@ -11,7 +18,6 @@
 #include <d3dcompiler.h>
 #endif
 
-// NOTE: 追加のインクルードはGraphicsSystemしか設定していない
 #include <assimp/Importer.hpp>
 #include <assimp/scene.h>
 #include <assimp/postprocess.h>

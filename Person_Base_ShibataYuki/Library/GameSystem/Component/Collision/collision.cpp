@@ -19,13 +19,13 @@ using namespace MySpace::SceneManager;
 // 引数付きコンストラクタ
 CCollision::CCollision(std::shared_ptr<CGameObject> owner, bool trigger)
 	:CComponent(owner), m_bIsTrigger(trigger), m_vOldPos(0, 0, 0),
-	m_pOldStayList(0),m_pHitList(0)
+	m_pOldStayList(0),m_pHitList(0), m_nSystemIdx(-1)
 {
 }
 // デストラクタ
 CCollision::~CCollision()
 {
-	CSceneManager::Get().GetCollisionSystem()->ExecutSystem(m_nSystemIdx);
+	CSceneManager::Get()->GetCollisionSystem()->ExecutSystem(m_nSystemIdx);
 
 	m_pOldStayList.clear();
 	m_pHitList.clear();
@@ -56,17 +56,16 @@ void CCollision::Update()
 
 	// 当たり判定の要請
 	//RequestCollision();
-	//CSceneManager::Get().GetActiveScene()->GetObjManager()->SetColComponent(GetPtr());
+	//CSceneManager::Get()->GetActiveScene()->GetObjManager()->SetColComponent(GetPtr());
 }
 void CCollision::RequestCollision()
 {
-	m_nSystemIdx = CSceneManager::Get().GetCollisionSystem()->RegistToSystem(BaseToDerived<CCollision>());
+	m_nSystemIdx = CSceneManager::Get()->GetCollisionSystem()->RegistToSystem(BaseToDerived<CCollision>());
 }
-// <Summary>
+
 // 外部から呼び出される
 // 当たった際の処理
 // EnterとStayはここで判定
-// </Summary>
 void CCollision::HitResponse(CCollision* other)
 {
 	std::weak_ptr<CGameObject> otherObj = other->GetOwner(0);
@@ -81,20 +80,19 @@ void CCollision::HitResponse(CCollision* other)
 	// Stay
 	m_pHitList.push_back(otherObj);
 
-
 	// Stay:以前のフレームで接触していたか確認
 	//if (auto it = std::find(m_pOldStayList.begin(), m_pOldStayList.end(), otherObj.lock()); it != m_pOldStayList.end())
-	bool res = false;
+	bool found = false;
 	for (auto & obj : m_pOldStayList)
 	{
 		if (obj.lock() == otherObj.lock())
 		{
-			res = true;
+			found = true;
 			break;
 		}
 	}
 
-	if (res)
+	if (found)
 	{
 		if (!trigger)
 		{
@@ -134,19 +132,17 @@ void CCollision::HitResponse(CCollision* other)
 	// 離れたオブジェクトの判定
 	ColObjectUpdate();
 }
-// <Summary>
 // 触れている→ Enter → 次も接している → stay保存 → 離れた Exit
-// </Summary>
 void CCollision::ColObjectUpdate()
 {
-	// 前フレームのリストを確認
+	//--- 前フレームのリストを確認
 	for (std::list<std::weak_ptr<CGameObject>>::iterator it = m_pOldStayList.begin(); it != m_pOldStayList.end(); ++it)
 	{
 		if (!(*it).lock()) // 削除されている可能性を鑑みて
 			continue;
 
 		// 格納されていない、離れた
-		//if (auto res = std::find(m_pHitList.begin(), m_pHitList.end(), (*it)); res == m_pHitList.end())
+		//if (auto found = std::find(m_pHitList.begin(), m_pHitList.end(), (*it)); found == m_pHitList.end())
 		bool res = false;
 		for (auto & obj : m_pHitList)
 		{	
@@ -172,12 +168,11 @@ void CCollision::ColObjectUpdate()
 	// 次の判定のため、クリア
 	m_pHitList.clear();
 }
-// <Summary> 
+
 // 離れた相手のことを教える
-// </Summary>
 bool CCollision::ExitTell()
 {
-	// EnterリストにStayオブジェあれば除外
+	//--- EnterリストにStayオブジェがあれば除外
 	for (std::list<std::weak_ptr<CGameObject>>::iterator it = m_pExitList.begin(); it != m_pExitList.end(); ++it)
 	{
 		CGameObject* pObj = (*it).lock().get();

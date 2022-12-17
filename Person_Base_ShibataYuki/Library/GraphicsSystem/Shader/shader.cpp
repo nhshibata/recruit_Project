@@ -39,8 +39,8 @@ namespace MySpace
 			PBYTE pbData = nullptr;
 			long lSize = 0L;
 
-			HINSTANCE hInst = Application::Get().GetHInst();
-			HWND hWnd = Application::Get().GetHWnd();
+			HINSTANCE hInst = Application::Get()->GetHInst();
+			HWND hWnd = Application::Get()->GetHWnd();
 			if (IS_INTRESOURCE(pwszVSFName)) {
 				HRSRC hResInfo = FindResourceW(hInst, pwszVSFName, RT_SHADER);
 				if (hResInfo) {
@@ -102,7 +102,7 @@ namespace MySpace
 			}
 
 			// ブロブからバーテックスシェーダ作成
-			ID3D11Device* pDevice = Application::Get().GetDevice();
+			ID3D11Device* pDevice = Application::Get()->GetDevice();
 			hr = pDevice->CreateVertexShader(pbData, lSize, nullptr, ppVertexShader);
 			if (FAILED(hr)) {
 				if (pCompiledShader)
@@ -151,8 +151,8 @@ namespace MySpace
 			ID3DBlob* pCompiledShader = nullptr;
 			PBYTE pbData = nullptr;
 			long lSize = 0L;
-			HINSTANCE hInst = Application::Get().GetHInst();
-			HWND hWnd = Application::Get().GetHWnd();
+			HINSTANCE hInst = Application::Get()->GetHInst();
+			HWND hWnd = Application::Get()->GetHWnd();
 
 			// シェーダバイナリ読み込み
 			if (IS_INTRESOURCE(pwszPSFName)) {
@@ -214,7 +214,7 @@ namespace MySpace
 #endif
 				}
 			}
-			ID3D11Device* pDevice = Application::Get().GetDevice();
+			ID3D11Device* pDevice = Application::Get()->GetDevice();
 			hr = pDevice->CreatePixelShader(pbData, lSize, nullptr, ppPixelShader);
 			if (pCompiledShader)
 				pCompiledShader->Release();

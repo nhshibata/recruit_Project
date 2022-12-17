@@ -13,7 +13,6 @@
 
 using namespace MySpace::System;
 
-
 // カレントディレクトリの取得
 std::string CFilePath::GetCurrentDirectory()
 {

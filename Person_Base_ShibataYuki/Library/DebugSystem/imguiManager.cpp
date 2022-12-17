@@ -49,6 +49,8 @@ using namespace MySpace::SceneManager;
 // コンストラクタ
 ImGuiManager::ImGuiManager()
 {
+	m_bPlayMode = EPlayMode::Release;
+	m_eHover = EMouseHovered::HOVERED_NONE;
 	m_bPause = false;
 	m_bOneFlame = false;
 	m_bEditFlg = true;
@@ -143,7 +145,7 @@ void ImGuiManager::Update()
 	m_pHierarchy->Update(this);
 	
 	// 現在シーン取得
-	SceneManager::CScene* scene = CSceneManager::Get().GetActiveScene();
+	SceneManager::CScene* scene = CSceneManager::Get()->GetActiveScene();
 	
 	//--- SceneView表示
 	if (m_bSceneRender)
@@ -172,7 +174,7 @@ void ImGuiManager::Update()
 
 		// シーン名表示
 		ImGui::Text(u8"現在のシーン名 : %s", scene->GetSceneName().c_str());
-		ImGui::Text(u8"オブジェクト数 : %d", CSceneManager::Get().GetActiveScene()->GetObjManager()->GetList().size());
+		ImGui::Text(u8"オブジェクト数 : %d", CSceneManager::Get()->GetActiveScene()->GetObjManager()->GetList().size());
 
 		// フレームレート表示
 		ImGui::Text(u8"現在のFPS : %.1f FPS", ImGui::GetIO().Framerate);
@@ -182,30 +184,30 @@ void ImGuiManager::Update()
 	//--- SceneManager表示
 	if (ImGui::BeginTabItem("SceneManager"))
 	{
-		CSceneManager::Get().ImGuiDebug();
+		CSceneManager::Get()->ImGuiDebug();
 		// 変更されている可能性があるため再取得
-		scene = CSceneManager::Get().GetActiveScene();
+		scene = CSceneManager::Get()->GetActiveScene();
 		ImGui::EndTabItem();	// とじる
 	}
 	
 	//--- FPS情報
 	if (ImGui::BeginTabItem("FPS"))
 	{
-		CFps::Get().ImGuiDebug();
+		CFps::Get()->ImGuiDebug();
 		ImGui::EndTabItem();	// とじる
 	}
 	
 	//--- 描画の確認
 	if (ImGui::BeginTabItem("DrawSystem"))
 	{
-		CSceneManager::Get().GetDrawSystem()->ImGuiDebug();
+		CSceneManager::Get()->GetDrawSystem()->ImGuiDebug();
 		ImGui::EndTabItem();	// とじる
 	}
 	
 	//--- NavMesh
 	if (ImGui::BeginTabItem("NavMesh"))
 	{
-		CSceneManager::Get().GetNavMesh()->ImGuiDebug();		
+		CSceneManager::Get()->GetNavMesh()->ImGuiDebug();		
 		ImGui::EndTabItem();	// とじる
 	}
 
@@ -233,7 +235,7 @@ void ImGuiManager::Update()
 
 	//--- ｶﾒﾗ操作
 	const int e = EMouseHovered::HOVERED_WINDOW | EMouseHovered::HOVERED_GIZMO | EMouseHovered::HOVERED_ITEM | EMouseHovered::HOVERED_DRAG;
-	if (!ImGuiManager::Get().IsHover(EMouseHovered(e)))
+	if (!ImGuiManager::Get()->IsHover(EMouseHovered(e)))
 	{
 		if (m_pDebugCamera.lock())
 			m_pDebugCamera.lock()->Update();
@@ -356,22 +358,22 @@ void ImGuiManager::HoverStateSet()
 
 	if (ImGui::IsWindowHovered())
 	{
-		ImGuiManager::Get().UpHover(ImGuiManager::EMouseHovered::HOVERED_WINDOW);
+		UpHover(ImGuiManager::EMouseHovered::HOVERED_WINDOW);
 		DebugLog("Window Hover");
 	}
 	if (ImGui::IsAnyItemHovered())
 	{
-		ImGuiManager::Get().UpHover(ImGuiManager::EMouseHovered::HOVERED_ITEM);
+		UpHover(ImGuiManager::EMouseHovered::HOVERED_ITEM);
 		DebugLog("Item Hover");
 	}
 	if (ImGui::IsDragDropPayloadBeingAccepted())
 	{
-		ImGuiManager::Get().UpHover(ImGuiManager::EMouseHovered::HOVERED_DRAG);
+		UpHover(ImGuiManager::EMouseHovered::HOVERED_DRAG);
 		DebugLog("Drag");
 	}
 	if (ImGui::IsAnyItemActive())
 	{
-		ImGuiManager::Get().UpHover(ImGuiManager::EMouseHovered::HOVERED_ITEM);
+		UpHover(ImGuiManager::EMouseHovered::HOVERED_ITEM);
 		DebugLog("Item Active");
 	}
 
@@ -394,7 +396,7 @@ ID3D11DepthStencilView* ImGuiManager::GetDSV()
 
 void ImGuiManager::SceneRender()
 {
-	auto pDX = &CDXDevice::Get();
+	auto pDX = CDXDevice::Get();
 	//--- 描画先の変更
 	pDX->SwitchRender(m_pRT->GetView(), m_pDS->GetView());
 }

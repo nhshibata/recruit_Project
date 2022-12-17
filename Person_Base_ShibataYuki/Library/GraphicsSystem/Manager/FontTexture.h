@@ -48,7 +48,7 @@ namespace MySpace
 			HFONT m_hFont;				// 
 			HFONT m_hOldFont;			// 
 
-			FontMap m_StringMap;		// 格納用
+			FontMap m_aStringMap;		// 格納用
 			std::wstring m_FontName;	// 現在保持フォント名
 		
 		public:

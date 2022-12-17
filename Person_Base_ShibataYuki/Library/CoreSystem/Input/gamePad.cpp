@@ -9,19 +9,11 @@
 // 名前空間
 using namespace MySpace::Input;
 
-namespace {
+namespace 
+{
 	const float THUMB_VALUE = (65535 / 4);
 
 }
-//--- 静的メンバ変数
-XINPUT_STATE CGamePad::m_XInputState;				//XBOXコントローラーの状態を格納する
-XINPUT_VIBRATION CGamePad::m_Vibration;			//XBOXコントローラーのバイブレーション
-bool CGamePad::g_bEnable = false;
-
-BYTE CGamePad::m_PadState[(int)EButton::MAX];			// コントローラーの入力情報ワーク
-BYTE CGamePad::m_PadTrigger[(int)EButton::MAX];	// コントローラーのトリガー情報ワーク
-BYTE CGamePad::m_PadRelease[(int)EButton::MAX];	// コントローラーのリリース情報ワーク
-
 
 CGamePad::CGamePad()
 {
@@ -80,12 +72,12 @@ void CGamePad::Update()
 	for (int nCnKey = 0; nCnKey < (int)EButton::MAX; nCnKey++)
 	{
 		// キートリガー・リリース情報を生成
-		m_PadTrigger[nCnKey] = (m_PadState[nCnKey] ^ aPadState[nCnKey]) & aPadState[nCnKey];
-		m_PadRelease[nCnKey] = (m_PadState[nCnKey] ^ aPadState[nCnKey]) & m_PadState[nCnKey];
+		m_aPadTrigger[nCnKey] = (m_aPadState[nCnKey] ^ aPadState[nCnKey]) & aPadState[nCnKey];
+		m_aPadRelease[nCnKey] = (m_aPadState[nCnKey] ^ aPadState[nCnKey]) & m_aPadState[nCnKey];
 
 
 		// キープレス情報を保存
-		m_PadState[nCnKey] = aPadState[nCnKey];
+		m_aPadState[nCnKey] = aPadState[nCnKey];
 	}
 }
 
@@ -98,21 +90,21 @@ bool CGamePad::IsPress(EButton nKey)
 {
 	if (!g_bEnable) { return false; }
 
-	return (m_PadState[(int)nKey]) ? true : false;
+	return (m_aPadState[(int)nKey]) ? true : false;
 }
 
 bool CGamePad::IsTrigger(EButton nKey)
 {
 	if (!g_bEnable) { return false; }
 
-	return (m_PadTrigger[(int)nKey]) ? true : false;
+	return (m_aPadTrigger[(int)nKey]) ? true : false;
 }
 
 bool CGamePad::IsRelease(EButton nKey)
 {
 	if (!g_bEnable) { return false; }
 
-	return (m_PadRelease[(int)nKey]) ? true : false;
+	return (m_aPadRelease[(int)nKey]) ? true : false;
 }
 
 float CGamePad::ThumbLX()

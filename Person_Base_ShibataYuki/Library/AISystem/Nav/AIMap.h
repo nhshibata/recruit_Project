@@ -1,6 +1,10 @@
+
+
+
 #ifndef __AI_MAP_H__
 #define __AI_MAP_H__
 
+//--- インクルード部
 #include <memory>
 #include <vector>
 #include <CoreSystem/Math/MyMath.h>
@@ -9,27 +13,32 @@
 #define MULTI_KARI(a,b)		DirectX::XMFLOAT3(a.x * b.x, a.y * b.y, a.z * b.z)
 #define MULTI_KARIB(a,b)	DirectX::XMFLOAT3(a.x * b, a.y * b, a.z * b)
 
+#pragma region ForwardDeclaration
 namespace AI
 {
 	class CNavMeshBake;
 }
+#pragma endregion
 using namespace MySpace::MyMath;
+
 
 class AIMapOperator
 {
 	friend class AIMap;
 	friend class AI::CNavMeshBake;
+	//--- メンバ関数
+protected:
+	virtual float Operator(Vector3 pos, void* data) = 0;
 public:
 	AIMapOperator() {}
 	~AIMapOperator() {}
-protected:
-	virtual float Operator(Vector3 pos, void* data) = 0;
 
 };
 
 class AIMap
 {
 public:
+	//--- エイリアス
 	using Route = std::vector<Vector3>;
 private:
 	struct Point
@@ -37,6 +46,22 @@ private:
 		int x;
 		int y;
 	};
+
+private:
+	char* m_pData;
+	int m_stride;
+	int m_grid;
+
+	Vector3 m_pos;
+	float m_margin;
+
+private:
+	//--- メンバ関数
+	bool IsOutOfPoint(Point index);
+	Point IndexToPoint(int index);
+	Point PosToPoint(const Vector3 pos);
+	int PointToIndex(Point point);
+	Vector3 PointToPos(Point point);
 
 public:
 	AIMap(int dataSize, int grid);
@@ -54,21 +79,6 @@ public:
 #ifdef _DEBUG
 	void Draw(AIMapOperator&& op);
 #endif
-
-private:
-	bool IsOutOfPoint(Point index);
-	Point IndexToPoint(int index);
-	Point PosToPoint(const Vector3 pos);
-	int PointToIndex(Point point);
-	Vector3 PointToPos(Point point);
-
-private:
-	char* m_pData;
-	int m_stride;
-	int m_grid;
-
-	Vector3 m_pos;
-	float m_margin;
 };
 
 #endif // __AI_MAP_H__

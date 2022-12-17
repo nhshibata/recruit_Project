@@ -2,7 +2,8 @@
 // [collisionSystem.h]
 // 作成:2022/11/9
 //----------------------------
-//
+// 当たり判定実行ｸﾗｽ
+// GameObjectManagerで実装していた機能を見やすくするためｸﾗｽ化
 //=====================================================
 
 //--- インクルードガード
@@ -30,16 +31,22 @@ namespace MySpace
 		class CCollisionSystem : public CMapSystemBase<std::weak_ptr<CCollision>>
 		{
 		private:
+			//--- エイリアス
 			using COLLISION_VEC = std::vector<std::weak_ptr<CCollision>>;				// 途中破棄された場合、参照しないためweak
-			//using COLLISION_MAP = std::unordered_map<int, std::weak_ptr<CCollision>>;	// 途中破棄された場合、参照しないためweak
-		private:
 		
 		public:
+			//--- メンバ関数
 			CCollisionSystem();
 			~CCollisionSystem();
 
-			// *当たり判定用関数
+			// *@当たり判定実行
 			void CollisionCheck();
+
+			// *@破棄(mapのため、整列はさせない)
+			inline std::weak_ptr<CCollision> ExecutSystem(int idx)
+			{
+				return ExecutSystem(idx);
+			}
 		};
 
 	}

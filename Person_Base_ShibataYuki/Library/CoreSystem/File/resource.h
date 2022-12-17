@@ -5,19 +5,21 @@
 #ifndef __RESOURCE_H__
 #define __RESOURCE_H__
 
+//--- インクルード部
 #include <string>
 
 class CResource
 {
+protected:
+	//--- メンバ変数
+	std::string m_fileName;
+
 public:
+	//--- メンバ関数
 	CResource() {};
 	~CResource() {};
 
 	virtual bool Load(std::string fileName) = 0;
-	//virtual bool Save() = 0;
-
-protected:
-	std::string m_fileName;
 };
 
 #endif // !__RESOURCE_H__

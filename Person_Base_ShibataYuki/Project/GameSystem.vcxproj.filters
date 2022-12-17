@@ -78,22 +78,10 @@
     <ClInclude Include="..\Library\GameSystem\components.h">
       <Filter>ヘッダー ファイル</Filter>
     </ClInclude>
-    <ClInclude Include="..\Library\GameSystem\gameInstance.h">
-      <Filter>ヘッダー ファイル</Filter>
-    </ClInclude>
     <ClInclude Include="..\Library\GameSystem\propertyCereal.h">
       <Filter>ヘッダー ファイル</Filter>
     </ClInclude>
-    <ClInclude Include="..\Library\GameSystem\Scene\gameScene.h">
-      <Filter>ヘッダー ファイル\Scene</Filter>
-    </ClInclude>
-    <ClInclude Include="..\Library\GameSystem\Scene\buildScene.h">
-      <Filter>ヘッダー ファイル\Scene</Filter>
-    </ClInclude>
     <ClInclude Include="..\Library\GameSystem\Scene\scene.h">
-      <Filter>ヘッダー ファイル\Scene</Filter>
-    </ClInclude>
-    <ClInclude Include="..\Library\GameSystem\Scene\titleScene.h">
       <Filter>ヘッダー ファイル\Scene</Filter>
     </ClInclude>
     <ClInclude Include="..\Library\GameSystem\Scene\sceneTransitionDetection.h">
@@ -306,10 +294,10 @@
       <Filter>ソース ファイル\Component\Camera</Filter>
     </ClCompile>
     <ClCompile Include="..\Library\GameSystem\Component\component.cpp">
-      <Filter>ヘッダー ファイル\Component</Filter>
+      <Filter>ソース ファイル\Component</Filter>
     </ClCompile>
     <ClCompile Include="..\Library\GameSystem\Component\cursor.cpp">
-      <Filter>ヘッダー ファイル\Component</Filter>
+      <Filter>ソース ファイル\Component</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>
