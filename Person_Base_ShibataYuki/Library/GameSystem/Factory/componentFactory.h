@@ -30,9 +30,12 @@ namespace MySpace
 		class CComponentFactory
 		{
 		public:
+			//--- ﾒﾝﾊﾞ関数
 			CComponentFactory();
 			~CComponentFactory() {};
 
+			// *@オブジェクトにｺﾝﾎﾟｰﾈﾝﾄを追加
+			// *@別クラスで登録されたｺﾝﾎﾟｰﾈﾝﾄを文字列から生成する
 			static bool ObjSetComponent(CGameObject& obj, std::string name);
 
 			static std::vector<std::string> GetNameList();

@@ -16,6 +16,7 @@
 using namespace MySpace::Graphics;
 	
 CFontTexture::CFontTexture()
+	:m_FontName(std::wstring())
 {
 
 }
@@ -27,7 +28,7 @@ HRESULT CFontTexture::Init()
 {
 	//ロケールを設定しなければ文字化けする可能性があるらしい
 	setlocale(LC_ALL, "Japanese");
-	m_StringMap[L"ＭＳ Ｐ明朝"];
+	m_aStringMap[L"ＭＳ Ｐ明朝"];
 
 #pragma region Convert
 	const size_t WCHARBUF = 100;
@@ -55,14 +56,14 @@ HRESULT CFontTexture::Init()
 }
 void CFontTexture::Uninit()
 {
-	for (auto & font : m_StringMap)
+	for (auto & font : m_aStringMap)
 	{ // vector
 		for (auto & str : font.second)
 		{
 			str.second.pTex->Release();
 		}
 	}
-	m_StringMap.clear();
+	m_aStringMap.clear();
 
 	SelectObject(m_hdc, m_hOldFont);
 	DeleteObject(m_hFont);
@@ -148,17 +149,17 @@ CFontTexture::STCharaData CFontTexture::CreateTex(LPCWSTR character, std::wstrin
 	}
 
 	// キーの確認
-	if (m_StringMap.count(fontName))
+	if (m_aStringMap.count(fontName))
 	{
 		// 読み込み済み
-		if (m_StringMap[fontName].count(character))
+		if (m_aStringMap[fontName].count(character))
 		{
-			return m_StringMap[fontName][character];
+			return m_aStringMap[fontName][character];
 		}
 	}
 	else
 	{
-		m_StringMap[fontName];
+		m_aStringMap[fontName];
 	}
 
 	// フォントハンドルの設定
@@ -226,10 +227,10 @@ CFontTexture::STCharaData CFontTexture::CreateTex(LPCWSTR character, std::wstrin
 	ID3D11Texture2D* fontTexture = 0;
 	auto pDX = CDXDevice::Get();
 	//デバイスコンテキスト
-	auto deviceContext = pDX.GetDeviceContext();
+	auto deviceContext = pDX->GetDeviceContext();
 
 	// フォント用テクスチャを作成
-	HRESULT hr = pDX.GetDevice()->CreateTexture2D(&rtDesc, NULL, &fontTexture);
+	HRESULT hr = pDX->GetDevice()->CreateTexture2D(&rtDesc, NULL, &fontTexture);
 
 	// フォント用テクスチャリソースにテクスチャ情報をコピー
 	D3D11_MAPPED_SUBRESOURCE mappedSubrsrc;
@@ -280,10 +281,10 @@ CFontTexture::STCharaData CFontTexture::CreateTex(LPCWSTR character, std::wstrin
 	newData.BMPHeight = iBmp_h;
 
 	// シェーダリソースビューを作成
-	pDX.GetDevice()->CreateShaderResourceView(fontTexture, &srvDesc, &newData.pTex);
+	pDX->GetDevice()->CreateShaderResourceView(fontTexture, &srvDesc, &newData.pTex);
 
 	// 格納
-	m_StringMap[fontName].insert(CharTexPair(character, newData));
+	m_aStringMap[fontName].insert(CharTexPair(character, newData));
 
 	return newData;
 #pragma region OLD
@@ -407,7 +408,7 @@ CFontTexture::STCharaData CFontTexture::CreateTex(LPCWSTR character, std::wstrin
 	pDX.GetDevice()->CreateShaderResourceView(fontTexture, &srvDesc, &newData.pTex);
 
 	// 格納
-	m_StringMap[fontName].insert(CharTexPair(character, newData));
+	m_aStringMap[fontName].insert(CharTexPair(character, newData));
 
 	return newData;
 
@@ -422,7 +423,7 @@ CFontTexture::STCharaData CFontTexture::CreateTex(LPCWSTR character, std::wstrin
 	//samDesc.MaxAnisotropy = 1;
 	//samDesc.ComparisonFunc = D3D11_COMPARISON_ALWAYS;
 	//samDesc.MaxLOD = D3D11_FLOAT32_MAX;
-	//CDXDevice::Get().GetDevice()->CreateSamplerState(&samDesc, &mSampler);
+	//CDXDevice::Get()->GetDevice()->CreateSamplerState(&samDesc, &mSampler);
 
 }
 

@@ -11,17 +11,20 @@
 #define __STATE_CONDITION_H__
 
 //--- インクルード部
-#include "aiCondition.h"
+#include <AISystem/aiCondition.h>
 
 namespace AI
 {
+#pragma region ForwardDeclaration
 	class CAISystem;
 	class CAINode;
 	class CStateNode;
+#pragma endregion
 
 	class CStateCondition
 	{
 	private:
+		//--- エイリアス
 		using NextNode = std::shared_ptr<CStateNode>;
 
 	private:

@@ -18,21 +18,21 @@ using namespace MySpace::Game;
 using namespace MySpace::Graphics;
 		
 CTextRenderer::CTextRenderer(std::shared_ptr<CGameObject> owner)
-	:CRenderer(owner), m_fOffset(0), m_Font(L"ÇlÇr Çoñæí©"), m_bVerticalWrit(false)
+	:CRenderer(owner), m_fOffset(0), m_Font(L"ÇlÇr Çoñæí©"), m_bVerticalWrit(false),
+	m_Text(std::wstring()), m_uOldTextSize(0)
 {
 
 }
 CTextRenderer::~CTextRenderer()
 {
-
+	CRenderer::~CRenderer();
 }
 void CTextRenderer::Awake()
 {
 #if BUILD_MODE
 	// ImGuiÇÃìsçáè„ÅAñºëOàÍívÇÕîÇØÇΩÇ¢ÇΩÇﬂÅAIDÇïtÇØë´Ç∑
-	static int CreateNum = 0;
 	// èâä˙âªï∂
-	GetOwner()->SetName("Text_" + std::to_string(++CreateNum));
+	GetOwner()->SetName("Text_" + std::to_string(++m_nBulidCreateNum));
 #else
 	// èâä˙âªï∂
 	GetOwner()->SetName("Text");
@@ -55,7 +55,7 @@ void CTextRenderer::Init()
 	m_uOldTextSize = m_Text.size();
 	
 	// ï∂éöóÒÇ©ÇÁ√∏Ω¡¨éÊìæ
-	m_pTexList = CFontTexture::Get().GetString(m_Text, m_Font);
+	m_aTexList = CFontTexture::Get()->GetString(m_Text, m_Font);
 
 	// ï`âÊàÀóä
 	CRenderer::Init();
@@ -65,23 +65,24 @@ void CTextRenderer::Update()
 	// ÉTÉCÉYî‰är
 	//if (m_uOldTextSize != m_Text.size())
 	//{
-	//	m_pTexList = CFontTexture::Get().GetString(m_Text, m_Font);
+	//	m_aTexList = CFontTexture::Get()->GetString(m_Text, m_Font);
 	//}
 }
 bool CTextRenderer::Draw()
 {
-	if (!CRenderer::Draw())return false;
+	if (!CRenderer::Draw())
+		return false;
 
 	// ëOèÄîı
-	CDXDevice::Get().SetZBuffer(false);
-	CDXDevice::Get().SetBlendState(static_cast<int>(EBlendState::BS_ALPHABLEND));
+	CDXDevice::Get()->SetZBuffer(false);
+	CDXDevice::Get()->SetBlendState(static_cast<int>(EBlendState::BS_ALPHABLEND));
 
-	// ï`âÊ
+	//--- ï`âÊ
 	// √∏Ω¡¨ÇÃêîÇæÇØåJÇËï‘Ç∑
 	Vector2 pos = m_pRectTransform.lock()->GetPos();
 	Vector2 scale = m_pRectTransform.lock()->GetSize();
 
-	for (auto tex : m_pTexList)
+	for (auto tex : m_aTexList)
 	{
 		CPolygon::SetColor(GetColor(1));
 		CPolygon::SetAlpha(GetColor().a);
@@ -92,7 +93,7 @@ bool CTextRenderer::Draw()
 			CPolygon::SetTexture(tex.pTex);
 		else
 			CPolygon::SetTexture(NULL);
-		CPolygon::Draw(CDXDevice::Get().GetDeviceContext());
+		CPolygon::Draw(CDXDevice::Get()->GetDeviceContext());
 
 		// ècèëÇ´Ç©
 		if(!m_bVerticalWrit)
@@ -110,8 +111,8 @@ bool CTextRenderer::Draw()
 	CPolygon::SetFrameSize(1.0f, 1.0f);
 	CPolygon::SetTexture(NULL);
 
-	CDXDevice::Get().SetZBuffer(true);
-	CDXDevice::Get().SetBlendState(static_cast<int>(EBlendState::BS_NONE));
+	CDXDevice::Get()->SetZBuffer(true);
+	CDXDevice::Get()->SetBlendState(static_cast<int>(EBlendState::BS_NONE));
 
 	return true;
 }

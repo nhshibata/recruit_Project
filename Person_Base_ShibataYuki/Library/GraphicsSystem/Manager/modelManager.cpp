@@ -30,7 +30,7 @@ CModelManager::CModelManager()
 }
 HRESULT CModelManager::Init()
 {
-	if (!CAssimpModel::InitShader(CDXDevice::Get().GetDevice()))
+	if (!CAssimpModel::InitShader(CDXDevice::Get()->GetDevice()))
 	{
 		return E_FAIL;
 	}
@@ -47,7 +47,7 @@ bool CModelManager::Load(std::string name)
 {
 	ModelSharedPtr addModel = std::make_shared<CAssimpModel>();
 	// ƒ‚ƒfƒ‹“Ç‚Ýž‚Ý
-	if (!addModel->Load(CDXDevice::Get().GetDevice(), CDXDevice::Get().GetDeviceContext(),
+	if (!addModel->Load(CDXDevice::Get()->GetDevice(), CDXDevice::Get()->GetDeviceContext(),
 		name))
 	{
 		return false;

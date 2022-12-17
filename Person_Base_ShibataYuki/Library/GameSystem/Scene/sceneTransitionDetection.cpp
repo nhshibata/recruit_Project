@@ -14,7 +14,9 @@ using namespace MySpace::SceneManager;
 
 CSceneTransitionDetection::CSceneTransitionDetection()
 {
-
+	m_pChangeFunc.clear();
+	m_pLoadFunc.clear();
+	m_pUnloadFunc.clear();
 }
 CSceneTransitionDetection::~CSceneTransitionDetection()
 {

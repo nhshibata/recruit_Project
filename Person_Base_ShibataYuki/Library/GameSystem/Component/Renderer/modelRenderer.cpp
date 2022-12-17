@@ -30,6 +30,8 @@ CModelRenderer::CModelRenderer(std::shared_ptr<CGameObject> owner)
 }
 CModelRenderer::~CModelRenderer()
 {
+	if(m_pIndex && m_pVertex)
+		FinVertexArray();
 	if (m_pModel)
 	{
 		// 所有権の放棄
@@ -39,7 +41,7 @@ CModelRenderer::~CModelRenderer()
 void CModelRenderer::SetModel(std::string name)
 {
 	// ポインタを受け取る
-	if (m_pModel = CModelManager::Get().GetModel(name); m_pModel)
+	if (m_pModel = CModelManager::Get()->GetModel(name); m_pModel)
 	{
 		m_modelName = name;
 
@@ -55,7 +57,7 @@ void CModelRenderer::SetModel(std::string name)
 		SetBSRadius(m_pModel->GetRadius() * scale);
 
 		// 自身と管理ｸﾗｽ以外に所有者が居た時
-		if (int num = CModelManager::Get().GetModelCnt(name); num > 2)
+		if (int num = CModelManager::Get()->GetModelCnt(name); num > 2)
 		{
 			m_bInstancing = true;
 		}
@@ -85,10 +87,10 @@ bool CModelRenderer::Draw()
 	XMFLOAT4X4 mtx = Transform()->GetWorldMatrix();
 	//--- インスタンシング描画
 	// 自身と管理以外が所持しているか確認
-	if (m_bInstancing || CModelManager::Get().GetModelCnt(m_modelName) > 2)
+	if (m_bInstancing || CModelManager::Get()->GetModelCnt(m_modelName) > 2)
 	{
 		// システム側に依頼を出し、まとめて描画してもらう
-		SceneManager::CSceneManager::Get().GetDrawSystem()->SetInstanchingModel(m_modelName, mtx);
+		SceneManager::CSceneManager::Get()->GetDrawSystem()->SetInstanchingModel(m_modelName, mtx);
 		return true;
 	}
 
@@ -97,18 +99,18 @@ bool CModelRenderer::Draw()
 	if (!pLight)return false;
 	pLight->SetDisable(GetLightEnable());	// ライティング無効
 	
-	m_pModel->Draw(CDXDevice::Get().GetDeviceContext(), mtx, EByOpacity::eOpacityOnly);
+	m_pModel->Draw(CDXDevice::Get()->GetDeviceContext(), mtx, EByOpacity::eOpacityOnly);
 
 	pLight->SetEnable();	// ライティング有効
 
 	//--- 半透明部分描画
-	CDXDevice::Get().SetZBuffer(false);
-	CDXDevice::Get().SetBlendState(static_cast<int>(EBlendState::BS_ALPHABLEND));
+	CDXDevice::Get()->SetZBuffer(false);
+	CDXDevice::Get()->SetBlendState(static_cast<int>(EBlendState::BS_ALPHABLEND));
 
-	m_pModel->Draw(CDXDevice::Get().GetDeviceContext(), mtx, EByOpacity::eTransparentOnly);
+	m_pModel->Draw(CDXDevice::Get()->GetDeviceContext(), mtx, EByOpacity::eTransparentOnly);
 
-	CDXDevice::Get().SetZBuffer(true);			// αブレンディング無効
-	CDXDevice::Get().SetBlendState(static_cast<int>(EBlendState::BS_NONE));		// 光源有効
+	CDXDevice::Get()->SetZBuffer(true);			// αブレンディング無効
+	CDXDevice::Get()->SetBlendState(static_cast<int>(EBlendState::BS_NONE));		// 光源有効
 
 	return true;
 }
@@ -123,18 +125,18 @@ bool CModelRenderer::Draw(int no)
 	if (!pLight)return false;
 	pLight->SetDisable(GetLightEnable());	// ライティング無効
 
-	m_pModel->Draw(CDXDevice::Get().GetDeviceContext(), mtx, EByOpacity::eOpacityOnly);
+	m_pModel->Draw(CDXDevice::Get()->GetDeviceContext(), mtx, EByOpacity::eOpacityOnly);
 
 	pLight->SetEnable();	// ライティング有効
 
 	//--- 半透明部分描画
-	CDXDevice::Get().SetZBuffer(false);
-	CDXDevice::Get().SetBlendState(static_cast<int>(EBlendState::BS_ALPHABLEND));
+	CDXDevice::Get()->SetZBuffer(false);
+	CDXDevice::Get()->SetBlendState(static_cast<int>(EBlendState::BS_ALPHABLEND));
 
-	m_pModel->Draw(CDXDevice::Get().GetDeviceContext(), mtx, EByOpacity::eTransparentOnly);
+	m_pModel->Draw(CDXDevice::Get()->GetDeviceContext(), mtx, EByOpacity::eTransparentOnly);
 
-	CDXDevice::Get().SetZBuffer(true);			// αブレンディング無効
-	CDXDevice::Get().SetBlendState(static_cast<int>(EBlendState::BS_NONE));		// 光源有効
+	CDXDevice::Get()->SetZBuffer(true);			// αブレンディング無効
+	CDXDevice::Get()->SetBlendState(static_cast<int>(EBlendState::BS_NONE));		// 光源有効
 
 	return true;
 }
@@ -330,7 +332,7 @@ void CModelRenderer::ImGuiDebug()
 		m_modelName = name;
 
 		// ポインタを受け取る
-		m_pModel = CModelManager::Get().GetModel(name);
+		m_pModel = CModelManager::Get()->GetModel(name);
 	}
 	
 	if (auto name = DispMenuBar(m_aObjModelList, "objFile"); !name.empty())
@@ -338,7 +340,7 @@ void CModelRenderer::ImGuiDebug()
 		m_modelName = name;
 
 		// ポインタを受け取る
-		m_pModel = CModelManager::Get().GetModel(name);
+		m_pModel = CModelManager::Get()->GetModel(name);
 	}
 	
 	if (auto name = DispMenuBar(m_aFbxModelList, "fbxFile"); !name.empty())
@@ -346,7 +348,7 @@ void CModelRenderer::ImGuiDebug()
 		m_modelName = name;
 
 		// ポインタを受け取る
-		m_pModel = CModelManager::Get().GetModel(name);
+		m_pModel = CModelManager::Get()->GetModel(name);
 		SetModel(name);
 	}
 }

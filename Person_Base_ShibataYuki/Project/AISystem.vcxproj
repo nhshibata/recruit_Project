@@ -96,14 +96,14 @@
   </ImportGroup>
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
-    <IncludePath>$(SolutionDir)Library\Effekseer;$(SolutionDir)Library;$(IncludePath)</IncludePath>
+    <IncludePath>$(SolutionDir)Library\ImGui;$(SolutionDir)Library\Effekseer;$(SolutionDir)Library;$(IncludePath);$(SolutionDir)Source;$(IncludePath)</IncludePath>
     <OutDir>$(SolutionDir)exe\$(Configuration)\</OutDir>
     <IntDir>$(SolutionDir)Binary\$(ProjectName)\$(Platform)\$(Configuration)\</IntDir>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <OutDir>$(SolutionDir)exe\$(Configuration)\</OutDir>
     <IntDir>$(SolutionDir)Binary\$(ProjectName)\$(Platform)\$(Configuration)\</IntDir>
-    <IncludePath>$(SolutionDir)Library\Effekseer;$(SolutionDir)Source;$(SolutionDir)Library;$(IncludePath)</IncludePath>
+    <IncludePath>$(SolutionDir)Library\ImGui;$(SolutionDir)Library\Effekseer;$(SolutionDir)Library;$(IncludePath);$(SolutionDir)Source;$(IncludePath)</IncludePath>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <ClCompile>
@@ -118,6 +118,8 @@
       <AdditionalIncludeDirectories>$(SolutionDir)..\..\DirectXTex;$(SolutionDir)..\..\Assimp\include;$(SolutionDir)..\..\Assimp;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>BUILD_MODE;NDEBUG;_LIB;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <InlineFunctionExpansion>Default</InlineFunctionExpansion>
+      <PrecompiledHeaderFile />
+      <AdditionalOptions>/bigobj %(AdditionalOptions)</AdditionalOptions>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -147,6 +149,7 @@
       <PreprocessorDefinitions>BUILD_MODE;_DEBUG;_LIB;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <AdditionalIncludeDirectories>$(SolutionDir)..\..\DirectXTex;$(SolutionDir)..\..\Assimp\include;$(SolutionDir)..\..\Assimp;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <InlineFunctionExpansion>AnySuitable</InlineFunctionExpansion>
+      <AdditionalOptions>/bigobj %(AdditionalOptions)</AdditionalOptions>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>

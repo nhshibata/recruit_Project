@@ -31,7 +31,9 @@ namespace MySpace
 					cereal::make_nvp("boxMesh", cereal::base_class<CMesh>(this))
 				);
 			}
+
 		public:
+			//--- ƒƒ“ƒoŠÖ”
 			CSphere();
 			virtual ~CSphere();
 

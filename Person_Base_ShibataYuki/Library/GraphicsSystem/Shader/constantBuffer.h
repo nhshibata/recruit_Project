@@ -28,10 +28,13 @@ namespace MySpace
 				MAX,
 			};
 		private:
+			//--- ƒƒ“ƒo•Ï”
 			ID3D11Buffer* m_pBuffer;
 			UINT m_uSlot;
 			EType m_eType;
+
 		public:
+			//--- ƒƒ“ƒoŠÖ”
 			CConstantBuffer();
 			virtual ~CConstantBuffer();
 

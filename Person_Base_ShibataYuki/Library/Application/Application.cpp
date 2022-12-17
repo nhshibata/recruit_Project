@@ -48,7 +48,7 @@ bool Application::Init(HINSTANCE h_Instance)
 
 	//--- ウインドウ作成
 	CWindow::Create();
-	CWindow* window = &CWindow::Get();
+	CWindow* window = CWindow::Get();
 	//window->RegisterClass(h_Instance, WINDOW_CLASS_NAME, CS_OWNDC);
 	window->RegisterClass(h_Instance, WINDOW_CLASS_NAME, CS_CLASSDC);
 	
@@ -92,7 +92,7 @@ void Application::Uninit()
 	//		app->Uninit();
 	//}
 
-	//CWindow::Get().Close(WINDOW_CLASS_NAME, m_hInst);
+	//CWindow::Get()->Close(WINDOW_CLASS_NAME, m_hInst);
 	UnregisterClass(WINDOW_CLASS_NAME, m_hInst);
 	
 	//--- シングルトンの解放
@@ -103,7 +103,7 @@ void Application::Uninit()
 
 unsigned long Application::MainLoop()
 {
-	CWindow* window = &CWindow::Get();
+	CWindow* window = CWindow::Get();
 	
 	// ゲームの変数宣言
 	CGameApp* gameApp = new CGameApp();	
@@ -116,27 +116,27 @@ unsigned long Application::MainLoop()
 
 	//--- タイム初期化処理
 	CFps::Create();
-	CFps::Get().Init();
+	CFps::Get()->Init();
 
 	// 無限ループ
 	while (window->ExecMessage()) 
 	{
 		// fps更新
-		CFps::Get().Update();
+		CFps::Get()->Update();
 
 		// 固定時間更新
-		if (!CFps::Get().IsFixedUpdate())
+		if (!CFps::Get()->IsFixedUpdate())
 			gameApp->FixedUpdate();
 
 		// 一定時間の更新
-		if (!CFps::Get().IsUpdate())
+		if (!CFps::Get()->IsUpdate())
 			continue;
 
 		// 呼び出されれば更新
 		gameApp->InputUpdate();
 
 		// 関数ポインタの更新
-		CFuncManager::Get().Update();
+		CFuncManager::Get()->Update();
 
 		// ｹﾞｰﾑ更新
 		gameApp->Update();
@@ -145,7 +145,7 @@ unsigned long Application::MainLoop()
 		gameApp->Draw();
 	}
 
-	CFps::Get().Uninit();
+	CFps::Get()->Uninit();
 	CFps::Destroy();
 
 	// ゲームの終了処理
@@ -157,9 +157,9 @@ unsigned long Application::MainLoop()
 }
 ID3D11Device* Application::GetDevice()
 {
-	return CDXDevice::Get().GetDevice();
+	return CDXDevice::Get()->GetDevice();
 }
 ID3D11DeviceContext* Application::GetDeviceContext()
 {
-	return CDXDevice::Get().GetDeviceContext();
+	return CDXDevice::Get()->GetDeviceContext();
 }

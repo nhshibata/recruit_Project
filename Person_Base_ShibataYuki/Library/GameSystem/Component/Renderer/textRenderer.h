@@ -53,7 +53,7 @@ namespace MySpace
 		private:
 			//--- メンバ変数
 			RectTransWeakPtr m_pRectTransform;					// 描画情報
-			std::vector<CFontTexture::STCharaData> m_pTexList;	// ○○番目の文字取得などがしやすいvector
+			std::vector<CFontTexture::STCharaData> m_aTexList;	// ○○番目の文字取得などがしやすいvector
 			
 			std::wstring m_Font;		// 読み込みフォント名
 			std::wstring m_Text;		// 文字列
@@ -63,7 +63,9 @@ namespace MySpace
 
 		public:
 			//--- メンバ関数
-			CTextRenderer() {};
+			CTextRenderer()
+				:m_Font(std::wstring()), m_Text(std::wstring()), m_uOldTextSize(0), m_fOffset(0.0f), m_bVerticalWrit(false)
+			{};
 			CTextRenderer(std::shared_ptr<CGameObject> owner);
 			~CTextRenderer();
 
@@ -78,8 +80,8 @@ namespace MySpace
 			// *@font設定
 			inline void SetFont(std::wstring text) { m_Font = text; }
 			// *@テキストに何を表示させるか
-			// *@ワイド文字
-			inline void SetTextWString(std::wstring text) { m_Text = text; m_pTexList = CFontTexture::Get().GetString(m_Text, m_Font);}
+			// *@ワイド文字指定
+			inline void SetTextWString(std::wstring text) { m_Text = text; m_aTexList = CFontTexture::Get()->GetString(m_Text, m_Font);}
 
 			// *@文字間距離の設定
 			inline void SetOffSet(float offset) { m_fOffset = offset; }
@@ -88,7 +90,9 @@ namespace MySpace
 			inline void Vertical(bool flg) { m_bVerticalWrit = flg; }
 
 #ifdef BUILD_MODE
-
+		private:
+			static inline int m_nBulidCreateNum;
+		public:
 			virtual void ImGuiDebug();
 			// *@仮想キーをwstringとして取得
 			std::wstring VKeyToWString(int nKey);

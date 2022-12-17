@@ -3,6 +3,8 @@
 // 作成:2022/06/27
 //---------------------------------------------------------
 //=========================================================
+
+//--- インクルード部
 #include <GraphicsSystem/Manager/shaderManager.h>
 
 #include <GraphicsSystem/Render/polygon.h>
@@ -30,10 +32,10 @@ ID3D11ShaderResourceView*	CPolygon::m_pTexture;				// テクスチャへのポインタ
 
 VERTEX_2D					CPolygon::m_vertexWk[NUM_VERTEX];	// 頂点情報格納ワーク
 
-XMFLOAT3					CPolygon::m_vPos;					// ポリゴンの移動量
-XMFLOAT3					CPolygon::m_vAngle;					// ポリゴンの回転量
-XMFLOAT3					CPolygon::m_vScale;					// ポリゴンのサイズ
-XMFLOAT4					CPolygon::m_vColor;					// ポリゴンの頂点カラー
+Vector3						CPolygon::m_vPos;					// ポリゴンの移動量
+Vector3						CPolygon::m_vAngle;					// ポリゴンの回転量
+Vector3						CPolygon::m_vScale;					// ポリゴンのサイズ
+Color						CPolygon::m_vColor;					// ポリゴンの頂点カラー
 bool						CPolygon::m_bInvalidate;			// 頂点データ更新フラグ
 
 XMFLOAT2					CPolygon::m_vPosTexFrame;			// UV座標
@@ -75,9 +77,9 @@ HRESULT CPolygon::Init(ID3D11Device* pDevice)
 	vs->Make(FORDER_DIR(Vertex2D.cso), layout, _countof(layout));
 	cb_sg->Make(sizeof(SHADER_GLOBAL_POLYGON), 0, CConstantBuffer::EType::Vertex);
 
-	CShaderManager::Get().SetConstantBuffer("SHADER_GLOBAL_POLYGON", cb_sg);
-	CShaderManager::Get().SetVS("Vertex2D", vs);
-	CShaderManager::Get().SetPS("Pixel2D", ps);*/
+	CShaderManager::Get()->SetConstantBuffer("SHADER_GLOBAL_POLYGON", cb_sg);
+	CShaderManager::Get()->SetVS("Vertex2D", vs);
+	CShaderManager::Get()->SetPS("Pixel2D", ps);*/
 
 	// 定数バッファ生成
 	D3D11_BUFFER_DESC bd;
@@ -222,10 +224,10 @@ HRESULT CPolygon::MakeVertex(ID3D11Device* pDevice)
 
 #endif
 	// 拡散反射光の設定
-	m_vertexWk[0].diffuse = m_vColor;
-	m_vertexWk[1].diffuse = m_vColor;
-	m_vertexWk[2].diffuse = m_vColor;
-	m_vertexWk[3].diffuse = m_vColor;
+	m_vertexWk[0].diffuse = XMFLOAT4(m_vColor.r, m_vColor.g, m_vColor.b, m_vColor.a);
+	m_vertexWk[1].diffuse = XMFLOAT4(m_vColor.r, m_vColor.g, m_vColor.b, m_vColor.a);
+	m_vertexWk[2].diffuse = XMFLOAT4(m_vColor.r, m_vColor.g, m_vColor.b, m_vColor.a);
+	m_vertexWk[3].diffuse = XMFLOAT4(m_vColor.r, m_vColor.g, m_vColor.b, m_vColor.a);
 
 	// テクスチャ座標の設定
 	m_vertexWk[0].tex = XMFLOAT2(0.0f, 0.0f);
@@ -268,7 +270,7 @@ void CPolygon::SetVertex(void)
 {
 	if (m_bInvalidate) {
 		//頂点バッファの中身を埋める
-		ID3D11DeviceContext* pDeviceContext = Application::Get().GetDeviceContext();
+		ID3D11DeviceContext* pDeviceContext = Application::Get()->GetDeviceContext();
 		HRESULT hr = S_OK;
 
 		// 頂点データの範囲をロックし、頂点バッファへのポインタを取得
@@ -276,10 +278,10 @@ void CPolygon::SetVertex(void)
 		hr = pDeviceContext->Map(m_pVertexBuffer, 0, D3D11_MAP_WRITE_DISCARD, 0, &msr);
 		if (SUCCEEDED(hr)) {
 			// 拡散反射光の設定
-			m_vertexWk[0].diffuse = m_vColor;
-			m_vertexWk[1].diffuse = m_vColor;
-			m_vertexWk[2].diffuse = m_vColor;
-			m_vertexWk[3].diffuse = m_vColor;
+			m_vertexWk[0].diffuse = XMFLOAT4(m_vColor.r, m_vColor.g, m_vColor.b, m_vColor.a);
+			m_vertexWk[1].diffuse = XMFLOAT4(m_vColor.r, m_vColor.g, m_vColor.b, m_vColor.a);
+			m_vertexWk[2].diffuse = XMFLOAT4(m_vColor.r, m_vColor.g, m_vColor.b, m_vColor.a);
+			m_vertexWk[3].diffuse = XMFLOAT4(m_vColor.r, m_vColor.g, m_vColor.b, m_vColor.a);
 			// 頂点データを上書き
 			memcpy_s(msr.pData, sizeof(m_vertexWk), m_vertexWk, sizeof(m_vertexWk));
 			// 頂点データをアンロックする

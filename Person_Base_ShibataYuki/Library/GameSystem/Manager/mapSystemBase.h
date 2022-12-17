@@ -2,7 +2,8 @@
 // [mapSystemBase.h]
 // 作成:2022/11/9
 //----------------------------
-//
+// 一意のインデックスで管理するためのハッシュmapｸﾗｽ
+// 登録した際にインデックスを渡し、破棄時などにインデックスを渡す
 //=====================================================
 
 //--- インクルードガード
@@ -21,30 +22,33 @@ namespace MySpace
 		class CMapSystemBase
 		{
 		protected:
+			//--- エイリアス
 			using MAP = std::unordered_map<int, T>;
 
 		protected:
-			MAP m_intMap;
+			//--- メンバ変数
+			MAP m_aIntMap;
 			int m_nRegistCnt = 0;
 
 		public:
-			CMapSystemBase() {};
-			virtual ~CMapSystemBase() { m_intMap.clear(); };
+			//--- メンバ関数
+			CMapSystemBase() { m_aIntMap.clear(); };
+			virtual ~CMapSystemBase() { m_aIntMap.clear(); };
 
 			// *登録
 			// *登録した番号を返す
 			_NODISCARD inline int RegistToSystem(T type)
 			{
 				int ret = static_cast<int>(m_nRegistCnt);
-				m_intMap[ret] = type;
+				m_aIntMap[ret] = type;
 				++m_nRegistCnt;
 				return ret;
 			}
 			// *破棄(mapのため、整列はさせない)
 			virtual inline T ExecutSystem(int idx)
 			{
-				T ret = m_intMap[idx];
-				m_intMap.erase(idx);
+				T ret = m_aIntMap[idx];
+				m_aIntMap.erase(idx);
 				return ret;
 			}
 		};

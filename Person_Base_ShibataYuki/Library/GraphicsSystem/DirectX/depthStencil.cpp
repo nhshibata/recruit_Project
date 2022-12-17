@@ -12,8 +12,8 @@
 using namespace MySpace::Graphics;
 
 CDepthStencil::CDepthStencil(UINT width, UINT height, bool useStencil)
+	:m_pDSV(nullptr)
 {
-	m_pSRV = nullptr;
 	HRESULT hr = Create(width, height, useStencil);
 }
 CDepthStencil::~CDepthStencil()
@@ -47,14 +47,14 @@ HRESULT CDepthStencil::Create(UINT width, UINT height, bool useStencil)
 	D3D11_SUBRESOURCE_DATA data = {};
 	data.pSysMem = nullptr;
 	data.SysMemPitch = desc.Width * 4;
-	hr = CDXDevice::Get().GetDevice()->CreateTexture2D(&desc, nullptr, &m_pTex);
+	hr = CDXDevice::Get()->GetDevice()->CreateTexture2D(&desc, nullptr, &m_pTex);
 	// Ý’è
 	D3D11_SHADER_RESOURCE_VIEW_DESC srvDesc = {};
 	srvDesc.Format = desc.Format;
 	srvDesc.ViewDimension = D3D11_SRV_DIMENSION_TEXTURE2D;
 	srvDesc.Texture2D.MipLevels = 1;
 	// ¶¬
-	hr = CDXDevice::Get().GetDevice()->CreateShaderResourceView(m_pTex, &srvDesc, &m_pSRV);
+	hr = CDXDevice::Get()->GetDevice()->CreateShaderResourceView(m_pTex, &srvDesc, &m_pSRV);
 	
 	// Ý’è
 	D3D11_DEPTH_STENCIL_VIEW_DESC dsvDesc = {};
@@ -62,7 +62,7 @@ HRESULT CDepthStencil::Create(UINT width, UINT height, bool useStencil)
 	dsvDesc.ViewDimension = D3D11_DSV_DIMENSION_TEXTURE2D;
 
 	// ¶¬
-	hr = CDXDevice::Get().GetDevice()->CreateDepthStencilView(m_pTex, &dsvDesc, &m_pDSV);
+	hr = CDXDevice::Get()->GetDevice()->CreateDepthStencilView(m_pTex, &dsvDesc, &m_pDSV);
 
 	return hr;
 }
@@ -74,5 +74,5 @@ void CDepthStencil::Release()
 
 void CDepthStencil::Clear()
 {
-	CDXDevice::Get().GetDeviceContext()->ClearDepthStencilView(GetView(), D3D11_CLEAR_DEPTH | D3D11_CLEAR_STENCIL, 1.0f, 0);
+	CDXDevice::Get()->GetDeviceContext()->ClearDepthStencilView(GetView(), D3D11_CLEAR_DEPTH | D3D11_CLEAR_STENCIL, 1.0f, 0);
 }

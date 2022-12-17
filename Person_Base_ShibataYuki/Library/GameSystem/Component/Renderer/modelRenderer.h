@@ -13,6 +13,7 @@
 #include <GameSystem/Component/Renderer/meshRenderer.h>
 #include <GraphicsSystem/Manager/modelManager.h>
 
+//--- 定数定義
 #define MODEL_PATH				FORDER_DIR(Data/model/)
 #define MODEL_PATH2(name)		FORDER_DIR(Data/model/name)
 #define CHARACTER_PATH(name)	FORDER_DIR(Data/model/character/name)
@@ -41,6 +42,7 @@ namespace MySpace
 				);
 			}
 		public:
+			//--- エイリアス
 			using PtrWeak = std::weak_ptr<CModelRenderer>;
 			
 		private:
@@ -54,11 +56,14 @@ namespace MySpace
 			bool m_bInstancing;
 
 		private:
+			//--- メンバ関数
 			void InitVertexArray();
 			void FinVertexArray();
 
 		public:
-			CModelRenderer() {};
+			CModelRenderer()
+				:m_modelName(std::string()), m_nVertex(0), m_pVertex(nullptr), m_nIndex(0), m_pIndex(nullptr), m_bInstancing(false)
+			{};
 			CModelRenderer(std::shared_ptr<CGameObject> owner);
 			~CModelRenderer();
 
@@ -68,10 +73,10 @@ namespace MySpace
 			virtual bool Draw();
 			bool Draw(int);
 
-			// レイとの当たり判定
+			// *@レイとの当たり判定
 			bool CollisionRay(XMFLOAT3 vP0, XMFLOAT3 vW, XMFLOAT3* pX = nullptr, XMFLOAT3* pN = nullptr);
 
-			// 線分との当たり判定
+			// *@線分との当たり判定
 			bool CollisionLineSegment(XMFLOAT3 vP0, XMFLOAT3 vP1, XMFLOAT3* pX = nullptr, XMFLOAT3* pN = nullptr);
 
 			//--- ゲッター・セッター

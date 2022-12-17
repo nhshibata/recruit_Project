@@ -12,6 +12,7 @@ using namespace MySpace::Graphics;
 
 
 CMeshBuffer::CMeshBuffer()
+	:m_pIdxBuffer(nullptr), m_pVtxBuffer(nullptr)
 {
 
 }
@@ -29,7 +30,7 @@ CMeshBuffer::~CMeshBuffer()
 
 void CMeshBuffer::Bind(UINT slot)
 {
-	ID3D11DeviceContext* pDC = CDXDevice::Get().GetDeviceContext();
+	ID3D11DeviceContext* pDC = CDXDevice::Get()->GetDeviceContext();
 
 	D3D11_PRIMITIVE_TOPOLOGY topology;
 	switch (m_stDesc.topology)
@@ -64,7 +65,7 @@ void CMeshBuffer::Write(void* data)
 {
 	if (!m_stDesc.isWrite) { return; }
 
-	ID3D11DeviceContext* pDC = CDXDevice::Get().GetDeviceContext();
+	ID3D11DeviceContext* pDC = CDXDevice::Get()->GetDeviceContext();
 	D3D11_MAPPED_SUBRESOURCE mapResource;
 
 	if (FAILED(pDC->Map(m_pVtxBuffer, 0, D3D11_MAP_WRITE_DISCARD, 0, &mapResource)))
@@ -96,7 +97,7 @@ HRESULT CMeshBuffer::CreateIndex()
 	subResource.pSysMem = m_stDesc.pIdx;
 
 	// インデックスバッファ生成
-	return CDXDevice::Get().GetDevice()->CreateBuffer(&bufDesc, &subResource, &m_pIdxBuffer);
+	return CDXDevice::Get()->GetDevice()->CreateBuffer(&bufDesc, &subResource, &m_pIdxBuffer);
 	
 }
 HRESULT CMeshBuffer::CreateVertex()
@@ -117,5 +118,5 @@ HRESULT CMeshBuffer::CreateVertex()
 	subResource.pSysMem = m_stDesc.pVtx;
 
 	//--- 頂点バッファの作成
-	return CDXDevice::Get().GetDevice()->CreateBuffer(&bufDesc, &subResource, &m_pVtxBuffer);
+	return CDXDevice::Get()->GetDevice()->CreateBuffer(&bufDesc, &subResource, &m_pVtxBuffer);
 }

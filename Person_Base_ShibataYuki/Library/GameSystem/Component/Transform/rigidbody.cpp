@@ -19,7 +19,8 @@ namespace
 
 // コンストラクタ
 CRigidbody::CRigidbody()
-	:m_bGravity(true), m_bIsSleep(false)
+	:m_bGravity(true), m_bIsSleep(false), m_fGravity(-GRAVITY), m_fResistance(1), m_fMass(1),
+	m_vAccel(0, 0, 0), m_vTargetPos(1, 1, 1), m_vVel(0, 0, 0)
 {
 
 }

@@ -30,8 +30,8 @@ namespace Spell
 		// UIポインタ
 	public:
 		//--- メンバ関数
-		CMage() {};
-		CMage(CGameObject::Ptr owner) :CComponent(owner){};
+		CMage():m_pCommand(nullptr){};
+		CMage(CGameObject::Ptr owner) :CComponent(owner), m_pCommand(nullptr) {};
 		~CMage() {};
 
 		void Awake();

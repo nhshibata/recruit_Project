@@ -16,7 +16,6 @@
 #include <CoreSystem/FuncPtr/funcPtr.h>
 #include <CoreSystem/FuncPtr/timeFuncPtr.h>
 #include <CoreSystem/Singleton.h>
-#include <DebugSystem/debug.h>
 
 namespace MySpace
 {
@@ -28,22 +27,19 @@ namespace MySpace
 			friend class CSingleton<CFuncManager>;
 		private:
 			using FUNC_VEC = std::vector<std::shared_ptr<CBaseFuncPtr>>;
+		private:
+			//--- メンバ変数
 			FUNC_VEC m_FuncPtr;
-			//FUNC_VEC m_ReleaseFunc;
 
-			bool m_debug;
-
+		private:
+			//--- メンバ変数
 			CFuncManager() {};
 		public:
 			void Update();
 			void Uninit();
 
-			//void UninitFunc();
-
 			// 戻り値がポインタ型
 			void RequestFunc(CFuncPtr::PTR func);
-
-			//void RequestUninitFunc(CTimeFuncPtr::PTR func);
 
 			// 戻り値がvoid
 			void RequestFunc(CTimeFuncPtr::PTR func, float time = 1, bool loop = false);
@@ -56,7 +52,7 @@ namespace MySpace
 
 #endif // BUILD_MODE
 
-			bool* IsDebug() { return &m_debug; }
+			bool* IsDebug() { return &m_bDebug; }
 		};
 	}
 }

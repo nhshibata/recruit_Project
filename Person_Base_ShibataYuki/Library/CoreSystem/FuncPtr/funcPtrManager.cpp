@@ -38,29 +38,19 @@ void CFuncManager::Update()
 		++it;
 	}
 }
-//void CFuncManager::UninitFunc()
-//{
-//	for (FUNC_VEC::iterator it = m_ReleaseFunc.begin(); it != m_ReleaseFunc.end(); ++it)
-//	{
-//		// 更新
-//		(*it)->Update();
-//	}
-//}
+
 // 戻り値がポインタ型
 void CFuncManager::RequestFunc(CFuncPtr::PTR func)
 {
 	m_FuncPtr.push_back(std::make_shared<CFuncPtr>(func));
 }
-//void CFuncManager::RequestUninitFunc(CTimeFuncPtr::PTR func)
-//{
-//	auto ptr = std::make_shared<CTimeFuncPtr>(func);
-//	m_ReleaseFunc.push_back(ptr);
-//}
+
 // 戻り値がvoid
 void CFuncManager::RequestFunc(CTimeFuncPtr::PTR func, float time, bool loop)
 {
 	m_FuncPtr.push_back(std::make_shared<CTimeFuncPtr>(func, time, loop));
 }
+
 bool CFuncManager::StopFunc(void* ptr)
 {
 	FUNC_VEC::iterator it;

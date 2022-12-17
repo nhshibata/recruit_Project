@@ -18,7 +18,6 @@
 #include <GameSystem/Manager/sceneManager.h>
 
 using namespace MySpace::Game;
-//using namespace MySpace;
 
 // コンストラクタ
 CGameObjectManager::CGameObjectManager(std::shared_ptr<CScene> scene)
@@ -32,7 +31,7 @@ CGameObjectManager::~CGameObjectManager()
 // 初期化
 void CGameObjectManager::Init()
 {
-	for (auto & obj : m_objMgr)
+	for (auto & obj : m_aGameObjList)
 	{
 		obj->Init();
 	}
@@ -41,11 +40,11 @@ void CGameObjectManager::Init()
 void CGameObjectManager::Uninit()
 {
 	// 全て除外
-	for (auto & obj : m_objMgr)
+	for (auto & obj : m_aGameObjList)
 	{
 		obj.reset();
 	}
-	m_objMgr.clear();
+	m_aGameObjList.clear();
 }
 // 更新
 void CGameObjectManager::Update()
@@ -55,7 +54,7 @@ void CGameObjectManager::Update()
 
 	// オブジェクト更新
 	// 状態確認（問題は次のフレームまでは破棄されないオブジェクトがあること?)
-	for (auto & obj : m_objMgr)
+	for (auto & obj : m_aGameObjList)
 	{
 		// 状態により分岐
 		switch (obj->GetState())
@@ -83,14 +82,14 @@ void CGameObjectManager::Update()
 	}
 
 	// Tweenの更新(順番検討)
-	CTweenManager::Get().Update();
+	CTweenManager::Get()->Update();
 
 	//--- アクティブのものだけ
 	// コンポーネントの更新
 	for (auto & obj : pActiveObj)
 	{
 		// component内でシーンが破棄された場合、処理を抜ける
-		if (MySpace::SceneManager::CSceneManager::Get().Escape())
+		if (MySpace::SceneManager::CSceneManager::Get()->Escape())
 			return;
 #ifdef _DEBUG
 
@@ -104,7 +103,7 @@ void CGameObjectManager::Update()
 	for (auto & obj : pActiveObj)
 	{
 		// component内でシーンが破棄された場合、処理を抜ける
-		if (MySpace::SceneManager::CSceneManager::Get().Escape())
+		if (MySpace::SceneManager::CSceneManager::Get()->Escape())
 			return;
 		obj.lock()->LateUpdate();
 	}
@@ -129,7 +128,7 @@ void CGameObjectManager::UpdateInDebug()
 	WeakList pDestoroyObj(0);	// 破棄オブジェクトを格納
 
 	// 状態確認（問題は次のフレームまでは破棄されないオブジェクトがあること?)
-	for (auto & obj : m_objMgr)
+	for (auto & obj : m_aGameObjList)
 	{
 		// 状態により分岐
 		switch (obj->GetState())
@@ -170,10 +169,10 @@ void CGameObjectManager::FixedUpdate()
 {
 	// オブジェクト更新
 	// コンポーネントの更新
-	for (auto & obj : m_objMgr)
+	for (auto & obj : m_aGameObjList)
 	{
 		// component内でシーンが破棄された場合、処理を抜ける
-		if (MySpace::SceneManager::CSceneManager::Get().Escape())
+		if (MySpace::SceneManager::CSceneManager::Get()->Escape())
 			return;
 
 		// 状態により分岐
@@ -188,10 +187,10 @@ bool CGameObjectManager::ObjectListUpdate()
 {
 	// 追加オブジェクトが空でない時
 	// 途中追加のオブジェがある場合のためwhile
-	while(m_addObjList.size() != 0)
+	while(m_aAddObjList.size() != 0)
 	{
-		auto addList = m_addObjList;	// 受け取る
-		m_addObjList.clear();			// 配列を空に
+		auto addList = m_aAddObjList;	// 受け取る
+		m_aAddObjList.clear();			// 配列を空に
 
 		// 格納し、処理を呼び出す
 		for (auto & addObj : addList)
@@ -231,9 +230,9 @@ void CGameObjectManager::CreateBasicObject()
 // *配列追加
 void CGameObjectManager::SetGameObject(std::shared_ptr<CGameObject> obj)
 {
-	if (!obj.get()->IsPtrIn <ObjList, std::shared_ptr<CGameObject>>(m_objMgr, obj))
+	if (!obj.get()->IsPtrIn <GameObjList, std::shared_ptr<CGameObject>>(m_aGameObjList, obj))
 	{
-		m_objMgr.push_back(obj);
+		m_aGameObjList.push_back(obj);
 		TagMove(obj->GetTag(),obj);
 	}
 }
@@ -242,22 +241,22 @@ void CGameObjectManager::TagMove(std::string NextTag, std::weak_ptr<CGameObject>
 	// 同一タグ
 	if (obj.lock()->GetTag() == NextTag)
 	{
-		auto list = m_tagMap[NextTag];
+		auto list = m_aTagMap[NextTag];
 		auto it = list.FindObj(obj.lock());
 		// 見つからなかったので追加
 		if (it == list.list.end())
-			m_tagMap[NextTag].list.push_back(obj);
+			m_aTagMap[NextTag].list.push_back(obj);
 		return;
 	}
 	
-	auto list = m_tagMap[obj.lock()->GetTag()];
+	auto list = m_aTagMap[obj.lock()->GetTag()];
 	auto it = list.FindObj(obj.lock());
 	// 現在のtagから除外
 	if(it != list.list.end())
-		m_tagMap[obj.lock()->GetTag()].list.erase(it);
+		m_aTagMap[obj.lock()->GetTag()].list.erase(it);
 	
 	// 変更後のtagへ移動
-	m_tagMap[NextTag].list.push_back(obj);
+	m_aTagMap[NextTag].list.push_back(obj);
 }
 std::shared_ptr<CGameObject> CGameObjectManager::CreateGameObject(CGameObject* pObj)
 {
@@ -271,7 +270,7 @@ std::shared_ptr<CGameObject> CGameObjectManager::CreateGameObject(CGameObject* p
 	{
 		spObj = std::make_shared<CGameObject>();
 		// 初期名
-		spObj->SetName(std::string("GameObj_" + std::to_string(static_cast<int>(m_objMgr.size() + m_addObjList.size()) + 1)));
+		spObj->SetName(std::string("GameObj_" + std::to_string(static_cast<int>(m_aGameObjList.size() + m_aAddObjList.size()) + 1)));
 	}
 	
 	// 自分の所属シーンを教える
@@ -293,20 +292,20 @@ std::shared_ptr<CGameObject> CGameObjectManager::CreateGameObject(CGameObject* p
 bool CGameObjectManager::DestroyObject(std::weak_ptr<CGameObject> pObj)
 {
 	// 検索
-	auto it = std::find(m_objMgr.begin(), m_objMgr.end(), pObj.lock());
-	if (it == m_objMgr.end())
+	auto it = std::find(m_aGameObjList.begin(), m_aGameObjList.end(), pObj.lock());
+	if (it == m_aGameObjList.end())
 		return false;	// 配列に居ない
-	m_objMgr.erase(it);
+	m_aGameObjList.erase(it);
 
 	// tag管理からも除外
-	auto weakMap = m_tagMap[pObj.lock()->GetTag()];
+	auto weakMap = m_aTagMap[pObj.lock()->GetTag()];
 	auto mapIt = weakMap.FindObj(pObj.lock());
 	if (mapIt != weakMap.list.end())
 		weakMap.list.erase(mapIt);
 
 	// 非破壊検索
-	if (std::find(m_dontDestroyMgr.begin(), m_dontDestroyMgr.end(), pObj.lock()) != m_dontDestroyMgr.end())
-		m_dontDestroyMgr.erase(it);	// FIXME: 正しく消去されるか要確認
+	if (std::find(m_aDontDestroyList.begin(), m_aDontDestroyList.end(), pObj.lock()) != m_aDontDestroyList.end())
+		m_aDontDestroyList.erase(it);	// FIXME: 正しく消去されるか要確認
 
 	// 明示的な破棄
 	pObj.lock().reset();

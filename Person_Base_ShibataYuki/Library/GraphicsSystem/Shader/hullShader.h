@@ -17,15 +17,18 @@ namespace MySpace
 		class CHullShader : public CGraphicsBase
 		{
 		private:
+			//--- ƒƒ“ƒo•Ï”
 			ID3D11HullShader* m_pHullShader;
+
 		public:
+			//--- ƒƒ“ƒoŠÖ”
 			CHullShader();
 			~CHullShader();
 
 			void Bind(UINT slot = 0);
-			void SetTexture(int texNum, ID3D11ShaderResourceView** ppTex);
 			HRESULT Make(void* pData, UINT size);
 			HRESULT Make(void* pData, SIZE_T size);
+			void SetTexture(int texNum, ID3D11ShaderResourceView** ppTex);
 		};
 	}
 }

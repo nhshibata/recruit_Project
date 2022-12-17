@@ -31,7 +31,6 @@ namespace MySpace
 {
 	namespace Debug
 	{
-
 		class CHierachy
 		{
 		private:

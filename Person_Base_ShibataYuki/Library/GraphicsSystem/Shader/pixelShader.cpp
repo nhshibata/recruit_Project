@@ -12,21 +12,21 @@
 using namespace MySpace::Graphics;
 
 CPixelShader::CPixelShader()
+	:m_pShader(nullptr)
 {
-		m_Shader = nullptr;
 }
 CPixelShader::~CPixelShader()
 {
-	if (m_Shader)
+	if (m_pShader)
 	{
-		m_Shader->Release();
-		m_Shader = nullptr;
+		m_pShader->Release();
+		m_pShader = nullptr;
 	}
 }
 void CPixelShader::Bind(UINT slot)
 {
-	ID3D11DeviceContext* pDC = CDXDevice::Get().GetDeviceContext();
-	pDC->PSSetShader(m_Shader, nullptr, 0);
+	ID3D11DeviceContext* pDC = CDXDevice::Get()->GetDeviceContext();
+	pDC->PSSetShader(m_pShader, nullptr, 0);
 }
 HRESULT CPixelShader::Make(std::string fileName)
 {
@@ -46,8 +46,8 @@ HRESULT CPixelShader::Make(std::string fileName)
 	fread(pData, fileSize, 1, fp);
 	fclose(fp);
 
-	ID3D11Device* pDevice = CDXDevice::Get().GetDevice();
-	hr = pDevice->CreatePixelShader(pData, fileSize, nullptr, &m_Shader);
+	ID3D11Device* pDevice = CDXDevice::Get()->GetDevice();
+	hr = pDevice->CreatePixelShader(pData, fileSize, nullptr, &m_pShader);
 	if (FAILED(hr)) {
 		if (pData) delete[] pData;
 		return hr;

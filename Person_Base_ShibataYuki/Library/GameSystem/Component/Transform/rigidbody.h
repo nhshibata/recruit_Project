@@ -102,8 +102,8 @@ namespace MySpace
 			void Update();
 
 			//--- ゲッター・セッター
-			inline Vector3 GetVel() { return m_vVel; };
-			inline Vector3 GetAccel() { return m_vAccel; };
+			_NODISCARD inline Vector3 GetVel() { return m_vVel; };
+			_NODISCARD inline Vector3 GetAccel() { return m_vAccel; };
 
 			inline bool SetGravity(const bool value) { m_bGravity = value; }
 			inline void SetTargetPos(Vector3 value) { m_vTargetPos = value; };
@@ -113,8 +113,8 @@ namespace MySpace
 			void SetFreezPos(const bool x, const bool y, const bool z);
 			void SetFreezRot(const bool x, const bool y, const bool z);
 
-			inline bool UseGravity() { return m_bGravity; }
-			inline bool IsSleeping() { return m_bIsSleep; }
+			_NODISCARD inline bool UseGravity() { return m_bGravity; }
+			_NODISCARD inline bool IsSleeping() { return m_bIsSleep; }
 
 #ifdef BUILD_MODE
 

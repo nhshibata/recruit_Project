@@ -5,21 +5,14 @@
 //========================================================
 
 //--- インクルード部
-#include "stateNode.h"
+#include <AISystem/Node/stateNode.h>
 #include <AISystem/stateCondition.h>
-
 #include <AISystem/System/aiSystem.h>
-#if _DEBUG
-#endif
 
 using namespace AI;
 
 CAINode::EStatus CStateNode::Execute(CAISystem* system)
 {
-#if _DEBUG
-	++system->m_nNodeCnt;
-#endif // _DEBUG
-
 	//--- 遷移確認
 	CAINode::Ptr next = CAINode::Ptr();
 	for (auto & condition : m_pConditons)

@@ -11,7 +11,6 @@
 //--- インクルード部
 #include <GameSystem/Component/Camera/camera.h>
 
-
 namespace MySpace
 {
 	namespace Game
@@ -38,7 +37,6 @@ namespace MySpace
 					/*CEREAL_NVP(VIEW_ASPECT),CEREAL_NVP(m_pSky), CEREAL_NVP(m_pCamera)*/
 				);
 			}
-		private:
 		public:
 			//--- ﾒﾝﾊﾞ関数
 			CGameCamera();

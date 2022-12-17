@@ -6,6 +6,7 @@
 #ifndef __BOX_MESH_H__
 #define __BOX_MESH_H__
 
+//--- インクルード部
 #include <GraphicsSystem/Render/mesh.h>
 
 namespace MySpace
@@ -15,7 +16,7 @@ namespace MySpace
 		class CBox :public CMesh
 		{
 		private:
-			// シリアライズ
+			//--- シリアライズ
 			friend class cereal::access;
 			template<class Archive>
 			void save(Archive& archive) const
@@ -32,6 +33,7 @@ namespace MySpace
 				);
 			}
 		public:
+			//--- メンバ関数
 			CBox();
 			virtual ~CBox();
 

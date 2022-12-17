@@ -24,16 +24,13 @@
     <ClCompile Include="..\Library\Application\main.cpp" />
     <ClCompile Include="..\Library\Application\screen.cpp" />
     <ClCompile Include="..\Library\Application\window.cpp" />
-    <ClCompile Include="..\Library\Application\windowCallback.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\Library\Application\Application.h" />
     <ClInclude Include="..\Library\Application\GameApp.h" />
     <ClInclude Include="..\Library\Application\main.h" />
     <ClInclude Include="..\Library\Application\screen.h" />
-    <ClInclude Include="..\Library\Application\systemManager.h" />
     <ClInclude Include="..\Library\Application\window.h" />
-    <ClInclude Include="..\Library\Application\windowCallback.h" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <VCProjectVersion>15.0</VCProjectVersion>
@@ -78,7 +75,7 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <LinkIncremental>true</LinkIncremental>
     <OutDir>$(SolutionDir)exe\$(Configuration)\</OutDir>
-    <IncludePath>$(SolutionDir)Library\Effekseer;$(SolutionDir)Source;$(SolutionDir)Library;$(IncludePath)</IncludePath>
+    <IncludePath>$(SolutionDir)Library\ImGui;$(SolutionDir)Library\Effekseer;$(SolutionDir)Library;$(IncludePath);$(SolutionDir)Source;$(IncludePath)</IncludePath>
     <LibraryPath>$(LibraryPath)</LibraryPath>
     <IntDir>$(SolutionDir)Binary\$(ProjectName)\$(Platform)\$(Configuration)\</IntDir>
   </PropertyGroup>
@@ -91,7 +88,7 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <LinkIncremental>false</LinkIncremental>
     <OutDir>$(SolutionDir)exe\$(Configuration)\</OutDir>
-    <IncludePath>$(SolutionDir)Library\Effekseer;$(SolutionDir)Library;$(IncludePath);$(IncludePath)</IncludePath>
+    <IncludePath>$(SolutionDir)Library\ImGui;$(SolutionDir)Library\Effekseer;$(SolutionDir)Library;$(IncludePath);$(SolutionDir)Source;$(IncludePath)</IncludePath>
     <LibraryPath>$(LibraryPath)</LibraryPath>
     <IntDir>$(SolutionDir)Binary\$(ProjectName)\$(Platform)\$(Configuration)\</IntDir>
   </PropertyGroup>

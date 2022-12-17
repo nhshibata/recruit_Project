@@ -40,12 +40,19 @@ namespace MySpace
 				INDEX idxSize;
 				UINT idxCount;
 				TOPOLOGY topology;
+				Description()
+					:pVtx(nullptr), vtxSize(0), vtxCount(0), isWrite(false), pIdx(nullptr), 
+					idxSize(INDEX::INDEX16), idxCount(0), topology(TOPOLOGY::LINE_LIST)
+				{};
 			};
 		private:
+			//--- メンバ変数
 			ID3D11Buffer* m_pVtxBuffer;
 			ID3D11Buffer* m_pIdxBuffer;
 			Description m_stDesc;
+
 		public:
+			//--- メンバ関数
 			CMeshBuffer(Description Desc);
 			CMeshBuffer();
 			~CMeshBuffer();
@@ -57,8 +64,8 @@ namespace MySpace
 
 			HRESULT CreateIndex();
 			HRESULT CreateVertex();
-			
 
+			//--- ゲッター・セッター
 			ID3D11Buffer* GetVtxBuffer() { return m_pVtxBuffer; }
 			ID3D11Buffer* GetIdxBuffer() { return m_pIdxBuffer; }
 		};

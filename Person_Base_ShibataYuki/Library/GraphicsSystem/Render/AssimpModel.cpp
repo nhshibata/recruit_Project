@@ -785,9 +785,9 @@ bool CAssimpModel::InitShader(ID3D11Device* pDevice)
 	hr = vs->Make(CSO_PATH(AssimpVertex.cso), layout, _countof(layout));
 	//cb_sg->Make(sizeof(SHADER_GLOBAL_POLYGON), 0, CConstantBuffer::EType::Vertex);
 
-	//CShaderManager::Get().SetConstantBuffer("SHADER_GLOBAL_POLYGON", cb_sg);
-	CShaderManager::Get().SetPS("AssimpPixel", ps);
-	CShaderManager::Get().SetVS("AssimpVertex", vs);
+	//CShaderManager::Get()->SetConstantBuffer("SHADER_GLOBAL_POLYGON", cb_sg);
+	CShaderManager::Get()->SetPS("AssimpPixel", ps);
+	CShaderManager::Get()->SetVS("AssimpVertex", vs);
 
 #endif // 1
 
@@ -920,9 +920,9 @@ void CAssimpModel::Draw(ID3D11DeviceContext* pDC, XMFLOAT4X4& mtxWorld, EByOpaci
 	// 頂点インプットレイアウトをセット
 	pDC->IASetInputLayout(m_pVertexLayout);
 #else
-	/*CShaderManager::Get().BindPS("AssimpPixel");
-	CShaderManager::Get().BindVS("AssimpVertex");*/
-	CShaderManager::Get().Render(CShaderManager::EShaderType::Triangle, "", "AssimpVertex", "AssimpPixel");
+	/*CShaderManager::Get()->BindPS("AssimpPixel");
+	CShaderManager::Get()->BindVS("AssimpVertex");*/
+	CShaderManager::Get()->Render(CShaderManager::EShaderType::Triangle, "", "AssimpVertex", "AssimpPixel");
 	//pDC->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_3_CONTROL_POINT_PATCHLIST);	
 	
 	// CShaderManager::EShaderType::PointToTriangle

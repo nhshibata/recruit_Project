@@ -17,8 +17,10 @@ namespace MySpace
 		class CDomainShader : public CGraphicsBase
 		{
 		private:
+			//--- ƒƒ“ƒo•Ï”
 			ID3D11DomainShader* m_pDomainShader;
 		public:
+			//--- ƒƒ“ƒoŠÖ”
 			CDomainShader();
 			~CDomainShader();
 

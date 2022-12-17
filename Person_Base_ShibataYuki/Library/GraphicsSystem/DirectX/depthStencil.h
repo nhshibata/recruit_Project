@@ -35,6 +35,7 @@ namespace MySpace
 
 			ID3D11DepthStencilView* GetView() const { return m_pDSV; };
 
+			// *@î•ñƒNƒŠƒA
 			void Clear();
 		};
 	}

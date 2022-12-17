@@ -22,7 +22,9 @@ namespace Spell
 		bool m_bMessageOn;
 		std::unordered_map<std::string, int> m_MessageMap;
 	private:
-		CEventMessage() {};
+		CEventMessage() 
+			:m_bMessageOn(false)
+		{};
 
 	public:
 

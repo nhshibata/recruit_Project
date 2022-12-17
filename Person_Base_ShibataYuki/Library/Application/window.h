@@ -9,23 +9,14 @@
 #ifndef __WINDOW_H__
 #define __WINDOW_H__
 
+#define NOMINMAX
 
 //--- インクルード部
-#define NOMINMAX
 #include <Windows.h>
 
-#include <CoreSystem/system.h>
+#include <CoreSystem/Singleton.h>
 #include <CoreSystem/Math/myVector.h>
-//#include <Application/main.h>
 #include <memory>
-
-namespace MySpace
-{
-	namespace System
-	{
-		//--- 前方参照
-	}
-}
 
 namespace MySpace
 {
@@ -49,16 +40,21 @@ namespace MySpace
 		
 		private:
 			//--- メンバ関数
-			CWindow() {};
+			CWindow() 
+			{
+				m_fScreenWidth = m_fScreenHeight = m_fClientWidth = m_fClientHeight = 0.0f;
+			};
 			//~CWindow();
 		public:
 			void Close(const char* name,HINSTANCE inst);
 
 			bool ExecMessage();
-			bool RegisterClass(HINSTANCE	  hInstance,
+			bool RegisterClass(
+				HINSTANCE	  hInstance,
 				const char*	  h_ClassName,
 				unsigned long h_Style);
-			void SetWindow(HINSTANCE		h_Instance,
+			void SetWindow(
+				HINSTANCE		h_Instance,
 				unsigned long	h_Style,
 				unsigned long	h_ExStyle,
 				HWND			h_Parent,
@@ -71,11 +67,11 @@ namespace MySpace
 			// スクリーン
 			const Vector2 GetScreenSize() { return Vector2(m_fScreenWidth, m_fScreenHeight); }
 			const Vector2 GetClientSize() { return Vector2(m_fClientWidth, m_fClientHeight); }
-			void SetScreenSize(Vector2 size) { m_fScreenWidth = size.x; m_fScreenHeight = size.y; }
-			void SetClientSize(Vector2 size) { m_fClientWidth = size.x; m_fClientHeight = size.y; }
-
 			const HWND& GetHWND() { return m_hwnd; }
 			long GetMessage()const { return m_Message.message; };
+
+			void SetScreenSize(Vector2 size) { m_fScreenWidth = size.x; m_fScreenHeight = size.y; }
+			void SetClientSize(Vector2 size) { m_fClientWidth = size.x; m_fClientHeight = size.y; }
 		};
 	};
 };

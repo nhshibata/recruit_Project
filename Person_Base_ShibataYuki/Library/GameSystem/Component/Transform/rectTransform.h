@@ -6,6 +6,7 @@
 #ifndef __RECT_TRANSFORM_COMPONENT_H__
 #define __RECT_TRANSFORM_COMPONENT_H__
 
+//--- インクルード部
 #include <GameSystem/Component/component.h>
 
 #pragma region ForwardDeclaration
@@ -27,7 +28,7 @@ namespace MySpace
 		class CRectTransform : public CComponent
 		{
 		private:
-			// シリアライズ
+			//--- シリアライズ
 			friend class cereal::access;
 			template<class Archive>
 			void save(Archive& archive) const
@@ -47,7 +48,7 @@ namespace MySpace
 			//--- メンバ変数
 			Vector2 m_vPos;
 			Vector2 m_vSize;
-			float m_fAngle = 0.0f;
+			float m_fAngle;
 
 		public:
 			//--- メンバ関数
@@ -61,9 +62,9 @@ namespace MySpace
 			void Update() {};
 
 			//--- ゲッター・セッター
-			inline Vector2 GetPos() { return m_vPos; }
-			inline Vector2 GetSize() { return m_vSize; }
-			inline float GetAngle() { return m_fAngle; }
+			_NODISCARD inline Vector2 GetPos() { return m_vPos; }
+			_NODISCARD inline Vector2 GetSize() { return m_vSize; }
+			_NODISCARD inline float GetAngle() { return m_fAngle; }
 			
 			inline void SetPos(Vector2 value) {  m_vPos = value; }
 			inline void SetPos(float x, float y) { m_vPos.x = x; m_vPos.y = y; }

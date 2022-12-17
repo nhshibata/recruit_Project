@@ -9,7 +9,8 @@
 
 using namespace MySpace::System;
 
-namespace {
+namespace 
+{
 	const int	g_nMouseBtn[] = { VK_LBUTTON, VK_RBUTTON, VK_MBUTTON, VK_XBUTTON1, VK_XBUTTON2 };
 };
 
@@ -197,7 +198,7 @@ void CInput::UninitMouse()
 HRESULT CInput::UpdateMouse()
 {
 	//extern HWND g_hWnd;	// main.cpp
-	HWND g_hWnd = Application::Get().GetHWnd();	// main.cpp
+	HWND g_hWnd = Application::Get()->GetHWnd();	// main.cpp
 	POINT pt;
 	GetCursorPos(&pt);
 	ScreenToClient(g_hWnd, &pt);

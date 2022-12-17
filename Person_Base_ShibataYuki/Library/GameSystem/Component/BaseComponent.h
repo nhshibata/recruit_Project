@@ -26,23 +26,18 @@ namespace MySpace
 			template<class Archive>
 			void save(Archive & archive) const
 			{
-				//archive(CEREAL_NVP(m_spThisPtr));
+				//archive(CEREAL_NVP(m_pSelfPtr));
 			}
 			template<class Archive>
 			void load(Archive & archive)
 			{
-				//archive(CEREAL_NVP(m_spThisPtr));
+				//archive(CEREAL_NVP(m_pSelfPtr));
 			}
 
 		public:
-			//CBaseComponent() {};
-			//virtual ~CBaseComponent() {};
-
-			// *@îjä¸Ç≥ÇÍÇÈç€åƒÇ—èoÇ≥ÇÍÇÈ
-			//virtual void Uninit() {}
-
-			inline std::string GetName() { return typeid(*this).name(); }
-			inline const type_info& GetType() { return typeid(*this); }
+			// *@∏◊ΩñºéÊìæ
+			_NODISCARD inline std::string GetName() { return typeid(*this).name(); }
+			_NODISCARD inline const type_info& GetType() { return typeid(*this); }
 
 			// <Summary>
 			// weakPtrå¿íË

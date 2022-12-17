@@ -140,6 +140,7 @@ namespace AI
 				static_cast<int>((pos.z - startZ) / m_fMargin)
 			};
 		}
+
 		// *@xyからインデックス変換
 		inline int PointToIndex(Point point)const { return point.y * m_nGrid + point.x; }
 

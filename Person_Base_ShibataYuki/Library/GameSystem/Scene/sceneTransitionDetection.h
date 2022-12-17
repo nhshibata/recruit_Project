@@ -65,6 +65,7 @@ namespace MySpace
 			};
 			
 		public:
+			//--- ’è‹`
 			enum class EFuncType
 			{
 				CHANGED,
@@ -77,40 +78,49 @@ namespace MySpace
 			using UnloadPtr = std::function<void*(CScene*)>;*/
 			
 		private:
+			//--- ƒƒ“ƒo•Ï”
 			std::vector<CReturnVoidFunc<CScene*,CScene*>> m_pChangeFunc;
 			std::vector<CReturnVoidFunc<CScene*,int>> m_pLoadFunc;
 			std::vector<CReturnVoidFunc<CScene*>> m_pUnloadFunc;
 
 		public:
+			//--- ƒƒ“ƒoŠÖ”
 			CSceneTransitionDetection();
 			~CSceneTransitionDetection();
 
-			void Call(CScene* prev, CScene* next);	// *“o˜^‚³‚ê‚½ŠÖ”‚ÌŒÄ‚Ño‚µ
-			void Call(CScene* scene, int);			// *“o˜^‚³‚ê‚½ŠÖ”‚ÌŒÄ‚Ño‚µ
-			void Call(CScene* scene);				// *“o˜^‚³‚ê‚½ŠÖ”‚ÌŒÄ‚Ño‚µ
+			// *@“o˜^‚³‚ê‚½ŠÖ”ŒÄ‚Ño‚µ
+			// *@ƒV[ƒ“‘JˆÚ
+			void Call(CScene* prev, CScene* next);	
+			// *@“o˜^‚³‚ê‚½ŠÖ”‚ÌŒÄ‚Ño‚µ
+			// *@ƒV[ƒ““Ç‚İ‚İ
+			void Call(CScene* scene, int);			
+			// *@“o˜^‚³‚ê‚½ŠÖ”‚ÌŒÄ‚Ño‚µ
+			// *@ƒV[ƒ“”jŠü
+			void Call(CScene* scene);				
 
-			// *ƒV[ƒ“Ø‘Ö
-			// *ÃİÌßÚ°Ä¸×½:“n‚µ‚½‚¢ŠÖ”‚ÌŒ^
+			// *@ƒV[ƒ“Ø‘Ö
+			// *@ÃİÌßÚ°Ä¸×½:“n‚µ‚½‚¢ŠÖ”‚ÌŒ^
 			template <class T>
 			void Changed(void* (T::*func)(CScene*, CScene*), T* ptr)
 			{
 				m_pChangeFunc.push_back(CCallFunc<T, CScene*, CScene*>(std::bind(func, ptr, std::placeholders::_1, std::placeholders::_2)));
 			}
-			// *ƒV[ƒ““Ç‚İ‚İ
-			// *ÃİÌßÚ°Ä¸×½:“n‚µ‚½‚¢ŠÖ”‚ÌŒ^
+			// *@ƒV[ƒ““Ç‚İ‚İ
+			// *@ÃİÌßÚ°Ä¸×½:“n‚µ‚½‚¢ŠÖ”‚ÌŒ^
 			template <class T>
 			void Loaded(void* (T::*func)(CScene*, int), T* ptr)
 			{
 				m_pLoadFunc.push_back(CCallFunc<T, CScene*, int>(std::bind(func, ptr, std::placeholders::_1, std::placeholders::_2)));
 			}
-			// *ƒV[ƒ“”jŠü
-			// *ÃİÌßÚ°Ä¸×½:“n‚µ‚½‚¢ŠÖ”‚ÌŒ^
+			// *@ƒV[ƒ“”jŠü
+			// *@ÃİÌßÚ°Ä¸×½:“n‚µ‚½‚¢ŠÖ”‚ÌŒ^
 			template <class T>
 			void Unloaded(void* (T::*func)(CScene*), T* ptr)
 			{
 				m_pUnloadFunc.push_back(CCallFunc<T, CScene*>(std::bind(func, ptr, std::placeholders::_1)));
 			}
-			// *“o˜^‚µ‚½ŠÖ”‚ğœŠO
+
+			// *@“o˜^‚µ‚½ŠÖ”œŠO
 			bool StopFunc(void* ptr);		
 			
 		};

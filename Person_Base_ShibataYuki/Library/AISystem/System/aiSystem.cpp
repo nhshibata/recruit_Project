@@ -5,7 +5,7 @@
 //========================================================
 
 //--- インクルード部
-#include "aiSystem.h"
+#include <AISystem/System/aiSystem.h>
 #include <AISystem/Node/aiNode.h>
 #include <GameSystem/GameObject/gameObject.h>
 

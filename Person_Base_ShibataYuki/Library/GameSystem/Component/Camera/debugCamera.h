@@ -48,7 +48,7 @@ namespace MySpace
 		private:
 			//--- メンバ変数
 			const float MOVE_SPEED = 1.0f / 60.0f;
-			ECameraMode m_eMode = ECameraMode::CAM_MODE_NONE;		// カメラ視点
+			ECameraMode m_eMode;		// カメラ視点
 			bool m_bMouse;
 			POINT m_oldMousePos;
 
@@ -64,11 +64,11 @@ namespace MySpace
 			void LateUpdate();			// 遅い更新
 
 			void CameraMouseMove(int x, int y);
-#ifdef BUILD_MODE
 
+#ifdef BUILD_MODE
 			//virtual void ImGuiDebug();
 
-			void ResumeCamera(bool );
+			void ResumeCamera(bool);
 
 			static CDebugCamera* GetDebugCamera() 
 			{

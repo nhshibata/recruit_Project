@@ -268,7 +268,7 @@ void CInspector::AddComponentWindow()
 }
 //void CInspector::MoveObject()
 //{
-//	if (!ImGuiManager::Get().GetPause())
+//	if (!ImGuiManager::Get()->GetPause())
 //		return;
 //	if (!m_spViewObj.lock()) return;
 //

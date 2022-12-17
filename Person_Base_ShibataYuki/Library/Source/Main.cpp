@@ -41,7 +41,7 @@
 //	};
 //	
 //	// ƒV[ƒ“‚Ìw’è
-//	CNewScene::Get().Bind<CMyScene>();
+//	CNewScene::Get()->Bind<CMyScene>();
 //
 //	MySpace::Update();
 //

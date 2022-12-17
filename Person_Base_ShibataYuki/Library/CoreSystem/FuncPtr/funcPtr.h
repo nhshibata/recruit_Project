@@ -19,20 +19,18 @@ namespace MySpace
 		class CBaseFuncPtr
 		{
 		public:
-
-		public:
 			CBaseFuncPtr() = default;
 			virtual ~CBaseFuncPtr() = default;
 			virtual bool Update() { return true; };
 			//void SetFunc(PTR ptr) { m_Func = ptr; };
 			virtual void* GetAddress() = 0;
 		};
+
 		// @戻り値:void*型
 		// @引き数:void型
 		class CFuncPtr : public CBaseFuncPtr
 		{
 		public:
-			//using VoidPtr = std::function<void()>;
 			using PTR = std::function<void*()>;
 
 		private:
@@ -45,23 +43,22 @@ namespace MySpace
 
 			virtual void* GetAddress() { return &m_Func; };
 		};
+
 		// @可変長テンプレート(第一引き数:戻り値型, 引き数:引き数型
 		// @戻り値:void,int等
 		// @引き数:void,int複数指定
 		template<class T, class... Args>
 		class CFuncPtrTemplate : public CBaseFuncPtr
 		{
-		public:
-			//using PTR = std::function<T(Args...)>;
-			//typedef void (T::*Func)(void);
 		private:
+			//--- メンバ変数
 			std::function<T(Args...)> m_Func;
 
 		public:
+			//--- メンバ関数
 			CFuncPtrTemplate() {};
 			CFuncPtrTemplate(std::function<T(Args...)> ptr) { m_Func = ptr; };
 			~CFuncPtrTemplate() {};
-			//bool Update() { return true; };
 
 			void SetFunc(std::function<T(Args...)> ptr) { m_Func = ptr; }
 			virtual void Call(Args... args) { m_Func(args...); }

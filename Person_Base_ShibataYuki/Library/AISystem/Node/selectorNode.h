@@ -11,16 +11,13 @@
 #define __SELECTOR_NODE_H__
 
 //--- インクルード部
-#include "parentNode.h"
+#include <AISystem/Node/parentNode.h>
 
 namespace AI
 {
 	class CSelectorNode : public CParentNode
 	{
-	private:
-
 	public:
-
 		// *@ノード実行関数
 		CAINode::EStatus Execute(CAISystem* sys)final;
 	};

@@ -42,16 +42,16 @@ namespace MySpace
 
 		private:
 			//--- ƒƒ“ƒo•Ï”
-			bool m_bVisible;
+			bool m_bVisible;		// •`‰æƒtƒ‰ƒO
 			Color m_vColor;
-
-			int m_nDrawIdx = -1;
+			int m_nDrawIdx = -1;	// DrawSystem‚É“o˜^‚µ‚½Û‚É“n‚³‚ê‚éID
 
 		private:
 			//--- ƒƒ“ƒoŠÖ”
 			void RequestDraw();
 		public:
-			CRenderer() {};
+			CRenderer():m_bVisible(true), m_nDrawIdx(-1)
+			{};
 			CRenderer(std::shared_ptr<CGameObject> owner);
 			virtual ~CRenderer();
 

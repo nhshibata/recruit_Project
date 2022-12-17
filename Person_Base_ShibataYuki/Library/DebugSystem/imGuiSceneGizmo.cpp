@@ -22,10 +22,14 @@ using namespace MySpace::Game;
 
 void CMyGizmo::Init()
 {
+	m_bUseSnap = true;
+	m_vSnapMove = { 1,1,1 };
+	m_bBoundSizing = false;
+	m_bBoundSizingSnap = false;
+
 	m_CurrentGizmoOperation = ImGuizmo::TRANSLATE;
 	m_CurrentGizmoMode = ImGuizmo::LOCAL;
 	ImGuizmo::AllowAxisFlip(false);
-	
 }
 
 void CMyGizmo::ViewGizmo(ImGuiManager* manager, const CCamera& camera, CTransform* editTransform)

@@ -45,13 +45,17 @@ namespace MySpace
 			}
 
 		private:
+			//--- ƒƒ“ƒo•Ï”
 			float m_fRadius;			// “–‚½‚è”»’è‹…
+
 		public:
 			//--- ÒİÊŞŠÖ”
-			CSphereCollision() {};
-			CSphereCollision(std::shared_ptr<CGameObject> owner, float radius = 10.0f);
+			CSphereCollision() :m_fRadius(1)
+			{};
+			CSphereCollision(std::shared_ptr<CGameObject> owner, float radius = 1.0f);
 			~CSphereCollision();
 
+			//--- “–‚½‚è”»’è
 			bool Sphere(Vector3 Apos, float Ar, Vector3 Bpos, float Br);
 			bool CollisionSphere(Vector3 pos, float radius);
 

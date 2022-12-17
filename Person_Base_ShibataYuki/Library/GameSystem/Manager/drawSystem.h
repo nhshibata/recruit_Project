@@ -39,15 +39,15 @@ namespace MySpace
 		class CDrawSystem : public CMapSystemBase<std::weak_ptr<CRenderer>>
 		{
 		private:
-			// エイリアス
-			using RenderWeak = std::vector<std::weak_ptr<CRenderer>>;
+			//--- エイリアス
+			using RenderWeakList = std::vector<std::weak_ptr<CRenderer>>;
 			using InstancingMap = std::map<std::string, std::vector<DirectX::XMFLOAT4X4>>;
 			using InstancingMeshMap = std::map<std::string, std::vector<CMesh*>>;
 
 		private:
 			//--- メンバ変数
-			bool m_bIsSortNecessary = false;
-			RenderWeak m_pDrawSortList;			// 管理しているmapをソートした結果を入れる変数
+			bool m_bIsSortNecessary;
+			RenderWeakList m_pDrawSortList;				// 管理しているmapをソートした結果を入れる変数
 			InstancingMap m_aInstancingModelMap;
 			InstancingMeshMap m_aInstancingMesh;
 
@@ -56,12 +56,11 @@ namespace MySpace
 			int m_nSkipCnt;
 			int m_nDrawCnt;
 			int m_nInstancingCnt;
-			bool m_bFrustum = true;
+			bool m_bFrustum;
 #endif // _DEBUG
 
-		private:
-			//--- メンバ関数
 		public:
+			//--- メンバ関数
 			CDrawSystem();
 			~CDrawSystem();
 			void Update();

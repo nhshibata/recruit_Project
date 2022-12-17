@@ -40,7 +40,7 @@ namespace MySpace
 			Vector3 m_vCenter;
 
 			bool m_bIsTrigger;				// 当たった時の動作(trueですり抜け)
-			int m_nSystemIdx = -1;
+			int m_nSystemIdx;
 
 			std::list<std::weak_ptr<CGameObject>> m_pOldStayList;	// 1フレーム前に接触していた
 			std::list<std::weak_ptr<CGameObject>> m_pHitList;		// 現在フレーム接触
@@ -58,10 +58,10 @@ namespace MySpace
 		protected:
 			void HitResponse(CCollision* col);
 			Vector3 PosAdjustment(Vector3 pos, Vector3 size) {};
-
 		public:
 			//--- ﾒﾝﾊﾞ関数
-			CCollision() :m_bIsTrigger(false) {};
+			CCollision() :m_bIsTrigger(false), m_nSystemIdx(-1)
+			{};
 			CCollision(std::shared_ptr<CGameObject> owner, bool trigger = false);
 			~CCollision();
 
@@ -74,24 +74,19 @@ namespace MySpace
 			// *@ 判定を行う際のすりぬけ確認
 			inline bool IsTrigger() { return m_bIsTrigger; };
 
-			/*void SetColTag(std::string tag) { m_HitSubjectTag = tag; };*/
-
+			inline Vector3 GetCenter() { return m_vCenter; }
+			
 			// *@ 判定を行う際のすりぬけ設定
 			inline void SetTrigger(const bool is) { m_bIsTrigger = is; };
 
-			inline Vector3 GetCenter() { return m_vCenter; }
-			
 			inline void SetCenter(Vector3 value) { m_vCenter = value; }
-
-			// <Summary>
-			// 当たり判定方法により異なる
-			// コリジョンｸﾗｽを引き数にとって、当たり判定を行う
-			// </Summary>
+			
+			// *@仮想関数
+			// *@当たり判定方法により異なる
+			// *@コリジョンｸﾗｽを引き数にとって、当たり判定を行う
 			virtual bool HitCheckPtr(CCollision* col) { return false; };
 
-			// <Summary> 
-			// 離れたオブジェクトを持ち主に教える
-			// </Summary>
+			// *@離れたオブジェクトを持ち主に教える
 			virtual bool ExitTell();
 
 #ifdef BUILD_MODE

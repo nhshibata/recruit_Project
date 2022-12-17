@@ -21,7 +21,7 @@ CTimeFuncPtr::~CTimeFuncPtr()
 }
 bool CTimeFuncPtr::Update()
 {
-	m_fTime -= CFps::Get().DeltaTime();
+	m_fTime -= CFps::Get()->DeltaTime();
 	
 	// 0ˆÈ‰º
 	if (m_fTime <= 0)

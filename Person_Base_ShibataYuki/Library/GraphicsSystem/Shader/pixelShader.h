@@ -18,9 +18,11 @@ namespace MySpace
 		class CPixelShader : public CGraphicsBase
 		{
 		private:
-			ID3D11PixelShader* m_Shader;		// ピクセルシェーダ
+			//--- メンバ変数
+			ID3D11PixelShader* m_pShader;		// ピクセルシェーダ
 
 		public:
+			//--- メンバ関数
 			CPixelShader();
 			virtual ~CPixelShader();
 

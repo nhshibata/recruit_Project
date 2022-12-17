@@ -1,6 +1,8 @@
 //=========================================================
 // [instantResourceManager.h]
+//----------------------
 // 作成:2022/07/31
+//----------------------
 // シーンのResourceを一時的に管理する
 // セーブ・ロードを行う
 //=========================================================
@@ -25,22 +27,22 @@ namespace MySpace
 			template <typename Archive>
 			void save(Archive & archive, std::uint32_t const version) const
 			{
-				archive(CEREAL_NVP(m_TexList), CEREAL_NVP(m_ModelList)/*, CEREAL_NVP(m_EffectList)*/);
+				archive(CEREAL_NVP(m_aTexList), CEREAL_NVP(m_aModelList)/*, CEREAL_NVP(m_EffectList)*/);
 			}
 			template <typename Archive>
 			void load(Archive & archive, std::uint32_t const version)
 			{
-				archive(CEREAL_NVP(m_TexList), CEREAL_NVP(m_ModelList)/*, CEREAL_NVP(m_EffectList)*/);
+				archive(CEREAL_NVP(m_aTexList), CEREAL_NVP(m_aModelList)/*, CEREAL_NVP(m_EffectList)*/);
 			}
-
+			//--- エイリアス
 			using RESOURCE_LIST = std::vector<std::string>;
 			using EFFECT_RESOURCE_LIST = std::vector<std::u16string>;
 		
 		private:
 			//--- メンバ変数
-			RESOURCE_LIST m_TexList;
-			RESOURCE_LIST m_ModelList;
-			EFFECT_RESOURCE_LIST m_EffectList;
+			RESOURCE_LIST m_aTexList;
+			RESOURCE_LIST m_aModelList;
+			EFFECT_RESOURCE_LIST m_aEffectList;
 
 		public:
 			//--- メンバ関数
@@ -48,9 +50,9 @@ namespace MySpace
 			void Save();
 			void SceneUnload();
 
-			inline RESOURCE_LIST GetTex() { return m_TexList; }
-			inline RESOURCE_LIST GetModel() { return m_ModelList; }
-			inline EFFECT_RESOURCE_LIST GetEffect() { return m_EffectList; }
+			inline RESOURCE_LIST GetTex() { return m_aTexList; }
+			inline RESOURCE_LIST GetModel() { return m_aModelList; }
+			inline EFFECT_RESOURCE_LIST GetEffect() { return m_aEffectList; }
 		};
 	}
 }

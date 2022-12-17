@@ -40,10 +40,12 @@ namespace MySpace
 				);
 			}
 		private:
+			//--- ƒƒ“ƒo•Ï”
 			std::shared_ptr<CBox> m_pBBox;
 			Vector3 m_vSize;
 		public:
-			CBoxRenderer() :m_vSize(100, 100, 100) {};
+			//--- ƒƒ“ƒoŠÖ”
+			CBoxRenderer() :m_vSize(1, 1, 1) {};
 			CBoxRenderer(std::shared_ptr<CGameObject> ptr);
 			virtual ~CBoxRenderer();
 

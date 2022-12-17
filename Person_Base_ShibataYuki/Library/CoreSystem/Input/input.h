@@ -89,6 +89,7 @@ using namespace MySpace::Input;
 class CInput
 {
 private:
+	//--- メンバ変数
 	static WORD			m_wKeyState[NUM_KEY_MAX];			// キーボードの押下状態を保持するワーク
 	static WORD			m_wKeyStateTrigger[NUM_KEY_MAX];	// キーボードのトリガ状態を保持するワーク
 	static WORD			m_wKeyStateRelease[NUM_KEY_MAX];	// キーボードのリリース状態を保持するワーク
@@ -103,6 +104,7 @@ private:
 	static POINT		m_ptMouse;
 
 public:
+	//--- メンバ関数
 	static HRESULT Init();
 	static void Fin();
 	static void Update();

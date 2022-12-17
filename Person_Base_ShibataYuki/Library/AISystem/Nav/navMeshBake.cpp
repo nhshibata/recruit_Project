@@ -53,7 +53,7 @@ void CNavMeshBake::Bake(const float startPosY, const float endPosY)
 	CModelRenderer* model = nullptr;
 	const int totalGrid = m_nGrid * m_nGrid;
 	// リスト取得
-	auto aRenderList = MySpace::SceneManager::CSceneManager::Get().GetDrawSystem()->GetList();
+	auto aRenderList = MySpace::SceneManager::CSceneManager::Get()->GetDrawSystem()->GetList();
 
 	// グリッド位置毎に確認
 	for (int index = 0; index < totalGrid; ++ index)
@@ -294,8 +294,8 @@ void CNavMeshBake::Draw()
 {
 	XMFLOAT4X4 m_mWorld;
 	XMStoreFloat4x4(&m_mWorld, XMMatrixIdentity());
-	CDXDevice& dx = CDXDevice::Get();
-	dx.SetBlendState(static_cast<int>(EBlendState::BS_ALPHABLEND));
+	CDXDevice* dx = CDXDevice::Get();
+	dx->SetBlendState(static_cast<int>(EBlendState::BS_ALPHABLEND));
 
 	// ウェイポイントを球表示
 	for (auto & point : m_aNavMap)
@@ -337,7 +337,7 @@ void CNavMeshBake::Draw()
 	{
 		obs->Draw();
 	}
-	dx.SetBlendState(static_cast<int>(EBlendState::BS_NONE));
+	dx->SetBlendState(static_cast<int>(EBlendState::BS_NONE));
 }
 #endif // DEBUG_POINT_DRAW
 

@@ -10,13 +10,11 @@
 // コンストラクタ
 CResourceCSV::CResourceCSV()
 {
-
 }
 
 // デストラクタ
 CResourceCSV::~CResourceCSV()
 {
-
 }
 
 bool CResourceCSV::Load(std::string fileName)

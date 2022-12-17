@@ -13,12 +13,12 @@ using namespace MySpace::Game;
 
 // コンストラクタ
 CCursor::CCursor()
-	:m_bInput(false),m_nMax(1),m_nPoint(0),m_nOldPoint(0)
+	:m_bInput(false),m_nMax(1),m_nPoint(0),m_nOldPoint(0), m_bAuthority(false)
 {
 }
 // 引数付きコンストラクタ
 CCursor::CCursor(std::shared_ptr<CGameObject> owner)
-	:CComponent(owner), m_bInput(false), m_nMax(1), m_nPoint(0), m_nOldPoint(0)
+	:CComponent(owner), m_bInput(false), m_nMax(1), m_nPoint(0), m_nOldPoint(0), m_bAuthority(false)
 {
 }
 // デストラクタ

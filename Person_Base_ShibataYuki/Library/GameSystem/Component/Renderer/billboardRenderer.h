@@ -39,10 +39,12 @@ namespace MySpace
 				);
 			}
 		private:
+			//--- ƒƒ“ƒo•Ï”
 			std::shared_ptr<CBillboard> m_pBillboard;
 			std::shared_ptr<CSpriteAnimation> m_pSprite;
 
 		public:
+			//--- ƒƒ“ƒoŠÖ”
 			CBillboardRenderer() {};
 			CBillboardRenderer(std::shared_ptr<CGameObject> owner);
 			~CBillboardRenderer();
@@ -55,6 +57,7 @@ namespace MySpace
 			inline void SetSprite(std::shared_ptr<CSpriteAnimation> anim) { m_pSprite = anim; }
 			inline void SetSprite(std::string name) { m_pSprite->SetImage(name); }
 			inline CSpriteAnimation* GetSprite() { return m_pSprite.get(); }
+
 #ifdef BUILD_MODE
 
 			virtual void ImGuiDebug();

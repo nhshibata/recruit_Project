@@ -1,23 +1,28 @@
 #ifndef __AI_MAP_COMPONENT_H__
 #define __AI_MAP_COMPONENT_H__
 
-#include "AIMap.h"
-#include "navMeshBake.h"
+#include <AISystem/Nav/AIMap.h>
+#include <AISystem/Nav/navMeshBake.h>
 
 struct AIPoint
 {
 	bool entry;
 };
 
-
 class AIMapRouteScore : public AIMapOperator
 {
+private:
+	//--- ƒƒ“ƒo•Ï”
+	Vector3 m_start;
+	Vector3 m_target;
+
 public:
+	//--- ƒƒ“ƒoŠÖ”
 	AIMapRouteScore(Vector3 start, Vector3 target)
 		: m_start(start), m_target(target)
 	{
-
 	}
+
 	float Operator(Vector3 pos, void* data) final
 	{
 		//AIPoint* point = reinterpret_cast<AIPoint*>(data);
@@ -48,9 +53,6 @@ public:
 		};
 		return score[0] + score[1] + score[2];
 	}
-private:
-	Vector3 m_start;
-	Vector3 m_target;
 };
 
 #endif // __AI_MAP_COMPONENT_H__

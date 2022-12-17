@@ -22,13 +22,13 @@ CRenderer::CRenderer(std::shared_ptr<CGameObject> owner)
 }
 CRenderer::~CRenderer()
 {
-	if(auto sys = SceneManager::CSceneManager::Get().GetDrawSystem(); sys)
+	if(auto sys = SceneManager::CSceneManager::Get()->GetDrawSystem(); sys)
 		sys->ExecutSystem(m_nDrawIdx);
 }
 void CRenderer::RequestDraw()
 {
 	// •`‰æ“o˜^
-	m_nDrawIdx = SceneManager::CSceneManager::Get().GetDrawSystem()->RegistToSystem(BaseToDerived<CRenderer>());
+	m_nDrawIdx = SceneManager::CSceneManager::Get()->GetDrawSystem()->RegistToSystem(BaseToDerived<CRenderer>());
 }
 void CRenderer::Awake()
 {}

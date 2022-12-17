@@ -8,7 +8,7 @@
 //========================================================
 
 //--- インクルード部
-#include "aiNode.h"
+#include <AISystem/Node/aiNode.h>
 
 #ifndef __ACTION_NODE_H__
 #define __ACTION_NODE_H__
@@ -18,7 +18,6 @@ namespace AI
 	class CActionNode : public CAINode
 	{
 	public:
-
 		// *@ノード実行関数
 		virtual CAINode::EStatus Execute(CAISystem* sys) = 0;
 	};

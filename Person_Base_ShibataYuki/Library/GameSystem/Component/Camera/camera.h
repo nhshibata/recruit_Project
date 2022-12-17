@@ -145,7 +145,7 @@ namespace MySpace
 			inline Vector3 ConvertScreenToWorld(Vector2 pos)
 			{
 				Vector3 ret;
-				D3D11_VIEWPORT& vp = *MySpace::Graphics::CDXDevice::Get().GetViewPort();
+				D3D11_VIEWPORT& vp = *MySpace::Graphics::CDXDevice::Get()->GetViewPort();
 				XMStoreFloat3(&ret, XMVector3Unproject(
 					XMVectorSet(pos.x, pos.y, 0.0f, 1.0f),
 					vp.TopLeftX, 

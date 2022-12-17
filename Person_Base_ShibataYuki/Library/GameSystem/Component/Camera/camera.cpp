@@ -65,7 +65,7 @@ CCamera::~CCamera()
 
 	// 破棄されたときにｶﾒﾗが存在しているか確認
 	// あればﾒｲﾝｶﾒﾗを移動
-	if (!CSceneManager::Get().GetActiveScene())return;
+	if (!CSceneManager::Get()->GetActiveScene())return;
 	if (auto camObj = CGameObject::FindGameObjectWithTag(CDefaultTagChar::CAMERA); camObj.lock())
 	{
 		auto cameraCom = camObj.lock()->GetComponent<CCamera>().lock();
@@ -141,12 +141,12 @@ void CCamera::Update()
 void CCamera::DrawSkyDome()
 {
 	//float ClearColor[4] = { 0.117647f, 0.254902f, 0.352941f, 1.0f };
-	//ID3D11DeviceContext* pDC = CDXDevice::Get().GetDeviceContext();
-	//pDC->ClearRenderTargetView(CDXDevice::Get().GetRenderTargetView(), ClearColor);
-	//pDC->ClearDepthStencilView(CDXDevice::Get().GetDepthStencilView(),
+	//ID3D11DeviceContext* pDC = CDXDevice::Get()->GetDeviceContext();
+	//pDC->ClearRenderTargetView(CDXDevice::Get()->GetRenderTargetView(), ClearColor);
+	//pDC->ClearDepthStencilView(CDXDevice::Get()->GetDepthStencilView(),
 	//	D3D11_CLEAR_DEPTH | D3D11_CLEAR_STENCIL, 1.0f, 0);
 	//ID3D11RenderTargetView* pViews[] = {
-	//	CDXDevice::Get().GetRenderTargetView()
+	//	CDXDevice::Get()->GetRenderTargetView()
 	//};
 	//pDC->OMSetRenderTargets(1, pViews,nullptr);
 
@@ -154,7 +154,7 @@ void CCamera::DrawSkyDome()
 	if (!m_pSky.lock())
 		return;
 	//{
-	//	CDXDevice::Get().SetZBuffer(false);		// Zバッファ無効
+	//	CDXDevice::Get()->SetZBuffer(false);		// Zバッファ無効
 	//	CDirectionalLight* pLight = dynamic_cast<CDirectionalLight*>(CLight::Get());
 	//	pLight->SetDisable();	// ライティング無効
 
@@ -167,8 +167,8 @@ void CCamera::DrawSkyDome()
 	//	Transform()->SetWorldMatrix(oldW);
 	//	pLight->SetEnable();	// ライティング有効
 	//}
-	//CDXDevice::Get().SetZBuffer(true);
-	//CDXDevice::Get().SetBlendState(static_cast<int>(EBlendState::BS_NONE));
+	//CDXDevice::Get()->SetZBuffer(true);
+	//CDXDevice::Get()->SetBlendState(static_cast<int>(EBlendState::BS_NONE));
 
 	m_pSky.lock()->SetVisible(true);
 	m_pSky.lock()->Draw(0);

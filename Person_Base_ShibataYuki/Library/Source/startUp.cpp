@@ -48,7 +48,6 @@
 //--- インクルード部
 #include <Windows.h>
 #include <stdlib.h>
-#include <crtdbg.h>
 
 #include <stdio.h>
 #include <memory>
@@ -99,6 +98,9 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 		CMyScene()
 		{
 		}
+		~CMyScene()
+		{
+		}
 		void* Load(CScene* scene, int mode)
 		{
 #if 0
@@ -114,7 +116,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 	CMyScene my;
 	// シーン読み込み時呼び出す関数を設定
 	CSceneManager::Create();
-	CSceneManager::Get().SceneLoaded<CMyScene>(&CMyScene::Load, &my);	
+	CSceneManager::Get()->SceneLoaded<CMyScene>(&CMyScene::Load, &my);	
 
 #if !_DEBUG
 	HRESULT hr = S_OK;
@@ -122,7 +124,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 	//--- 生成
 	Application::Create();
 
-	Application* Appli = &Application::Get();
+	Application* Appli = Application::Get();
 	hr = Appli->Init(hInstance);
 
 	//--- ウィンドウ表示

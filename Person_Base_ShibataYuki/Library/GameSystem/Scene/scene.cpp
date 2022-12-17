@@ -30,13 +30,13 @@ CScene::~CScene()
 {
 	//Uninit();
 
-	m_objeManager.reset();
+	m_pObjeManager.reset();
 }
 // 初期化
 void CScene::Init(std::weak_ptr<CScene> scene)
 {
 	m_spPtr = scene;
-	m_objeManager = std::make_shared<CGameObjectManager>(scene.lock());
+	m_pObjeManager = std::make_shared<CGameObjectManager>(scene.lock());
 	// シーンに対してゲームオブジェクトを引き渡す
 	//m_objeManager->Init();
 }
@@ -44,17 +44,17 @@ void CScene::Init(std::weak_ptr<CScene> scene)
 void CScene::Uninit()
 {
 	// シーンを破棄した際、スマートポインタで破棄される
-	m_objeManager->Uninit();
+	m_pObjeManager->Uninit();
 }
 // 更新
 void CScene::Update()
 {
-	m_objeManager->Update();
+	m_pObjeManager->Update();
 }
 // 一定時間の更新
 void CScene::FixedUpdate()
 {
-	m_objeManager->FixedUpdate();
+	m_pObjeManager->FixedUpdate();
 }
 // 描画
 void CScene::Draw()
@@ -62,12 +62,12 @@ void CScene::Draw()
 }
 void CScene::CreateEmptyScene()
 {
-	if (m_objeManager)
+	if (m_pObjeManager)
 	{
-		m_objeManager->Uninit();
+		m_pObjeManager->Uninit();
 	}
 	//m_objeManager = std::make_shared<CGameObjectManager>();
-	m_objeManager->CreateBasicObject();
+	m_pObjeManager->CreateBasicObject();
 	//m_objeManager->Init();
 	if(m_SceneName.empty())
 		m_SceneName = "empty";

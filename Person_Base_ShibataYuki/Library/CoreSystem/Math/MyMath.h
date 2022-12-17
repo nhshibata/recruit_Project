@@ -12,7 +12,6 @@ namespace MySpace
 {
 	namespace MyMath
 	{
-		
 		// ƒAƒ‰ƒCƒƒ“ƒg
 		template <class T>
 		struct alignas(16) AlgnasConvert
@@ -22,7 +21,6 @@ namespace MySpace
 			T operator=(T f1) { value = f1; return value; }
 		};
 
-	
 
 		struct ST_MyMath 
 		{

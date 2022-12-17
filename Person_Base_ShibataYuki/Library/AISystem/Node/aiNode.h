@@ -54,9 +54,7 @@ namespace AI
 		// *@İ’è‚µ‚½ó‘Ô‚ğ•Ô‚·
 		inline CAINode::EStatus SetStatus(const EStatus e) { m_eStatus = e; return m_eStatus; }
 		inline void SetIndex(const int idx) { m_nIndex = idx; }
-
 	public:
-
 		// *@‹N“®ˆ—
 		virtual void OnAwake(CAISystem* sys) {};
 

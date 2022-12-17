@@ -59,8 +59,8 @@ bool CBillboardRenderer::Draw()
 	if (!CMeshRenderer::Draw())
 		return false;
 
-	//CDXDevice::Get().SetZBuffer(false);
-	CDXDevice::Get().SetBlendState(static_cast<int>(EBlendState::BS_ALPHABLEND));
+	//CDXDevice::Get()->SetZBuffer(false);
+	CDXDevice::Get()->SetBlendState(static_cast<int>(EBlendState::BS_ALPHABLEND));
 	CLight::Get()->SetDisable();
 	
 	// ﾃｸｽﾁｬマッピング更新
@@ -84,9 +84,9 @@ bool CBillboardRenderer::Draw()
 	{
 		SetInstancing(m_pBillboard.get());
 	}
-	//CDXDevice::Get().SetZBuffer(true);			
+	//CDXDevice::Get()->SetZBuffer(true);			
 	CLight::Get()->SetEnable();// 光源有効
-	CDXDevice::Get().SetBlendState(static_cast<int>(EBlendState::BS_NONE));		// αブレンディング無効
+	CDXDevice::Get()->SetBlendState(static_cast<int>(EBlendState::BS_NONE));		// αブレンディング無効
 	
 	return true;
 }

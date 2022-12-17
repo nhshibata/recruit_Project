@@ -66,7 +66,6 @@ namespace MySpace
 
 		public:
 			CFps();
-			CFps(const int nSlowfps);
 			~CFps();
 
 			void Init();

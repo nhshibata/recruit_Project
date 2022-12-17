@@ -45,7 +45,6 @@
     <ClInclude Include="..\Library\GameSystem\Component\Transform\transform.h" />
     <ClInclude Include="..\Library\GameSystem\Component\Transform\Tween.h" />
     <ClInclude Include="..\Library\GameSystem\Factory\componentFactory.h" />
-    <ClInclude Include="..\Library\GameSystem\gameInstance.h" />
     <ClInclude Include="..\Library\GameSystem\GameObject\BaseObject.h" />
     <ClInclude Include="..\Library\GameSystem\GameObject\gameObject.h" />
     <ClInclude Include="..\Library\GameSystem\GameObject\layer.h" />
@@ -58,11 +57,8 @@
     <ClInclude Include="..\Library\GameSystem\Manager\mapSystemBase.h" />
     <ClInclude Include="..\Library\GameSystem\Manager\sceneManager.h" />
     <ClInclude Include="..\Library\GameSystem\propertyCereal.h" />
-    <ClInclude Include="..\Library\GameSystem\Scene\buildScene.h" />
-    <ClInclude Include="..\Library\GameSystem\Scene\gameScene.h" />
     <ClInclude Include="..\Library\GameSystem\Scene\scene.h" />
     <ClInclude Include="..\Library\GameSystem\Scene\sceneTransitionDetection.h" />
-    <ClInclude Include="..\Library\GameSystem\Scene\titleScene.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\Library\GameSystem\components.cpp" />
@@ -155,7 +151,7 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <LinkIncremental>true</LinkIncremental>
     <OutDir>$(SolutionDir)exe\$(Configuration)\</OutDir>
-    <IncludePath>$(SolutionDir)Library\Effekseer;$(SolutionDir)Library;$(IncludePath);$(IncludePath)</IncludePath>
+    <IncludePath>$(SolutionDir)Library\ImGui;$(SolutionDir)Library\Effekseer;$(SolutionDir)Library;$(IncludePath);$(SolutionDir)Source;$(IncludePath)</IncludePath>
     <LibraryPath>$(LibraryPath)</LibraryPath>
     <IntDir>$(SolutionDir)Binary\$(ProjectName)\$(Platform)\$(Configuration)\</IntDir>
   </PropertyGroup>
@@ -168,7 +164,7 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <LinkIncremental>false</LinkIncremental>
     <OutDir>$(SolutionDir)exe\$(Configuration)\</OutDir>
-    <IncludePath>$(SolutionDir)Library\Effekseer;$(SolutionDir)Library;$(IncludePath);$(IncludePath)</IncludePath>
+    <IncludePath>$(SolutionDir)Library\ImGui;$(SolutionDir)Library\Effekseer;$(SolutionDir)Library;$(IncludePath);$(SolutionDir)Source;$(IncludePath)</IncludePath>
     <LibraryPath>$(LibraryPath)</LibraryPath>
     <IntDir>$(SolutionDir)Binary\$(ProjectName)\$(Platform)\$(Configuration)\</IntDir>
   </PropertyGroup>

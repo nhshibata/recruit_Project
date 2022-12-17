@@ -3,7 +3,7 @@
 // 作成:2022/06/26
 //=========================================================
 
-
+//--- インクルード部
 #include <CoreSystem/Input/mouse.h>
 #include <Application/Application.h>
 
@@ -11,26 +11,13 @@ using namespace MySpace;
 using namespace MySpace::Input;
 using namespace MySpace::System;
 
-//--- 静的メンバ変数
-Vector2 Mouse::m_vCursorPos;
-Vector2 Mouse::m_vPrevCursorPos;
-Vector2 Mouse::m_vVel;
-float Mouse::m_fWheel;
-bool Mouse::m_bWheel;
-
-bool Mouse::curState[(int)EButton::MAX]{};
-bool Mouse::mouseState[(int)EButton::MAX]{};
-bool Mouse::mouseStateTrigger[(int)EButton::MAX]{};
-bool Mouse::mouseStateRelease[(int)EButton::MAX]{};
-
-
 
 void Mouse::Initialize()
 {
 	POINT pos, pos1, pos2;
 	
 	// ウィンドウの左上の位置を取得 ＆ ウィンドウのマウス座標取得
-	if (ScreenToClient(Application::Get().GetHWnd(), &pos1) &&
+	if (ScreenToClient(Application::Get()->GetHWnd(), &pos1) &&
 		GetCursorPos(&pos2))
 	{
 		pos.x = pos1.x + pos2.x + GetSystemMetrics(SM_CXDLGFRAME) * 2;
@@ -77,27 +64,9 @@ void Mouse::Update()
 			// PCのディスプレイサイズ取得
 			HWND hDesktop = GetDesktopWindow();
 			GetWindowRect(hDesktop, &wRect);
-			//WINDOWINFO windowInfo;
-			/*wRect.left = windowInfo.rcClient.left;
-			wRect.right = windowInfo.rcClient.right;
-			wRect.top = windowInfo.rcClient.top;
-			wRect.bottom = windowInfo.rcClient.bottom;*/
-			/*windowInfo.cbSize = sizeof(WINDOWINFO);
-			GetWindowInfo(hDesktop, &windowInfo);*/
-			//int x = GetSystemMetrics(SM_CXSCREEN);
-			//int y = GetSystemMetrics(SM_CYSCREEN);
-			/*wRect.left = windowInfo.rcClient.left;
-			wRect.right = windowInfo.rcClient.right;
-			wRect.top = windowInfo.rcClient.top;
-			wRect.bottom = windowInfo.rcClient.bottom;*/
 
 			LONG offset = 5;
 			bool isOut = false;
-
-			//wRect.left -= windowFrameW;
-			//wRect.right += windowFrameW * 4;
-			//wRect.top -= windowFrameH;
-			//wRect.bottom += windowFrameW;
 
 			wRect.right -= 1;
 			wRect.bottom -= 1;
@@ -114,18 +83,6 @@ void Mouse::Update()
 			if (pos.y >= wRect.bottom) {
 				pos.y = wRect.top + offset; isOut = true;
 			}
-
-			//if (isOut) {
-			//	POINT pos2 = pos;
-			//	//ClientToScreen(RendererSystem::hWnd, &pos2);
-			//	SetCursorPos((int)pos2.x, (int)pos2.y);
-			//	curPos = Vector2((float)pos.x, (float)pos.y);
-
-			//	ImGuiIO & io = ImGui::GetIO();
-			//	io.MouseDelta = ImVec2(0.0f, 0.0f);
-			//	io.MousePos = ImVec2(curPos.x, curPos.y);
-			//	io.MousePosPrev = ImVec2(curPos.x, curPos.y);
-			//}
 		}
 
 		m_vPrevCursorPos = m_vCursorPos;

@@ -8,7 +8,7 @@
 //========================================================
 
 //--- インクルード部
-#include "selectorNode.h"
+#include <AISystem/Node/selectorNode.h>
 
 using namespace AI;
 

@@ -22,10 +22,12 @@ namespace MySpace
 			using PTR = std::function<void()>;
 
 		private:
+			//--- ƒƒ“ƒo•Ï”
 			PTR m_Func;
 			float m_fTime;
 			bool m_bLoop;
 		public:
+			//--- ƒƒ“ƒoŠÖ”
 			CTimeFuncPtr(PTR ptr, float time = 1, bool loop = false);
 			~CTimeFuncPtr();
 
