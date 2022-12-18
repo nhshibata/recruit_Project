@@ -56,6 +56,7 @@
     <ClInclude Include="..\Library\GameSystem\Manager\instantResourceManager.h" />
     <ClInclude Include="..\Library\GameSystem\Manager\mapSystemBase.h" />
     <ClInclude Include="..\Library\GameSystem\Manager\sceneManager.h" />
+    <ClInclude Include="..\Library\GameSystem\Manager\tagManager.h" />
     <ClInclude Include="..\Library\GameSystem\propertyCereal.h" />
     <ClInclude Include="..\Library\GameSystem\Scene\scene.h" />
     <ClInclude Include="..\Library\GameSystem\Scene\sceneTransitionDetection.h" />
@@ -93,6 +94,7 @@
     <ClCompile Include="..\Library\GameSystem\Manager\gameObjectManager.cpp" />
     <ClCompile Include="..\Library\GameSystem\Manager\instantResourceManager.cpp" />
     <ClCompile Include="..\Library\GameSystem\Manager\sceneManager.cpp" />
+    <ClCompile Include="..\Library\GameSystem\Manager\tagManager.cpp" />
     <ClCompile Include="..\Library\GameSystem\Scene\scene.cpp" />
     <ClCompile Include="..\Library\GameSystem\Scene\sceneTransitionDetection.cpp" />
   </ItemGroup>
@@ -239,8 +241,9 @@
       <AdditionalIncludeDirectories>$(SolutionDir)..\..\DirectXTex;$(SolutionDir)..\..\Assimp\include;$(SolutionDir)..\..\Assimp;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <AdditionalOptions>/bigobj %(AdditionalOptions)</AdditionalOptions>
       <LanguageStandard>stdcpp17</LanguageStandard>
-      <InlineFunctionExpansion>Default</InlineFunctionExpansion>
+      <InlineFunctionExpansion>AnySuitable</InlineFunctionExpansion>
       <PrecompiledHeaderFile />
+      <WholeProgramOptimization>true</WholeProgramOptimization>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>

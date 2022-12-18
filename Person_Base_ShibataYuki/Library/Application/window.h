@@ -44,7 +44,7 @@ namespace MySpace
 			{
 				m_fScreenWidth = m_fScreenHeight = m_fClientWidth = m_fClientHeight = 0.0f;
 			};
-			//~CWindow();
+			~CWindow() = default;
 		public:
 			void Close(const char* name,HINSTANCE inst);
 

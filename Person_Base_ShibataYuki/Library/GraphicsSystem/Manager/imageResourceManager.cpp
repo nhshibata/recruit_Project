@@ -16,6 +16,9 @@ using namespace MySpace::Graphics;
 CImageResourceManager::CImageResourceManager()
 {
 }
+CImageResourceManager::~CImageResourceManager()
+{
+}
 void CImageResourceManager::Uninit()
 {
 	UnloadAll();

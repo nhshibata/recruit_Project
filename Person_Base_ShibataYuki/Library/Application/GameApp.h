@@ -22,19 +22,19 @@ namespace MySpace
 		{
 		private:
 			//--- ÉÅÉìÉoä÷êî
-			void BeginRender();
-			void EndRender();
+			void BeginRender(Application*);
+			void EndRender(Application*);
 			
 		public:
 			CGameApp();
 			~CGameApp();
 
-			void Init();
-			void Uninit()const;
-			void FixedUpdate()const;
+			void Init(Application*);
+			void Uninit(Application*)const;
+			void FixedUpdate(Application*)const;
 			void InputUpdate();
-			void Update();
-			void Draw();
+			void Run(Application*);
+			void Draw(Application*);
 		};
 	}
 }

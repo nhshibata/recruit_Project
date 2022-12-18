@@ -23,6 +23,7 @@
 #include <map>
 #include <CoreSystem/Singleton.h>
 #include <CoreSystem/property.h>
+#include <CoreSystem/Util/define.h>
 
 
 using MySpace::System::CSingleton;
@@ -35,11 +36,13 @@ private:
 	//--- メンバ変数
 	HWND					m_hWnd;						// Windowハンドル
 	HINSTANCE				m_hInst;					// インスタンスハンドル
+	std::map<std::string, void*>	m_aSystems;
 
 private:
 	//--- メンバ関数
-	Application() {};									// コンストラクタ
-	~Application() {};									// デストラクタ
+	Application() = default;							// コンストラクタ
+	~Application() = default;							// デストラクタ
+
 public:
 	bool Init(HINSTANCE h_cpInstance);					// システム有効化
 	
@@ -53,6 +56,30 @@ public:
 	ID3D11Device* GetDevice();
 	ID3D11DeviceContext* GetDeviceContext();
 
+	// *@システムへの生ﾎﾟｲﾝﾀによる追加
+	template <class T>
+	bool AddSystem()
+	{
+		std::string name = typeid(T).name();
+		if (m_aSystems.count(name))
+		{
+			return false;
+		}
+
+		m_aSystems[name] = new T;
+		return true;
+	}
+
+	// *@型指定によるﾎﾟｲﾝﾀの取得
+	template <class T>
+	T* GetSystem()
+	{
+		std::string name = typeid(T).name();
+		if (!m_aSystems.count(name))
+			return nullptr;
+		T* ret = static_cast<T*>(m_aSystems[name]);
+		return ret;
+	}
 };
 
 #endif // !__APPLICATION_H__

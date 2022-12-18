@@ -485,7 +485,7 @@ namespace MySpace
 				return Color(0.0f, 1.0f, 0.0f, 1.0f);
 			}
 			
-			static inline Color Blue()
+			static inline Color Green()
 			{
 				return Color(0.0f, 0.0f, 1.0f, 1.0f);
 			}

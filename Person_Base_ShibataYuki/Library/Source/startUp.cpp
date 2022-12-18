@@ -55,6 +55,7 @@
 #include <tchar.h>
 
 #include <Application/main.h>
+#include <Application/Application.h>
 #include <GameSystem/Manager/sceneManager.h>
 //#include <gameCentipedeMarch.h>
 

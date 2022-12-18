@@ -19,15 +19,17 @@ namespace Spell
 	{
 		friend class MySpace::System::CSingleton<CEventMessage>;
 	private:
+		//--- メンバ変数
 		bool m_bMessageOn;
 		std::unordered_map<std::string, int> m_MessageMap;
+
 	private:
+		//--- メンバ関数
 		CEventMessage() 
 			:m_bMessageOn(false)
 		{};
-
+		~CEventMessage() = default;
 	public:
-
 		// 1フレームだけ保持
 		void Update()
 		{ 

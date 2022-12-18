@@ -25,6 +25,11 @@ using namespace MySpace::Game;
 CSceneManager::CSceneManager()
 	:m_bTransition(false), m_currentPath(std::string())
 {
+	m_sceneDetection.reset();
+	m_pCollisionSystem.reset();
+	m_pDrawSystem.reset();
+	m_pNavMesh.reset();
+
 	m_sceneDetection = std::make_shared<CSceneTransitionDetection>();
 	m_pCollisionSystem = std::make_shared<CCollisionSystem>();
 	m_pDrawSystem = std::make_shared<CDrawSystem>();
@@ -51,7 +56,7 @@ void CSceneManager::Uninit()
 	m_pDrawSystem.reset();
 	m_aScenes.clear();
 }
-void CSceneManager::Update()
+void CSceneManager::UpdateScene()
 {
 	//for (SceneList::iterator scene = m_pScenes.begin(); scene != m_pScenes.end(); ++scene)
 	for (auto & scene : m_aScenes)

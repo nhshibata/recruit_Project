@@ -46,7 +46,7 @@ CGameApp::~CGameApp()
 {
 }
 // ‰Šú‰»
-void CGameApp::Init()
+void CGameApp::Init(Application* app)
 {
 	HWND hWnd = Application::Get()->GetHWnd();
 
@@ -73,7 +73,7 @@ void CGameApp::Init()
 	CTypeSaveManager::Create();
 
 	//--- ƒQ[ƒ€—v‘f
-	CTagName::Create();
+	CTagManager::Create();
 	CTweenManager::Create();
 
 	// ƒ‚ƒfƒ‹
@@ -121,7 +121,7 @@ void CGameApp::Init()
 
 }
 // ‰ð•úˆ—
-void CGameApp::Uninit()const
+void CGameApp::Uninit(Application* app)const
 {
 
 	//_CrtDumpMemoryLeaks();
@@ -147,7 +147,7 @@ void CGameApp::Uninit()const
 
 	//--- ƒVƒ“ƒOƒ‹ƒgƒ“”jŠü
 	CTweenManager::Destroy();
-	CTagName::Destroy();
+	CTagManager::Destroy();
 	CImageResourceManager::Create();
 	CFontTexture::Destroy();
 	CEffekseer::Destroy();
@@ -160,8 +160,13 @@ void CGameApp::Uninit()const
 
 }
 // ’ÊíXV
-void CGameApp::Update()
+void CGameApp::Run(Application* app)
 {
+	{
+		auto ooo = CTagManager::Get()->GetNameList();
+		auto aoo = CTagManager::Get()->IDToTag(1);
+	}
+
 	// ‰¹XV
 	CSound::Update();
 
@@ -181,11 +186,11 @@ void CGameApp::Update()
 	}
 #endif // DEBUG
 
-	CSceneManager::Get()->Update();
+	CSceneManager::Get()->UpdateScene();
 	CEffekseer::Get()->Update();
 }
 // ’èŠúXV
-void CGameApp::FixedUpdate()const
+void CGameApp::FixedUpdate(Application* app)const
 {
 	// ˆê’èŽžŠÔ‚ÌXV
 	CSceneManager::Get()->FixedUpdateScene();
@@ -200,10 +205,10 @@ void CGameApp::InputUpdate()
 	Keyboad::Update();
 }
 // •`‰æ
-void CGameApp::Draw()
+void CGameApp::Draw(Application* app)
 {
 	//--- •`‰ææÝ’è
-	BeginRender();	// •`‰æ€”õ
+	BeginRender(app);	// •`‰æ€”õ
 	if (ImGuiManager::Get()->IsSceneRender())
 	{
 		ImGuiManager::Get()->SceneRenderClear();
@@ -242,10 +247,10 @@ void CGameApp::Draw()
 #endif // BUILD_MODE
 
 	// •`‰æŒãXV
-	EndRender();
+	EndRender(app);
 }
 // *@•`‰æ‘O
-void CGameApp::BeginRender()
+void CGameApp::BeginRender(Application* app)
 {
 	float ClearColor[4] = { 0.117647f, 0.254902f, 0.352941f, 1.0f };
 	auto pDX = CDXDevice::Get();
@@ -260,7 +265,7 @@ void CGameApp::BeginRender()
 	//pDC->OMSetRenderTargets(1, pViews, nullptr);
 }
 // *@•`‰æŒã
-void CGameApp::EndRender()
+void CGameApp::EndRender(Application* app)
 {
 	auto pDX = CDXDevice::Get();
 	pDX->SetCullMode((int)ECullMode::CULLMODE_NONE);

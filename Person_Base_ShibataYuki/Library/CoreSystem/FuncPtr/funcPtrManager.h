@@ -30,10 +30,12 @@ namespace MySpace
 		private:
 			//--- ƒƒ“ƒo•Ï”
 			FUNC_VEC m_FuncPtr;
+			bool m_bDebug;
 
 		private:
 			//--- ƒƒ“ƒo•Ï”
-			CFuncManager() {};
+			CFuncManager():m_bDebug(false){ };
+			~CFuncManager() = default;
 		public:
 			void Update();
 			void Uninit();

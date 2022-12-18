@@ -195,6 +195,9 @@
     <ClInclude Include="..\Library\GameSystem\Component\BaseComponent.h">
       <Filter>ヘッダー ファイル\Component</Filter>
     </ClInclude>
+    <ClInclude Include="..\Library\GameSystem\Manager\tagManager.h">
+      <Filter>ヘッダー ファイル\Manager</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\Library\GameSystem\components.cpp">
@@ -298,6 +301,9 @@
     </ClCompile>
     <ClCompile Include="..\Library\GameSystem\Component\cursor.cpp">
       <Filter>ソース ファイル\Component</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Library\GameSystem\Manager\tagManager.cpp">
+      <Filter>ヘッダー ファイル\Manager</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

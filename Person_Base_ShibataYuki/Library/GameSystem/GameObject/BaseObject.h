@@ -73,7 +73,7 @@ namespace MySpace
 
 			// *@weakPtrŒÀ’è
 			// *@”z—ñ‚É‚ ‚é‚©Šm”F
-			template <class T2, class S>
+			/*template <class T2, class S>
 			bool IsPtrIn(T2 ptr, S obj) {
 				auto it = ptr.begin();
 				for (; it != ptr.end(); ++it)
@@ -81,19 +81,19 @@ namespace MySpace
 					if ((*it) == obj) { return true; }
 				}
 				return false;
-			}
+			}*/
 
 			// *@listŒÀ’è
-			template <class T1>
-			bool IsPtrIn(std::list<T1> ptr, T1 obj) {
-				auto it = ptr.begin();
-				for (; it != ptr.end(); ++it)
-				{
-					if ((*it).lock() == obj.lock()) { return true; }		// weak
-					if ((*it) == obj) { return true; }					// shared
-				}
-				return false;
-			}
+			//template <class T1>
+			//bool IsPtrIn(std::list<T1> ptr, T1 obj) {
+			//	auto it = ptr.begin();
+			//	for (; it != ptr.end(); ++it)
+			//	{
+			//		if ((*it).lock() == obj.lock()) { return true; }		// weak
+			//		if ((*it) == obj) { return true; }					// shared
+			//	}
+			//	return false;
+			//}
 
 #ifdef BUILD_MODE
 		public:
