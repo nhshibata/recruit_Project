@@ -91,6 +91,7 @@ namespace MySpace
 		private:
 			//--- ÒİÊŞŠÖ”
 			CSceneManager();
+			~CSceneManager() = default;
 
 			// *@ƒV[ƒ“”jŠü‚ÉŒÄ‚Ño‚·‚½‚ß‚ÌŠÖ”
 			// *@m_bTransition‚ğtrue
@@ -105,7 +106,7 @@ namespace MySpace
 		public:
 			void Init();
 			void Uninit();
-			void Update();
+			void UpdateScene();
 			void FixedUpdateScene();
 			void DrawScene();
 

@@ -55,19 +55,12 @@ namespace MySpace
 			bool m_bUpdate;
 
 			STFixedTime m_FixedData;
-			
-#if BUILD_MODE
-			DWORD m_dwFPSLastTime;
-			DWORD m_dwFrameCount;
-			int m_nCountFPS;
-		public:
-			inline int GetFPSCount() { return m_nCountFPS; }
-#endif // BUILD_MODE
 
-		public:
+		private:
+			//--- メンバ関数
 			CFps();
 			~CFps();
-
+		public:
 			void Init();
 			void Uninit();
 			void Update();
@@ -95,18 +88,16 @@ namespace MySpace
 			inline void SetTimeScale(float time)				{ if (time > 0 && time < 2.0f)m_fTimeScale = time; }
 			void SetSlow(const int nSlowfps);
 			void SetSlow(const int nSlowfps, const int nTime);
-
-			// シングルトン
-			//static void Start() { m_pInstance = new CFps(); };
-			//static void End() { delete m_pInstance; };
-			//static CFps* Get() { return m_pInstance; };
-
+			
 #if BUILD_MODE
 		private:
+			DWORD m_dwFPSLastTime;
+			DWORD m_dwFrameCount;
+			int m_nCountFPS;
 			int m_nDebugFPS = FPS;
 			DWORD m_dwDebugSlow;
-
 		public:
+			inline int GetFPSCount() { return m_nCountFPS; }
 			void ImGuiDebug();
 #endif // BUILD_MODE
 

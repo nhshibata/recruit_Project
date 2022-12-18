@@ -160,6 +160,7 @@
       <ShowIncludes>false</ShowIncludes>
       <InlineFunctionExpansion>AnySuitable</InlineFunctionExpansion>
       <PreprocessorDefinitions>_NDEBUG;_LIB;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <WholeProgramOptimization>true</WholeProgramOptimization>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>

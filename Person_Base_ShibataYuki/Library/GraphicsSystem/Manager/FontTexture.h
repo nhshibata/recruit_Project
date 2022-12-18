@@ -51,11 +51,11 @@ namespace MySpace
 			FontMap m_aStringMap;		// 格納用
 			std::wstring m_FontName;	// 現在保持フォント名
 		
-		public:
+		private:
 			//--- メンバ関数
 			CFontTexture();
 			~CFontTexture();
-
+		public:
 			HRESULT Init();
 			void Uninit();
 			

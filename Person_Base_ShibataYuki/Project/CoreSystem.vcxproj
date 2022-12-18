@@ -210,7 +210,8 @@
       <LanguageStandard>stdcpp17</LanguageStandard>
       <UndefinePreprocessorDefinitions>
       </UndefinePreprocessorDefinitions>
-      <InlineFunctionExpansion>Default</InlineFunctionExpansion>
+      <InlineFunctionExpansion>AnySuitable</InlineFunctionExpansion>
+      <WholeProgramOptimization>true</WholeProgramOptimization>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>

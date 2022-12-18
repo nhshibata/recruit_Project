@@ -51,11 +51,12 @@ namespace MySpace
 {
 	namespace System
 	{
-		// エイリアス
+		//--- エイリアス
 		using MySpace::Graphics::CResourceMap;
 
-		// クラスの前方参照
+		//--- 前方参照
 		class CEffekseerParam;	
+
 		// --- クラス定義 ---
 		class CEffekseer : public CSingleton<CEffekseer>, public CResourceMap<std::u16string, Effekseer::EffectRef>
 		{
@@ -75,6 +76,7 @@ namespace MySpace
 			using EffectMapPair = std::pair<std::u16string, Effekseer::EffectRef>;	// パイル
 			using EffectParam = std::vector<CEffekseerParam>;						// 生成するエフェクトのパラメータ
 
+		private:
 			// --- メンバ変数 ---
 			//static CEffekseer* m_pInstance;
 			DirectX::XMFLOAT4 m_vLight;
@@ -87,10 +89,12 @@ namespace MySpace
 			EffectParam m_effectParam;
 			int m_nTimer;
 
+		private:
 			// --- メンバ関数 ---
-			void SetMatrix(Effekseer::Matrix43*, XMFLOAT4X4);
 			CEffekseer();
 			~CEffekseer();
+			void SetMatrix(Effekseer::Matrix43*, XMFLOAT4X4);
+
 		public:
 			//~CEffekseer();
 

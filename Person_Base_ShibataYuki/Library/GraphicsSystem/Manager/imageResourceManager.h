@@ -29,6 +29,7 @@ namespace MySpace
 		protected:
 			//--- ƒƒ“ƒo•Ï”
 			CImageResourceManager();
+			~CImageResourceManager();
 
 		public:
 			//--- ƒƒ“ƒoŠÖ”

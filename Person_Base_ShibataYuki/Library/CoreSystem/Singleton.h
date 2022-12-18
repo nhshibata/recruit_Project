@@ -31,19 +31,19 @@ namespace MySpace
 		class CSingleton /*: public CBase*/
 		{
 		protected:
-			CSingleton() {}
+			CSingleton() = default;
+			~CSingleton() = default;
 			
 		public:
 			//--- メンバ関数
-			~CSingleton() {}
 
 			// 代入禁止
 			void operator=(const CSingleton<T> t) = delete;
 
-#define LOCAL_PATTERN _DEBUG
+#define LOCAL_PATTERN _DEBUG | true
 #if LOCAL_PATTERN
 			//--- 静的変数の使用
-			static inline T* Get() { static T pInstance; return &pInstance; }
+			static T* Get() { static T pInstance; return &pInstance; }
 			// *@シングルトン破棄
 			static inline void Create() {  };
 			// *@シングルトン破棄

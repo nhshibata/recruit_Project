@@ -86,10 +86,10 @@ namespace MySpace
 
 		private:
 			//--- メンバ関数
-			CTypeSaveManager() {};
+			CTypeSaveManager() = default;
+			~CTypeSaveManager();
 
 		public:
-			~CTypeSaveManager();
 			void Uninit();
 
 			//--- ゲッター・セッター

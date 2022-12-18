@@ -32,7 +32,7 @@ using namespace MySpace::Game;
 static inline void CheckObj(CGameObject* obj)
 {
 	auto name = obj->GetName();
-	auto tag = obj->GetTagPtr()->GetTag();
+	auto tag = obj->GetTagPtr()->IDToTag();
 }
 #endif // _DEBUG
 
@@ -397,7 +397,7 @@ void CGameObject::ImGuiDebug()
 	{
 		if (ImGui::BeginMenu(u8"tag"))
 		{
-			auto tagList = CTagName::Get()->GetList();
+			auto tagList = CTagManager::Get()->GetNameList();
 			for (int state = 0; state < static_cast<int>(tagList.size()); ++state)
 			{
 				auto tagName = tagList[state].c_str();

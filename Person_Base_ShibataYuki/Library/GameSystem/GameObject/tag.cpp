@@ -12,34 +12,9 @@
 using namespace MySpace::Game;
 using namespace MySpace::System;
 
-//--- 定数定義
-#define TAG_PATH		FORDER_DIR(data/SystemData/tag.json)
-
-//--- 静的メンバ変数
-
-CTagName::CTagName()
-{
-	//SetLoad();
-	//SetSave();
-}
-
-CTagName::~CTagName()
-{
-	SaveSystem();
-}
-void CTagName::SaveSystem()
-{
-	CCerealize<std::vector<std::string>> sirial;
-	sirial.OutputFile("tagList", TAG_PATH, m_tagVec);
-}
-void CTagName::LoadSystem()
-{
-	CCerealize<std::vector<std::string>> sirial;
-	m_tagVec = sirial.InputFile(TAG_PATH); 
-}
-//=====================================================
 // コンストラクタ
 CTag::CTag()
+	:m_nTagID(0)
 {
 	CreateTag(CDefaultTagChar::DEFAULT);
 	SetTag(CDefaultTagChar::DEFAULT);

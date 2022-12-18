@@ -47,6 +47,7 @@ namespace MySpace
 		{
 			friend class CSingleton<CDXDevice>; // Singleton でのインスタンス作成は許可
 		private:
+			//--- メンバ変数
 			ComPtr<ID3D11Device>			g_pDevice;				// デバイス
 			ComPtr<ID3D11DeviceContext>		g_pDeviceContext;		// デバイス コンテキスト
 			ComPtr<IDXGISwapChain> 			g_pSwapChain;			// スワップチェーン
@@ -64,6 +65,11 @@ namespace MySpace
 			int								m_Height = 0;				// バックバッファＹサイズ
 			std::shared_ptr<D3D11_VIEWPORT> m_viewPort;
 			ComPtr<ID3D11SamplerState>		m_SamplerState;
+
+		private:
+			//--- メンバ関数
+			CDXDevice() = default;
+			~CDXDevice() = default;
 
 		public:
 			

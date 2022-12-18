@@ -258,10 +258,13 @@ namespace MySpace
 			friend class CSingleton<CTweenManager>;
 
 		private:
+			//--- メンバ変数
 			std::vector<std::shared_ptr<MySpace::TWeen::CTween>> m_aTweenList;
 
 		private:
-			CTweenManager() {};
+			//--- メンバ関数
+			CTweenManager() = default;
+			~CTweenManager() = default;
 
 		public:
 			// *@更新

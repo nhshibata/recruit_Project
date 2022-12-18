@@ -14,6 +14,7 @@
 #include <cctype>
 #include <stdio.h>
 #include <CoreSystem/Util/stl.h>
+#include <CoreSystem/Singleton.h>
 #include <CoreSystem/Util/define.h>
 
 #include <ImGui/imgui.h>
@@ -104,7 +105,7 @@ namespace MySpace
 		private:
 			//--- メンバ関数
 			ImGuiManager();
-			//~ImGuiManager() {};
+			~ImGuiManager() = default;
 			// *@ログ表示
 			void DispLog();
 			// *@ポーズ処理

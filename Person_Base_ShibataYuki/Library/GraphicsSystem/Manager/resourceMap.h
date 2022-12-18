@@ -29,8 +29,12 @@ namespace MySpace
 			//--- ƒƒ“ƒo•Ï”
 			Map m_aResourceMap;
 
-		public:
+		protected:
 			//--- ƒƒ“ƒoŠÖ”
+			CResourceMap() = default;
+			~CResourceMap() = default;
+		public:
+			
 			virtual bool Load(T1 name) = 0;
 
 			std::vector<T1> GetNameList() 

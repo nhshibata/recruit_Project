@@ -100,6 +100,7 @@ namespace MySpace
 		private:
 			//--- ƒƒ“ƒoŠÖ”
 			CShaderManager();
+			~CShaderManager() = default;
 
 		public:
 			HRESULT Init();

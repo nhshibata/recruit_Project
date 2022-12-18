@@ -36,10 +36,8 @@ namespace MySpace
 		private:
 			//--- ƒƒ“ƒoŠÖ”
 			CModelManager();
-
+			~CModelManager() = default;
 		public:
-			//~CImageResourceManager();
-
 			HRESULT Init();
 			void Uninit();
 			

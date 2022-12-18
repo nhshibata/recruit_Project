@@ -16,8 +16,6 @@
 #include <Application/GameApp.h>
 #include <Application/window.h>
 #include <Application/screen.h>
-#include <Application/systemManager.h>
-#include <CoreSystem/system.h>
 #include <CoreSystem/Time/fps.h>
 #include <CoreSystem/FuncPtr/funcPtrManager.h>
 #include <GraphicsSystem/DirectX/DXDevice.h>
@@ -47,6 +45,7 @@ bool Application::Init(HINSTANCE h_Instance)
 	//CScreen::SetSize(1280.0f, 960.0f);
 
 	//--- ウインドウ作成
+	//AddSystem<CWindow>();
 	CWindow::Create();
 	CWindow* window = CWindow::Get();
 	//window->RegisterClass(h_Instance, WINDOW_CLASS_NAME, CS_OWNDC);
@@ -74,6 +73,7 @@ bool Application::Init(HINSTANCE h_Instance)
 
 	// 読み込みが必要なシステムの関数を呼び出す
 	CFuncManager::Create();
+	//AddSystem<CFuncManager>();
 
 	return true;
 }
@@ -98,6 +98,15 @@ void Application::Uninit()
 	//--- シングルトンの解放
 	CFuncManager::Destroy();
 	CWindow::Destroy();
+
+	// 最後尾から解放
+	for (auto rit = m_aSystems.rbegin(); rit != m_aSystems.rend();)
+	{
+		delete (*rit).second;
+		++rit;
+	}
+	m_aSystems.clear();
+
 	return;
 }
 
@@ -112,7 +121,7 @@ unsigned long Application::MainLoop()
 	//CFuncManager::Get();
 
 	// ゲームの初期化処理
-	gameApp->Init();
+	gameApp->Init(this);
 
 	//--- タイム初期化処理
 	CFps::Create();
@@ -126,30 +135,30 @@ unsigned long Application::MainLoop()
 
 		// 固定時間更新
 		if (!CFps::Get()->IsFixedUpdate())
-			gameApp->FixedUpdate();
+			gameApp->FixedUpdate(this);
 
 		// 一定時間の更新
 		if (!CFps::Get()->IsUpdate())
 			continue;
 
-		// 呼び出されれば更新
+		// 更新
 		gameApp->InputUpdate();
 
 		// 関数ポインタの更新
 		CFuncManager::Get()->Update();
 
 		// ｹﾞｰﾑ更新
-		gameApp->Update();
+		gameApp->Run(this);
 
 		// ｹﾞｰﾑ描画
-		gameApp->Draw();
+		gameApp->Draw(this);
 	}
 
 	CFps::Get()->Uninit();
 	CFps::Destroy();
 
 	// ゲームの終了処理
-	gameApp->Uninit();
+	gameApp->Uninit(this);
 	delete gameApp;
 	
 	// 終了メッセージ

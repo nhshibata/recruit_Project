@@ -230,11 +230,15 @@ void CGameObjectManager::CreateBasicObject()
 // *”z—ñ’Ç‰Á
 void CGameObjectManager::SetGameObject(std::shared_ptr<CGameObject> obj)
 {
-	if (!obj.get()->IsPtrIn <GameObjList, std::shared_ptr<CGameObject>>(m_aGameObjList, obj))
+	if (!obj)
+		return;
+	for(auto & pObj : m_aGameObjList)
 	{
-		m_aGameObjList.push_back(obj);
-		TagMove(obj->GetTag(),obj);
+		if (pObj == obj)
+			break;
 	}
+	m_aGameObjList.push_back(obj);
+	TagMove(obj->GetTag(), obj);
 }
 void CGameObjectManager::TagMove(std::string NextTag, std::weak_ptr<CGameObject> obj)
 {
