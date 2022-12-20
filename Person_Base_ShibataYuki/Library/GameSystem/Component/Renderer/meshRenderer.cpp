@@ -57,6 +57,12 @@ Vector3 CMeshRenderer::GetCenter(int n)
 {
 	return m_vCenter + Transform()->GetPos(); 
 }
+
+float CMeshRenderer::GetBSRadius()
+{
+	return m_fBSRadius * Transform()->GetScale().GetLargeValue(); 
+};
+
 void CMeshRenderer::SetInstancing(CMesh* mesh, std::string name)
 {
 	auto sys = SceneManager::CSceneManager::Get()->GetDrawSystem();
@@ -78,13 +84,36 @@ void CMeshRenderer::SetInstancing(CMesh* mesh, std::string name)
 
 void CMeshRenderer::ImGuiDebug()
 {
-	ImGui::Text("Material");
+	ImGui::Text("BSphere:%f", GetBSRadius());
 	ImGui::Checkbox("Static", (bool*)&m_nStaticMode);
-	ImGui::ColorPicker4("Diffuse", (float*)&m_MeshMaterial.m_Diffuse);
-	ImGui::ColorPicker4("Ambient", (float*)&m_MeshMaterial.m_Ambient);
-	ImGui::ColorPicker4("Specular", (float*)&m_MeshMaterial.m_Specular);
-	ImGui::ColorPicker4("Emissive", (float*)&m_MeshMaterial.m_Emissive);
-	ImGui::DragFloat("Material", (float*)&m_MeshMaterial.m_Power);
+	
+	ImGui::BeginTabBar("Material");
+	if (ImGui::BeginTabItem("Diffuse"))
+	{
+		ImGui::ColorPicker4("Diffuse", (float*)&m_MeshMaterial.m_Diffuse);
+		ImGui::EndTabItem();
+	}
+	if (ImGui::BeginTabItem("Ambient"))
+	{
+		ImGui::ColorPicker4("Ambient", (float*)&m_MeshMaterial.m_Ambient);
+		ImGui::EndTabItem();
+	}
+	if (ImGui::BeginTabItem("Specular"))
+	{
+		ImGui::ColorPicker4("Specular", (float*)&m_MeshMaterial.m_Specular);
+		ImGui::EndTabItem();
+	}
+	if (ImGui::BeginTabItem("Emissive"))
+	{
+		ImGui::ColorPicker4("Emissive", (float*)&m_MeshMaterial.m_Emissive);
+		ImGui::EndTabItem();
+	}
+	if (ImGui::BeginTabItem("Power"))
+	{
+		ImGui::DragFloat("Power", (float*)&m_MeshMaterial.m_Power);
+		ImGui::EndTabItem();
+	}
+	ImGui::EndTabBar();
 	//CRenderer::ImGuiDebug();
 }
 

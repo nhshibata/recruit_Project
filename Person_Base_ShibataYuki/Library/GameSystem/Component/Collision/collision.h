@@ -46,12 +46,6 @@ namespace MySpace
 			std::list<std::weak_ptr<CGameObject>> m_pHitList;		// 現在フレーム接触
 			std::list<std::weak_ptr<CGameObject>> m_pExitList;		// 離れた
 
-#ifdef BUILD_MODE
-			int m_nDebugEnterCnt = 0;
-			int m_nDebugStayCnt  = 0;
-			int m_nDebugExitCnt  = 0;
-#endif // BUILD_MODE
-
 		private:
 			//--- ﾒﾝﾊﾞ関数
 			void ColObjectUpdate();
@@ -90,6 +84,11 @@ namespace MySpace
 			virtual bool ExitTell();
 
 #ifdef BUILD_MODE
+		private:
+			int m_nDebugEnterCnt = 0;
+			int m_nDebugStayCnt = 0;
+			int m_nDebugExitCnt = 0;
+		public:
 			virtual void ImGuiDebug();
 #endif // BUILD_MODE
 		};

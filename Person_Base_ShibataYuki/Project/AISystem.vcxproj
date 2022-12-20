@@ -19,6 +19,7 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="..\Library\AISystem\aiFunction.cpp" />
     <ClCompile Include="..\Library\AISystem\Nav\AIMap.cpp" />
     <ClCompile Include="..\Library\AISystem\Nav\navMeshBake.cpp" />
     <ClCompile Include="..\Library\AISystem\Node\selectorNode.cpp" />
@@ -29,6 +30,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\Library\AISystem\aiCondition.h" />
+    <ClInclude Include="..\Library\AISystem\aiFunction.h" />
     <ClInclude Include="..\Library\AISystem\Nav\AIMap.h" />
     <ClInclude Include="..\Library\AISystem\Nav\AIMapComponent.hpp" />
     <ClInclude Include="..\Library\AISystem\Nav\navMeshBake.h" />

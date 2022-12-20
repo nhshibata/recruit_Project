@@ -120,6 +120,15 @@
     <ClInclude Include="..\Library\GraphicsSystem\DirectX\depthStencil.h">
       <Filter>ヘッダー ファイル\DirectX</Filter>
     </ClInclude>
+    <ClInclude Include="..\Library\GraphicsSystem\Texture\Texture.h">
+      <Filter>ヘッダー ファイル\Texture</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Library\GraphicsSystem\Texture\imageResource.h">
+      <Filter>ヘッダー ファイル\Texture</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Library\GraphicsSystem\Texture\spriteAnimation.h">
+      <Filter>ヘッダー ファイル\Texture</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\Library\GraphicsSystem\Texture\Texture.cpp">
@@ -150,9 +159,6 @@
       <Filter>ソース ファイル\Shader</Filter>
     </ClCompile>
     <ClCompile Include="..\Library\GraphicsSystem\Shader\domainShader.cpp">
-      <Filter>ソース ファイル\Shader</Filter>
-    </ClCompile>
-    <ClCompile Include="..\Library\GraphicsSystem\Shader\GraphicsBase.cpp">
       <Filter>ソース ファイル\Shader</Filter>
     </ClCompile>
     <ClCompile Include="..\Library\GraphicsSystem\Render\box.cpp">

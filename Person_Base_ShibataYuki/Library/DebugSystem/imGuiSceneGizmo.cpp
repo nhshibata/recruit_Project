@@ -90,13 +90,13 @@ void CMyGizmo::ViewGizmo(ImGuiManager* manager, const CCamera& camera, CTransfor
 	XMFLOAT3 localTrans, localRot, localScal;
 	ImGuizmo::DecomposeMatrixToComponents((float*)local.m, (float*)&localTrans, (float*)&localRot, (float*)&localScal);
 
-	// 行列設定
-	editTransform->SetWorldMatrix(localTrans, localRot, localScal);
 	
 	//--- 選択状態設定
 	if (ImGuizmo::IsUsing())
 	{
 		manager->UpHover(ImGuiManager::EMouseHovered::HOVERED_GIZMO);
+	// 行列設定
+	editTransform->SetWorldMatrix(localTrans, localRot, localScal);
 	}
 	else
 		manager->DownHover(ImGuiManager::EMouseHovered::HOVERED_GIZMO);
@@ -154,6 +154,10 @@ void CMyGizmo::EditTransform(MySpace::Debug::ImGuiManager* manager)
 			break;
 	}
 
+}
+
+void CMyGizmo::ViewGrid(const CCamera& camera)
+{
 	auto viewMatrix = CCamera::GetMain()->GetViewMatrix().m;	// ｶﾒﾗの姿勢
 	auto projMatrix = CCamera::GetMain()->GetProjMatrix().m;	// プロジェクション行列
 	XMFLOAT4X4 mtx;												// 初期値
@@ -161,5 +165,4 @@ void CMyGizmo::EditTransform(MySpace::Debug::ImGuiManager* manager)
 	//--- グリッドの表示
 	ImGuizmo::DrawGrid(&viewMatrix[0][0], &projMatrix[0][0], &mtx.m[0][0], 1000);
 	//ImGuizmo::DrawCubes(&viewMatrix[0][0], &projMatrix[0][0], &mtx.m[0][0], 1);
-
 }

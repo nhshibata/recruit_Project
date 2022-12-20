@@ -47,6 +47,9 @@
     <ClInclude Include="..\Library\GraphicsSystem\Shader\pixelShader.h" />
     <ClInclude Include="..\Library\GraphicsSystem\Shader\shader.h" />
     <ClInclude Include="..\Library\GraphicsSystem\Shader\vertexShader.h" />
+    <ClInclude Include="..\Library\GraphicsSystem\Texture\imageResource.h" />
+    <ClInclude Include="..\Library\GraphicsSystem\Texture\spriteAnimation.h" />
+    <ClInclude Include="..\Library\GraphicsSystem\Texture\Texture.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\Library\GraphicsSystem\DirectX\depthStencil.cpp" />
@@ -69,7 +72,6 @@
     <ClCompile Include="..\Library\GraphicsSystem\Render\Sphere.cpp" />
     <ClCompile Include="..\Library\GraphicsSystem\Shader\constantBuffer.cpp" />
     <ClCompile Include="..\Library\GraphicsSystem\Shader\domainShader.cpp" />
-    <ClCompile Include="..\Library\GraphicsSystem\Shader\GraphicsBase.cpp" />
     <ClCompile Include="..\Library\GraphicsSystem\Shader\hullShader.cpp" />
     <ClCompile Include="..\Library\GraphicsSystem\Shader\meshBuffer.cpp" />
     <ClCompile Include="..\Library\GraphicsSystem\Shader\pixelShader.cpp" />

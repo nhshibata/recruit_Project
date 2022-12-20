@@ -46,24 +46,11 @@ namespace MySpace
 		class CInspector
 		{
 		private:
-			/*enum class EObjMoveType : int
-			{
-				POSITION = 0,
-				ROTATE,
-				SCALE,
-				MAX
-			};
-			struct STTransformSet
-			{
-				EObjMoveType eType = EObjMoveType::POSITION;
-				float fMoveValue = 1.0f;
-				std::weak_ptr<CRectTransform> spRect;
-			};*/
-		private:
 			std::weak_ptr<CGameObject> m_spViewObj;
 			std::vector<bool> m_isDrawInfo;
 			bool m_isComponent;
 			bool m_isDeleted;
+			bool m_bOpen;
 			//bool m_bDispObj;
 			//STTransformSet m_TransformController;
 

@@ -51,6 +51,13 @@ namespace MySpace
 				m_aIntMap.erase(idx);
 				return ret;
 			}
+
+			inline T IDToData(int idx)
+			{
+				if (m_aIntMap.count(idx))
+					return m_aIntMap[idx];
+				return T();
+			}
 		};
 	}
 }

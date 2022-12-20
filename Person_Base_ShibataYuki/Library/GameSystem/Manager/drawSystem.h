@@ -73,20 +73,23 @@ namespace MySpace
 				m_pDrawSortList.push_back(render);
 				return ret;
 			}
+
 			// *@”jŠü overlide
 			std::weak_ptr<CRenderer> ExecutSystem(int idx)
 			{
-				auto release = CMapSystemBase::ExecutSystem(idx).lock();
+				auto release = IDToData(idx);
 
 				// ”jŠü‚³‚ê‚½ºİÎß°ÈİÄ‚ğ’T‚µA®—ñƒŠƒXƒg‚©‚çœŠO
 				for (auto it = m_pDrawSortList.begin(); it != m_pDrawSortList.end();)
 				{
-					if (release == (*it).lock())
+					if (release.lock() == (*it).lock())
 					{
 						m_pDrawSortList.erase(it);
 						break;
 					}
+					++it;
 				}
+				CMapSystemBase::ExecutSystem(idx);
 				return release;
 			}
 

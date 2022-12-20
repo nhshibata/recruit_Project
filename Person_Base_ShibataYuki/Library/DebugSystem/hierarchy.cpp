@@ -10,12 +10,12 @@
 #include <DebugSystem/hierarchy.h>
 #if BUILD_MODE
 
-#include <DebugSystem/imguiManager.h>
-#include <DebugSystem/inspector.h>
-#include <DebugSystem/imGuiPackage.h>
 #include <ImGui/imgui.h>
 #include <ImGui/imgui_impl_win32.h>
 #include <ImGui/imgui_impl_dx11.h>
+#include <DebugSystem/imguiManager.h>
+#include <DebugSystem/inspector.h>
+#include <DebugSystem/imGuiPackage.h>
 
 #include <GameSystem/Scene/scene.h>
 #include <GameSystem/Component/Transform/transform.h>
@@ -101,6 +101,14 @@ void CHierachy::Update(ImGuiManager* manager)
 				// ｺﾝﾎﾟｰﾈﾝﾄの追加後
 				manager->GetInspector()->SetSelectGameObject(obj);
 			}
+			if (ImGui::MenuItem("StaticModel"))
+			{
+				auto obj = CGameObject::CreateObject().lock();
+				auto render = obj->AddComponent<CModelRenderer>();
+				render->SetStatic(CMeshRenderer::EStaticMode::NONE_MOVE);
+				// ｺﾝﾎﾟｰﾈﾝﾄの追加後
+				manager->GetInspector()->SetSelectGameObject(obj);
+			}
 			if (ImGui::MenuItem("Billboard"))
 			{
 				auto obj = CGameObject::CreateObject().lock();
@@ -162,7 +170,7 @@ void CHierachy::Update(ImGuiManager* manager)
 #endif // 0
 		
 		// 選択ボタン、ウィンドウ表示
-		if (ImGui::Button(object->GetName().c_str()) )
+		if (ImGui::Button(object->GetName().c_str()))
 		{
 			manager->GetInspector()->SetSelectGameObject(object);
 			break;

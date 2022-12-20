@@ -13,7 +13,6 @@ using namespace MySpace::System;
 CSpriteAnimation::CSpriteAnimation() 
 	:m_nAnimNo(0),m_nSplitX(1),m_nSplitY(1),m_nCnt(3)
 {
-	
 }
 CSpriteAnimation::~CSpriteAnimation()
 {

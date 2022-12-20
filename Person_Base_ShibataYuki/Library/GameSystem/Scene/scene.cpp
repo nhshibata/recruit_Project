@@ -17,19 +17,15 @@ using namespace MySpace::Game;
 CScene::CScene()
 	:m_SceneName("none")
 {
-	//CreateEmptyScene();
 }
 // コンストラクタ
 CScene::CScene(std::string name)
 	:m_SceneName(name)
 {
-	//m_objeManager->Awake();
 }
 // デストラクタ
 CScene::~CScene()
 {
-	//Uninit();
-
 	m_pObjeManager.reset();
 }
 // 初期化
@@ -66,9 +62,7 @@ void CScene::CreateEmptyScene()
 	{
 		m_pObjeManager->Uninit();
 	}
-	//m_objeManager = std::make_shared<CGameObjectManager>();
 	m_pObjeManager->CreateBasicObject();
-	//m_objeManager->Init();
 	if(m_SceneName.empty())
 		m_SceneName = "empty";
 }

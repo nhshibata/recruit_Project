@@ -58,7 +58,6 @@ void CSceneManager::Uninit()
 }
 void CSceneManager::UpdateScene()
 {
-	//for (SceneList::iterator scene = m_pScenes.begin(); scene != m_pScenes.end(); ++scene)
 	for (auto & scene : m_aScenes)
 	{
 		scene->Update();
@@ -241,9 +240,6 @@ bool CSceneManager::LoadScene(std::string path)
 void CSceneManager::ImGuiDebug()
 {
 	//--- î•ñ•\¦
-	if (!ImGui::TreeNode("--- Scene ---"))
-		return;
-
 	if (ImGui::BeginMenuBar()) 
 	{
 		if (ImGui::BeginMenu(u8"Scene"))
@@ -276,7 +272,6 @@ void CSceneManager::ImGuiDebug()
 	//	CScene* newScene = AddScene<CScene>();
 	//}
 
-	ImGui::TreePop();
 }
 
 #endif // BUILD_MODE

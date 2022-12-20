@@ -58,16 +58,16 @@ public:
 
 	// *@システムへの生ﾎﾟｲﾝﾀによる追加
 	template <class T>
-	bool AddSystem()
+	T* AddSystem()
 	{
 		std::string name = typeid(T).name();
 		if (m_aSystems.count(name))
 		{
-			return false;
+			return m_aSystems[name];
 		}
 
 		m_aSystems[name] = new T;
-		return true;
+		return m_aSystems[name];
 	}
 
 	// *@型指定によるﾎﾟｲﾝﾀの取得

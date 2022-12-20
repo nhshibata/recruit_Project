@@ -46,15 +46,16 @@ void CModelRenderer::SetModel(std::string name)
 		m_modelName = name;
 
 		// モデル半径の設定
-		auto size = Transform()->GetScale();
+		/*auto size = Transform()->GetScale();
 		float scale = size.x;
 		if (scale < size.y || scale < size.z)
 		{
 			scale = size.y;
 			if (scale < size.z)
 				scale = size.z;
-		}
-		SetBSRadius(m_pModel->GetRadius() * scale);
+		}*/
+		//SetBSRadius(m_pModel->GetRadius() * scale);
+		SetBSRadius(m_pModel->GetRadius());
 
 		// 自身と管理ｸﾗｽ以外に所有者が居た時
 		if (int num = CModelManager::Get()->GetModelCnt(name); num > 2)
@@ -332,7 +333,7 @@ void CModelRenderer::ImGuiDebug()
 		m_modelName = name;
 
 		// ポインタを受け取る
-		m_pModel = CModelManager::Get()->GetModel(name);
+		SetModel(name);
 	}
 	
 	if (auto name = DispMenuBar(m_aObjModelList, "objFile"); !name.empty())
@@ -340,7 +341,7 @@ void CModelRenderer::ImGuiDebug()
 		m_modelName = name;
 
 		// ポインタを受け取る
-		m_pModel = CModelManager::Get()->GetModel(name);
+		SetModel(name);
 	}
 	
 	if (auto name = DispMenuBar(m_aFbxModelList, "fbxFile"); !name.empty())
@@ -348,7 +349,6 @@ void CModelRenderer::ImGuiDebug()
 		m_modelName = name;
 
 		// ポインタを受け取る
-		m_pModel = CModelManager::Get()->GetModel(name);
 		SetModel(name);
 	}
 }

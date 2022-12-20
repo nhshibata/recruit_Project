@@ -190,10 +190,10 @@ std::weak_ptr<CTransform> CTransform::GetChild(int no)
 void CTransform::ImGuiDebug()
 {
 	// 3次元座標
-	ImGui::DragFloat3(u8"座標", (float*)m_vPos);
+	ImGui::DragFloat3(u8"座標", (float*)&m_vPos);
 	ImGui::Text(u8"過去座標 %f %f %f", m_vOldPos.x, m_vOldPos.y, m_vOldPos.z);
-	ImGui::DragFloat3(u8"角度", (float*)m_vRot);
-	ImGui::DragFloat3(u8"サイズ", (float*)m_vScale);
+	ImGui::DragFloat3(u8"角度", (float*)&m_vRot);
+	ImGui::DragFloat3(u8"サイズ", (float*)&m_vScale);
 	
 	//UpdateWorldMatrix();
 }

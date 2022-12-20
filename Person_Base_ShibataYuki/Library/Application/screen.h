@@ -38,22 +38,20 @@ namespace MySpace
 			static inline void SetSize(float x, float y) { m_fWidth = x; m_fHeight = y; SetScreenMatrix(m_fWidth, m_fHeight); };
 			
 			// *@スクリーン行列更新
-			static void SetScreenMatrix(float width,float height)
+			static void SetScreenMatrix(float width, float height)
 			{
 				m_mtxScreen = Matrix4x4(
-					width / 2, 0.0f, 0.0f, 0.0f,
-					0.0f, -height / 2, 0.0f, 0.0f,
-					width / 2, 0.0f, 1.0f, 0.0f,
-					width / 2, height / 2, 0.0f, 1.0f
+					width / 2,	0.0f,		 0.0f, 0.0f,
+					0.0f,		-height / 2, 0.0f, 0.0f,
+					width / 2,	0.0f,		 1.0f, 0.0f,
+					width / 2,	height / 2,	 0.0f, 1.0f
 				);
 			}
 
 			// *@3D座標からスクリーン座標へ
 			static Vector2 ConvertWorldToScreen(Vector3 pos)
 			{
-				//Vector2 ret;
 				auto vector = DirectX::XMVectorSet(pos.x, pos.y, pos.z, 1.0f);
-				//DirectX::XMStoreFloat3(&ret, DirectX::XMVector3Transform(vector, DirectX::XMLoadFloat4x4(&m_mtxScreen)));
 				auto xy = DirectX::XMVector3Transform(vector, DirectX::XMLoadFloat4x4(&m_mtxScreen));
 
 				return Vector2(xy.m128_f32[0], xy.m128_f32[1]);
