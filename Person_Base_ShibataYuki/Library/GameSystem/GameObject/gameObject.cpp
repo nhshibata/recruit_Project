@@ -32,7 +32,7 @@ using namespace MySpace::Game;
 static inline void CheckObj(CGameObject* obj)
 {
 	auto name = obj->GetName();
-	auto tag = obj->GetTagPtr()->IDToTag();
+	auto tag = obj->GetTagPtr()->GetTag();
 }
 #endif // _DEBUG
 
@@ -71,14 +71,16 @@ CGameObject::CGameObject(const CGameObject & object)
 		// コンポーネントを保存しているｸﾗｽに追加してもらう
 		if (CComponentFactory::ObjSetComponent(*this, component->GetName()))
 		{
-			//// 最後尾に追加されているコンポーネントを取得
+			// 最後尾に追加されているコンポーネントを取得
 			//auto com = this->GetComponentList().back();
-			////com->Init();
+			//com->Init();
 		}
 	}
 }
 CGameObject::~CGameObject()
 {
+	for (auto & com : m_pComponent)
+		com.reset();
 	m_pComponent.clear();
 }
 void CGameObject::OnLoad()

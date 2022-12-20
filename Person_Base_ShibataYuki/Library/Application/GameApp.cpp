@@ -27,6 +27,7 @@
 
 #include <DebugSystem/imguiManager.h>
 #include <DebugSystem/typeSaveManager.h>
+
 #include <CoreSystem/Input/input.h>
 #include <CoreSystem/Sound/Sound.h>
 #include <CoreSystem/FuncPtr/funcPtrManager.h>
@@ -54,6 +55,10 @@ void CGameApp::Init(Application* app)
 	CDXDevice::Create();
 	auto pDX = CDXDevice::Get();
 	pDX->Init(hWnd, (unsigned int)CScreen::GetWidth(), (unsigned int)CScreen::GetHeight());
+	
+	/*auto dx = app->AddSystem<CDXDevice>();
+	dx->SetApp(app);*/
+
 	//--- 変数宣言
 	auto pD = pDX->GetDevice();
 	auto pDc = pDX->GetDeviceContext();
@@ -162,11 +167,6 @@ void CGameApp::Uninit(Application* app)const
 // 通常更新
 void CGameApp::Run(Application* app)
 {
-	{
-		auto ooo = CTagManager::Get()->GetNameList();
-		auto aoo = CTagManager::Get()->IDToTag(1);
-	}
-
 	// 音更新
 	CSound::Update();
 

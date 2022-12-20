@@ -20,10 +20,10 @@ namespace MySpace
 		float CScreen::m_fWidth = SCREEN_WIDTH;
 		float CScreen::m_fHeight = SCREEN_HIGHT;
 		Matrix4x4 CScreen::m_mtxScreen = Matrix4x4(
-			SCREEN_WIDTH / 2, 0.0f, 0.0f, 0.0f,
-			0.0f, -SCREEN_HIGHT / 2, 0.0f, 0.0f,
-			SCREEN_WIDTH / 2, 0.0f, 1.0f, 0.0f,
-			SCREEN_WIDTH / 2, SCREEN_HIGHT / 2, 0.0f, 1.0f
+			SCREEN_WIDTH / 2,	0.0f,				0.0f, 0.0f,
+			0.0f,				-SCREEN_HIGHT / 2,	0.0f, 0.0f,
+			SCREEN_WIDTH / 2,	0.0f,				1.0f, 0.0f,
+			SCREEN_WIDTH / 2,	SCREEN_HIGHT / 2,	0.0f, 1.0f
 		);
 	}
 }

@@ -45,13 +45,7 @@ namespace AI
 	{
 		//--- 構造体定義
 #pragma region Struct
-	public:
-		struct NodeData		// ノードが持つﾃﾞｰﾀ
-		{
-			Vector3 pos;
-			bool close = false;
-			std::vector<NodeData*> surrounding;
-		};
+	
 	private:
 		struct Obstacle		// 障害物ﾃﾞｰﾀ
 		{
@@ -69,6 +63,13 @@ namespace AI
 			// 演算子のオーバーロード
 			bool operator==(Point other) { return x == other.x && y == other.y; }
 			bool operator!=(Point other) { return !(*this == other); }
+		};
+	public:
+		struct NodeData		// ノードが持つﾃﾞｰﾀ
+		{
+			Vector3 pos;
+			bool close = false;
+			std::vector<int> surrounding;
 		};
 #pragma endregion
 
@@ -89,16 +90,12 @@ namespace AI
 		float m_fMargin;						// グリッド毎の差
 		int m_nGrid;							// グリッド縦横
 
-#if DEBUG_POINT_DRAW
-		std::shared_ptr<CSphere> m_pDebugSphere;
-		std::vector<std::shared_ptr<CBox>> m_aDebugBox;
-		std::vector<int> m_aDebugRoute;
-#endif // DEBUG
-
 	private:
 		//--- ﾒﾝﾊﾞ関数
 		void AddScore(const Vector3& pos, const Vector3& size);
 
+		float CalcDist(Vector3 a, Vector3 b);
+		float CalcStepWeight(Vector3 a, Vector3 b, float height);
 	public:
 		CNavMeshBake();
 		CNavMeshBake(Vector3 pos, int grid, float margin);
@@ -107,13 +104,8 @@ namespace AI
 		void Init();
 
 		// *@ポイント情報生成呼び出し
-		// *@引き数:線分の始点、終点
-		void Bake(const float startPos, const float endPos);
-		
-#if DEBUG_POINT_DRAW
-		// *@ポイント描画
-		void Draw();
-#endif // DEBUG_POINT_DRAW
+		// *@引き数:線分の始点, 終点, 歩ける高さ
+		void Bake(const float startPos, const float endPos, const float wayHeight = 2.0f);
 
 		// *@中心座標
 		inline void SetPos(Vector3 pos) { m_vCenter = pos; }
@@ -162,6 +154,9 @@ namespace AI
 		// *@マップﾃﾞｰﾀからルートを構築
 		MapRoute GetRoute(Vector3 start, Vector3 end, AIMapOperator&& op);
 
+		// *@マップﾃﾞｰﾀからルートを構築
+		MapRoute GetRoute(Vector3 start, Vector3 end, float height);
+
 		// *@障害物設置
 		void SetObstacle(Vector3 pos, Vector3 size) { m_aObstacle.push_back(Obstacle(pos, size)); }
 
@@ -171,6 +166,19 @@ namespace AI
 
 #endif // 0
 		
+#if DEBUG_POINT_DRAW
+	private:
+		std::shared_ptr<CSphere> m_pDebugSphere;
+		std::vector<std::shared_ptr<CBox>> m_aDebugBox;
+		std::vector<int> m_aDebugRoute;
+		Vector3 m_vDebugStart;
+		Vector3 m_vDebugEnd;
+		Vector2 m_vLine = Vector2(1000, -1000);
+
+	public:
+		// *@ポイント描画
+		void Draw();
+#endif // DEBUG_POINT_DRAW
 
 	};
 }

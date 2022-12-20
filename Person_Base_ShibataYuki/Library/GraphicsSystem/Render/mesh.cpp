@@ -430,11 +430,12 @@ void CMesh::DrawInstancing(std::vector<XMFLOAT4X4> aWorld)
 	pDeviceContext->IASetIndexBuffer(m_pIndexBuffer, DXGI_FORMAT_R32_UINT, 0);
 
 	pDeviceContext->PSSetSamplers(0, 1, &m_pSamplerState);
-	pDeviceContext->PSSetShaderResources(0, 1, nullptr);
+	//pDeviceContext->PSSetShaderResources(0, 1, NULL);
 
 	SHADER_GLOBAL cb;
 	//DirectX::XMMATRIX mtxWorld = XMLoadFloat4x4(&m_mWorld);
 	CCamera* pCamera = CCamera::GetMain();
+	if (!pCamera)return;
 	//cb.mVP = XMMatrixTranspose(mtxWorld * XMLoadFloat4x4(&pCamera->GetViewMatrix()) * XMLoadFloat4x4(&pCamera->GetProjMatrix()));
 	cb.mVP = XMMatrixTranspose(XMLoadFloat4x4(&pCamera->GetViewMatrix()) * XMLoadFloat4x4(&pCamera->GetProjMatrix()));
 	//cb.mW = XMMatrixTranspose(mtxWorld);
@@ -479,16 +480,19 @@ void CMesh::DrawInstancing(std::vector<XMFLOAT4X4> aWorld)
 
 	//--- データセット
 	D3D11_MAPPED_SUBRESOURCE pData;
-	int cnt = 0;
-	if (cnt < aWorld.size())
+	int cntNum = 0;
+	while (cntNum < aWorld.size())
 	{
+		int cnt = 0;
 		if (SUCCEEDED(pDeviceContext->Map(m_pConstantBufferI, 0, D3D11_MAP_WRITE_DISCARD, 0, &pData)))
 		{
 			SHADER_MESH_INSTANCING si;
-			// 本来ここで抜ける
-			for (; cnt < aWorld.size(); ++cnt)
+			
+			for (; cnt < 1024; ++cnt, ++cntNum)
 			{
-				si.mWorld[cnt] = XMMatrixTranspose(XMLoadFloat4x4(&aWorld[cnt]));
+				if (cnt >= aWorld.size() || cntNum >= aWorld.size())
+					break;
+				si.mWorld[cnt] = XMMatrixTranspose(XMLoadFloat4x4(&aWorld[cntNum]));
 			}
 			memcpy_s(pData.pData, pData.RowPitch, (void*)&si, sizeof(SHADER_MESH_INSTANCING));
 			pDeviceContext->Unmap(m_pConstantBufferI, 0);
@@ -496,7 +500,10 @@ void CMesh::DrawInstancing(std::vector<XMFLOAT4X4> aWorld)
 		pDeviceContext->VSSetConstantBuffers(1, 1, &m_pConstantBufferI);
 
 		// ポリゴンの描画
-		pDeviceContext->DrawIndexedInstanced(static_cast<UINT>(m_nNumIndex), static_cast<UINT>(aWorld.size()), 0, 0, 0);
+		if(aWorld.size() > 1024)
+			pDeviceContext->DrawIndexedInstanced(static_cast<UINT>(m_nNumIndex), static_cast<UINT>(cnt), 0, 0, 0);
+		else
+			pDeviceContext->DrawIndexedInstanced(static_cast<UINT>(m_nNumIndex), static_cast<UINT>(aWorld.size()), 0, 0, 0);
 	}
 }
 

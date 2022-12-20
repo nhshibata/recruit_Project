@@ -111,17 +111,7 @@ namespace MySpace
 			void UpdateMatrix();
 			DirectX::XMFLOAT4X4& CalcWorldMatrix();
 
-			inline void SetPos(DirectX::XMFLOAT3& vPos) { Transform()->SetPos(vPos); }
-			inline void SetPos(float x, float y, float z) { Transform()->SetPos(Vector3(x, y, z)); }
-			inline void SetTarget(DirectX::XMFLOAT3& vTarget) { m_vTarget = vTarget; }
-			inline void SetTarget(float x, float y, float z) { m_vTarget.x = x, m_vTarget.y = y, m_vTarget.z = z; }
-			inline void SetUpVector(DirectX::XMFLOAT3& vUp) { m_vUp = vUp; }
-			inline void SetUpVector(float x, float y, float z) { m_vUp.x = x, m_vUp.y = y, m_vUp.z = z; }
-			inline void SetWorldMatrix(DirectX::XMFLOAT4X4& mtxWorld);
-			inline void SetFovY(float fFovY) { m_fFovY = fFovY; }
-			inline void SetAspectRatio(float fAspect) { m_fAspectRatio = fAspect; }
-			inline void SetRangeZ(float fNearZ, float fFarZ) { m_fNearZ = fNearZ, m_fFarZ = fFarZ; }
-
+			//--- ゲッター・セッター
 			inline DirectX::XMFLOAT3& GetPos() { return m_vPos; }
 			inline DirectX::XMFLOAT3 GetUpVector() { return m_vUp; }
 			inline DirectX::XMFLOAT3 GetTarget() { return m_vTarget; }
@@ -137,12 +127,26 @@ namespace MySpace
 			inline DirectX::XMMATRIX GetWorldMatrix(int no) { return DirectX::XMLoadFloat4x4(&m_mtxWorld); }
 			inline DirectX::XMMATRIX GetLookAtMatrix() { return DirectX::XMLoadFloat4x4(&m_mtxView); };
 			inline DirectX::XMMATRIX GetProjectionMatrix() { return DirectX::XMLoadFloat4x4(&m_mtxProj); };
+			static inline CCamera* GetMain() { if (!m_pMainCamera.lock())return nullptr; return m_pMainCamera.lock().get(); };
+			static inline std::weak_ptr<CCamera> GetMain(int) { return m_pMainCamera.lock(); };
 			
-			// 視錘台（当たり判定)
+			inline void SetPos(DirectX::XMFLOAT3& vPos) { Transform()->SetPos(vPos); }
+			inline void SetPos(float x, float y, float z) { Transform()->SetPos(Vector3(x, y, z)); }
+			inline void SetTarget(DirectX::XMFLOAT3& vTarget) { m_vTarget = vTarget; }
+			inline void SetTarget(float x, float y, float z) { m_vTarget.x = x, m_vTarget.y = y, m_vTarget.z = z; }
+			inline void SetUpVector(DirectX::XMFLOAT3& vUp) { m_vUp = vUp; }
+			inline void SetUpVector(float x, float y, float z) { m_vUp.x = x, m_vUp.y = y, m_vUp.z = z; }
+			inline void SetWorldMatrix(DirectX::XMFLOAT4X4& mtxWorld);
+			inline void SetFovY(float fFovY) { m_fFovY = fFovY; }
+			inline void SetAspectRatio(float fAspect) { m_fAspectRatio = fAspect; }
+			inline void SetRangeZ(float fNearZ, float fFarZ) { m_fNearZ = fNearZ, m_fFarZ = fFarZ; }
+			inline void SetMain(std::weak_ptr<CCamera> ptr) { m_pMainCamera = ptr; }
+
+			// *@視錘台（当たり判定)
 			EFrustumResult CollisionViewFrustum(XMFLOAT3* pCenter, float fRadius);
 			
-			// スクリーン座標を3D座標へ変換
-			inline Vector3 ConvertScreenToWorld(Vector2 pos)
+			// *@スクリーン座標を3D座標へ変換
+			Vector3 ConvertScreenToWorld(Vector2 pos)
 			{
 				Vector3 ret;
 				D3D11_VIEWPORT& vp = *MySpace::Graphics::CDXDevice::Get()->GetViewPort();
@@ -160,12 +164,6 @@ namespace MySpace
 				));
 				return ret;
 			}
-
-			// セッター・ゲッター
-			inline static CCamera* GetMain() { return m_pMainCamera.lock().get(); };
-			inline static std::weak_ptr<CCamera> GetMain(int) { return m_pMainCamera.lock(); };
-
-			inline void SetMain(std::weak_ptr<CCamera> ptr) { m_pMainCamera = ptr; }
 
 #ifdef BUILD_MODE
 

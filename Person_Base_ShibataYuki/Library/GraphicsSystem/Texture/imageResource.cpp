@@ -13,7 +13,6 @@ using namespace MySpace::Graphics;
 CImageResource::CImageResource()
 	: m_pSRV(nullptr), m_pTex(nullptr)
 {
-	//res = nullptr;
 }
 CImageResource::~CImageResource()
 {

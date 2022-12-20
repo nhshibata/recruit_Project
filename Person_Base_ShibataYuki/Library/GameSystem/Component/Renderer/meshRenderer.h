@@ -54,7 +54,7 @@ namespace MySpace
 			//--- メンバ変数
 			Vector3 m_vCenter;				// *@中心座標
 			bool m_bLightEnable;			// *@ライト有効フラグ
-			float m_fBSRadius = 1;			// *@バウンディングスフィア
+			float m_fBSRadius;			// *@バウンディングスフィア
 			int m_nStaticMode;				// *@static状態
 			CMeshMaterial m_MeshMaterial;
 
@@ -76,7 +76,8 @@ namespace MySpace
 			inline bool GetLightEnable() { return m_bLightEnable; };
 			inline Vector3 GetCenter() { return m_vCenter; }
 			Vector3 GetCenter(int n);
-			inline float GetBSRadius()const { return m_fBSRadius; };		// *@バウンディングスフィア
+			// *@バウンディングスフィア
+			float GetBSRadius();
 			inline CMeshMaterial* GetMaterial() { return &m_MeshMaterial; }
 			inline int GetStatic() { return m_nStaticMode; }
 

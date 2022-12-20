@@ -299,7 +299,6 @@ bool CGameObjectManager::DestroyObject(std::weak_ptr<CGameObject> pObj)
 	auto it = std::find(m_aGameObjList.begin(), m_aGameObjList.end(), pObj.lock());
 	if (it == m_aGameObjList.end())
 		return false;	// 配列に居ない
-	m_aGameObjList.erase(it);
 
 	// tag管理からも除外
 	auto weakMap = m_aTagMap[pObj.lock()->GetTag()];
@@ -313,6 +312,9 @@ bool CGameObjectManager::DestroyObject(std::weak_ptr<CGameObject> pObj)
 
 	// 明示的な破棄
 	pObj.lock().reset();
+
+	// 配列からの除外
+	m_aGameObjList.erase(it);
 	
 	// 監視対象が残っている想定しないエラー
 	if (pObj.lock()) 

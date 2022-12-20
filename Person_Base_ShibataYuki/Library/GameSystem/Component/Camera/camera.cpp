@@ -1,7 +1,7 @@
 //=========================================================
 // [light.cpp]
 // 作成:2022/06/27
-// 更新:2022/11/10 視覚錘修正 : 渡すワールドマトリックス間違い
+// 更新:2022/11/10 視錘台修正 : 渡すワールドマトリックス間違い
 // 
 //=========================================================
 
@@ -44,6 +44,7 @@ using namespace Camera;
 
 CCamera::CCamera()
 {
+	auto cam = m_pMainCamera.lock();
 }
 CCamera::CCamera(std::shared_ptr<CGameObject> owner)
 	:CComponent(owner),m_vPos(0,0,0),m_vTarget(1,1,1),m_vUp(0,1,0),m_vAngle(0,0,0)
@@ -233,13 +234,13 @@ void CCamera::InitFrustum()
 	float fTan = tanf(XMConvertToRadians(m_fFovY * 0.5f));
 	
 	// 上下左右前後
-	m_frus[0] = { 0.0f, -1.0f, fTan, 0.0f };
-	m_frus[1] = { 0.0f, 1.0f, fTan, 0.0f };
+	m_frus[0] = { 0.0f,  -1.0f, fTan,  0.0f };
+	m_frus[1] = { 0.0f,  1.0f,  fTan,  0.0f };
 	fTan *= m_fAspectRatio;	// アスペクト比を掛ける
-	m_frus[2] = { 1.0f, 0.0f, fTan, 0.0f };
-	m_frus[3] = { -1.0f, 0.0f, fTan, 0.0f };
-	m_frus[4] = { 0.0f, 0.0f,1.0f, -m_fNearZ };
-	m_frus[5] = { 0.0f, 0.0f,-1.0f, m_fFarZ };
+	m_frus[2] = { 1.0f,  0.0f,  fTan,  0.0f };
+	m_frus[3] = { -1.0f, 0.0f,  fTan,  0.0f };
+	m_frus[4] = { 0.0f,  0.0f,  1.0f,  -m_fNearZ };
+	m_frus[5] = { 0.0f,  0.0f,  -1.0f, m_fFarZ };
 
 	for (int cnt = 0; cnt < MAX_FRUS; ++cnt)
 	{
@@ -254,10 +255,12 @@ void CCamera::InitFrustum()
 void CCamera::UpdateFrustum()
 {
 	auto mtx = this->CalcWorldMatrix();	//Transform()->GetWorldMatrix();
-	// ｶﾒﾗの移動に伴い、視錘台をワールド変換
+	//--- ｶﾒﾗの移動に伴い、視錘台をワールド変換
 	XMMATRIX mW = XMLoadFloat4x4(&mtx);
-	// 平面をワールド空間に配置
+	// 平面をワールド空間に配置(XMPlaneTransform関数の仕様に合わせる)
+	// 逆行列
 	mW = XMMatrixInverse(nullptr, mW);
+	// 転置行列
 	mW = XMMatrixTranspose(mW);
 
 	for (int cnt = 0; cnt < MAX_FRUS; ++cnt)

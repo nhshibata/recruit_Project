@@ -55,6 +55,9 @@
     <Filter Include="ヘッダー ファイル\Sound">
       <UniqueIdentifier>{ea069cde-c574-421e-91cf-e40738246655}</UniqueIdentifier>
     </Filter>
+    <Filter Include="cereal">
+      <UniqueIdentifier>{156d80f3-78cd-48b0-9fc4-bfa9dd582dc7}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\Library\CoreSystem\FuncPtr\funcPtrManager.h">

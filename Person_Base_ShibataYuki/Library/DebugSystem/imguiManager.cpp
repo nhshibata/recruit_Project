@@ -94,6 +94,8 @@ void ImGuiManager::Init(HWND hWnd, ID3D11Device* device, ID3D11DeviceContext* co
 		CGameObject::CreateDebugObject(m_pDebugObj);
 		m_pDebugCamera = m_pDebugObj->AddComponent<CDebugCamera>();
 		m_pDebugCamera.lock()->Init();
+		m_pDebugObj->GetTransform()->SetScale({ 10, 10, 10 });
+		m_pDebugObj->GetTransform()->Update();		
 	}
 }
 // ImGuiの終了処理
@@ -212,6 +214,7 @@ void ImGuiManager::Update()
 	}
 
 	//--- ギズモ表示
+	m_pGizmo->ViewGrid(*CCamera::GetMain());
 	if (auto selectObj = m_pInspector->GetSelectObject().lock(); selectObj)
 	{
 		m_pGizmo->ViewGizmo(this, *CCamera::GetMain(), selectObj->GetTransform());
@@ -223,10 +226,10 @@ void ImGuiManager::Update()
 	}
 
 	//--- マウス状態確認
-	if(ImGui::IsDragDropPayloadBeingAccepted())
+	if (ImGui::IsDragDropPayloadBeingAccepted())
 		UpHover(EMouseHovered::HOVERED_DRAG);
 
-	if (ImGui::IsAnyItemHovered()) 
+	if (ImGui::IsAnyItemHovered())
 	{
 		UpHover(EMouseHovered::HOVERED_ITEM);
 	}
@@ -240,13 +243,20 @@ void ImGuiManager::Update()
 		if (m_pDebugCamera.lock())
 			m_pDebugCamera.lock()->Update();
 	}
-	int res = 0;
-	for (int cnt = 1; cnt < sizeof(EMouseHovered) ; cnt++)
+
+	if (ImGui::BeginTabItem("ImGui"))
 	{
-		res += m_eHover & (1 << cnt) ? 1 : 0;
-		res *= 10;
+		int res = 0;
+		for (int cnt = 1; cnt < sizeof(EMouseHovered); cnt++)
+		{
+			res += m_eHover & (1 << cnt) ? 1 : 0;
+			res *= 10;
+		}
+		ImGui::Text("Hover->%d", res);
+		//m_pDebugCamera.lock()->Transform()->Update();
+		//m_pDebugCamera.lock()->Transform()->ImGuiDebug();
+		ImGui::EndTabItem();// とじる
 	}
-	ImGui::Text("Hover->%d", res);
 
 	//--- ログ表示
 	DispLog();

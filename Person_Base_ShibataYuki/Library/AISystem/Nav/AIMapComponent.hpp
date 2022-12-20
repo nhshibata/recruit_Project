@@ -1,6 +1,7 @@
 #ifndef __AI_MAP_COMPONENT_H__
 #define __AI_MAP_COMPONENT_H__
 
+//--- インクルード部
 #include <AISystem/Nav/AIMap.h>
 #include <AISystem/Nav/navMeshBake.h>
 
@@ -26,18 +27,19 @@ public:
 	float Operator(Vector3 pos, void* data) final
 	{
 		//AIPoint* point = reinterpret_cast<AIPoint*>(data);
+		// キャスト
 		AI::CNavMeshBake::NodeData* point = reinterpret_cast<AI::CNavMeshBake::NodeData*>(data);
 
 		float nor1, nor2;
-		Vector3 vec = MINUS(m_start, pos);
-		vec = MULTI_KARIB(vec, 0.05f);
+		Vector3 vec = m_start - pos;
+		vec = vec * 0.05f;
 		DirectX::XMVECTOR m_vec1;
 		m_vec1 = DirectX::XMLoadFloat3(&vec);
 		m_vec1 = DirectX::XMVector3Normalize(m_vec1);
 		DirectX::XMStoreFloat(&nor1, m_vec1);
 
-		vec = MINUS(m_target, pos);
-		vec = MULTI_KARIB(vec, 0.95f);
+		vec = m_target - pos;
+		vec = vec * 0.95f;
 		DirectX::XMVECTOR m_vec2;
 		m_vec2 = DirectX::XMLoadFloat3(&vec);
 		m_vec2 = DirectX::XMVector3Normalize(m_vec2);

@@ -59,6 +59,7 @@ namespace MySpace
 			void Init();
 			void ViewGizmo(MySpace::Debug::ImGuiManager* manager, const CCamera& camera, CTransform* editObj);
 			void EditTransform(MySpace::Debug::ImGuiManager* manager);
+			void ViewGrid(const CCamera& camera);
 		};
 	}
 }

@@ -11,24 +11,34 @@
 
 #include <vector>
 
+#pragma region ForwardDeclaration
+class Application;
+#pragma endregion
+
+
 namespace MySpace
 {
 	namespace System
 	{
 		//--- クラス定義
 		// 型変換のためだけのｸﾗｽ
-		//class CBase
-		//{
-		//public:
-		//	void operator=(CBase) = delete;
+		class CBase
+		{
+		private:
+			//--- ﾒﾝﾊﾞ変数
+			Application* m_pApp;
 
-		//	// *@解放処理
-		//	virtual void Uninit() {};
-		//};
+		public:
+			//--- メンバ関数
+			void operator=(CBase) = delete;
+
+			void SetApp(Application* app) { m_pApp = app; }
+			inline Application* GetApp() { return m_pApp; }
+		};
 
 		//--- クラス定義
 		template <class T>
-		class CSingleton /*: public CBase*/
+		class CSingleton : public CBase
 		{
 		protected:
 			CSingleton() = default;
