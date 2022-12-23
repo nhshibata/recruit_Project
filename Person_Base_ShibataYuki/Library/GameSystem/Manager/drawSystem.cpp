@@ -84,7 +84,7 @@ void CDrawSystem::Update()
 		// カリングフラグがONかも確認
 		if (auto mesh = render.lock()->BaseToDerived<CMeshRenderer>().get(); mesh && m_bFrustum)
 		{	
-			float fRadius = 0.0f;
+			float fRadius = mesh->GetBSRadius();
 			auto mW = mesh->Transform()->GetWorldMatrix();
 			fRadius = (mW._11 > fRadius) ? mW._11 : fRadius;
 			fRadius = (mW._22 > fRadius) ? mW._22 : fRadius;

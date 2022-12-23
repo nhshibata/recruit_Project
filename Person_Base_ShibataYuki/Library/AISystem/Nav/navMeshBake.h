@@ -70,6 +70,7 @@ namespace AI
 			Vector3 pos;
 			bool close = false;
 			std::vector<int> surrounding;
+			std::map<int, float> aHeightMap;
 		};
 #pragma endregion
 
@@ -96,6 +97,7 @@ namespace AI
 
 		float CalcDist(Vector3 a, Vector3 b);
 		float CalcStepWeight(Vector3 a, Vector3 b, float height);
+
 	public:
 		CNavMeshBake();
 		CNavMeshBake(Vector3 pos, int grid, float margin);
@@ -173,8 +175,11 @@ namespace AI
 		std::vector<int> m_aDebugRoute;
 		Vector3 m_vDebugStart;
 		Vector3 m_vDebugEnd;
+		float m_fDebugHeight = (1.0f);
 		Vector2 m_vLine = Vector2(1000, -1000);
 
+	private:
+		bool IsRoute(int idx);
 	public:
 		// *@ƒ|ƒCƒ“ƒg•`‰æ
 		void Draw();

@@ -55,6 +55,7 @@ ImGuiManager::ImGuiManager()
 	m_bOneFlame = false;
 	m_bEditFlg = true;
 	m_bSceneRender = false;
+	m_bGridDisp = false;
 }
 // オーナーのデバッグフラグ確認
 bool ImGuiManager::CheckPlayMode()
@@ -214,7 +215,8 @@ void ImGuiManager::Update()
 	}
 
 	//--- ギズモ表示
-	m_pGizmo->ViewGrid(*CCamera::GetMain());
+	if(m_bGridDisp)
+		m_pGizmo->ViewGrid(*CCamera::GetMain());
 	if (auto selectObj = m_pInspector->GetSelectObject().lock(); selectObj)
 	{
 		m_pGizmo->ViewGizmo(this, *CCamera::GetMain(), selectObj->GetTransform());
@@ -253,6 +255,8 @@ void ImGuiManager::Update()
 			res *= 10;
 		}
 		ImGui::Text("Hover->%d", res);
+		ImGui::Checkbox("Grid", &m_bGridDisp);
+
 		//m_pDebugCamera.lock()->Transform()->Update();
 		//m_pDebugCamera.lock()->Transform()->ImGuiDebug();
 		ImGui::EndTabItem();// とじる

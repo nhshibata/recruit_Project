@@ -20,13 +20,13 @@ namespace
 // コンストラクタ
 CRigidbody::CRigidbody()
 	:m_bGravity(true), m_bIsSleep(false), m_fGravity(-GRAVITY), m_fResistance(1), m_fMass(1),
-	m_vAccel(0, 0, 0), m_vTargetPos(1, 1, 1), m_vVel(0, 0, 0)
+	m_vAccel(0, 0, 0), m_vTargetPos(1, 1, 1), m_vVel(0, 0, 0), m_vForce(0, 0, 0)
 {
 
 }
 CRigidbody::CRigidbody(std::shared_ptr<CGameObject> owner)
 	:CComponent(owner), m_bGravity(true), m_bIsSleep(false), m_fGravity(-GRAVITY), m_fResistance(1), m_fMass(1),
-	m_vAccel(0,0,0),m_vTargetPos(0,0,0),m_vVel(0,0,0)
+	m_vAccel(0,0,0),m_vTargetPos(0,0,0),m_vVel(0,0,0),m_vForce(0,0,0)
 {
 
 }
@@ -38,15 +38,22 @@ void CRigidbody::Update()
 {
 	Vector3 pos = GetOwner()->GetTransform()->GetPos();
 	Vector3 oldPos = GetOwner()->GetTransform()->GetOldPos();
-	Vector3 vel = m_vVel;
 	Vector3 rot = GetOwner()->GetTransform()->GetRot();
 
 	// 重力を与える
 	if (m_bGravity)
 	{
-		m_fResistance = std::clamp(m_fResistance, 0.f, 1.f);
-		vel *= (1.0f - m_fResistance);
-		vel.y += m_fGravity;
+		//m_fResistance = std::clamp(m_fResistance, 0.f, 1.f);
+		//m_vVel *= (1.0f - m_fResistance);
+		//m_vVel.y += m_fGravity * CFps::Get()->DeltaTime();
+
+		{
+			m_vForce.y += m_fGravity * CFps::Get()->DeltaTime();
+			Vector3 vec = m_vForce / m_fMass;
+			m_vVel += vec * CFps::Get()->DeltaTime();
+			pos += m_vVel * CFps::Get()->DeltaTime();
+
+		}
 	}
 
 	// 位置固定
@@ -56,7 +63,6 @@ void CRigidbody::Update()
 	m_pFreezRot.Fix(rot);
 
 	GetOwner()->GetTransform()->SetPos(pos);
-	m_vVel = vel;
 	GetOwner()->GetTransform()->SetRot(rot);
 
 	// 動いたか動いてないか

@@ -244,10 +244,12 @@ void CInspector::DispPopUpMenuObject()
 				open = false;
 			break;
 		case -1:
-			/*if (ImGui::IsMouseClicked(ImGuiMouseButton_::ImGuiMouseButton_Left) && !ImGui::IsItemHovered())
-				open = false;*/
+			if (ImGui::IsMouseClicked(ImGuiMouseButton_::ImGuiMouseButton_Left))
+				open = false;
 			break;
 		default:
+			if (ImGui::IsMouseClicked(ImGuiMouseButton_::ImGuiMouseButton_Left))
+				open = false;
 			break;
 	}
 }
