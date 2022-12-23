@@ -89,6 +89,7 @@ namespace MySpace
 
 			Vector3 m_vTargetPos;		// 目標座標
 			Vector3 m_vVel;				// 移動量
+			Vector3 m_vForce;			// 力
 			Vector3 m_vAccel;			// 加速
 			FixedVector3 m_pFreezPos;	// 座標固定
 			FixedVector3 m_pFreezRot;	// 回転固定
@@ -112,9 +113,11 @@ namespace MySpace
 			// 位置・角度固定
 			void SetFreezPos(const bool x, const bool y, const bool z);
 			void SetFreezRot(const bool x, const bool y, const bool z);
+			inline void SetForce(Vector3 value) { m_vForce = value; }
 
 			_NODISCARD inline bool UseGravity() { return m_bGravity; }
 			_NODISCARD inline bool IsSleeping() { return m_bIsSleep; }
+			inline void AddForce(Vector3 add) { m_vForce += add; }
 
 #ifdef BUILD_MODE
 

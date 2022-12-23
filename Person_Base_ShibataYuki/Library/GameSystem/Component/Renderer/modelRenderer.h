@@ -78,6 +78,7 @@ namespace MySpace
 
 			// *@線分との当たり判定
 			bool CollisionLineSegment(XMFLOAT3 vP0, XMFLOAT3 vP1, XMFLOAT3* pX = nullptr, XMFLOAT3* pN = nullptr);
+			bool CollisionLineSegment(XMFLOAT3 vP0, XMFLOAT3 vP1, std::vector<Vector3>* pX);
 
 			//--- ゲッター・セッター
 			inline void SetModel(ModelSharedPtr model) { m_pModel = model; /*m_modelName = model.lock()->GetFileName();*/ }

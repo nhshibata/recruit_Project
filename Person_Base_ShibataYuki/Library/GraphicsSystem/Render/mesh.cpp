@@ -521,3 +521,4 @@ void CMesh::SetMaterial(const CMeshMaterial* pMaterial)
 		m_material.m_Emissive = M_EMISSIVE;
 	}
 }
+

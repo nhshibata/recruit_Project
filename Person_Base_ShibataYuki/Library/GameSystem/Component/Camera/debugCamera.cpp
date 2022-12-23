@@ -13,14 +13,13 @@
 
 using namespace MySpace::Game;
 using namespace MySpace::System;
-//using namespace MySpace::SceneManager;
 
 CDebugCamera::CDebugCamera()
-	:m_eMode(ECameraMode::CAM_MODE_NONE), m_oldMousePos({ 0 }), m_bMouse(true)
+	:m_eMode(ECameraMode::CAM_MODE_NONE), m_oldMousePos({ LONG(0),LONG(0) }), m_bMouse(true)
 {
 }
 CDebugCamera::CDebugCamera(std::shared_ptr<CGameObject> owner)
-	:CCamera(owner), m_eMode(ECameraMode::CAM_MODE_NONE), m_oldMousePos({0}), m_bMouse(true)
+	: CCamera(owner), m_eMode(ECameraMode::CAM_MODE_NONE), m_oldMousePos({LONG(0),LONG(0)}), m_bMouse(true)
 {
 }
 CDebugCamera::~CDebugCamera()
@@ -105,29 +104,27 @@ void CDebugCamera::CameraMouseMove(int x, int y)
 {
 	// カメラを動かす状態か確認
 	if (m_eMode == ECameraMode::CAM_MODE_NONE)
-	{
-		// マウスの座標更新
-		m_oldMousePos.x = x;
-		m_oldMousePos.y = y;
 		return;
-	}
+
 	// マウスの移動量
-	float mouseMoveX = x - (float)m_oldMousePos.x;
-	float mouseMoveY = y - (float)m_oldMousePos.y;
+	float mouseMoveX = (float)x - (float)m_oldMousePos.x;
+	float mouseMoveY = (float)y - (float)m_oldMousePos.y;
+	// マウスの座標更新
+	m_oldMousePos.x = x;
+	m_oldMousePos.y = y;
 
 #if 1
 	Vector3 pos = CCamera::GetPos();
 	XMVECTOR vPos = XMVectorSet(pos.x, pos.y, pos.z, 0.0f);
 	XMVECTOR vLook = XMVectorSet(m_vTarget.x, m_vTarget.y, m_vTarget.z, 0.0f);
 	XMVECTOR vFront = XMVectorSubtract(vLook, vPos);
-	XMVECTOR vUp = XMVectorSet(m_vUp.x, m_vUp.y, m_vUp.z, 0.0f);
+	XMVECTOR vUp = XMVector3Normalize(XMLoadFloat3(&m_vUp));
 	XMVECTOR side;
 	float focus = 0.0f;
 
 	XMStoreFloat(&focus, XMVector3Length(vFront));
 	// 正規化
 	vFront = XMVector3Normalize(vFront);
-	vUp = XMVector3Normalize(vUp);
 	side = XMVector3Normalize(XMVector3Cross(vUp, vFront));
 	vUp = XMVector3Normalize(XMVector3Cross(vFront, side));
 
@@ -144,12 +141,18 @@ void CDebugCamera::CameraMouseMove(int x, int y)
 
 		XMVECTOR rotPos = XMVectorSubtract(vPos, vLook);
 		XMMATRIX rotY = XMMatrixRotationY(XMConvertToRadians(angleX));
-		XMVECTOR rotAxis = XMVector3TransformCoord(side, rotY);
+		XMVECTOR rotAxis = XMVector3Normalize(XMVector3TransformCoord(side, rotY));
+		
 		XMMATRIX rotX = XMMatrixRotationAxis(rotAxis, XMConvertToRadians(angleY));
+		DirectX::XMVECTOR vRelative = DirectX::XMVectorScale(vFront, focus);
+		vRelative = XMVector3TransformCoord(vRelative, rotY * rotX);
+
 		// 注視点を原点として回転
-		rotPos = DirectX::XMVector3TransformCoord(rotPos, rotY);
+		/*rotPos = DirectX::XMVector3TransformCoord(rotPos, rotY);
 		rotPos = DirectX::XMVector3TransformCoord(rotPos, rotX);
-		DirectX::XMStoreFloat3(&pos, DirectX::XMVectorAdd(rotPos, vLook));
+		DirectX::XMStoreFloat3(&pos, DirectX::XMVectorAdd(rotPos, vLook));*/
+		// 座標更新
+		DirectX::XMStoreFloat3(&GetPos(), DirectX::XMVectorSubtract(vLook, vRelative));
 
 		// アップベクトルを計算
 		vUp = DirectX::XMVector3Cross(
@@ -160,21 +163,28 @@ void CDebugCamera::CameraMouseMove(int x, int y)
 	case ECameraMode::CAM_MODE_TRACK:
 	{
 		float farZ = GetFarZ() / 1000;
-		float rate = focus / farZ;
-		float aspect = GetAspect();
+
 		// 底辺A、高さBとする三角形について tanΘ = A / Bが成り立つ
 		// 上記式をもとに割り出した遠景の移動量と、フォーカス位置 / 遠景 の比率から、カメラの移動量を求める
-		float farMoveX = tanf(DirectX::XM_PI / 6.0f) * farZ * -mouseMoveX * aspect / (CScreen::GetWidth() * 0.5f);
-		float farMoveY = tanf(DirectX::XM_PI / 6.0f) * farZ *  mouseMoveY / (CScreen::GetHeight() * 0.5f);
+		float farScreenHeight = tanf(GetFOV() * 0.5f) * farZ;
+		float farMoveX = -farScreenHeight * mouseMoveX / (CScreen::GetWidth() * 0.5f) * GetAspect();
+		float farMoveY =  farScreenHeight * mouseMoveY / (CScreen::GetHeight() * 0.5f);
+		
 		// 姿勢行列をもとにカメラを移動
-		DirectX::XMVECTOR vMove = DirectX::XMVectorAdd(DirectX::XMVectorScale(side, farMoveX * rate), DirectX::XMVectorScale(vUp, farMoveY * rate));
+		float rate = focus / farZ;
+		DirectX::XMVECTOR vMove = XMVectorZero();
+		vMove = DirectX::XMVectorAdd(vMove, DirectX::XMVectorScale(side, farMoveX * rate));
+		vMove = DirectX::XMVectorAdd(vMove, DirectX::XMVectorScale(vUp, farMoveY * rate));
+
 		DirectX::XMStoreFloat3(&pos, DirectX::XMVectorAdd(vPos, vMove));
 		DirectX::XMStoreFloat3(&m_vTarget, DirectX::XMVectorAdd(vLook, vMove));
 	break;
 	}
 	case ECameraMode::CAM_MODE_DOLLY:
 	{
-		XMStoreFloat3(&pos, DirectX::XMVectorAdd(vPos, DirectX::XMVectorScale(vFront, focus * mouseMoveY * 0.01f)));
+		float farZ = GetFarZ() / 1000;
+		float rate = focus / farZ;
+		XMStoreFloat3(&pos, DirectX::XMVectorAdd(vPos, DirectX::XMVectorScale(vFront, farZ * 0.01f * rate * (mouseMoveY + mouseMoveX))));
 	break;
 	}
 	default:

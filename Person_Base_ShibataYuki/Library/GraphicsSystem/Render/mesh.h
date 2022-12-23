@@ -136,6 +136,7 @@ namespace MySpace
 			// *@CMesh一つで複数描画したい用
 			void DrawInstancing(std::vector<XMFLOAT4X4> aWorld);
 
+
 			//--- ゲッター・セッター
 			inline CMeshMaterial* GetMaterial() { return &m_material; }
 			inline int GetIndexNum()const { return m_nNumIndex; }

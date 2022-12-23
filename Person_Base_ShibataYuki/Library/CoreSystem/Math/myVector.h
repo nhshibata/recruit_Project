@@ -396,6 +396,29 @@ namespace MySpace
 				_41 = 0.0f; _42 = 0.0f; _43 = 0.0f; _44 = 1.0f;
 				return *this;
 			};
+
+			Matrix4x4 CalcWorld(Vector3 pos, Vector3 center = Vector3(0, 0, 0))
+			{
+				Matrix4x4 mtx = *this;
+				mtx._41 = pos.x;
+				mtx._42 = pos.y;
+				mtx._43 = pos.z;
+
+				XMVECTOR vCenter = XMLoadFloat3(&center);
+				XMMATRIX mWorld = XMLoadFloat4x4(&mtx);
+				vCenter = XMVector3TransformCoord(vCenter, mWorld);
+				mWorld = XMMatrixTranslationFromVector(vCenter);
+				XMStoreFloat4x4(&mtx, mWorld);
+				return mtx;
+			}
+
+			Matrix4x4 Multiply(Matrix4x4 a)
+			{
+				auto newMtx = XMMatrixMultiply(XMLoadFloat4x4(&*this), XMLoadFloat4x4(&a));
+				Matrix4x4 ret;
+				XMStoreFloat4x4(&ret, newMtx);
+				return ret;
+			}
 		};
 
 		class Quaternion : public XMFLOAT4

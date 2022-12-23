@@ -88,7 +88,8 @@ namespace MySpace
 			bool m_bPause;								// ポーズ
 			bool m_bOneFlame;							// 1フレーム進行
 			bool m_bEditFlg;							// 編集フラグ
-			
+			bool m_bGridDisp;
+
 			EMouseHovered m_eHover;						// マウス等選択中か列挙体(bit)
 			bool m_bSceneRender;						// シーンレンダーフラグ
 			MapString m_aDebugMap;						// デバッグログ用map
