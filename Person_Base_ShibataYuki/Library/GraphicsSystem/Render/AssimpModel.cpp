@@ -565,7 +565,7 @@ void CAssimpMesh::Draw(ID3D11DeviceContext* pDC, XMFLOAT4X4& m44World, EByOpacit
 		sg.mVP = XMMatrixTranspose(sg.mVP);
 
 		sg.vEye = XMLoadFloat3(&pCamera->GetPos());
-		CDirectionalLight* pLight = dynamic_cast<CDirectionalLight*>(CLight::Get());
+		CDirectionalLight* pLight = dynamic_cast<CDirectionalLight*>(CLight::GetMain());
 		sg.vLightDir = XMLoadFloat3(&pLight->GetDir());
 		sg.vLd = XMLoadFloat4(&pLight->GetDiffuse());
 		sg.vLa = XMLoadFloat4(&pLight->GetAmbient());
@@ -661,7 +661,7 @@ void CAssimpMesh::DrawInstanchid(ID3D11DeviceContext* pDC, XMFLOAT4X4& m44World,
 		sg.mVP = XMMatrixTranspose(sg.mVP);
 
 		sg.vEye = XMLoadFloat3(&pCamera->GetPos());
-		CDirectionalLight* pLight = dynamic_cast<CDirectionalLight*>(CLight::Get());
+		CDirectionalLight* pLight = dynamic_cast<CDirectionalLight*>(CLight::GetMain());
 		sg.vLightDir = XMLoadFloat3(&pLight->GetDir());
 		sg.vLd = XMLoadFloat4(&pLight->GetDiffuse());
 		sg.vLa = XMLoadFloat4(&pLight->GetAmbient());
@@ -786,8 +786,8 @@ bool CAssimpModel::InitShader(ID3D11Device* pDevice)
 	//cb_sg->Make(sizeof(SHADER_GLOBAL_POLYGON), 0, CConstantBuffer::EType::Vertex);
 
 	//CShaderManager::Get()->SetConstantBuffer("SHADER_GLOBAL_POLYGON", cb_sg);
-	CShaderManager::Get()->SetPS("AssimpPixel", ps);
-	CShaderManager::Get()->SetVS("AssimpVertex", vs);
+	CShaderManager::GetMain()->SetPS("AssimpPixel", ps);
+	CShaderManager::GetMain()->SetVS("AssimpVertex", vs);
 
 #endif // 1
 
@@ -922,7 +922,7 @@ void CAssimpModel::Draw(ID3D11DeviceContext* pDC, XMFLOAT4X4& mtxWorld, EByOpaci
 #else
 	/*CShaderManager::Get()->BindPS("AssimpPixel");
 	CShaderManager::Get()->BindVS("AssimpVertex");*/
-	CShaderManager::Get()->Render(CShaderManager::EShaderType::Triangle, "", "AssimpVertex", "AssimpPixel");
+	CShaderManager::GetMain()->Render(CShaderManager::EShaderType::Triangle, "", "AssimpVertex", "AssimpPixel");
 	//pDC->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_3_CONTROL_POINT_PATCHLIST);	
 	
 	// CShaderManager::EShaderType::PointToTriangle

@@ -6,10 +6,10 @@
 
 //--- インクルード部
 #include <GraphicsSystem/Manager/shaderManager.h>
-
 #include <GraphicsSystem/Render/polygon.h>
 #include <GraphicsSystem/Shader/shader.h>
 #include <GraphicsSystem/Render/mesh.h>
+
 #include <Application/Application.h>
 #include <Application/screen.h>
 
@@ -20,7 +20,8 @@ using namespace MySpace::System;
 using namespace MySpace::Graphics;
 
 // シェーダに渡す値
-struct SHADER_GLOBAL_POLYGON {
+struct SHADER_GLOBAL_POLYGON 
+{
 	XMMATRIX	mWorld;		// ワールド変換行列(転置行列)
 	XMMATRIX	mView;		// ビュー変換行列(転置行列)
 	XMMATRIX	mProj;		// 射影変換行列(転置行列)
@@ -53,13 +54,15 @@ XMFLOAT4X4					CPolygon::m_mView;					// ビュー変換行列
 XMFLOAT4X4					CPolygon::m_mWorld;					// ワールド変換行列
 XMFLOAT4X4					CPolygon::m_mTex;					// テクスチャ変換行列
 
+//==========================================================
 // 初期化
+//==========================================================
 HRESULT CPolygon::Init(ID3D11Device* pDevice)
 {
 	HRESULT hr = S_OK;
 
 	// シェーダ初期化
-	static const D3D11_INPUT_ELEMENT_DESC layout[] = {
+	const D3D11_INPUT_ELEMENT_DESC layout[] = {
 		{"POSITION", 0, DXGI_FORMAT_R32G32B32_FLOAT,    0, 0,                            D3D11_INPUT_PER_VERTEX_DATA, 0},
 		{"COLOR",    0, DXGI_FORMAT_R32G32B32A32_FLOAT, 0, D3D11_APPEND_ALIGNED_ELEMENT, D3D11_INPUT_PER_VERTEX_DATA, 0},
 		{"TEXCOORD", 0, DXGI_FORMAT_R32G32_FLOAT,       0, D3D11_APPEND_ALIGNED_ELEMENT, D3D11_INPUT_PER_VERTEX_DATA, 0},
@@ -133,7 +136,9 @@ HRESULT CPolygon::Init(ID3D11Device* pDevice)
 	return hr;
 }
 
+//==========================================================
 // 終了処理
+//==========================================================
 void CPolygon::Fin(void)
 {
 	// テクスチャ サンプラの開放
@@ -150,7 +155,9 @@ void CPolygon::Fin(void)
 	SAFE_RELEASE(m_pVertexShader);
 }
 
+//==========================================================
 // 描画
+//==========================================================
 void CPolygon::Draw(ID3D11DeviceContext* pDeviceContext)
 {
 	// 拡縮
@@ -206,7 +213,9 @@ void CPolygon::Draw(ID3D11DeviceContext* pDeviceContext)
 	pDeviceContext->Draw(NUM_VERTEX, 0);
 }
 
+//==========================================================
 // 頂点の作成
+//==========================================================
 HRESULT CPolygon::MakeVertex(ID3D11Device* pDevice)
 {
 	// 頂点座標の設定
@@ -265,7 +274,9 @@ HRESULT CPolygon::MakeVertex(ID3D11Device* pDevice)
 	return hr;
 }
 
+//==========================================================
 // 頂点座標の設定
+//==========================================================
 void CPolygon::SetVertex(void)
 {
 	if (m_bInvalidate) {

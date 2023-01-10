@@ -7,6 +7,7 @@
 //==========================================================
 
 //--- インクルード部
+#include <Application/Application.h>
 #include <AISystem/Nav/navMeshBake.h>
 #include <AISystem/Nav/AIMapComponent.hpp>
 #include <GameSystem/Component/Renderer/modelRenderer.h>
@@ -22,14 +23,17 @@ using namespace MySpace::Game;
 using namespace MySpace::Graphics;
 using namespace MySpace::Debug;
 
+
 CNavMeshBake::CNavMeshBake() 
 	:CNavMeshBake(Vector3(0, 0, 0), 20, 10.0f)
 {
 }
+
 CNavMeshBake::CNavMeshBake(Vector3 pos, int grid, float margin)
 	:m_vCenter(pos),m_nGrid(grid),m_fMargin(margin)
 {
 }
+
 CNavMeshBake::~CNavMeshBake()
 {
 #if DEBUG_POINT_DRAW
@@ -40,6 +44,9 @@ CNavMeshBake::~CNavMeshBake()
 #endif // DEBUG_POINT_DRAW
 }
 
+//==========================================================
+// 初期化
+//==========================================================
 void CNavMeshBake::Init()
 {
 #if DEBUG_POINT_DRAW
@@ -49,20 +56,24 @@ void CNavMeshBake::Init()
 #endif // DEBUG_POINT_DRAW
 }
 
-void CNavMeshBake::Bake(const float startPosY, const float endPosY, const float wayHeight)
+//==========================================================
+// ウェイポイント計算
+//==========================================================
+void CNavMeshBake::Bake(const float startPosY, const float endPosY)
 {
 	// 3Dオブジェクト当たり判定用
 	CModelRenderer* model = nullptr;
 	const int totalGrid = m_nGrid * m_nGrid;
 	// リスト取得
 	// 外見のあるもの=当たり判定のあるものとする
-	auto aRenderList = MySpace::SceneManager::CSceneManager::Get()->GetDrawSystem()->GetList();
+	auto aRenderList = MySpace::SceneManager::CSceneManager::Get().GetDrawSystem()->GetList();
 
 	//--- グリッド位置毎に確認
 	for (int index = 0; index < totalGrid; ++ index)
 	{
 		Point point = IndexToPoint(index);
-		//Vector3 vX, vY;
+		// 受け取り用変数
+		Vector3 vX, vY;
 		// 線分の始点、終点
 		Vector3 startPos = PointToPos(point);
 		Vector3 endPos = startPos;
@@ -75,33 +86,27 @@ void CNavMeshBake::Bake(const float startPosY, const float endPosY, const float 
 		{
 			if (model = dynamic_cast<CModelRenderer*>(render.lock().get()); !model)
 				continue;
+
 			if (model->GetStatic() == 0)
 				continue;
+
 			// 当たり判定
-			//if (!model->CollisionLineSegment(startPos, endPos, &vX, &vY))
-			std::vector<Vector3> pos;
-			if (!model->CollisionLineSegment(startPos, endPos, &pos))
+			if (!model->CollisionLineSegment(startPos, endPos, &vX, &vY))
 				continue;
 
-			// 当たったものが一つ以上なら
-			if (pos.size() > 1)
+			// 既に格納済みか
+			if (m_aNavMap.count(index))
 			{
-				// 高さ順に整列
-				std::sort(pos.begin(), pos.end(), [](auto const& a, auto const& b)->bool
-				{
-					return a.y > b.y;
-				});
-				// 高さ別に分けて格納
-				for (int i = 0; i < pos.size(); i++)
-				{
-					int idx = (int)pos[i].y / wayHeight;
-					m_aNavMap[index].aHeightMap[idx] = pos[i].y;
-				}
+				// 高さが高い方を格納
+				if (m_aNavMap[index].pos.y > vX.y)
+					continue;
 			}
+			
 			// 先頭を渡す
-			m_aNavMap[index].pos = pos.front();
+			m_aNavMap[index].pos = vX;
 		}
 	}
+
 	//--- 通行不可エリアの取得
 	for (auto & obs : m_aObstacle)
 	{
@@ -144,211 +149,9 @@ void CNavMeshBake::Bake(const float startPosY, const float endPosY, const float 
 
 }
 
-CNavMeshBake::MapRoute CNavMeshBake::GetRoute(Vector3 start, Vector3 end, float height)
-{
-	struct List
-	{
-		List* parent;
-		float weight;
-		float dist;
-		float step;
-		NodeData* pNode;
-	};
-	List* const pRoot = reinterpret_cast<List*>(-1);
-
-	Point startPoint = PosToPoint(start);
-	Point endPoint = PosToPoint(end);
-	//--- 同一地点なら抜ける
-	if (startPoint == endPoint)
-	{
-		CNavMeshBake::MapRoute ret;
-		ret.push_back(start);
-		ret.push_back(end);
-		return ret;
-	}
-
-	//--- 経路探索
-	// マップ初期化
-	int totalGrid = m_nGrid * m_nGrid;
-	List* pList = new List[totalGrid];
-	for (int i = 0; i < totalGrid; i++)
-	{
-		pList[i].parent = nullptr;
-		pList[i].pNode = nullptr;
-		if (!m_aNavMap.count(i))
-			continue;
-		pList[i].pNode = &m_aNavMap[i];
-		pList[i].dist = 0.0f;
-		pList[i].step = 0.0f;
-		pList[i].weight = 0.0f;
-	}
-
-	// スタート地点のリスト情報を作成
-	int index = PointToIndex(startPoint);
-	List* ptr = &pList[index];
-	ptr->parent = pRoot;
-	bool bb = m_aNavMap.count(index);
-
-	if (!ptr->pNode)
-	{
-		CNavMeshBake::MapRoute ret;
-		ret.push_back(start);
-		ret.push_back(end);
-		return ret;
-	}
-
-	// オープンリストへ追加
-	std::list<List*> openList;
-	openList.clear();
-	openList.push_front(ptr);
-
-	bool isEnd = false;
-	//--- 8方向を調査
-	while (PosToPoint(ptr->pNode->pos) != endPoint && !isEnd)
-	{
-		// 繋がっているノードを探索
-		for (auto & index : ptr->pNode->surrounding)
-		{
-			List* node = &pList[index];
-			if (node->parent || !node->pNode)
-				continue;
-
-			// 移動コストを計算。平面のA*であれば通常は 1 で問題なし  
-			float weight = CalcStepWeight(ptr->pNode->pos, node->pNode->pos, height);
-			if (weight < 0) 
-				continue; // 0以下を壁とみなし探索を飛ばす  
-			node->step = ptr->step + weight;
-			node->dist = CalcDist(node->pNode->pos, end);
-			node->weight = node->step + node->dist;
-
-			node->parent = ptr;
-
-			// ウェイトに沿って挿入
-			bool add = false;
-			for (auto it = openList.begin(); it != openList.end(); ++it)
-			{
-				if ((*it)->weight > node->weight)
-				{
-					openList.insert(it, node);
-					add = true;
-					break;
-				}
-			}
-			if (!add)
-				openList.push_back(node);
-		}
-
-		// 探索終了したので除外
-		openList.remove(ptr);
-
-		// 探索できるルートなし
-		if (openList.size() == 0)
-			break;
-
-		// 次へ
-		ptr = openList.front();
-
-		// 見つかったので抜ける
-		if (PosToPoint(ptr->pNode->pos) == endPoint)
-		{
-
-			isEnd = true;
-		}
-	}
-
-	//--- ルートの構築
-	CNavMeshBake::MapRoute route;
-	if (!isEnd)
-	{
-		// 見つからなかった
-		route.push_back(start);
-	}
-	else
-	{
-		// 見つかった箇所からさかのぼる
-		route.push_back(end);
-		ptr = ptr->parent;
-		while (ptr->parent != pRoot)
-		{
-			Vector3 routePos = ptr->pNode->pos;
-			// 後ろ二つの進行方向
-			if (route.size() >= 2)
-			{
-				Vector3 routeTarget = routePos;
-				Vector3 routeStart = route[route.size() - 2];
-				Vector3 routeEnd = route[route.size() - 1];
-
-				Vector3 vec = routeEnd - routeStart;
-				vec.Normalize();
-
-				Vector3 vec2 = routeTarget - routeEnd;
-				vec2.Normalize();
-
-				float dot;
-				DirectX::XMStoreFloat(&dot, DirectX::XMVector3Dot(DirectX::XMLoadFloat3(&vec), DirectX::XMLoadFloat3(&vec2)));
-
-				if (dot >= 0.95f) // acos
-				{
-					route.back() = routePos;
-				}
-				else
-				{
-					route.push_back(routePos);
-				}
-			}
-			else
-			{
-				route.push_back(routePos);
-			}
-			ptr = ptr->parent;
-		}
-		// 始点を入れ、入れ替え
-		route.push_back(start);
-		std::reverse(route.begin(), route.end());
-	}
-
-#if	DEBUG_POINT_DRAW
-	m_aDebugRoute.clear();
-	for (auto & point : route)
-	{
-		m_aDebugRoute.push_back(PointToIndex(PosToPoint(point)));
-	}
-#endif // 
-
-	delete[] pList;
-	return route;
-}
-
-float CNavMeshBake::CalcDist(Vector3 a, Vector3 b)
-{
-	Vector3 vec = b - a;
-	return vec.Length();
-}
-
-float CNavMeshBake::CalcStepWeight(Vector3 a, Vector3 b, float height)
-{
-	// 高さが同一ならば移動コストは通常通り  
-	if (a.y == b.y)
-		return 1.0f;
-
-	// 上り  
-	if (a.y < b.y)
-	{
-		int sh = static_cast<int>(b.y - a.y);
-		if (sh > height) return -1;
-		return 1 + sh * height; // 高さ分コストを加える  
-	}
-	// 下り  
-	if (a.y > b.y)
-	{
-		int sh = static_cast<int>(a.y - b.y);
-		if (sh > height) return -1;
-		return 1; // 下りは同一コストとする  
-	}
-	return -1;
-}
-
-//*@ ルートを構築
+//==========================================================
+// ルートを構築
+//==========================================================
 CNavMeshBake::MapRoute CNavMeshBake::GetRoute(Vector3 start, Vector3 end, AIMapOperator&& op)
 {
 	struct List
@@ -526,6 +329,9 @@ Vector3 CNavMeshBake::PosToMapPos(Vector3 pos)
 	return m_aNavMap[idx].pos;
 }
 
+//==========================================================
+// 障害物の追加
+//==========================================================
 void CNavMeshBake::AddScore(const Vector3& pos, const Vector3& size)
 {
 	Vector3 halfSize(size.x * 0.5f, 0.0f, size.z * 0.5f);
@@ -572,12 +378,15 @@ void CNavMeshBake::AddScore(const Vector3& pos, const Vector3& size)
 	XMStoreFloat4x4(&mW, mWorld);
 	box->SetWorld(&mW);
 	box->SetDiffuse(Vector4(1, 0, 0, 0.3f));
-#endif // _DEBUG
+#endif // DEBUG_POINT_DRAW
+
 }
 
 #if DEBUG_POINT_DRAW
 
+//==========================================================
 // ルートか確認
+//==========================================================
 bool CNavMeshBake::IsRoute(int idx)
 {
 	for (auto & routePoint : m_aDebugRoute)
@@ -590,12 +399,14 @@ bool CNavMeshBake::IsRoute(int idx)
 	return false;
 }
 
-// ポイント確認
+//==========================================================
+// ポイント確認表示
+//==========================================================
 void CNavMeshBake::Draw()
 {
 	Matrix4x4 m_mWorld;
 	XMStoreFloat4x4(&m_mWorld, XMMatrixIdentity());
-	CDXDevice* dx = CDXDevice::Get();
+	CDXDevice* dx = Application::Get()->GetSystem<CDXDevice>();
 	dx->SetBlendState(static_cast<int>(EBlendState::BS_ALPHABLEND));
 
 	// ウェイポイントを球表示
@@ -644,7 +455,9 @@ void CNavMeshBake::Draw()
 }
 #endif // DEBUG_POINT_DRAW
 
+
 #if BUILD_MODE
+
 void CNavMeshBake::ImGuiDebug()
 {
 	ImGui::Text("PointNum:%d", (int)m_aNavMap.size());
@@ -665,17 +478,14 @@ void CNavMeshBake::ImGuiDebug()
 	ImGui::SameLine();
 	if (ImGui::Button("BakeOnHeight"))
 	{
-		Bake(m_vLine.x, m_vLine.y, m_fMargin);
+		Bake(m_vLine.x, m_vLine.y);
 	}
 	
 	ImGui::DragFloat3("startPos", (float*)m_vDebugStart);
 	ImGui::DragFloat3("endPos", (float*)m_vDebugEnd);
 	ImGui::DragFloat("Height", &m_fDebugHeight);
-	if (ImGui::Button("Debug1"))
-	{
-		GetRoute(m_vDebugStart, m_vDebugEnd, 1.0f);
-	}
-	if (ImGui::Button("Debug2"))
+
+	if (ImGui::Button("DebugRoute"))
 	{
 		GetRoute(m_vDebugStart, m_vDebugEnd, AIMapRouteScore(m_vDebugStart, m_vDebugEnd));
 	}

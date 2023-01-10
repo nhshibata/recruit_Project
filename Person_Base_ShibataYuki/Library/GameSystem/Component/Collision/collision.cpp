@@ -11,30 +11,40 @@
 #include <GameSystem/Manager/sceneManager.h>
 #include <ImGui/imgui.h>
 
-#pragma region NAME_SPACE
 using namespace MySpace::Game;
 using namespace MySpace::SceneManager;
-#pragma endregion
 
+//==========================================================
 // 引数付きコンストラクタ
+//==========================================================
 CCollision::CCollision(std::shared_ptr<CGameObject> owner, bool trigger)
 	:CComponent(owner), m_bIsTrigger(trigger), m_vOldPos(0, 0, 0),
 	m_pOldStayList(0),m_pHitList(0), m_nSystemIdx(-1)
 {
 }
+
+//==========================================================
 // デストラクタ
+//==========================================================
 CCollision::~CCollision()
 {
-	CSceneManager::Get()->GetCollisionSystem()->ExecutSystem(m_nSystemIdx);
+	CSceneManager::Get().GetCollisionSystem()->ExecutSystem(m_nSystemIdx);
 
 	m_pOldStayList.clear();
 	m_pHitList.clear();
 	m_pExitList.clear();
 }
+
+//==========================================================
+// 生成時呼び出し
+//==========================================================
 void CCollision::Awake()
 {
 }
+
+//==========================================================
 // 初期化
+//==========================================================
 void CCollision::Init()
 {
 	// 当たり判定の要請
@@ -48,7 +58,10 @@ void CCollision::Init()
 		m_vOldScale = { 1,1,1 };
 	}
 }
+
+//==========================================================
 // 更新
+//==========================================================
 void CCollision::Update()
 {
 	// 過去座標を更新
@@ -56,16 +69,22 @@ void CCollision::Update()
 
 	// 当たり判定の要請
 	//RequestCollision();
-	//CSceneManager::Get()->GetActiveScene()->GetObjManager()->SetColComponent(GetPtr());
-}
-void CCollision::RequestCollision()
-{
-	m_nSystemIdx = CSceneManager::Get()->GetCollisionSystem()->RegistToSystem(BaseToDerived<CCollision>());
 }
 
+//==========================================================
+// システムへの申請
+//==========================================================
+void CCollision::RequestCollision()
+{
+	m_nSystemIdx = CSceneManager::Get().GetCollisionSystem()->RegistToSystem(BaseToDerived<CCollision>());
+}
+
+//==========================================================
+// 衝突時関数呼び出し
 // 外部から呼び出される
 // 当たった際の処理
 // EnterとStayはここで判定
+//==========================================================
 void CCollision::HitResponse(CCollision* other)
 {
 	std::weak_ptr<CGameObject> otherObj = other->GetOwner(0);
@@ -132,7 +151,11 @@ void CCollision::HitResponse(CCollision* other)
 	// 離れたオブジェクトの判定
 	ColObjectUpdate();
 }
+
+//==========================================================
+// 衝突状態確認
 // 触れている→ Enter → 次も接している → stay保存 → 離れた Exit
+//==========================================================
 void CCollision::ColObjectUpdate()
 {
 	//--- 前フレームのリストを確認
@@ -169,7 +192,10 @@ void CCollision::ColObjectUpdate()
 	m_pHitList.clear();
 }
 
+//==========================================================
+// 衝突終了確認
 // 離れた相手のことを教える
+//==========================================================
 bool CCollision::ExitTell()
 {
 	//--- EnterリストにStayオブジェがあれば除外
@@ -191,6 +217,7 @@ bool CCollision::ExitTell()
 	return false;
 }
 
+
 #ifdef BUILD_MODE
 
 void CCollision::ImGuiDebug()
@@ -205,6 +232,7 @@ void CCollision::ImGuiDebug()
 
 	// 再初期化はここで行う
 	m_nDebugEnterCnt = m_nDebugStayCnt = m_nDebugExitCnt = 0;
+
 }
 
 #endif // BUILD_MODE

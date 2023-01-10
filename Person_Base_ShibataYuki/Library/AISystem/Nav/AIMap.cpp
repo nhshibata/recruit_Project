@@ -1,6 +1,9 @@
 #include "AIMap.h"
 #include <list>
 
+//==========================================================
+// 引き数付きコンストラクタ
+//==========================================================
 AIMap::AIMap(int dataSize, int grid)
 	: m_pData(nullptr)
 	, m_stride(dataSize)
@@ -12,6 +15,10 @@ AIMap::AIMap(int dataSize, int grid)
 	m_pData = new char[totalSize];
 	memset(m_pData, 0, totalSize);
 }
+
+//==========================================================
+// 引き数付きコンストラクタ
+//==========================================================
 AIMap::AIMap(int dataSize, int grid, AIMapOperator&& op)
 	: AIMap(dataSize, grid)
 {
@@ -21,19 +28,34 @@ AIMap::AIMap(int dataSize, int grid, AIMapOperator&& op)
 		op.Operator(PointToPos(IndexToPoint(i)), m_pData + m_stride * i);
 	}
 }
+
+//==========================================================
+// デストラクタ
+//==========================================================
 AIMap::~AIMap()
 {
 	delete[] m_pData;
 }
 
+//==========================================================
+// 中心座標
+//==========================================================
 void AIMap::SetPos(const Vector3& pos)
 {
 	m_pos = pos;
 }
+
+//==========================================================
+// ポイント間の差
+//==========================================================
 void AIMap::SetMargin(float margin)
 {
 	m_margin = margin;
 }
+
+//==========================================================
+// 障害物設定
+//==========================================================
 void AIMap::AddScore(const Vector3& pos, const Vector3& size, AIMapOperator&& op)
 {
 	Vector3 halfSize(size.x * 0.5f, 0.0f, size.z * 0.5f);
@@ -50,6 +72,10 @@ void AIMap::AddScore(const Vector3& pos, const Vector3& size, AIMapOperator&& op
 		}
 	}
 }
+
+//==========================================================
+// 最も遠い
+//==========================================================
 Vector3 AIMap::SearchTarget(const Vector3 start, AIMapOperator&& op)
 {
 	int grid = m_grid * m_grid;
@@ -67,6 +93,11 @@ Vector3 AIMap::SearchTarget(const Vector3 start, AIMapOperator&& op)
 	}
 	return maxPos;
 }
+
+//==========================================================
+// 目標座標までのルート取得
+// なければスタート地点を
+//==========================================================
 AIMap::Route AIMap::SearchRoute(const Vector3 start, const Vector3 target, AIMapOperator&& op)
 {
 	struct List
@@ -233,15 +264,26 @@ void AIMap::Draw(AIMapOperator&& op)
 }
 #endif
 
+//==========================================================
+// 範囲内確認
+//==========================================================
 bool AIMap::IsOutOfPoint(Point index)
 {
 	return index.x < 0 || index.y < 0 ||
 		m_grid <= index.x || m_grid <= index.y;
 }
+
+//==========================================================
+// インデックスから二次元配列へ変換
+//==========================================================
 AIMap::Point AIMap::IndexToPoint(int index)
 {
 	return Point{ index % m_grid, index / m_grid };
 }
+
+//==========================================================
+// 座標から二次元配列へ変換
+//==========================================================
 AIMap::Point AIMap::PosToPoint(const Vector3 pos)
 {
 	float startX = m_pos.x - m_grid * m_margin * 0.5f; // m_margin * (m_grid - 1) * 0.5f - m_margin * 0.5f;
@@ -251,10 +293,18 @@ AIMap::Point AIMap::PosToPoint(const Vector3 pos)
 		static_cast<int>((pos.z - startZ) / m_margin)
 	};
 }
+
+//==========================================================
+// 二次元配列からインデックスへ変換
+//==========================================================
 int AIMap::PointToIndex(Point point)
 {
 	return point.y * m_grid + point.x;
 }
+
+//==========================================================
+// 二次元配列から座標へ変換
+//==========================================================
 Vector3 AIMap::PointToPos(Point point)
 {
 	float startX = m_pos.x - (m_grid - 1) * m_margin * 0.5f;

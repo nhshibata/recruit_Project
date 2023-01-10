@@ -121,16 +121,14 @@ namespace MySpace
 
 			// *@生成することで追加する
 			// *@持ち主設定、自SPの設定などを行い、生成時処理を呼び出す
-			template <class T>
+			template <class T = CComponent>
 			std::shared_ptr<T> AddComponent()
 			{
-				//static_assert(std::is_base_of<CComponent, T> == false, "not CComponent");// ｺﾝﾎﾟｰﾈﾝﾄを継承しているか確認
-
 				std::shared_ptr<T> com = std::make_shared<T>(GetPtr().lock());
 				com->SetPtr(com);					// 自身のポインタの設定
 				com->SetOwner(GetPtr().lock());		// 所持gameobjectの設定
 
-				com.get()->Awake();
+				com->Awake();
 				AddComponent(com);				// 配列への追加
 				return com;
 			}

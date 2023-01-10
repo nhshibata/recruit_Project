@@ -9,27 +9,26 @@
 #define __EVENT_MESSAGE_H__
 
 //--- インクルード部
-#include <CoreSystem/Singleton.h>
 #include <unordered_map>
 #include <string>
 
 namespace Spell
 {
-	class CEventMessage : public MySpace::System::CSingleton<CEventMessage>
+	class CEventMessage
 	{
-		friend class MySpace::System::CSingleton<CEventMessage>;
 	private:
 		//--- メンバ変数
 		bool m_bMessageOn;
 		std::unordered_map<std::string, int> m_MessageMap;
 
-	private:
+	
+	public:
 		//--- メンバ関数
 		CEventMessage() 
 			:m_bMessageOn(false)
 		{};
 		~CEventMessage() = default;
-	public:
+	
 		// 1フレームだけ保持
 		void Update()
 		{ 

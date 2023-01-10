@@ -37,22 +37,41 @@ using namespace MySpace::Debug;
 using namespace MySpace::SceneManager;
 using namespace MySpace::Game;
 
+//==========================================================
+// コンストラクタ
+//==========================================================
 CHierachy::CHierachy()
 	:m_bLoadSaveWindow(false), m_savePath(), m_loadPath()
 {
 	m_loadPath = FORDER_DIR(Data/scene);
 	LoadScenePathList();
 }
+
+//==========================================================
+// デストラクタ
+//==========================================================
 CHierachy::~CHierachy()
 {
 }
+
+//==========================================================
+// 初期化
+//==========================================================
 void CHierachy::Init()
 {
 	LoadScenePathList();
 }
+
+//==========================================================
+// 終了
+//==========================================================
 void CHierachy::Uninit()
 {
 }
+
+//==========================================================
+// 更新
+//==========================================================
 void CHierachy::Update(ImGuiManager* manager)
 {
 	ImGui::PushStyleColor(ImGuiCol_TitleBgActive, ImVec4(0.0f, 0.7f, 0.2f, 1.0f));
@@ -63,10 +82,10 @@ void CHierachy::Update(ImGuiManager* manager)
 	ImGui::Begin(u8"Hierarchy", &flg, ImGuiWindowFlags_MenuBar);
 
 	// シーンが存在していなければ処理しない
-	if (!CSceneManager::Get()->GetActiveScene())
+	if (!CSceneManager::Get().GetActiveScene())
 		return;
 
-	ImGuiManager::Get()->HoverStateSet();
+	manager->HoverStateSet();
 
 	//--- メニューバー
 	if (ImGui::BeginMenuBar())
@@ -76,7 +95,7 @@ void CHierachy::Update(ImGuiManager* manager)
 		{
 			if (ImGui::MenuItem("New Scene"))
 			{
-				CSceneManager::Get()->CreateNewScene<CScene>();
+				CSceneManager::Get().CreateNewScene<CScene>();
 			}
 			ImGui::Separator();
 			if (ImGui::MenuItem("Load/Save"))
@@ -91,7 +110,7 @@ void CHierachy::Update(ImGuiManager* manager)
 		{
 			if (ImGui::MenuItem("Empty"))
 			{
-				auto obj = CSceneManager::Get()->GetActiveScene()->GetObjManager()->CreateGameObject();
+				auto obj = CSceneManager::Get().GetActiveScene()->GetObjManager()->CreateGameObject();
 				manager->GetInspector()->SetSelectGameObject(obj);
 			}
 			if (ImGui::MenuItem("Model"))
@@ -153,7 +172,8 @@ void CHierachy::Update(ImGuiManager* manager)
 	DispSearch();
 
 	//--- GameObject表示
-	auto objList = CSceneManager::Get()->GetActiveScene()->GetObjManager()->GetList();
+	auto objList = CSceneManager::Get().GetActiveScene()->GetObjManager()->GetList();
+
 	// ゲームオブジェクト名の表示と子要素の表示
 	for (const auto & object : objList)
 	{
@@ -201,11 +221,19 @@ void CHierachy::Update(ImGuiManager* manager)
 	ImGui::PopStyleColor();
 	ImGui::PopStyleColor();
 }
+
+//==========================================================
+// シーンファイル
+//==========================================================
 void CHierachy::LoadScenePathList()
 {
 	CFilePath path;
 	m_scenePathList = path.GetFileName(m_loadPath);
 }
+
+//==========================================================
+// Scene保存読み込みメニュー表示
+//==========================================================
 void CHierachy::DispSaveLoadMenu()
 {
 	bool flg = true;
@@ -233,28 +261,31 @@ void CHierachy::DispSaveLoadMenu()
 		LoadScenePathList();
 	}
 
-	//ImGui::InputText("reloadFile", m_loadPath.data(), 256);
 	m_loadPath = InputString(m_loadPath, u8"loadFile");
 
 	if (ImGui::Button("Load"))
 	{
-		CSceneManager::Get()->LoadScene(m_loadPath);
+		CSceneManager::Get().LoadScene(m_loadPath);
 	}
 	ImGui::Separator();
 
 	ImGui::SetNextWindowPos(ImVec2(20, 20), ImGuiCond_Once);
 	ImGui::SetNextWindowSize(ImVec2(200, 300), ImGuiCond_Once);
 
-	//ImGui::Begin("Save", &batsu, ImGuiWindowFlags_MenuBar);
 	m_savePath = InputString(m_savePath, u8"saveFile");
 	if (ImGui::Button(u8"Save"))
 	{
-		CSceneManager::Get()->SaveScene(m_savePath);
+		CSceneManager::Get().SaveScene(m_savePath);
 	}
 	ImGui::End();
 }
 
+
 #pragma region GAME_OBJECT
+
+//==========================================================
+// 子オブジェクト表示
+//==========================================================
 void CHierachy::DispChild(ImGuiManager* manager, std::weak_ptr<MySpace::Game::CGameObject> object)
 {
 	bool select = false;
@@ -314,10 +345,14 @@ void CHierachy::DispChild(ImGuiManager* manager, std::weak_ptr<MySpace::Game::CG
 #pragma endregion
 
 #pragma region SEARCH
+
+//==========================================================
+// 表示オブジェクト切替
+//==========================================================
 void CHierachy::DispSearch()
 {
 	// for文変数
-	static const int nSearch[static_cast<int>(ESearchTerms::MAX)] =
+	const int nSearch[static_cast<int>(ESearchTerms::MAX)] =
 	{
 		static_cast<int>(ESearchTerms::OBJ_NAME),
 		static_cast<int>(ESearchTerms::TAG),
@@ -326,7 +361,8 @@ void CHierachy::DispSearch()
 		static_cast<int>(ESearchTerms::STATE_STOP),
 		static_cast<int>(ESearchTerms::STATE_DESTROY),
 	};
-	static const char* szDisp[static_cast<int>(ESearchTerms::MAX)] =
+
+	const char* szDisp[static_cast<int>(ESearchTerms::MAX)] =
 	{
 		"Name","Tag","Component","sActiv","sStop","sDestroy"
 	};
@@ -338,7 +374,8 @@ void CHierachy::DispSearch()
 		m_Search.bSearchCriteria ^= true;
 	}
 	ImGui::SameLine();
-	// 入力
+
+	//--- 入力
 	m_Search.inputName = InputString(m_Search.inputName, u8"Search");
 
 	ImGui::Text(u8"Condition");
@@ -349,7 +386,10 @@ void CHierachy::DispSearch()
 	}
 	ImGui::Separator();
 }
-// 表示する対象か確認
+
+//==========================================================
+// 表示する対象確認
+//==========================================================
 bool CHierachy::DispCheck(CGameObject* obj)
 {
 	switch (m_Search.eTerms)
@@ -360,6 +400,7 @@ bool CHierachy::DispCheck(CGameObject* obj)
 		break;
 	case MySpace::Debug::CHierachy::ESearchTerms::TAG:			// tag比較
 		return obj->GetTagPtr()->Compare(m_Search.inputName);
+
 	case MySpace::Debug::CHierachy::ESearchTerms::COMPONENT:
 	{
 		auto comList = obj->GetComponentList();					// 文字列一部一致でも可
@@ -372,10 +413,13 @@ bool CHierachy::DispCheck(CGameObject* obj)
 	}
 	case MySpace::Debug::CHierachy::ESearchTerms::STATE_ACTIVE:
 		return obj->GetState() == CGameObject::E_ObjectState::ACTIVE;
+
 	case MySpace::Debug::CHierachy::ESearchTerms::STATE_STOP:
 		return obj->GetState() == CGameObject::E_ObjectState::STOP;
+
 	case MySpace::Debug::CHierachy::ESearchTerms::STATE_DESTROY:
 		return obj->GetState() == CGameObject::E_ObjectState::DESTROY;
+
 	default:
 		break;
 	}
@@ -384,8 +428,11 @@ bool CHierachy::DispCheck(CGameObject* obj)
 #pragma endregion
 
 #pragma region LIST_SWAP
+
+//==========================================================
 // list用コンテナ内で挿入入れ替え
 // 受け取ったリストを入れ替え返却 else そのまま返却
+//==========================================================
 template<class T>
 std::list<T> CHierachy::MovingInList(std::list<T> list, T newT, int index)
 {

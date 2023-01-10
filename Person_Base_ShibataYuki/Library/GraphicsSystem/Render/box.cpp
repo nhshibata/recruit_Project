@@ -1,21 +1,30 @@
+//==========================================================
+// [Box.cpp]
+// 直方体 
+//==========================================================
 
-// 直方体 [Box.cpp]
+//--- インクルード部
 #include <GraphicsSystem/Render/box.h>
-
 
 using namespace MySpace::Graphics;
 
+//==========================================================
 // コンストラクタ
+//==========================================================
 CBox::CBox() : CMesh()
 {
 }
 
+//==========================================================
 // デストラクタ
+//==========================================================
 CBox::~CBox()
 {
 }
 
+//==========================================================
 // 初期化
+//==========================================================
 HRESULT CBox::Init(XMFLOAT3 vBBox)
 {
 	HRESULT hr = S_OK;
@@ -23,6 +32,7 @@ HRESULT CBox::Init(XMFLOAT3 vBBox)
 	vSize.x = vBBox.x * 2.0f;
 	vSize.y = vBBox.y * 2.0f;
 	vSize.z = vBBox.z * 2.0f;
+
 	const static float vtx[] = {
 		-1.0f,  1.0f, -1.0f,
 		 1.0f,  1.0f, -1.0f,
@@ -55,6 +65,7 @@ HRESULT CBox::Init(XMFLOAT3 vBBox)
 		1.0f, 1.0f,
 		1.0f, 0.0f,
 	};
+
 	VERTEX_3D* pVertexWk = new VERTEX_3D[24];
 	int* pIndexWk = new int[36];
 	VERTEX_3D* pVtx = pVertexWk;
@@ -77,7 +88,9 @@ HRESULT CBox::Init(XMFLOAT3 vBBox)
 		pIndexWk[i * 6 + 4] = pIndexWk[i * 6 + 2];
 		pIndexWk[i * 6 + 5] = pIndexWk[i * 6 + 1];
 	}
+
 	hr = CMesh::Init(pVertexWk, 24, pIndexWk, 36);
+
 	delete[] pIndexWk;
 	delete[] pVertexWk;
 	return hr;

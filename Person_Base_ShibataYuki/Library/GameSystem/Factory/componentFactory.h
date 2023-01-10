@@ -38,15 +38,17 @@ namespace MySpace
 			// *@別クラスで登録されたｺﾝﾎﾟｰﾈﾝﾄを文字列から生成する
 			static bool ObjSetComponent(CGameObject& obj, std::string name);
 
+			// *@ｺﾝﾎﾟｰﾈﾝﾄ名全取得
 			static std::vector<std::string> GetNameList();
 
-			static std::shared_ptr<CComponent> CreateComponent(std::string name);
+			// *@名前からｺﾝﾎﾟｰﾈﾝﾄ取得
+			//static std::shared_ptr<CComponent> CreateComponent(std::string name);
 
-			template <class T>
+		/*	template <class T>
 			static T* CreateComponent();
 
 			template <class T>
-			static std::shared_ptr<T> MakeComponent();
+			static std::shared_ptr<T> MakeComponent();*/
 		};
 	}
 }

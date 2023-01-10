@@ -11,15 +11,26 @@
 
 using namespace MySpace::Game;
 
+//==========================================================
+// コンストラクタ
+//==========================================================
 CRectTransform::CRectTransform(std::shared_ptr<CGameObject> owner)
 	:CComponent(owner), m_vPos(0.0f, 0.0f), m_vSize(1, 1), m_fAngle(0.0f)
 {
 
 }
+
+//==========================================================
+// デストラクタ
+//==========================================================
 CRectTransform::~CRectTransform()
 {
 
 }
+
+
+#ifdef BUILD_MODE
+
 void CRectTransform::ImGuiDebug()
 {
 	// 3次元座標
@@ -28,4 +39,7 @@ void CRectTransform::ImGuiDebug()
 	ImGui::DragFloat2(u8"サイズ", (float*)m_vSize);
 	ImGui::DragFloat(u8"角度", (float*)&m_fAngle);
 	ImGui::SliderAngle(u8"角度", &m_fAngle);
+
 }
+
+#endif // BUILD_MODE

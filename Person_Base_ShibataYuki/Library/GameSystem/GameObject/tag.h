@@ -4,6 +4,7 @@
 // 作成:2022/04/19 (火曜日)
 // 更新:2022/09/20 タグの比較に完全一致か部分一致かを判別できるよう変更
 // 更新:2022/12/18 タグ管理ｸﾗｽをファイル分け
+// 更新:2022/12/22 静的メンバ変数でリスト管理に変更
 //--------------------------
 // タグ : 部品クラス
 //=========================================================
@@ -12,7 +13,6 @@
 #define __TAG_H__
 
 //--- インクルード部
-#include <GameSystem/Manager/tagManager.h>
 #include <string>
 #include <CoreSystem/Util/cerealCommon.h>
 
@@ -49,10 +49,46 @@ namespace MySpace
 		private:
 			//--- メンバ変数
 			int m_nTagID = 0;
+			static inline std::vector<std::string> m_aTagName;
 			
 		private:
 			//--- メンバ関数
-			inline int GetID(std::string name) { return CTagManager::Get()->FindIdx(name); }
+			inline int GetID(std::string name) { return FindIdx(name); }
+
+			// *@インデックス取得
+			_NODISCARD static int FindIdx(std::string name)
+			{
+				int id = 0;
+				for (std::vector<std::string>::iterator it = m_aTagName.begin(); it != m_aTagName.end(); ++it, ++id)
+				{
+					if ((*it) == name)
+						return id;
+				}
+				return -1;
+			}
+
+			// *@タグ生成(登録)
+			// *@登録完了 / 必要なし
+			static bool CreateRegist(std::string name)
+			{
+				if (FindIdx(name) == -1)
+				{
+					m_aTagName.push_back(name);
+					return true;
+				}
+				return false;
+			}
+
+			// *@idからstring取得
+			static std::string IDToTag(int id)
+			{
+				if (m_aTagName.size() <= id)
+				{
+					return "null";
+				}
+				return m_aTagName[id];
+			}
+
 		public:
 			CTag();
 			CTag(std::string name);
@@ -62,13 +98,14 @@ namespace MySpace
 			// *@なければ生成。どちらにせよ登録される
 			bool CreateTag(std::string name) 
 			{ 
-				bool ret = CTagManager::Get()->CreateRegist(name);
+				bool ret = CreateRegist(name);
 				SetTag(name);
 				return ret;
 			}
 
 			//--- セッター・ゲッター
-			inline std::string GetTag() { return CTagManager::Get()->IDToTag(m_nTagID); }
+			inline std::string GetTag() { return IDToTag(m_nTagID); }
+
 			// *@※注意 
 			// *@事前にCreateTag関数を呼び出す必要あり
 			// *@登録、生成されていなければ-1が入る
@@ -79,11 +116,22 @@ namespace MySpace
 			// *@return (完全一致:1, 部分一致:2, 一致なし:0)
 			int Compare(std::string name)
 			{
-				if (auto tag = CTagManager::Get()->IDToTag(m_nTagID); name == tag) { return true; }
+				if (auto tag = IDToTag(m_nTagID); name == tag) { return true; }
 				else if (tag.find(name) != std::string::npos) { return 2; }
 				return false; 
 			}
 
+			// *@リスト取得
+			static inline std::vector<std::string> GetNameList()
+			{
+				return m_aTagName;
+			}
+
+			// *@ファイル保存
+			static void SaveSystem();
+
+			// *@ファイル読み込み
+			static void LoadSystem();
 		};
 	}
 }

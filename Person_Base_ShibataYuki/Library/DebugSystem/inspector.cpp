@@ -29,22 +29,33 @@ using namespace MySpace::Game;
 using namespace MySpace::SceneManager;
 using namespace MySpace::Debug;
 
+//==========================================================
+// コンストラクタ
+//==========================================================
 CInspector::CInspector()
 	:m_isComponent(false), m_isDeleted(false), m_bOpen(true)
 {
 }
+
+//==========================================================
+// デストラクタ
+//==========================================================
 CInspector::~CInspector()
 {
 
 }
+
 void CInspector::Init()
 {
-
 }
+
 void CInspector::Uninit()
 {
-
 }
+
+//==========================================================
+// 更新
+//==========================================================
 void CInspector::Update(ImGuiManager* manager)
 {
 	if (!m_bOpen && !m_spViewObj.lock())
@@ -72,11 +83,12 @@ void CInspector::Update(ImGuiManager* manager)
 	// 選択中objデバッグ表示
 	DispDebugSelectObject();
 
-	// メニュー表示
+	//--- メニュー表示
 	DispPopUpMenuObject();
 	
 	manager->HoverStateSet();
 
+	//--- メニューバー
 	if (ImGui::BeginMenuBar())
 	{
 		// オブジェクト生成
@@ -113,14 +125,25 @@ void CInspector::Update(ImGuiManager* manager)
 	ImGui::PopStyleColor();
 	ImGui::PopStyleColor();
 }
+
+
 void CInspector::Draw()
 {
 }
+
+
+//==========================================================
+// delete
+//==========================================================
 void CInspector::DeleteObject()
 {
 	CGameObject::Destroy(m_spViewObj.lock());
 	m_spViewObj.reset();
 }
+
+//==========================================================
+// 選択オブジェクト設定
+//==========================================================
 void CInspector::SetSelectGameObject(std::weak_ptr<CGameObject> obj)
 {
 	m_spViewObj = obj;
@@ -133,7 +156,11 @@ void CInspector::SetSelectGameObject(std::weak_ptr<CGameObject> obj)
 		m_isDrawInfo.push_back(false);
 	}
 }
-// copy
+
+//==========================================================
+// オブジェクトcopy
+// TODO:未実装
+//==========================================================
 void CInspector::CopyGameObject()
 {
 	if (!m_spViewObj.lock()) 
@@ -149,7 +176,10 @@ void CInspector::CopyGameObject()
 		com->Init();
 	}
 }
-// 選択中オブジェクトの表示
+
+//==========================================================
+// 選択中オブジェクトの情報表示
+//==========================================================
 void CInspector::DispDebugSelectObject()
 {
 	if (!m_spViewObj.lock()) return;
@@ -160,16 +190,12 @@ void CInspector::DispDebugSelectObject()
 	m_spViewObj.lock()->ImGuiDebug();
 	m_spViewObj.lock()->GetTransform()->ImGuiDebug();
 
-	// レイヤー
+	//--- レイヤー
 	layer = *m_spViewObj.lock()->GetLayerPtr()->GetLayer();
 	ImGui::InputInt("layer", &layer);
-	/*if (layer >= 10)
-	{
-		layer = 10;
-	}*/
 	m_spViewObj.lock()->GetLayerPtr()->SetLayer(layer);
 
-	// ｺﾝﾎﾟｰﾈﾝﾄ
+	//--- ｺﾝﾎﾟｰﾈﾝﾄ
 	int cnt = 0;
 	auto components = m_spViewObj.lock()->GetComponentList();
 	if (m_isDrawInfo.size() != components.size())
@@ -211,10 +237,15 @@ void CInspector::DispDebugSelectObject()
 	}
 	ImGui::PopStyleColor();
 	ImGui::PopStyleColor();
+
 }
+
+//==========================================================
+// ポップアップ表示
+//==========================================================
 void CInspector::DispPopUpMenuObject()
 {
-	static std::vector<std::string> menuVec = {
+	std::vector<std::string> menuVec = {
 		u8"ParentDissolved(親子関係解消)",
 		u8"close",
 	};
@@ -239,10 +270,6 @@ void CInspector::DispPopUpMenuObject()
 			}
 			break;
 		}
-		case 1:
-			if (ImGui::IsMouseClicked(ImGuiMouseButton_::ImGuiMouseButton_Left))
-				open = false;
-			break;
 		case -1:
 			if (ImGui::IsMouseClicked(ImGuiMouseButton_::ImGuiMouseButton_Left))
 				open = false;
@@ -253,6 +280,11 @@ void CInspector::DispPopUpMenuObject()
 			break;
 	}
 }
+
+//==========================================================
+// ｺﾝﾎﾟｰﾈﾝﾄ追加ウィンドウ
+// クリックで追加
+//==========================================================
 void CInspector::AddComponentWindow()
 {
 	bool batsu = true;

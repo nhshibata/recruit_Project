@@ -1,4 +1,7 @@
+
+//--- インクルード部
 #include <GameSystem/components.h>
+
 #include <DebugSystem/typeSaveManager.h>
 
 
@@ -9,6 +12,11 @@
 using namespace MySpace::Debug;
 using namespace MySpace::Game;
 
+
+//==========================================================
+// 型の保存
+// 一度だけしか実行されない
+//==========================================================
 void CreateComponentType()
 {
 	static bool ones = true;

@@ -19,11 +19,12 @@
 #include <GraphicsSystem/DirectX/DXDevice.h>
 #include <GraphicsSystem/Render/polygon.h>
 #include <GraphicsSystem/Render/mesh.h>
-#include <GraphicsSystem/Manager/imageResourceManager.h>
-#include <GraphicsSystem/Manager/FontTexture.h>
+#include <GraphicsSystem/Manager/assetsManager.h>
+//#include <GraphicsSystem/Manager/imageResourceManager.h>
+//#include <GraphicsSystem/Manager/FontTexture.h>
 #include <GraphicsSystem/Manager/modelManager.h>
 #include <GraphicsSystem/Manager/effectManager.h>
-#include <GraphicsSystem/Manager/shaderManager.h>
+//#include <GraphicsSystem/Manager/shaderManager.h>
 
 #include <DebugSystem/imguiManager.h>
 #include <DebugSystem/typeSaveManager.h>
@@ -38,146 +39,117 @@ using namespace MySpace::Game;
 using namespace MySpace::Debug;
 using namespace MySpace::SceneManager;
 
+
+//==========================================================
 // コンストラクタ
+//==========================================================
 CGameApp::CGameApp()
 {
 }
+
+//==========================================================
 // デストラクタ
+//==========================================================
 CGameApp::~CGameApp()
 {
 }
+
+//==========================================================
 // 初期化
+//==========================================================
 void CGameApp::Init(Application* app)
 {
 	HWND hWnd = Application::Get()->GetHWnd();
 
-	//--- デバイスの初期化
-	CDXDevice::Create();
-	auto pDX = CDXDevice::Get();
-	pDX->Init(hWnd, (unsigned int)CScreen::GetWidth(), (unsigned int)CScreen::GetHeight());
-	
-	/*auto dx = app->AddSystem<CDXDevice>();
-	dx->SetApp(app);*/
-
 	//--- 変数宣言
-	auto pD = pDX->GetDevice();
-	auto pDc = pDX->GetDeviceContext();
+	auto pDevice = app->GetDevice();
+	auto pDC = app->GetDeviceContext();
 
-	// 入力の初期化
+	//--- 入力初期化
 	CInput::Init();
 	CGamePad::Init();
 	Mouse::Initialize();
 	Keyboad::Update();
 
-	// メッシュ
+	//--- メッシュ
 	CMesh::InitShader();
 
-	// 平行光源の初期化
-	// ポストエフェクト?
-	// スカイドーム
-	CTypeSaveManager::Create();
-
-	//--- ゲーム要素
-	CTagManager::Create();
-	CTweenManager::Create();
-
 	// モデル
-	CModelManager::Create();
-	auto model = CModelManager::Get();
-	model->Init();
+	CAssimpModel::InitShader(pDevice);
 
 	//--- ポリゴン
-	CPolygon::Init(pD);
+	CPolygon::Init(pDevice);
 
-	//--- ﾃｸｽﾁｬ
-	CImageResourceManager::Create();
-
-	//--- フォント
-	CFontTexture::Create();
-	auto font = CFontTexture::Get();
-	font->Init();
-
-	//--- シーンの生成
-	CSceneManager::Create();
-	auto scene = CSceneManager::Get();
-	//CSceneManager::Get()->Init();
-	//auto scene = CSceneManager::Get()->CreateNewScene<CScene>("Title");
-	//CSceneManager::Get()->CreateNewScene<CScene>("Title");
-	scene->Init();
-	scene->CreateNewScene<CScene>("Title");
-
-	//--- エフェクト生成・初期化(ｶﾒﾗの生成後)
-	CEffekseer::Create();
-	auto effect = CEffekseer::Get();
-	effect->Init(pD, pDc);
-
-#ifdef BUILD_MODE
-	// imGuiの初期化処理
-	ImGuiManager::Create();
-	auto imgui = ImGuiManager::Get();
-	imgui->Init(hWnd, pD, pDc);
-#endif // BUILD_MODE
-
-	// シェーダー
-	//CShaderManager::Get()->Init();
+	//--- アセット
+	// 素材全般所持ｸﾗｽ
+	auto pAssets = app->AddSystem<CAssetsManager>();
+	pAssets->Init(app);
 
 	// 音初期化
 	CSound::Init();
 
+	//--- シーンの生成
+	auto sceneMgr = &CSceneManager::Get();
+	sceneMgr->Init();
+	
+
+#ifdef BUILD_MODE
+	//--- imGuiの初期化処理
+	auto imgui = app->AddSystem<ImGuiManager>();
+	if (!imgui)
+	{
+		int a = 0;
+	}
+	imgui->Init(hWnd, pDevice, pDC);
+#endif // BUILD_MODE
+
+	app->AddSystem<CTweenManager>();
+
 }
+
+//==========================================================
 // 解放処理
+//==========================================================
 void CGameApp::Uninit(Application* app)const
 {
-
 	//_CrtDumpMemoryLeaks();
 
 	// 音終了
 	CSound::Fin();
 
+	// Assimp用シェーダ終了処理
+	CAssimpModel::UninitShader();
+
 	// 描画関係
 	CMesh::FinShader();
 	CPolygon::Fin();
 
-	CFontTexture::Get()->Uninit();
-
-	CSceneManager::Get()->Uninit();
-	//CShaderManager::Get()->Uninit();
-	
 	CTypeSaveManager::Get()->Uninit();
 
 	// 入力
 	CInput::Fin();
 	CGamePad::Uninit();
-	//_CrtDumpMemoryLeaks();
-
-	//--- シングルトン破棄
-	CTweenManager::Destroy();
-	CTagManager::Destroy();
-	CImageResourceManager::Create();
-	CFontTexture::Destroy();
-	CEffekseer::Destroy();
-	CModelManager::Destroy();
-	ImGuiManager::Destroy();
-	CSceneManager::Destroy();
-	CTypeSaveManager::Destroy();
-	CDXDevice::Destroy();
-	//_CrtDumpMemoryLeaks();
+	_CrtDumpMemoryLeaks();
 
 }
+
+//==========================================================
 // 通常更新
+//==========================================================
 void CGameApp::Run(Application* app)
 {
+	
 	// 音更新
 	CSound::Update();
 
 #ifdef BUILD_MODE	// ImGui
-	auto imgui = ImGuiManager::Get();
+	auto imgui = app->GetSystem<ImGuiManager>();
 	imgui->Update();
 	
 	// デバッグ中の更新(GameObjectのdeleteとTransformの更新はないと不便)
 	if (imgui->GetPause())
 	{
-		auto all = CSceneManager::Get()->GetAllScene();
+		auto all = CSceneManager::Get().GetAllScene();
 		for (auto & scene : all)
 		{
 			scene->GetObjManager()->UpdateInDebug();
@@ -186,16 +158,25 @@ void CGameApp::Run(Application* app)
 	}
 #endif // DEBUG
 
-	CSceneManager::Get()->UpdateScene();
-	CEffekseer::Get()->Update();
+	CSceneManager::Get().UpdateScene();
+
+	// Tweenの更新(順番検討)
+	app->GetSystem<CTweenManager>()->Update();
+
+	app->GetSystem<CAssetsManager>()->Update();
 }
-// 定期更新
+
+//==========================================================
+// 一定時間の更新
+//==========================================================
 void CGameApp::FixedUpdate(Application* app)const
 {
-	// 一定時間の更新
-	CSceneManager::Get()->FixedUpdateScene();
+	CSceneManager::Get().FixedUpdateScene();
 }
+
+//==========================================================
 // 入力更新
+//==========================================================
 void CGameApp::InputUpdate()
 {
 	CInput::Update();
@@ -204,56 +185,80 @@ void CGameApp::InputUpdate()
 
 	Keyboad::Update();
 }
+
+//==========================================================
 // 描画
+//==========================================================
 void CGameApp::Draw(Application* app)
 {
 	//--- 描画先設定
 	BeginRender(app);	// 描画準備
-	if (ImGuiManager::Get()->IsSceneRender())
+
+#ifdef BUILD_MODE
+	auto imgui = app->GetSystem<ImGuiManager>();
+
+	if (imgui->IsSceneRender())
 	{
-		ImGuiManager::Get()->SceneRenderClear();
-		ImGuiManager::Get()->SceneRender();
+		imgui->SceneRenderClear();
+		imgui->SceneRender();
 	}
 	else
 	{
-		auto pDX = CDXDevice::Get();
+		auto pDX = app->GetSystem<CDXDevice>();
 		pDX->SwitchRender(nullptr, nullptr);
 	}
-	
-	CCamera::GetMain()->DrawSkyDome();
 
 	// オブジェクトが存在しないとき
-	if (CCamera::GetMain() && CLight::Get())
+	if (CCamera::GetMain() && CLight::GetMain())
 	{
+		// スカイドーム描画
+		CCamera::GetMain()->DrawSkyDome();
+		
 		// シーンの描画
-		CSceneManager::Get()->DrawScene();
+		CSceneManager::Get().DrawScene();
 
 		// effect
-		CEffekseer::Get()->Draw();
+		app->GetSystem<CAssetsManager>()->GetEffekseer()->Draw();
 	}
 
-	ImGuiManager::Get()->SceneGizmo();
+	imgui->SceneGizmo();
 
 	//--- 描画先切替
-	if (ImGuiManager::Get()->IsSceneRender())
+	if (imgui->IsSceneRender())
 	{
-		auto pDX = CDXDevice::Get();
+		auto pDX = app->GetSystem<CDXDevice>();
 		pDX->SwitchRender(nullptr, nullptr);
 	}
 
-#ifdef BUILD_MODE
 	//--- ImGuiの描画
-	ImGuiManager::Get()->Render();
+	imgui->Render();
+
+#else
+
+	// オブジェクトが存在しないとき
+	if (CCamera::GetMain() && CLight::GetMain())
+	{
+		CCamera::GetMain()->DrawSkyDome();
+		
+		// シーンの描画
+		CSceneManager::Get().DrawScene();
+
+		// effect
+		app->GetSystem<CAssetsManager>()->GetEffekseer()->Draw();
+	}
 #endif // BUILD_MODE
 
 	// 描画後更新
 	EndRender(app);
 }
-// *@描画前
+
+//==========================================================
+// 描画前
+//==========================================================
 void CGameApp::BeginRender(Application* app)
 {
 	float ClearColor[4] = { 0.117647f, 0.254902f, 0.352941f, 1.0f };
-	auto pDX = CDXDevice::Get();
+	auto pDX = app->GetSystem<CDXDevice>();
 	ID3D11DeviceContext* pDC = pDX->GetDeviceContext();
 	pDC->ClearRenderTargetView(pDX->GetRenderTargetView(), ClearColor);
 	pDC->ClearDepthStencilView(pDX->GetDepthStencilView(),
@@ -264,10 +269,13 @@ void CGameApp::BeginRender(Application* app)
 	};*/
 	//pDC->OMSetRenderTargets(1, pViews, nullptr);
 }
-// *@描画後
+
+//==========================================================
+// 描画後
+//==========================================================
 void CGameApp::EndRender(Application* app)
 {
-	auto pDX = CDXDevice::Get();
+	auto pDX = app->GetSystem<CDXDevice>();
 	pDX->SetCullMode((int)ECullMode::CULLMODE_NONE);
 	pDX->GetSwapChain()->Present(0, 0);
 }

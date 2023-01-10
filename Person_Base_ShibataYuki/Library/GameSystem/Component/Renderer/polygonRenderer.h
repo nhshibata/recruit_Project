@@ -47,11 +47,11 @@ namespace MySpace
 			RectTransWeakPtr m_pRectTransform;				// •`‰æî•ñ
 
 		public:
-			CPolygonRenderer() {};
+			CPolygonRenderer();
 			CPolygonRenderer(std::shared_ptr<CGameObject> owner);
 			~CPolygonRenderer();
 
-			virtual void Awake();
+			void Awake();
 			virtual void Init();
 			virtual void Update();
 			virtual bool Draw();

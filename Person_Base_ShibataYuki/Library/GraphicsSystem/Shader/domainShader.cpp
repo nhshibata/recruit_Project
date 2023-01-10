@@ -6,7 +6,7 @@
 
 //--- インクルード部
 #include <GraphicsSystem/Shader/domainShader.h>
-#include <GraphicsSystem/DirectX/DXDevice.h>
+#include <Application/Application.h>
 
 using namespace MySpace::Graphics;
 
@@ -14,19 +14,22 @@ CDomainShader::CDomainShader()
 	:m_pDomainShader(nullptr)
 {
 }
+
 CDomainShader::~CDomainShader()
 {
 	SAFE_RELEASE(m_pDomainShader);
 }
+
 void CDomainShader::Bind(UINT slot)
 {
-	auto pDC = CDXDevice::Get()->GetDeviceContext();
+	auto pDC = Application::Get()->GetDeviceContext();
 	pDC->DSSetShader(m_pDomainShader, NULL, 0);
 }
+
 HRESULT CDomainShader::Make(void* pData, UINT size)
 {
 	HRESULT hr = S_OK;
-	ID3D11Device* pD = CDXDevice::Get()->GetDevice();
+	ID3D11Device* pD = Application::Get()->GetDevice();
 
 	hr = pD->CreateDomainShader(pData, size, NULL, &m_pDomainShader);
 

@@ -4,24 +4,36 @@
 //---------------------------------------------------------
 //=========================================================
 
+//--- 警告抑止
 #define _CRT_SECURE_NO_WARNINGS
 
 //--- インクルード部
 #include <GraphicsSystem/Shader/vertexShader.h>
-#include <GraphicsSystem/DirectX/DXDevice.h>
+#include <Application/Application.h>
 
 using namespace MySpace::Graphics;
 
+//==========================================================
+// コンストラクタ
+//==========================================================
 CVertexShader::CVertexShader()
 {
 	m_Shader = nullptr;
 	m_Layout = nullptr;
 }
+
+//==========================================================
+// 引き数付きコンストラクタ
+//==========================================================
 CVertexShader::CVertexShader(ID3D11VertexShader* pVer, ID3D11InputLayout* pLay)
 {
 	m_Shader = pVer;
 	m_Layout = pLay;
 }
+
+//==========================================================
+// デストラクタ
+//==========================================================
 CVertexShader::~CVertexShader()
 {
 	if (m_Shader)
@@ -35,30 +47,38 @@ CVertexShader::~CVertexShader()
 		m_Layout = nullptr;
 	}
 }
+
+//==========================================================
+// 割り当て
+//==========================================================
 void CVertexShader::Bind(UINT slot)
 {
-	ID3D11DeviceContext* pDC = CDXDevice::Get()->GetDeviceContext();
-	pDC->VSSetShader(m_Shader, nullptr, 0);
+	ID3D11DeviceContext* pDC = Application::Get()->GetDeviceContext();
+	pDC->VSSetShader(m_Shader, nullptr, slot);
 	pDC->IASetInputLayout(m_Layout);
 }
+
+//==========================================================
+// 構築
+//==========================================================
 HRESULT CVertexShader::Make(std::string fileName, const D3D11_INPUT_ELEMENT_DESC* layout, UINT size)
 {
 	HRESULT hr = E_FAIL;
 	FILE* fp = fopen(fileName.c_str(), "rb");
 	if (!fp) { return hr; }
 
-	//-- ファイルの中身をメモリに読み込み --
+	//-- ファイルの中身をメモリに読み込み
 	char* pData = nullptr;
-	//-- ファイルのデータサイズを調べる --
+	//-- ファイルのデータサイズを調べる
 	fseek(fp, 0, SEEK_END);
 	long fileSize = ftell(fp);	//移動量検出
 	fseek(fp, 0, SEEK_SET);
-	//-- メモリ確保して読み込み --
+	//-- メモリ確保して読み込み
 	pData = new char[fileSize];
 	fread(pData, fileSize, 1, fp);
 	fclose(fp);
 
-	ID3D11Device* pDevice = CDXDevice::Get()->GetDevice();
+	ID3D11Device* pDevice = Application::Get()->GetDevice();
 
 	hr = pDevice->CreateVertexShader(pData, fileSize, nullptr, &m_Shader);
 	if (FAILED(hr))

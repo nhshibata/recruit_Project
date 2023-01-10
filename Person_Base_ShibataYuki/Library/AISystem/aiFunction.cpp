@@ -12,8 +12,10 @@
 
 namespace AI
 {
-	// *@二点間から角度を求め、角度内か判定
-	// *@参考: http://www.sousakuba.com/Programming/gs_two_vector_angle.html
+	//==========================================================
+	// 二点間から角度を求め、角度内か判定
+	// 参考: http://www.sousakuba.com/Programming/gs_two_vector_angle.html
+	//==========================================================
 	bool SearchAngle(MySpace::Game::CTransform* owner, MySpace::Game::CTransform* other, float searchAngle, bool degree)
 	{
 		auto fA = other->GetPos().Length();
@@ -27,8 +29,9 @@ namespace AI
 		return (searchAngle >= angle);
 	}
 
-
+	//==========================================================
 	// 距離の判定
+	//==========================================================
 	inline float GetDistance(Vector3 posA, Vector3 posB)
 	{
 		return sqrtf(pow(posB.x - posA.x, 2) +
@@ -36,6 +39,9 @@ namespace AI
 					 pow(posB.z - posA.z, 2));
 	}
 
+	//==========================================================
+	// 滑らかな値の移動
+	//==========================================================
 	Vector3 Smoothly(Vector3 pos, Vector3 destPos, float per)
 	{
 		return (pos * per + destPos * (1.0f - per));

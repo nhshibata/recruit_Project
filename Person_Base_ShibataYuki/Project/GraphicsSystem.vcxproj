@@ -22,6 +22,7 @@
     <ClInclude Include="..\Library\GraphicsSystem\DirectX\depthStencil.h" />
     <ClInclude Include="..\Library\GraphicsSystem\DirectX\DXDevice.h" />
     <ClInclude Include="..\Library\GraphicsSystem\DirectX\renderTarget.h" />
+    <ClInclude Include="..\Library\GraphicsSystem\Manager\assetsManager.h" />
     <ClInclude Include="..\Library\GraphicsSystem\Manager\effectManager.h" />
     <ClInclude Include="..\Library\GraphicsSystem\Manager\FontTexture.h" />
     <ClInclude Include="..\Library\GraphicsSystem\Manager\imageResourceManager.h" />
@@ -55,6 +56,7 @@
     <ClCompile Include="..\Library\GraphicsSystem\DirectX\depthStencil.cpp" />
     <ClCompile Include="..\Library\GraphicsSystem\DirectX\DXDevice.cpp" />
     <ClCompile Include="..\Library\GraphicsSystem\DirectX\renderTarget.cpp" />
+    <ClCompile Include="..\Library\GraphicsSystem\Manager\assetsManager.cpp" />
     <ClCompile Include="..\Library\GraphicsSystem\Manager\effectManager.cpp" />
     <ClCompile Include="..\Library\GraphicsSystem\Manager\FontTexture.cpp" />
     <ClCompile Include="..\Library\GraphicsSystem\Manager\imageResourceManager.cpp" />
@@ -281,7 +283,7 @@
       <AdditionalIncludeDirectories>$(SolutionDir)..\..\DirectXTex;$(SolutionDir)..\..\Assimp\include;$(SolutionDir)..\..\Assimp;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <AdditionalOptions>/bigobj %(AdditionalOptions)</AdditionalOptions>
       <LanguageStandard>stdcpp17</LanguageStandard>
-      <InlineFunctionExpansion>AnySuitable</InlineFunctionExpansion>
+      <InlineFunctionExpansion>Default</InlineFunctionExpansion>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -345,7 +347,7 @@
       <AdditionalIncludeDirectories>$(SolutionDir)..\..\DirectXTex;$(SolutionDir)..\..\Assimp\include;$(SolutionDir)..\..\Assimp;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <AdditionalOptions>/bigobj %(AdditionalOptions)</AdditionalOptions>
       <LanguageStandard>stdcpp17</LanguageStandard>
-      <InlineFunctionExpansion>AnySuitable</InlineFunctionExpansion>
+      <InlineFunctionExpansion>OnlyExplicitInline</InlineFunctionExpansion>
       <WholeProgramOptimization>true</WholeProgramOptimization>
     </ClCompile>
     <Link>

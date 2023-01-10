@@ -15,7 +15,9 @@ namespace MySpace
 {
 	namespace Graphics
 	{
+		//==========================================================
 		// メモリから生成
+		//==========================================================
 		HRESULT CreateTextureFromMemory(_In_ ID3D11Device* d3dDevice,
 			_In_bytecount_(wicDataSize) const uint8_t* wicData,
 			_In_ size_t wicDataSize,
@@ -40,7 +42,10 @@ namespace MySpace
 			return CreateShaderResourceView(d3dDevice, image.GetImages(), image.GetImageCount(), meta, textureView);
 		}
 
+		//==========================================================
+		// ﾃｸｽﾁｬ読み込み
 		// ファイルから生成
+		//==========================================================
 		HRESULT CreateTextureFromFile(_In_ ID3D11Device* d3dDevice,
 			_In_z_ const wchar_t* szFileName,
 			_Out_opt_ ID3D11ShaderResourceView** textureView,
@@ -63,6 +68,9 @@ namespace MySpace
 			return CreateShaderResourceView(d3dDevice, image.GetImages(), image.GetImageCount(), meta, textureView);
 		}
 
+		//==========================================================
+		// ﾃｸｽﾁｬ読み込み確認
+		//==========================================================
 		HRESULT CreateTextureFromFile(_In_ ID3D11Device* d3dDevice,
 			_In_z_ const char* szFileName,
 			_Out_opt_ ID3D11ShaderResourceView** textureView,

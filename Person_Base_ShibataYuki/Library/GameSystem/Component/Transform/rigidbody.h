@@ -1,5 +1,8 @@
 //=========================================================
+// [rigidbody.cpp]
+//---------------------------------------------------------
 // çÏê¨:2022/05/24
+//---------------------------------------------------------
 // ï®óù
 //=========================================================
 
@@ -52,6 +55,7 @@ namespace MySpace
 				//--- ÉÅÉìÉoïœêî
 				float x, y, z;
 				bool bX, bY, bZ;
+
 				//--- ÉÅÉìÉoä÷êî
 				FixedVector3()
 				{
@@ -106,7 +110,7 @@ namespace MySpace
 			_NODISCARD inline Vector3 GetVel() { return m_vVel; };
 			_NODISCARD inline Vector3 GetAccel() { return m_vAccel; };
 
-			inline bool SetGravity(const bool value) { m_bGravity = value; }
+			inline void SetGravity(const bool value) { m_bGravity = value; }
 			inline void SetTargetPos(Vector3 value) { m_vTargetPos = value; };
 			inline void SetVel(Vector3 value) { m_vVel = value; };
 			inline void SetAccel(Vector3 value) { m_vAccel = value; };

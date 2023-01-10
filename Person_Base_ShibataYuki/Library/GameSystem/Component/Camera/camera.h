@@ -146,24 +146,8 @@ namespace MySpace
 			EFrustumResult CollisionViewFrustum(XMFLOAT3* pCenter, float fRadius);
 			
 			// *@スクリーン座標を3D座標へ変換
-			Vector3 ConvertScreenToWorld(Vector2 pos)
-			{
-				Vector3 ret;
-				D3D11_VIEWPORT& vp = *MySpace::Graphics::CDXDevice::Get()->GetViewPort();
-				XMStoreFloat3(&ret, XMVector3Unproject(
-					XMVectorSet(pos.x, pos.y, 0.0f, 1.0f),
-					vp.TopLeftX, 
-					vp.TopLeftY, 
-					vp.Width, 
-					vp.Height, 
-					vp.MinDepth, 
-					vp.MaxDepth,
-					XMLoadFloat4x4(&GetProjMatrix()), 
-					XMLoadFloat4x4(&GetViewMatrix()),
-					XMMatrixIdentity()
-				));
-				return ret;
-			}
+			Vector3 ConvertScreenToWorld(Vector2 pos);
+			
 
 #ifdef BUILD_MODE
 

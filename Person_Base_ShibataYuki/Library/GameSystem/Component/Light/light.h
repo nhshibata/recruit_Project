@@ -38,7 +38,7 @@ namespace MySpace
 		private:
 			bool m_bEnable;			// ライティング有効/無効
 
-			static CLight* m_pLight;
+			static inline CLight* m_pLight = nullptr;
 
 		public:
 			//--- ﾒﾝﾊﾞ関数
@@ -53,7 +53,7 @@ namespace MySpace
 			inline void SetDisable(bool bDisable = true) { m_bEnable = !bDisable; }
 			inline bool IsEnable() { return m_bEnable; }
 
-			static CLight* Get();
+			static CLight* GetMain();
 			static void Set(CLight* pLight = nullptr);
 
 #ifdef BUILD_MODE

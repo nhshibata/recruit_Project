@@ -67,9 +67,7 @@ namespace MySpace
 			CMeshRenderer(std::shared_ptr<CGameObject> owner);
 			virtual ~CMeshRenderer();
 
-			virtual void Awake();
 			virtual void Init();
-			virtual void Update();
 			virtual bool Draw();
 
 			//--- ゲッター・セッター

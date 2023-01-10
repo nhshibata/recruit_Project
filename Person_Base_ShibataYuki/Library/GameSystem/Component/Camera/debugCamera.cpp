@@ -14,19 +14,33 @@
 using namespace MySpace::Game;
 using namespace MySpace::System;
 
+//==========================================================
+// コンストラクタ
+//==========================================================
 CDebugCamera::CDebugCamera()
 	:m_eMode(ECameraMode::CAM_MODE_NONE), m_oldMousePos({ LONG(0),LONG(0) }), m_bMouse(true)
 {
 }
+
+//==========================================================
+// 引き数付きコンストラクタ
+//==========================================================
 CDebugCamera::CDebugCamera(std::shared_ptr<CGameObject> owner)
 	: CCamera(owner), m_eMode(ECameraMode::CAM_MODE_NONE), m_oldMousePos({LONG(0),LONG(0)}), m_bMouse(true)
 {
 }
+
+//==========================================================
+// デストラクタ
+//==========================================================
 CDebugCamera::~CDebugCamera()
 {
 
 }
 
+//==========================================================
+// 生成時呼び出し
+//==========================================================
 void CDebugCamera::Awake()
 {
 	CCamera::Awake();
@@ -38,14 +52,20 @@ void CDebugCamera::Awake()
 	ResumeCamera(true);
 }
 
+//==========================================================
+// 初期化
+//==========================================================
 void CDebugCamera::Init()
 {
 	CCamera::Init();
 }
 
+//==========================================================
+// 更新
+//==========================================================
 void CDebugCamera::Update()
 {
-	// マウス（カーソル)による更新
+	//--- マウス（カーソル)による更新
 	if (GetAsyncKeyState(VK_LBUTTON))
 	{
 		m_eMode = ECameraMode::CAM_MODE_ORBIT;
@@ -84,8 +104,6 @@ void CDebugCamera::Update()
 	if (Input::Keyboad::IsTrigger(VK_F1))
 		m_bMouse ^= true;
 
-	//if (CInput::GetKeyRelease(VK_C))
-
 	if (!m_bMouse)
 		m_eMode = ECameraMode::CAM_MODE_NONE;
 
@@ -95,25 +113,36 @@ void CDebugCamera::Update()
 	CameraMouseMove(pos.x, pos.y);
 }
 
+//==========================================================
+// 最終更新
+//==========================================================
 void CDebugCamera::LateUpdate()
 {
 	CCamera::Update();
 }
 
+//==========================================================
+// ｶﾒﾗ操作
+//==========================================================
 void CDebugCamera::CameraMouseMove(int x, int y)
 {
-	// カメラを動かす状態か確認
+	//--- カメラを動かす状態か確認
 	if (m_eMode == ECameraMode::CAM_MODE_NONE)
+	{
+		// マウスの座標更新
+		m_oldMousePos.x = x;
+		m_oldMousePos.y = y;
 		return;
+	}
 
 	// マウスの移動量
 	float mouseMoveX = (float)x - (float)m_oldMousePos.x;
 	float mouseMoveY = (float)y - (float)m_oldMousePos.y;
-	// マウスの座標更新
+
+	//--- マウスの座標更新
 	m_oldMousePos.x = x;
 	m_oldMousePos.y = y;
 
-#if 1
 	Vector3 pos = CCamera::GetPos();
 	XMVECTOR vPos = XMVectorSet(pos.x, pos.y, pos.z, 0.0f);
 	XMVECTOR vLook = XMVectorSet(m_vTarget.x, m_vTarget.y, m_vTarget.z, 0.0f);
@@ -123,7 +152,7 @@ void CDebugCamera::CameraMouseMove(int x, int y)
 	float focus = 0.0f;
 
 	XMStoreFloat(&focus, XMVector3Length(vFront));
-	// 正規化
+	//--- 正規化
 	vFront = XMVector3Normalize(vFront);
 	side = XMVector3Normalize(XMVector3Cross(vUp, vFront));
 	vUp = XMVector3Normalize(XMVector3Cross(vFront, side));
@@ -132,6 +161,7 @@ void CDebugCamera::CameraMouseMove(int x, int y)
 	{
 	case ECameraMode::CAM_MODE_NONE:
 		break;
+
 	case ECameraMode::CAM_MODE_ORBIT:
 	{
 		//--- オービット(被写体(注視点)を中心に回転する操作)
@@ -143,26 +173,27 @@ void CDebugCamera::CameraMouseMove(int x, int y)
 		XMMATRIX rotY = XMMatrixRotationY(XMConvertToRadians(angleX));
 		XMVECTOR rotAxis = XMVector3Normalize(XMVector3TransformCoord(side, rotY));
 		
-		XMMATRIX rotX = XMMatrixRotationAxis(rotAxis, XMConvertToRadians(angleY));
+		XMMATRIX rotSide = XMMatrixRotationAxis(rotAxis, XMConvertToRadians(angleY));
 		DirectX::XMVECTOR vRelative = DirectX::XMVectorScale(vFront, focus);
-		vRelative = XMVector3TransformCoord(vRelative, rotY * rotX);
+		vRelative = XMVector3TransformCoord(vRelative, rotY * rotSide);
 
 		// 注視点を原点として回転
 		/*rotPos = DirectX::XMVector3TransformCoord(rotPos, rotY);
-		rotPos = DirectX::XMVector3TransformCoord(rotPos, rotX);
+		rotPos = DirectX::XMVector3TransformCoord(rotPos, rotSide);
 		DirectX::XMStoreFloat3(&pos, DirectX::XMVectorAdd(rotPos, vLook));*/
+		
 		// 座標更新
-		DirectX::XMStoreFloat3(&GetPos(), DirectX::XMVectorSubtract(vLook, vRelative));
+		DirectX::XMStoreFloat3(&pos, DirectX::XMVectorSubtract(vLook, vRelative));
 
 		// アップベクトルを計算
 		vUp = DirectX::XMVector3Cross(
-			DirectX::XMVector3Normalize(DirectX::XMVectorScale(rotPos, -1.0f)), rotAxis);
+			DirectX::XMVector3Normalize(vRelative), rotAxis);
 		DirectX::XMStoreFloat3(&m_vUp, DirectX::XMVector3Normalize(vUp));
 		break;
 	}
 	case ECameraMode::CAM_MODE_TRACK:
 	{
-		float farZ = GetFarZ() / 1000;
+		float farZ = GetFarZ();
 
 		// 底辺A、高さBとする三角形について tanΘ = A / Bが成り立つ
 		// 上記式をもとに割り出した遠景の移動量と、フォーカス位置 / 遠景 の比率から、カメラの移動量を求める
@@ -182,9 +213,10 @@ void CDebugCamera::CameraMouseMove(int x, int y)
 	}
 	case ECameraMode::CAM_MODE_DOLLY:
 	{
-		float farZ = GetFarZ() / 1000;
+		float farZ = GetFarZ();
 		float rate = focus / farZ;
-		XMStoreFloat3(&pos, DirectX::XMVectorAdd(vPos, DirectX::XMVectorScale(vFront, farZ * 0.01f * rate * (mouseMoveY + mouseMoveX))));
+		XMVECTOR vMove = DirectX::XMVectorScale(vFront, farZ * 0.01f * rate * (mouseMoveY + mouseMoveX));
+		XMStoreFloat3(&pos, DirectX::XMVectorAdd(vPos, vMove));
 	break;
 	}
 	default:
@@ -192,14 +224,17 @@ void CDebugCamera::CameraMouseMove(int x, int y)
 	}
 
 	Transform()->SetPos(pos);
-
-#endif // 1
+	m_vPos = pos;
 
 	// マウスの座標更新
 	m_oldMousePos.x = x;
 	m_oldMousePos.y = y;
 }
 
+//==========================================================
+// Debug用
+// ﾒｲﾝｶﾒﾗの切替
+//==========================================================
 void CDebugCamera::ResumeCamera(bool bSwitch)
 {
 	static std::weak_ptr<CCamera> work;
@@ -225,4 +260,5 @@ void CDebugCamera::ResumeCamera(bool bSwitch)
 			}
 		}
 	}
+
 }

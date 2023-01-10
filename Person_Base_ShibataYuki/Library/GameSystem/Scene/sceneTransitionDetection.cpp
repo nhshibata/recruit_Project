@@ -11,20 +11,29 @@
 
 using namespace MySpace::SceneManager;
 
-
+//==========================================================
+// コンストラクタ
+//==========================================================
 CSceneTransitionDetection::CSceneTransitionDetection()
 {
 	m_pChangeFunc.clear();
 	m_pLoadFunc.clear();
 	m_pUnloadFunc.clear();
 }
+
+//==========================================================
+// デストラクタ
+//==========================================================
 CSceneTransitionDetection::~CSceneTransitionDetection()
 {
 	m_pChangeFunc.clear();
 	m_pLoadFunc.clear();
 	m_pUnloadFunc.clear();
 }
-// *Change
+
+//==========================================================
+// Change時呼び出し
+//==========================================================
 void CSceneTransitionDetection::Call(CScene* prev, CScene* next)
 {
 	auto list = m_pChangeFunc;
@@ -35,7 +44,10 @@ void CSceneTransitionDetection::Call(CScene* prev, CScene* next)
 		(*it).Call(prev,next);
 	}
 }
-// *Load
+
+//==========================================================
+// Load時呼び出し
+//==========================================================
 void CSceneTransitionDetection::Call(CScene* scene, int mode)
 {
 	auto list = m_pLoadFunc;
@@ -48,7 +60,10 @@ void CSceneTransitionDetection::Call(CScene* scene, int mode)
 		(*it).Call(scene, mode);
 	}
 }
-// *Unload
+
+//==========================================================
+// Unload時呼び出し
+//==========================================================
 void CSceneTransitionDetection::Call(CScene* scene)
 {
 	auto list = m_pUnloadFunc;
@@ -59,10 +74,13 @@ void CSceneTransitionDetection::Call(CScene* scene)
 		(*it).Call(scene);
 	}
 }
+
+//==========================================================
+// 除外
+//==========================================================
 bool CSceneTransitionDetection::StopFunc(void* ptr)
 {
-	// 検索
-	//if (auto it = std::find(m_pChangeFunc.begin(), m_pChangeFunc.end(),ptr); it != m_pChangeFunc.end())
+	//--- 検索
 	for (auto it = m_pChangeFunc.begin(); it != m_pChangeFunc.end(); ++it)
 	{
 		if (ptr == it->GetAdress()) 
@@ -71,7 +89,7 @@ bool CSceneTransitionDetection::StopFunc(void* ptr)
 			return true;
 		}
 	}
-	//if (auto it = std::find(m_pLoadFunc.begin(), m_pLoadFunc.end(),ptr); it != m_pLoadFunc.end())
+
 	for (auto it = m_pLoadFunc.begin(); it != m_pLoadFunc.end(); ++it)
 	{
 		if (ptr == it->GetAdress())
@@ -80,7 +98,7 @@ bool CSceneTransitionDetection::StopFunc(void* ptr)
 			return true;
 		}
 	}
-	//if (auto it = std::find(m_pUnloadFunc.begin(), m_pUnloadFunc.end(), ptr); it != m_pUnloadFunc.end())
+
 	for (auto it = m_pUnloadFunc.begin(); it != m_pUnloadFunc.end(); ++it)
 	{
 		if (ptr == it->GetAdress())

@@ -93,6 +93,7 @@ namespace MySpace
 					CEREAL_NVP(m_mWorld), CEREAL_NVP(m_material)
 				);
 			}
+
 		private:
 			//--- メンバ変数
 			ID3D11Buffer* m_pVertexBuffer;	// 頂点バッファインターフェースへのポインタ

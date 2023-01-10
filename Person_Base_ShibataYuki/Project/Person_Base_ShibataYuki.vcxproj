@@ -71,7 +71,7 @@
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <LinkIncremental>true</LinkIncremental>
-    <IncludePath>$(SolutionDir)Library\Effekseer;$(SolutionDir)Library\Source\common;$(SolutionDir)Library\Source\spel;$(SolutionDir)Library\Source;$(SolutionDir)Library;$(IncludePath)</IncludePath>
+    <IncludePath>$(SolutionDir)Source;$(SolutionDir)Library\Effekseer;$(SolutionDir)Library\Source\common;$(SolutionDir)Library\Source\spel;$(SolutionDir)Library\Source;$(SolutionDir)Library;$(IncludePath)</IncludePath>
     <LibraryPath>$(SolutionDir)exe\$(Configuration)\;$(SolutionDir)..\..\DirectXTex;$(SolutionDir)..\..\Assimp\lib\x64;$(SolutionDir)..\..\Assimp;$(SolutionDir)..\..\DirectXTex\x64\$(Configuration);$(SolutionDir)Library\Effekseer;$(DXSDK_DIR)lib¥x64;$(LibraryPath)</LibraryPath>
     <OutDir>$(SolutionDir)exe\$(Configuration)\</OutDir>
     <IntDir>$(SolutionDir)Binary\$(ProjectName)\$(Platform)\$(Configuration)\</IntDir>
@@ -79,7 +79,7 @@
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <LinkIncremental>false</LinkIncremental>
-    <IncludePath>$(SolutionDir)Library\Effekseer;$(SolutionDir)Library\Source\common;$(SolutionDir)Library\Source\spel;$(SolutionDir)Library\Source;$(SolutionDir)Library;$(IncludePath)</IncludePath>
+    <IncludePath>$(SolutionDir)Source;$(SolutionDir)Library\Effekseer;$(SolutionDir)Library\Source\common;$(SolutionDir)Library\Source\spel;$(SolutionDir)Library\Source;$(SolutionDir)Library;$(IncludePath)</IncludePath>
     <LibraryPath>$(SolutionDir)exe\$(Configuration)\;$(SolutionDir)..\..\DirectXTex;$(SolutionDir)..\..\Assimp\lib\x64;$(SolutionDir)..\..\Assimp;$(SolutionDir)..\..\DirectXTex\x64\$(Configuration);$(SolutionDir)Library\Effekseer;$(DXSDK_DIR)lib¥x64;$(LibraryPath)</LibraryPath>
     <OutDir>$(SolutionDir)exe\$(Configuration)\</OutDir>
     <IntDir>$(SolutionDir)Binary\$(ProjectName)\$(Platform)\$(Configuration)\</IntDir>
@@ -114,7 +114,7 @@
       <AdditionalOptions>/bigobj %(AdditionalOptions)</AdditionalOptions>
       <LanguageStandard>stdcpp17</LanguageStandard>
       <ShowIncludes>false</ShowIncludes>
-      <InlineFunctionExpansion>AnySuitable</InlineFunctionExpansion>
+      <InlineFunctionExpansion>Default</InlineFunctionExpansion>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -158,7 +158,7 @@
       <AdditionalOptions>/bigobj %(AdditionalOptions)</AdditionalOptions>
       <LanguageStandard>stdcpp17</LanguageStandard>
       <ShowIncludes>false</ShowIncludes>
-      <InlineFunctionExpansion>AnySuitable</InlineFunctionExpansion>
+      <InlineFunctionExpansion>OnlyExplicitInline</InlineFunctionExpansion>
       <PreprocessorDefinitions>_NDEBUG;_LIB;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <WholeProgramOptimization>true</WholeProgramOptimization>
     </ClCompile>
@@ -173,12 +173,7 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="..\Library\Source\common\eventMessage.cpp" />
-    <ClCompile Include="..\Library\Source\common\fadeController.cpp">
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
-    </ClCompile>
     <ClCompile Include="..\Library\Source\gameCamera.cpp" />
-    <ClCompile Include="..\Library\Source\Main.cpp" />
     <ClCompile Include="..\Library\Source\spel\battleStatus.cpp" />
     <ClCompile Include="..\Library\Source\spel\command.cpp" />
     <ClCompile Include="..\Library\Source\spel\commandSpell.cpp" />
@@ -197,13 +192,17 @@
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
     </ClCompile>
     <ClCompile Include="..\Library\Source\startUp.cpp" />
+    <ClCompile Include="..\Source\fadeController.cpp" />
+    <ClCompile Include="..\Source\gameManager.cpp" />
+    <ClCompile Include="..\Source\gameSceneManager.cpp" />
+    <ClCompile Include="..\Source\spellPlayer.cpp" />
+    <ClCompile Include="..\Source\stageBuild.cpp" />
+    <ClCompile Include="..\Source\stageManager.cpp" />
+    <ClCompile Include="..\Source\titleMove.cpp" />
+    <ClCompile Include="..\Source\titleSceneManager.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\Library\Source\common\eventMessage.h" />
-    <ClInclude Include="..\Library\Source\common\fadeController.h">
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
-    </ClInclude>
     <ClInclude Include="..\Library\Source\gameCamera.h" />
     <ClInclude Include="..\Library\Source\spel\battleStatus.h" />
     <ClInclude Include="..\Library\Source\spel\command.h" />
@@ -222,6 +221,15 @@
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
     </ClInclude>
+    <ClInclude Include="..\Source\fadeController.h" />
+    <ClInclude Include="..\Source\gameManager.h" />
+    <ClInclude Include="..\Source\gameSceneManager.h" />
+    <ClInclude Include="..\Source\spellDefine.h" />
+    <ClInclude Include="..\Source\spellPlayer.h" />
+    <ClInclude Include="..\Source\stageBuild.h" />
+    <ClInclude Include="..\Source\stageManager.h" />
+    <ClInclude Include="..\Source\titleMove.h" />
+    <ClInclude Include="..\Source\titleSceneManager.h" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="AISystem.vcxproj">

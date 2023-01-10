@@ -38,15 +38,15 @@
 #include <GameSystem/Component/Camera/debugCamera.h>
 #include <AISystem/Nav/navMeshBake.h>
 
-#pragma region NAME_SPACE
 using namespace MySpace::System;
 using namespace MySpace::Debug;
 using namespace MySpace::Game;
 using namespace MySpace::Graphics;
 using namespace MySpace::SceneManager;
-#pragma endregion
 
+//==========================================================
 // コンストラクタ
+//==========================================================
 ImGuiManager::ImGuiManager()
 {
 	m_bPlayMode = EPlayMode::Release;
@@ -56,13 +56,20 @@ ImGuiManager::ImGuiManager()
 	m_bEditFlg = true;
 	m_bSceneRender = false;
 	m_bGridDisp = false;
+
 }
+
+//==========================================================
 // オーナーのデバッグフラグ確認
+//==========================================================
 bool ImGuiManager::CheckPlayMode()
 {
 	return m_bEditFlg;
 }
+
+//==========================================================
 // 初期化
+//==========================================================
 void ImGuiManager::Init(HWND hWnd, ID3D11Device* device, ID3D11DeviceContext* context)
 {
 	IMGUI_CHECKVERSION();
@@ -89,7 +96,8 @@ void ImGuiManager::Init(HWND hWnd, ID3D11Device* device, ID3D11DeviceContext* co
 	m_pDS = std::make_shared<CDepthStencil>();
 	m_pRT = std::make_shared<CRenderTarget>();
 	
-	// デバッグカメラの生成
+	//--- デバッグカメラの生成
+	if(0)
 	{
 		m_pDebugObj = std::make_shared<CGameObject>();
 		CGameObject::CreateDebugObject(m_pDebugObj);
@@ -98,8 +106,15 @@ void ImGuiManager::Init(HWND hWnd, ID3D11Device* device, ID3D11DeviceContext* co
 		m_pDebugObj->GetTransform()->SetScale({ 10, 10, 10 });
 		m_pDebugObj->GetTransform()->Update();		
 	}
+	else
+	{
+		m_bEditFlg = false;
+	}
 }
+
+//==========================================================
 // ImGuiの終了処理
+//==========================================================
 void ImGuiManager::Uninit()
 {
 	m_pDebugCamera.lock()->GetOwner(0).reset();
@@ -116,13 +131,18 @@ void ImGuiManager::Uninit()
 	ImGui_ImplWin32_Shutdown();
 	ImGui::DestroyContext();
 }
+
+//==========================================================
 // ImGuiの更新処理
+// ImGuiの表示は基本ここで呼び出す
+//==========================================================
 void ImGuiManager::Update() 
 {
 	if (CInput::GetKeyTrigger(VK_P))
 	{
 		m_bSceneRender ^= true;
 	}
+
 	// ON/OFF
 	if (CInput::GetKeyTrigger(VK_I))
 	{
@@ -148,7 +168,7 @@ void ImGuiManager::Update()
 	m_pHierarchy->Update(this);
 	
 	// 現在シーン取得
-	SceneManager::CScene* scene = CSceneManager::Get()->GetActiveScene();
+	SceneManager::CScene* scene = CSceneManager::Get().GetActiveScene();
 	
 	//--- SceneView表示
 	if (m_bSceneRender)
@@ -177,7 +197,7 @@ void ImGuiManager::Update()
 
 		// シーン名表示
 		ImGui::Text(u8"現在のシーン名 : %s", scene->GetSceneName().c_str());
-		ImGui::Text(u8"オブジェクト数 : %d", CSceneManager::Get()->GetActiveScene()->GetObjManager()->GetList().size());
+		ImGui::Text(u8"オブジェクト数 : %d", CSceneManager::Get().GetActiveScene()->GetObjManager()->GetList().size());
 
 		// フレームレート表示
 		ImGui::Text(u8"現在のFPS : %.1f FPS", ImGui::GetIO().Framerate);
@@ -187,30 +207,30 @@ void ImGuiManager::Update()
 	//--- SceneManager表示
 	if (ImGui::BeginTabItem("SceneManager"))
 	{
-		CSceneManager::Get()->ImGuiDebug();
+		CSceneManager::Get().ImGuiDebug();
 		// 変更されている可能性があるため再取得
-		scene = CSceneManager::Get()->GetActiveScene();
+		scene = CSceneManager::Get().GetActiveScene();
 		ImGui::EndTabItem();	// とじる
 	}
 	
 	//--- FPS情報
 	if (ImGui::BeginTabItem("FPS"))
 	{
-		CFps::Get()->ImGuiDebug();
+		CFps::Get().ImGuiDebug();
 		ImGui::EndTabItem();	// とじる
 	}
 	
 	//--- 描画の確認
 	if (ImGui::BeginTabItem("DrawSystem"))
 	{
-		CSceneManager::Get()->GetDrawSystem()->ImGuiDebug();
+		CSceneManager::Get().GetDrawSystem()->ImGuiDebug();
 		ImGui::EndTabItem();	// とじる
 	}
 	
 	//--- NavMesh
 	if (ImGui::BeginTabItem("NavMesh"))
 	{
-		CSceneManager::Get()->GetNavMesh()->ImGuiDebug();		
+		CSceneManager::Get().GetNavMesh()->ImGuiDebug();		
 		ImGui::EndTabItem();	// とじる
 	}
 
@@ -240,7 +260,7 @@ void ImGuiManager::Update()
 
 	//--- ｶﾒﾗ操作
 	const int e = EMouseHovered::HOVERED_WINDOW | EMouseHovered::HOVERED_GIZMO | EMouseHovered::HOVERED_ITEM | EMouseHovered::HOVERED_DRAG;
-	if (!ImGuiManager::Get()->IsHover(EMouseHovered(e)))
+	if (!this->IsHover(EMouseHovered(e)))
 	{
 		if (m_pDebugCamera.lock())
 			m_pDebugCamera.lock()->Update();
@@ -248,6 +268,8 @@ void ImGuiManager::Update()
 
 	if (ImGui::BeginTabItem("ImGui"))
 	{
+		ImGui::Checkbox("ImguiOFF", &m_bPause);
+
 		int res = 0;
 		for (int cnt = 1; cnt < sizeof(EMouseHovered); cnt++)
 		{
@@ -280,7 +302,9 @@ void ImGuiManager::Update()
 	return;
 }
 
-// ImGuiの描画更新処理
+//==========================================================
+// ImGuiの描画処理
+//==========================================================
 void ImGuiManager::Render()
 {
 	if (!m_bEditFlg)
@@ -297,13 +321,15 @@ void ImGuiManager::Render()
 	}
 }
 
-// ポーズの処理
+//==========================================================
+// ポーズ処理
+//==========================================================
 void ImGuiManager::Pause()
 {
 	if (!m_bEditFlg)
 		return;
 
-	//画面位置を外部から取得できるようにする
+	//--- 画面位置を外部から取得できるようにする
 	ImGui::SetNextWindowPos(ImVec2((float)CScreen::GetWidth()*0.75f, (float)CScreen::GetHeight()*0.85f));
 	ImGui::SetNextWindowSize(ImVec2(320, 120), ImGuiCond_Once);
 	ImGui::Begin(u8"Pause", &m_bPause);
@@ -313,13 +339,13 @@ void ImGuiManager::Pause()
 	ImGui::Text(u8"step[O]");
 	ImGui::SameLine();
 
-	// デバッグポーズの処理
+	// デバッグポーズ処理
 	if (ImGui::Button(u8"STOP") || CInput::GetKeyTrigger(VK_L))
 	{
 		m_bPause ^= true;
 	}
 
-	// 1フレーム進めたい時
+	//--- 1フレーム進める時
 	if (m_bPause)
 	{
 		ImGui::SameLine();
@@ -336,7 +362,7 @@ void ImGuiManager::Pause()
 			m_bPause = false;
 		}
 	}
-	// 1フレーム戻ってきたときの処理
+	//--- 1フレーム進んで戻ってきたとき
 	else if (m_bOneFlame && !m_bPause)
 	{
 		m_bOneFlame = false;
@@ -346,6 +372,9 @@ void ImGuiManager::Pause()
 	ImGui::End();
 }
 
+//==========================================================
+// ログの表示
+//==========================================================
 void ImGuiManager::DispLog()
 {
 	//ImGui::SetNextWindowPos(ImVec2(120, 60), ImGuiCond_::ImGuiCond_Once);
@@ -367,6 +396,9 @@ void ImGuiManager::DispLog()
 	//ImGui::End();
 }
 
+//==========================================================
+// マウスの状態設定
+//==========================================================
 void ImGuiManager::HoverStateSet()
 {
 
@@ -375,16 +407,19 @@ void ImGuiManager::HoverStateSet()
 		UpHover(ImGuiManager::EMouseHovered::HOVERED_WINDOW);
 		DebugLog("Window Hover");
 	}
+
 	if (ImGui::IsAnyItemHovered())
 	{
 		UpHover(ImGuiManager::EMouseHovered::HOVERED_ITEM);
 		DebugLog("Item Hover");
 	}
+	
 	if (ImGui::IsDragDropPayloadBeingAccepted())
 	{
 		UpHover(ImGuiManager::EMouseHovered::HOVERED_DRAG);
 		DebugLog("Drag");
 	}
+	
 	if (ImGui::IsAnyItemActive())
 	{
 		UpHover(ImGuiManager::EMouseHovered::HOVERED_ITEM);
@@ -395,26 +430,36 @@ void ImGuiManager::HoverStateSet()
 	{
 		DebugLog("Item Click");
 	}
-
 }
 
+//==========================================================
+// ImGui表示のレンダーターゲット
+//==========================================================
 ID3D11RenderTargetView* ImGuiManager::GetRTV()
 {
 	return m_pRT->GetView();
 }
 
+//==========================================================
+// ImGui表示の深度
+//==========================================================
 ID3D11DepthStencilView* ImGuiManager::GetDSV()
 {
 	return m_pDS->GetView();
 }
 
+//==========================================================
+// ImGuiの描画先切替
+//==========================================================
 void ImGuiManager::SceneRender()
 {
-	auto pDX = CDXDevice::Get();
 	//--- 描画先の変更
-	pDX->SwitchRender(m_pRT->GetView(), m_pDS->GetView());
+	Application::Get()->GetSystem<CDXDevice>()->SwitchRender(m_pRT->GetView(), m_pDS->GetView());
 }
 
+//==========================================================
+// レンダーターゲットと深度のクリア
+//==========================================================
 void ImGuiManager::SceneRenderClear()
 {
 	float ClearColor[4] = { 0.117647f, 0.254902f, 0.352941f, 1.0f };
@@ -424,6 +469,9 @@ void ImGuiManager::SceneRenderClear()
 	m_pDS->Clear();
 }
 
+//==========================================================
+// ギズモ表示
+//==========================================================
 void ImGuiManager::SceneGizmo()
 {
 	if (auto selectObj = m_pInspector->GetSelectObject().lock(); selectObj)

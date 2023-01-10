@@ -9,11 +9,11 @@
 #define _CRT_SECURE_NO_WARNINGS
 
 //--- インクルード部
+#include <Application/Application.h>
 #include <GraphicsSystem/Manager/shaderManager.h>
-#include <GraphicsSystem/DirectX/DXDevice.h>
+#include <GameSystem/Component/Camera/camera.h>
 #include <d3dcompiler.h>
 #include <DirectXMath.h>
-#include <GameSystem/Component/Camera/camera.h>
 
 #include <fstream>
 
@@ -48,15 +48,21 @@ inline bool loadBinaryFile(std::vector<char>* pOut, const char* filepath)
 	return true;
 }
 
+//==========================================================
+// コンストラクタ
+//==========================================================
 CShaderManager::CShaderManager()
 	:m_fTessellationAmount(24.0f)
 {
-
 }
+
+//==========================================================
+// 初期化
+//==========================================================
 HRESULT CShaderManager::Init()
 {
 	HRESULT hr = S_OK;
-	auto device = CDXDevice::Get()->GetDevice();
+	auto device = Application::Get()->GetDevice();
 
 	for (int cnt = 0 ; cnt < static_cast<int>(EShaderType::MAX); ++cnt)
 	{
@@ -114,7 +120,9 @@ HRESULT CShaderManager::Init()
 	return hr;
 }
 
+//==========================================================
 // 各ｸﾗｽで解放処理
+//==========================================================
 void CShaderManager::Uninit()
 {
 	for (auto & pixel : m_PixelMap)
@@ -142,6 +150,10 @@ void CShaderManager::Uninit()
 		ds.second.reset();
 	}
 }
+
+//==========================================================
+// 更新
+//==========================================================
 void CShaderManager::Update()
 {
 	//for (auto & con : m_ConstantMap)
@@ -149,10 +161,18 @@ void CShaderManager::Update()
 	//	con.second->Bind();
 	//}
 }
+
+//==========================================================
+// 定数書き込み
+//==========================================================
 void CShaderManager::ConstantWrite(std::string name, void* data)
 {
 	m_ConstantMap[name]->Write(data);
 }
+
+//==========================================================
+// シェーダ設定
+//==========================================================
 bool CShaderManager::SetShaderParameters(
 	XMMATRIX worldMatrix, 
 	XMMATRIX viewMatrix,
@@ -160,7 +180,7 @@ bool CShaderManager::SetShaderParameters(
 	float tessellationAmount)
 {
 	HRESULT hr = S_OK;
-	ID3D11DeviceContext * pDC = CDXDevice::Get()->GetDeviceContext();
+	ID3D11DeviceContext * pDC = Application::Get()->GetDeviceContext();
 	D3D11_MAPPED_SUBRESOURCE mappedResource;
 	//unsigned int bufferNumber;
 	MatrixBufferType* dataPtr;
@@ -211,6 +231,10 @@ bool CShaderManager::SetShaderParameters(
 
 	return true;
 }
+
+//==========================================================
+// 描画
+//==========================================================
 void CShaderManager::Render(EShaderType etype, std::string cb, std::string vs, std::string ps, std::string mb)
 {
 	auto pCamera = Game::CCamera::GetMain();
@@ -237,9 +261,13 @@ void CShaderManager::Render(EShaderType etype, std::string cb, std::string vs, s
 	
 	BindMB(mb);
 }
+
+//==========================================================
+// 描画後処理
+//==========================================================
 void CShaderManager::EndRender()
 {
-	ID3D11DeviceContext* pDC = CDXDevice::Get()->GetDeviceContext();
+	ID3D11DeviceContext* pDC = Application::Get()->GetDeviceContext();
 	pDC->VSSetConstantBuffers(0, 1, nullptr);
 	//pDC->VSSetShader(nullptr, nullptr, 0);
 	//pDC->IASetInputLayout(nullptr);
@@ -247,6 +275,8 @@ void CShaderManager::EndRender()
 	//pDC->DSSetShader(nullptr, NULL, 0);
 	//pDC->PSSetShader(nullptr, nullptr, 0);
 }
+
+
 void CShaderManager::Load()
 {
 #if 0

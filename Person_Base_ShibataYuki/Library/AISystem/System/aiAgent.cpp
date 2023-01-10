@@ -11,17 +11,27 @@
 
 using namespace MySpace::Game;
 
+//==========================================================
+// コンストラクタ
+//==========================================================
 CAIAgent::CAIAgent(std::shared_ptr<CGameObject> owner)
 	:CAISystem(owner), m_vTarget(owner->GetTransform()->GetPos()), m_fDistans(0), m_fLimitDistans(1),
 	m_bIsStoping(false)
 {
 
 }
+
+//==========================================================
+// デストラクタ
+//==========================================================
 CAIAgent::~CAIAgent()
 {
 
 }
 
+//==========================================================
+// ノード更新
+//==========================================================
 int CAIAgent::NodeUpdate()
 {
 	auto pos = GetOwner()->GetTransform()->GetPos();

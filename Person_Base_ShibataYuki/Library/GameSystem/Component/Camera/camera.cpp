@@ -42,16 +42,25 @@ namespace Camera
 };
 using namespace Camera;
 
+//==========================================================
+// コンストラクタ
+//==========================================================
 CCamera::CCamera()
 {
 	auto cam = m_pMainCamera.lock();
 }
+
+//==========================================================
+// 引き数付きコンストラクタ
+//==========================================================
 CCamera::CCamera(std::shared_ptr<CGameObject> owner)
 	:CComponent(owner),m_vPos(0,0,0),m_vTarget(1,1,1),m_vUp(0,1,0),m_vAngle(0,0,0)
 {
-	//if (!m_pCamera)m_pCamera = this;
-	//if (!m_pCamera.lock())m_pCamera = BaseToDerived<CCamera>();
 }
+
+//==========================================================
+// デストラクタ
+//==========================================================
 CCamera::~CCamera()
 {
 	// 自身が破棄されたときにreset
@@ -66,13 +75,17 @@ CCamera::~CCamera()
 
 	// 破棄されたときにｶﾒﾗが存在しているか確認
 	// あればﾒｲﾝｶﾒﾗを移動
-	if (!CSceneManager::Get()->GetActiveScene())return;
+	if (!CSceneManager::Get().GetActiveScene())return;
 	if (auto camObj = CGameObject::FindGameObjectWithTag(CDefaultTagChar::CAMERA); camObj.lock())
 	{
 		auto cameraCom = camObj.lock()->GetComponent<CCamera>().lock();
 		SetMain(cameraCom);
 	}
 }
+
+//==========================================================
+// ロード時呼び出し
+//==========================================================
 void CCamera::OnLoad()
 {
 	if (!m_pMainCamera.lock())
@@ -80,6 +93,10 @@ void CCamera::OnLoad()
 
 	m_pSky = GetOwner()->GetComponent<CModelRenderer>();
 }
+
+//==========================================================
+// 生成時呼び出し
+//==========================================================
 void CCamera::Awake()
 {
 	if (!m_pMainCamera.lock())
@@ -101,6 +118,10 @@ void CCamera::Awake()
 	DirectX::XMStoreFloat4x4(&m_mtxView, XMMatrixIdentity());
 	DirectX::XMStoreFloat4x4(&m_mtxProj, XMMatrixIdentity());
 }
+
+//==========================================================
+// 初期化
+//==========================================================
 void CCamera::Init()
 {
 	auto screen = CScreen::GetSize();
@@ -127,6 +148,10 @@ void CCamera::Init()
 	// 視覚錘初期化
 	InitFrustum();
 }
+
+//==========================================================
+// 更新
+//==========================================================
 void CCamera::Update()
 {
 	m_vPos.x = Transform()->GetPos().x;
@@ -139,43 +164,24 @@ void CCamera::Update()
 	// 視錘台
 	UpdateFrustum();
 }
+
+//==========================================================
+// スカイドーム描画
+//==========================================================
 void CCamera::DrawSkyDome()
 {
-	//float ClearColor[4] = { 0.117647f, 0.254902f, 0.352941f, 1.0f };
-	//ID3D11DeviceContext* pDC = CDXDevice::Get()->GetDeviceContext();
-	//pDC->ClearRenderTargetView(CDXDevice::Get()->GetRenderTargetView(), ClearColor);
-	//pDC->ClearDepthStencilView(CDXDevice::Get()->GetDepthStencilView(),
-	//	D3D11_CLEAR_DEPTH | D3D11_CLEAR_STENCIL, 1.0f, 0);
-	//ID3D11RenderTargetView* pViews[] = {
-	//	CDXDevice::Get()->GetRenderTargetView()
-	//};
-	//pDC->OMSetRenderTargets(1, pViews,nullptr);
-
 	// TODO: skydomeｸﾗｽ作る？
 	if (!m_pSky.lock())
 		return;
-	//{
-	//	CDXDevice::Get()->SetZBuffer(false);		// Zバッファ無効
-	//	CDirectionalLight* pLight = dynamic_cast<CDirectionalLight*>(CLight::Get());
-	//	pLight->SetDisable();	// ライティング無効
-
-	//	XMFLOAT4X4 mW, oldW;
-	//	oldW = Transform()->GetWorldMatrix();
-	//	XMStoreFloat4x4(&mW, XMMatrixTranslation(m_vPos.x, m_vPos.y, m_vPos.z));
-	//	Transform()->SetWorldMatrix(mW);
-
-	//	m_pSky.lock()->Draw(0);
-	//	Transform()->SetWorldMatrix(oldW);
-	//	pLight->SetEnable();	// ライティング有効
-	//}
-	//CDXDevice::Get()->SetZBuffer(true);
-	//CDXDevice::Get()->SetBlendState(static_cast<int>(EBlendState::BS_NONE));
 
 	m_pSky.lock()->SetVisible(true);
 	m_pSky.lock()->Draw(0);
 	m_pSky.lock()->SetVisible(false);
-
 }
+
+//==========================================================
+// マトリックス
+//==========================================================
 void CCamera::SetWorldMatrix(DirectX::XMFLOAT4X4& mtxWorld)
 {
 	m_mtxWorld = mtxWorld;
@@ -183,6 +189,10 @@ void CCamera::SetWorldMatrix(DirectX::XMFLOAT4X4& mtxWorld)
 	m_vTarget = XMFLOAT3(mtxWorld._41 + mtxWorld._31, mtxWorld._42 + mtxWorld._32, mtxWorld._43 + mtxWorld._33);
 	m_vUp = XMFLOAT3(mtxWorld._21, mtxWorld._22, mtxWorld._23);
 }
+
+//==========================================================
+// ｶﾒﾗの姿勢からマトリックス計算
+//==========================================================
 DirectX::XMFLOAT4X4& CCamera::CalcWorldMatrix()
 {
 	XMVECTOR vecZ = XMVectorSet(m_vTarget.x - m_vPos.x, m_vTarget.y - m_vPos.y, m_vTarget.z - m_vPos.z, 0.0f);
@@ -215,6 +225,10 @@ DirectX::XMFLOAT4X4& CCamera::CalcWorldMatrix()
 
 	return m_mtxWorld;
 }
+
+//==========================================================
+// マトリックス更新
+//==========================================================
 void CCamera::UpdateMatrix()
 {
 	XMStoreFloat4x4(&m_mtxView, XMMatrixLookAtLH(
@@ -228,6 +242,10 @@ void CCamera::UpdateMatrix()
 		m_fAspectRatio, m_fNearZ, m_fFarZ
 	));
 }
+
+//==========================================================
+// 視錘台初期化
+//==========================================================
 void CCamera::InitFrustum()
 {
 	// 視錘台準備
@@ -252,6 +270,10 @@ void CCamera::InitFrustum()
 		Transform()->SetPos(m_vPos);
 	}
 }
+
+//==========================================================
+// 視錘台更新
+//==========================================================
 void CCamera::UpdateFrustum()
 {
 	auto mtx = this->CalcWorldMatrix();	//Transform()->GetWorldMatrix();
@@ -268,7 +290,10 @@ void CCamera::UpdateFrustum()
 		XMStoreFloat4(&m_frusw[cnt], XMPlaneTransform(XMLoadFloat4(&m_frus[cnt]), mW));
 	}
 }
-// *@視錘台
+
+//==========================================================
+// 視錘台による当たり判定
+//==========================================================
 CCamera::EFrustumResult CCamera::CollisionViewFrustum(XMFLOAT3* pCenter, float fRadius)
 {
 	bool bHit = false;
@@ -287,6 +312,30 @@ CCamera::EFrustumResult CCamera::CollisionViewFrustum(XMFLOAT3* pCenter, float f
 	if (bHit)return EFrustumResult::PARTINSIDE;	// 面をまたぐ
 	return EFrustumResult::INSIDE;	// 完全に内側
 }
+
+//==========================================================
+// スクリーン座標からﾜｰﾙﾄﾞ空間上の座標へ変換
+//==========================================================
+Vector3 CCamera::ConvertScreenToWorld(Vector2 pos)
+{
+	
+	D3D11_VIEWPORT& vp = *Application::Get()->GetSystem<CDXDevice>()->GetViewPort();
+	Vector3 ret;
+	XMStoreFloat3(&ret, XMVector3Unproject(
+		XMVectorSet(pos.x, pos.y, 0.0f, 1.0f),
+		vp.TopLeftX,
+		vp.TopLeftY,
+		vp.Width,
+		vp.Height,
+		vp.MinDepth,
+		vp.MaxDepth,
+		XMLoadFloat4x4(&GetProjMatrix()),
+		XMLoadFloat4x4(&GetViewMatrix()),
+		XMMatrixIdentity()
+	));
+	return ret;
+}
+
 
 #ifdef BUILD_MODE
 

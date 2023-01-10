@@ -9,8 +9,8 @@
 //=========================================================
 
 //--- インクルード部
+#include <Application/Application.h>
 #include <GraphicsSystem/Manager/FontTexture.h>
-#include <GraphicsSystem/DirectX/DXDevice.h>
 #include <GraphicsSystem/Render/polygon.h>
 
 using namespace MySpace::Graphics;
@@ -18,12 +18,14 @@ using namespace MySpace::Graphics;
 CFontTexture::CFontTexture()
 	:m_FontName(std::wstring())
 {
-
+	
 }
+
 CFontTexture::~CFontTexture()
 {
 
 }
+
 HRESULT CFontTexture::Init()
 {
 	//ロケールを設定しなければ文字化けする可能性があるらしい
@@ -54,6 +56,7 @@ HRESULT CFontTexture::Init()
 
 	return S_OK;
 }
+
 void CFontTexture::Uninit()
 {
 	for (auto & font : m_aStringMap)
@@ -75,6 +78,7 @@ void CFontTexture::Uninit()
 		&design
 	);*/
 }
+
 void CFontTexture::DesignFont(std::string fontPath, std::wstring fontName)
 {
 	// フォントハンドルの生成
@@ -119,6 +123,7 @@ void CFontTexture::DesignFont(std::string fontPath, std::wstring fontName)
 	m_hdc = GetDC(NULL);
 	m_hOldFont = (HFONT)SelectObject(m_hdc, m_hFont);
 }
+
 CFontTexture::STCharaData CFontTexture::CreateTex(LPCWSTR character, std::wstring fontName)
 {
 	if (m_FontName != fontName)
@@ -162,30 +167,6 @@ CFontTexture::STCharaData CFontTexture::CreateTex(LPCWSTR character, std::wstrin
 		m_aStringMap[fontName];
 	}
 
-	// フォントハンドルの設定
-	//UINT fontSize = 64;
-	//UINT fontWeight = 1000;
-	//LPCSTR font = "ＭＳ ゴシック";
-	//LOGFONTW lf =
-	//{
-	//	fontSize, 0, 0, 0,
-	//	fontWeight, 0, 0, 0,
-	//	SHIFTJIS_CHARSET,
-	//	OUT_TT_ONLY_PRECIS,
-	//	CLIP_DEFAULT_PRECIS,
-	//	PROOF_QUALITY,
-	//	DEFAULT_PITCH | FF_MODERN,
-	//	(WCHAR)font,
-	//};
-
-	//// フォントハンドルを生成
-	//HFONT hFont = CreateFontIndirectW(&lf);
-
-	//// 現在のウィンドウに適用
-	//HDC hdc = GetDC(NULL);
-	//HFONT oldFont = static_cast<HFONT>(SelectObject(hdc, hFont));
-
-
 	// デバイスにフォントを持たせないとGetGlyphOutlineW関数はエラーとなる。
 	// 出力する文字(一文字だけ)
 	UINT code = static_cast<UINT>(*character);
@@ -225,12 +206,12 @@ CFontTexture::STCharaData CFontTexture::CreateTex(LPCWSTR character, std::wstrin
 
 
 	ID3D11Texture2D* fontTexture = 0;
-	auto pDX = CDXDevice::Get();
+	auto pApp = Application::Get();
 	//デバイスコンテキスト
-	auto deviceContext = pDX->GetDeviceContext();
+	auto deviceContext = pApp->GetDeviceContext();
 
 	// フォント用テクスチャを作成
-	HRESULT hr = pDX->GetDevice()->CreateTexture2D(&rtDesc, NULL, &fontTexture);
+	HRESULT hr = pApp->GetDevice()->CreateTexture2D(&rtDesc, NULL, &fontTexture);
 
 	// フォント用テクスチャリソースにテクスチャ情報をコピー
 	D3D11_MAPPED_SUBRESOURCE mappedSubrsrc;
@@ -281,7 +262,7 @@ CFontTexture::STCharaData CFontTexture::CreateTex(LPCWSTR character, std::wstrin
 	newData.BMPHeight = iBmp_h;
 
 	// シェーダリソースビューを作成
-	pDX->GetDevice()->CreateShaderResourceView(fontTexture, &srvDesc, &newData.pTex);
+	pApp->GetDevice()->CreateShaderResourceView(fontTexture, &srvDesc, &newData.pTex);
 
 	// 格納
 	m_aStringMap[fontName].insert(CharTexPair(character, newData));
@@ -337,10 +318,10 @@ CFontTexture::STCharaData CFontTexture::CreateTex(LPCWSTR character, std::wstrin
 	fontTextureDesc.MiscFlags = 0;
 
 	ID3D11Texture2D* fontTexture = 0;
-	auto pDX = CDXDevice::Get();
-	HRESULT hr = pDX.GetDevice()->CreateTexture2D(&fontTextureDesc, NULL, &fontTexture);
+	auto pApp = CDXDevice::GetMain();
+	HRESULT hr = pApp.GetDevice()->CreateTexture2D(&fontTextureDesc, NULL, &fontTexture);
 	//デバイスコンテキスト
-	auto deviceContext = pDX.GetDeviceContext();
+	auto deviceContext = pApp.GetDeviceContext();
 
 	// フォント情報をテクスチャに書き込む部分
 	// フォント用ﾃｸｽﾁｬResourceにテクスチャ情報をコピー
@@ -405,7 +386,7 @@ CFontTexture::STCharaData CFontTexture::CreateTex(LPCWSTR character, std::wstrin
 	newData.BMPWidth = iBmp_w;
 	newData.BMPHeight = iBmp_h;
 
-	pDX.GetDevice()->CreateShaderResourceView(fontTexture, &srvDesc, &newData.pTex);
+	pApp.GetDevice()->CreateShaderResourceView(fontTexture, &srvDesc, &newData.pTex);
 
 	// 格納
 	m_aStringMap[fontName].insert(CharTexPair(character, newData));

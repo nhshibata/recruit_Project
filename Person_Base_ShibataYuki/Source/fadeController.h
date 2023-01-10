@@ -29,7 +29,8 @@ private:
 	std::weak_ptr<CPolygonRenderer> m_pPolygon;										// *@ポリゴンptr
 	E_FadeState m_eState;															// *@状態
 	float m_fFadeTime;																// *@フェード実行時間
-	
+	std::string m_SceneName;
+
 	static inline std::map<E_FadeState, std::vector<std::function<void(void)>>> m_pFuncMap;		// *@フェード実行時関数ポインタ
 	static inline std::map<E_FadeState, std::vector<std::function<void(void)>>> m_pLoopFuncMap;	// *@フェード実行時関数ポインタ(ループ)
 	
@@ -55,6 +56,7 @@ private:
 		}
 		m_pFuncMap[state].clear();
 	}
+
 public:
 	CFadeController() {};
 	CFadeController(std::shared_ptr<CGameObject> owner);
@@ -62,6 +64,8 @@ public:
 
 	void Awake();
 	void Update();
+
+	void SetScene(std::string sceneName);
 
 	// *@フェードアウト開始
 	void StartFadeOut();
@@ -75,6 +79,7 @@ public:
 	{
 		m_pFuncMap[state].push_back(std::bind(func, ptr));
 	}
+
 	// *@呼び出しタイミング指定
 	// *@引き数:void(class)(void)型関数ポインタ, インスタンスポインタ, (bool型追加で破棄されない)
 	template<class T>

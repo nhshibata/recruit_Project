@@ -5,7 +5,7 @@
 //=========================================================
 
 //--- インクルード部
-#include <GraphicsSystem/DirectX/DXDevice.h>
+#include <Application/Application.h>
 #include <GraphicsSystem/Manager/modelManager.h>
 #include <CoreSystem/Util/define.h>
 
@@ -24,30 +24,30 @@ namespace {
 	};*/
 }
 
+//==========================================================
+// コンストラクタ
+//==========================================================
 CModelManager::CModelManager()
 {
+}
 
-}
-HRESULT CModelManager::Init()
-{
-	if (!CAssimpModel::InitShader(CDXDevice::Get()->GetDevice()))
-	{
-		return E_FAIL;
-	}
-	return S_OK;
-}
-void CModelManager::Uninit()
+//==========================================================
+// デストラクタ
+//==========================================================
+CModelManager::~CModelManager()
 {
 	UnloadAll();
-
-	// Assimp用シェーダ終了処理
-	CAssimpModel::UninitShader();
 }
+
+//==========================================================
+// 読み込み
+//==========================================================
 bool CModelManager::Load(std::string name)
 {
 	ModelSharedPtr addModel = std::make_shared<CAssimpModel>();
+
 	// モデル読み込み
-	if (!addModel->Load(CDXDevice::Get()->GetDevice(), CDXDevice::Get()->GetDeviceContext(),
+	if (!addModel->Load(Application::Get()->GetDevice(), Application::Get()->GetDeviceContext(),
 		name))
 	{
 		return false;
@@ -56,12 +56,27 @@ bool CModelManager::Load(std::string name)
 
 	return true;
 }
+
+//==========================================================
+// ﾃﾞｰﾀ破棄
+//==========================================================
 bool CModelManager::Unload(std::string name)
 {
+	if (!m_aResourceMap.count(name))
+		return false;
+
 	m_aResourceMap[name]->Release();
 	m_aResourceMap[name].reset();
+	
+	//--- リストから破棄
+	auto it = m_aResourceMap.find(name);
+	m_aResourceMap.erase(it);
 	return true;
 }
+
+//==========================================================
+// 全開放
+//==========================================================
 void CModelManager::UnloadAll()
 {
 	for (auto it = m_aResourceMap.begin(); it != m_aResourceMap.end(); ++it)
@@ -72,31 +87,42 @@ void CModelManager::UnloadAll()
 	m_aResourceMap.clear();
 }
 
+//==========================================================
+// シーン破棄時確認
+//==========================================================
 int CModelManager::SceneUnload()
 {
 #if _DEBUG	// 確認
 	int cnt = static_cast<int>(m_aResourceMap.size());
-	for (auto & image : m_aResourceMap)
+	for (auto it = m_aResourceMap.begin(); it != m_aResourceMap.end();)
 	{
-		// 所持権が自身しか持っていなければ解放
-		if (image.second.use_count() == 1)
+		// 所持権が自身だけなら解放
+		if ((*it).second.use_count() == 1)
 		{
-			image.second->Release();
-			image.second.reset();
+			(*it).second->Release();
+			(*it).second.reset();
+			it = m_aResourceMap.erase(it);
 			--cnt;
+			continue;
 		}
+		++it;
 	}
 	return cnt;
+
 #else
-	for (auto & image : m_aResourceMap)
+	for (auto it = m_aResourceMap.begin(); it != m_aResourceMap.end();)
 	{
-		// 所持権が自身しか持っていなければ解放
-		if (image.second.use_count() == 1)
+		// 所持権が自身だけなら解放
+		if ((*it).second.use_count() == 1)
 		{
-			image.second->Release();
-			image.second.reset();
+			(*it).second->Release();
+			(*it).second.reset();
+			it = m_aResourceMap.erase(it);
+			continue;
 		}
+		++it;
 	}
+	
 #endif // _DEBUG
 
 	return 0;

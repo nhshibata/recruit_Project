@@ -38,7 +38,7 @@ namespace MySpace
 
 		//--- クラス定義
 		template <class T>
-		class CSingleton : public CBase
+		class CSingleton
 		{
 		protected:
 			CSingleton() = default;
@@ -53,11 +53,9 @@ namespace MySpace
 #define LOCAL_PATTERN _DEBUG | true
 #if LOCAL_PATTERN
 			//--- 静的変数の使用
+			// *@シングルトンの取得
 			static T* Get() { static T pInstance; return &pInstance; }
-			// *@シングルトン破棄
-			static inline void Create() {  };
-			// *@シングルトン破棄
-			static inline void Destroy() { }
+
 #else
 			//--- 動的に作成
 		private:

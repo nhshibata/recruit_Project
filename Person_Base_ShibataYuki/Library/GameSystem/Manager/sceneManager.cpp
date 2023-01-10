@@ -21,7 +21,9 @@ using namespace MySpace::Game;
 
 #define SCENE_PATH	FORDER_DIR(data/scene/)
 
+//========================================================
 // コンストラクタ
+//========================================================
 CSceneManager::CSceneManager()
 	:m_bTransition(false), m_currentPath(std::string())
 {
@@ -35,14 +37,39 @@ CSceneManager::CSceneManager()
 	m_pDrawSystem = std::make_shared<CDrawSystem>();
 	m_pNavMesh = std::make_shared<CNavMeshBake>();
 }
+
+//========================================================
+// デストラクタ
+//========================================================
+CSceneManager::~CSceneManager()
+{
+	Uninit();
+}
+
+//========================================================
+// 初期化
+//========================================================
 void CSceneManager::Init()
 {
+	// パス設定
 	m_currentPath = SCENE_PATH + std::string("Title.scene");
+	
 	// 関数設定
 	SceneUnloaded<CSceneManager>(&CSceneManager::FlagOn, this);
-	//m_pCurrentScene.lock()->Init();
+	
+	// NavMesh
 	m_pNavMesh->Init();
+
+	//--- Scene開始
+	if(m_pCurrentScene.lock())
+		m_pCurrentScene.lock()->Init(m_pCurrentScene);
+	else
+		CreateNewScene<CScene>("Title");
 }
+
+//========================================================
+// 解放処理
+//========================================================
 void CSceneManager::Uninit()
 {
 	for (auto & scene : m_aScenes)
@@ -56,6 +83,10 @@ void CSceneManager::Uninit()
 	m_pDrawSystem.reset();
 	m_aScenes.clear();
 }
+
+//========================================================
+// シーン更新
+//========================================================
 void CSceneManager::UpdateScene()
 {
 	for (auto & scene : m_aScenes)
@@ -66,6 +97,10 @@ void CSceneManager::UpdateScene()
 	// 当たり判定の確認
 	m_pCollisionSystem->CollisionCheck();
 }
+
+//========================================================
+// 固定時間更新
+//========================================================
 void CSceneManager::FixedUpdateScene()
 {
 	for (auto & scene : m_aScenes)
@@ -73,6 +108,10 @@ void CSceneManager::FixedUpdateScene()
 		scene->FixedUpdate();
 	}
 }
+
+//========================================================
+// 描画
+//========================================================
 void CSceneManager::DrawScene()
 {
 	for (auto & scene : m_aScenes)
@@ -83,7 +122,23 @@ void CSceneManager::DrawScene()
 	m_pDrawSystem->Update();
 	m_pNavMesh->Draw();
 }
+
+//========================================================
+// 名前からシーンﾎﾟｲﾝﾀ取得
+//========================================================
+std::shared_ptr<CScene> CSceneManager::GetSceneByName(std::string name)
+{
+	for (auto & scene : m_aScenes)
+	{
+		if (scene->GetSceneName() == name)
+			return scene;
+	}
+	return std::shared_ptr<CScene>();
+}
+
+//========================================================
 // シーン切替
+//========================================================
 std::weak_ptr<CScene> CSceneManager::SceneTransition(std::string name)
 {
 	std::shared_ptr<CScene> pNextScene = NewScene(name);
@@ -96,7 +151,10 @@ std::weak_ptr<CScene> CSceneManager::SceneTransition(std::string name)
 
 	return m_pCurrentScene;
 }
+
+//========================================================
 // メインシーンの切り替え
+//========================================================
 std::weak_ptr<CScene> CSceneManager::SetActiveScene(std::shared_ptr<CScene> pNextScene)
 {
 	// objの引き渡し
@@ -105,27 +163,39 @@ std::weak_ptr<CScene> CSceneManager::SetActiveScene(std::shared_ptr<CScene> pNex
 	RemoveScene(m_pCurrentScene.lock(), pNextScene);
 	return m_pCurrentScene;
 }
+
+//========================================================
 // シーン生成
+//========================================================
 std::shared_ptr<CScene> CSceneManager::NewScene(std::string name)
 {
 	std::shared_ptr<CScene> pNextScene;
 
+	//--- メモリ確保
 	// 名前指定なし
 	if (name.empty())
 		pNextScene = std::make_shared<CScene>();
 	else
 		pNextScene = std::make_shared<CScene>(name);
+
 	// リストへの追加
-	AddSceneList(pNextScene);
-	// 初期化:自分のSPを教える
+	AddList(pNextScene);
+
+	//--- 初期化:自分のSPを教える
 	pNextScene->Init(pNextScene);
 
 	if (!m_pCurrentScene.lock())
 		m_pCurrentScene = pNextScene;
-	m_sceneDetection->Call(pNextScene.get(), 0);	// 生成時呼び出し
+	
+	//--- 生成時呼び出し
+	m_sceneDetection->Call(pNextScene.get(), 0);
+
 	return pNextScene;
 }
+
+//========================================================
 // シーン破棄
+//========================================================
 void CSceneManager::RemoveScene(std::shared_ptr<CScene> pRemove, std::shared_ptr<CScene> pNext)
 {
 	//--- メインの切替
@@ -133,8 +203,9 @@ void CSceneManager::RemoveScene(std::shared_ptr<CScene> pRemove, std::shared_ptr
 	{
 		m_pCurrentScene = pNext;
 		m_sceneDetection->Call(pRemove.get(), pNext.get());	// 関数ポインタ呼び出し
-		AddSceneList(pNext);
+		AddList(pNext);
 	}
+
 	//--- 配列からの除外
 	if (auto it = std::find(m_aScenes.begin(), m_aScenes.end(), pRemove); it != m_aScenes.end())
 	{
@@ -147,20 +218,35 @@ void CSceneManager::RemoveScene(std::shared_ptr<CScene> pRemove, std::shared_ptr
 		pRemove.reset();
 		m_aScenes.erase(it);
 	}
+
 	//--- アクティブシーンがなければ設定
 	if (!m_pCurrentScene.lock() && !pNext)
 	{
 		m_pCurrentScene = m_aScenes.front();
 	}
 }
+
+//========================================================
+// リストに追加
+//========================================================
+bool CSceneManager::AddList(std::shared_ptr<CScene> add)
+{
+	for (auto & scene : m_aScenes)
+	{
+		if (scene == add)
+		{
+			return false;
+		}
+	}
+	m_aScenes.push_back(add);
+	return true;
+}
+
+//========================================================
+// シーン保存
+//========================================================
 void CSceneManager::SaveScene(const std::string filename)
 {
-	// フォルダ
-	//std::string filePathName = "data" + std::string("/") + "scene";
-	/*if (_mkdir(filePathName.c_str()) != 0)
-	{
-		return;
-	}*/
 	auto scene = m_pCurrentScene.lock();
 
 	// ファイル拡張子
@@ -179,7 +265,8 @@ void CSceneManager::SaveScene(const std::string filename)
 	std::string filePathName = SCENE_PATH + name;
 	{
 		CCerealize<std::shared_ptr<CSceneData>> sirial;
-		// 保存用のｼｰﾝﾃﾞｰﾀを作成
+
+		//--- 保存用のｼｰﾝﾃﾞｰﾀを作成
 		std::shared_ptr<CSceneData> saveData = std::make_shared<CSceneData>();
 		saveData->m_resource.Save();						// Resourceを格納
 		saveData->m_SceneName = scene->GetSceneName();		// 名前格納
@@ -193,6 +280,10 @@ void CSceneManager::SaveScene(const std::string filename)
 		sirial.OutputFile(filename, filePathName, saveData);
 	}
 }
+
+//========================================================
+// シーン読み込み
+//========================================================
 bool CSceneManager::LoadScene(std::string path)
 {
 	// セーブ情報受け取り用変数
@@ -235,6 +326,16 @@ bool CSceneManager::LoadScene(std::string path)
 	return true;
 }
 
+//========================================================
+// シングルトンの取得
+// 静的変数
+//========================================================
+CSceneManager& CSceneManager::Get()
+{
+	static CSceneManager pInstance;
+	return pInstance;
+}
+
 #ifdef BUILD_MODE
 
 void CSceneManager::ImGuiDebug()
@@ -267,6 +368,7 @@ void CSceneManager::ImGuiDebug()
 	{
 		auto i = SceneTransition(m_cDebugSceneName).lock().get();
 	}
+
 	//if (ImGui::Button("add scene"))
 	//{
 	//	CScene* newScene = AddScene<CScene>();

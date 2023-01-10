@@ -20,6 +20,9 @@ using namespace MySpace::Debug;
 using namespace MySpace::MyMath;
 using namespace MySpace::Game;
 
+//==========================================================
+// 初期化
+//==========================================================
 void CMyGizmo::Init()
 {
 	m_bUseSnap = true;
@@ -32,6 +35,9 @@ void CMyGizmo::Init()
 	ImGuizmo::AllowAxisFlip(false);
 }
 
+//==========================================================
+// ギズモ表示
+//==========================================================
 void CMyGizmo::ViewGizmo(ImGuiManager* manager, const CCamera& camera, CTransform* editTransform)
 {
 	Matrix4x4 matrix = editTransform->GetWorldMatrix();
@@ -111,6 +117,9 @@ void CMyGizmo::ViewGizmo(ImGuiManager* manager, const CCamera& camera, CTransfor
 
 }
 
+//==========================================================
+// ﾄﾗﾝｽﾌｫｰﾑ編集
+//==========================================================
 void CMyGizmo::EditTransform(MySpace::Debug::ImGuiManager* manager)
 {
 	manager->HoverStateSet();
@@ -156,6 +165,9 @@ void CMyGizmo::EditTransform(MySpace::Debug::ImGuiManager* manager)
 
 }
 
+//==========================================================
+// グリッド表示
+//==========================================================
 void CMyGizmo::ViewGrid(const CCamera& camera)
 {
 	auto viewMatrix = CCamera::GetMain()->GetViewMatrix().m;	// ｶﾒﾗの姿勢

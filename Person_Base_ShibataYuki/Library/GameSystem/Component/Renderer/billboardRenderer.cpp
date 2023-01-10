@@ -6,8 +6,9 @@
 //--- インクルード部
 #include <GameSystem/Component/Renderer/billboardRenderer.h>
 #include <GameSystem/Component/Transform/transform.h>
-#include <GameSystem/Manager/sceneManager.h>
 #include <GameSystem/Component/Light/directionalLight.h>
+#include <GameSystem/Manager/sceneManager.h>
+#include <Application/Application.h>
 
 #include <DebugSystem/imGuiPackage.h>
 #include <CoreSystem/File/filePath.h>
@@ -15,19 +16,31 @@
 using namespace MySpace::Game;
 using namespace MySpace::Graphics;
 
+//--- 定数定義
 #define TEXTURE_PATH		FORDER_DIR(Data/Texture/)
 
+
+//==========================================================
+// コンストラクタ
+//==========================================================
 CBillboardRenderer::CBillboardRenderer(std::shared_ptr<CGameObject> owner)
 	: CMeshRenderer(owner)
 {
-
 }
+
+//==========================================================
+// デストラクタ
+//==========================================================
 CBillboardRenderer::~CBillboardRenderer()
 {
 	m_pBillboard->Fin();
 	m_pBillboard.reset();
 	m_pSprite.reset();
 }
+
+//==========================================================
+// 生成時呼び出し
+//==========================================================
 void CBillboardRenderer::Awake()
 {
 	if (!m_pBillboard) 
@@ -38,11 +51,19 @@ void CBillboardRenderer::Awake()
 	if(!m_pSprite)
 		m_pSprite = std::make_shared<CSpriteAnimation>();
 }
+
+//==========================================================
+// 初期化
+//==========================================================
 void CBillboardRenderer::Init()
 {
 	// 描画依頼
 	CMeshRenderer::Init();
 }
+
+//==========================================================
+// 更新
+//==========================================================
 void CBillboardRenderer::Update()
 {
 	if (!m_pBillboard)
@@ -54,14 +75,19 @@ void CBillboardRenderer::Update()
 	// 座標更新
 	m_pBillboard->Update(Transform()->GetPos(),Vector2(Transform()->GetScale().x, Transform()->GetScale().y));
 }
+
+//==========================================================
+// 描画
+//==========================================================
 bool CBillboardRenderer::Draw()
 {
 	if (!CMeshRenderer::Draw())
 		return false;
 
+	auto pDX = Application::Get()->GetSystem<CDXDevice>();
 	//CDXDevice::Get()->SetZBuffer(false);
-	CDXDevice::Get()->SetBlendState(static_cast<int>(EBlendState::BS_ALPHABLEND));
-	CLight::Get()->SetDisable();
+	pDX->SetBlendState(static_cast<int>(EBlendState::BS_ALPHABLEND));
+	CLight::GetMain()->SetDisable();
 	
 	// ﾃｸｽﾁｬマッピング更新
 	if (m_pSprite->GetTexture() && m_pSprite)
@@ -85,11 +111,12 @@ bool CBillboardRenderer::Draw()
 		SetInstancing(m_pBillboard.get());
 	}
 	//CDXDevice::Get()->SetZBuffer(true);			
-	CLight::Get()->SetEnable();// 光源有効
-	CDXDevice::Get()->SetBlendState(static_cast<int>(EBlendState::BS_NONE));		// αブレンディング無効
+	CLight::GetMain()->SetEnable();// 光源有効
+	pDX->SetBlendState(static_cast<int>(EBlendState::BS_NONE));		// αブレンディング無効
 	
 	return true;
 }
+
 
 #ifdef BUILD_MODE
 
@@ -107,7 +134,7 @@ void CBillboardRenderer::ImGuiDebug()
 
 	m_pSprite->ImGuiDebug();
 
-	// 画像のリロード
+	//--- 画像のリロード
 	if (s_FileList.empty() || ImGui::Button(u8"画像 reload"))
 	{
 		MySpace::System::CFilePath file;
@@ -119,5 +146,7 @@ void CBillboardRenderer::ImGuiDebug()
 	{
 		m_pSprite->SetImage(name);
 	}
+
 }
+
 #endif // BUILD_MODE

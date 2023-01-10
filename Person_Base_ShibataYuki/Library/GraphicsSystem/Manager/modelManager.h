@@ -11,7 +11,6 @@
 #define NOMINMAX
 
 //--- インクルード部
-#include <CoreSystem/Singleton.h>
 #include <GraphicsSystem/Manager/resourceMap.h>
 #include <GraphicsSystem/Render/AssimpModel.h>
 #include <GraphicsSystem/DirectX/DXDevice.h>
@@ -30,16 +29,12 @@ namespace MySpace
 	namespace Graphics
 	{
 		//--- クラス定義
-		class CModelManager : public CSingleton<CModelManager>, public CResourceMap<std::string, ModelSharedPtr>
-		{
-			friend class CSingleton<CModelManager>;
-		private:
+		class CModelManager : public CResourceMap<std::string, ModelSharedPtr>
+		{	
+		public:
 			//--- メンバ関数
 			CModelManager();
-			~CModelManager() = default;
-		public:
-			HRESULT Init();
-			void Uninit();
+			~CModelManager();
 			
 			bool Load(std::string name);
 			bool Unload(std::string name);

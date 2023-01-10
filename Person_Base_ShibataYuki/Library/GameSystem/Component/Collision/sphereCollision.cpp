@@ -14,6 +14,9 @@
 
 using namespace MySpace::Game;
 
+//==========================================================
+// 引き数付きコンストラクタ
+//==========================================================
 CSphereCollision::CSphereCollision(std::shared_ptr<CGameObject> owner, float radius)
 	:CCollision(owner),m_fRadius(radius)
 {
@@ -23,6 +26,9 @@ CSphereCollision::CSphereCollision(std::shared_ptr<CGameObject> owner, float rad
 #endif //
 }
 
+//==========================================================
+// デストラクタ
+//==========================================================
 CSphereCollision::~CSphereCollision()
 {
 #if BUILD_MODE
@@ -30,6 +36,9 @@ CSphereCollision::~CSphereCollision()
 #endif // BUILD_MODE
 }
 
+//==========================================================
+// 球の当たり判定
+//==========================================================
 bool CSphereCollision::Sphere(Vector3 Apos, float Ar, Vector3 Bpos, float Br)
 {
 	float dx = Apos.x - Bpos.x;
@@ -38,7 +47,10 @@ bool CSphereCollision::Sphere(Vector3 Apos, float Ar, Vector3 Bpos, float Br)
 	float dr = Ar + Br;
 	return dx * dx + dy * dy + dz * dz <= dr * dr;
 }
+
+//==========================================================
 // 球の当たり判定
+//==========================================================
 bool CSphereCollision::CollisionSphere(Vector3 pos, float radius)
 {
 	if (Sphere(Transform()->GetPos(), m_fRadius, pos, radius))
@@ -46,8 +58,12 @@ bool CSphereCollision::CollisionSphere(Vector3 pos, float radius)
 		return true;
 	}
 	return false;
-}		
+}
+
+//==========================================================
+// 当たり判定
 // コリジョンｸﾗｽを引き数にとって、当たり判定を行う
+//==========================================================
 bool CSphereCollision::HitCheckPtr(CCollision* other)
 {
 	bool trigger = other->IsTrigger() | IsTrigger();
@@ -106,6 +122,10 @@ bool CSphereCollision::HitCheckPtr(CCollision* other)
 
 	return false;
 }
+
+//==========================================================
+// 押し出し
+//==========================================================
 void CSphereCollision::PushObject(CSphereCollision* other)
 {
 	//---  押し出し
@@ -117,6 +137,10 @@ void CSphereCollision::PushObject(CSphereCollision* other)
 	// 押し出し
 	Transform()->SetPos(Transform()->GetPos() + vec);
 }
+
+//==========================================================
+// 押し出し修正
+//==========================================================
 Vector3 CSphereCollision::PosAdjustment(Vector3 otherPos, float size)
 {
 	Vector3 checkPos = Transform()->GetPos();
@@ -157,7 +181,9 @@ Vector3 CSphereCollision::PosAdjustment(Vector3 otherPos, float size)
 	return checkPos;
 }
 
+
 #ifdef BUILD_MODE
+
 void CSphereCollision::ImGuiDebug()
 {
 	CCollision::ImGuiDebug();
@@ -171,6 +197,7 @@ void CSphereCollision::ImGuiDebug()
 		m_pDebugSphere->Init(16, 8, m_fRadius);
 	}
 
+	// debug表示
 	XMVECTOR vCenter = XMLoadFloat3(&GetCenter());
 	XMMATRIX mWorld = XMLoadFloat4x4(&Transform()->GetWorldMatrix());
 
@@ -180,5 +207,7 @@ void CSphereCollision::ImGuiDebug()
 	XMStoreFloat4x4(&mW, mWorld);
 	m_pDebugSphere->SetWorld(&mW);
 	m_pDebugSphere->Draw();
+
 }
+
 #endif // BUILD_MODE

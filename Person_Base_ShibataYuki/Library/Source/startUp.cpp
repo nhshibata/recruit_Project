@@ -58,8 +58,9 @@
 #include <Application/Application.h>
 #include <GameSystem/Manager/sceneManager.h>
 //#include <gameCentipedeMarch.h>
+#include <gameManager.h>
 
-// ライブラリ参照
+//--- ライブラリ参照
 // プロパティで指定するか、ここで指定するか…悩みどころ
 #pragma region LIBRARY
 
@@ -73,14 +74,16 @@
 #pragma comment(lib, "imm32")
 
 #pragma comment(lib, "dxgi.lib")
-#pragma comment (lib, "d3d11.lib")	
+#pragma comment (lib, "d3d11.lib")
 
 //#pragma comment(lib, "Application")
 //#pragma comment(lib, "CoreSystem")
 //#pragma comment(lib, "DebugSystem")
 //#pragma comment(lib, "GameSystem")
 //#pragma comment(lib, "GraphicsSystem")
+
 #pragma endregion
+
 
 int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine, int nCmdShow)
 {
@@ -93,38 +96,68 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 	// *@シーン作成時に呼び出すｸﾗｽ
 	// *@静的なシーン作成の場合、動的な作成はファイル書き込みと読み込みを行う
 	// *@通常の関数でもいいような
-	class CMyScene
+	//class CMyScene
+	//{
+	//public:
+	//	CMyScene()
+	//	{
+	//	}
+	//	~CMyScene()
+	//	{
+	//	}
+	//	void* Load(CScene* scene, int mode)
+	//	{
+	//		//auto obj = scene->GetObjManager()->CreateGameObject();
+	//		//obj->AddComponent<CGameCentipedeMarch>();
+	//		scene->SetSceneName("BuildeScene");
+	//		scene->CreateEmptyScene();
+	//		return nullptr;
+	//	}
+	//};
+
+	//--- シーン読み込み時呼び出す関数を設定
+	//CMyScene my;
+	//CSceneManager::Get().SceneLoaded<CMyScene>(&CMyScene::Load, &my);	
+
+	class CStartScene : public CScene
 	{
 	public:
-		CMyScene()
+		// コンストラクタ
+		CStartScene()
 		{
 		}
-		~CMyScene()
+
+		// デストラクタ
+		~CStartScene()
 		{
 		}
-		void* Load(CScene* scene, int mode)
+
+		// 初期化
+		void Init(std::weak_ptr<CScene> scene)
 		{
-#if 0
-			//auto obj = scene->GetObjManager()->CreateGameObject();
-			//obj->AddComponent<CGameCentipedeMarch>();
-#endif // 0
-			scene->SetSceneName("BuildeScene");
-			scene->CreateEmptyScene();
-			return nullptr;
+			CScene::Init(scene);
+
+			//--- 必要なｺﾝﾎﾟｰﾈﾝﾄ呼び出し
+			scene.lock()->GetObjManager()->CreateBasicObject();
+
+			auto obj = CGameObject::CreateObject().lock();
+			obj->AddComponent<Spell::CGameManager>();
+
+			//--- 名前設定
+			scene.lock()->SetSceneName("StartScene");
+			
 		}
 	};
 
-	CMyScene my;
-	// シーン読み込み時呼び出す関数を設定
-	CSceneManager::Create();
-	CSceneManager::Get()->SceneLoaded<CMyScene>(&CMyScene::Load, &my);	
+	//--- メモリ確保
+	std::shared_ptr<CStartScene> startScene = std::make_shared<CStartScene>();
+	CSceneManager::Get().SetStartScene(startScene);
+
 
 #if !_DEBUG
 	HRESULT hr = S_OK;
 
 	//--- 生成
-	Application::Create();
-
 	Application* Appli = Application::Get();
 	hr = Appli->Init(hInstance);
 
@@ -136,12 +169,10 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 	Appli->MainLoop();
 
 	//--- 終了
-	Appli->Uninit();
-
-	//--- 破棄
-	Application::Destroy();
+	Appli->Destroy();
 
 #else
+
 	// 開始
 	// ウィンドウの生成などを行う
 	StartUp(hInstance, hPrevInstance, lpCmdLine, nCmdShow);

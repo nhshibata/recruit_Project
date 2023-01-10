@@ -20,10 +20,11 @@
 #include <CoreSystem/FuncPtr/funcPtrManager.h>
 #include <GraphicsSystem/DirectX/DXDevice.h>
 
+//--- 定数定義
+#define CLASS_NAME		_T("win32app")
+
 using namespace MySpace::System;
 using namespace MySpace::Graphics;
-
-#define CLASS_NAME		_T("win32app")
 
 namespace
 {
@@ -39,16 +40,16 @@ namespace
 	uint32_t		SYSTEM_HEIGHT = 0;
 }
 
+//==========================================================
+// 初期化
+//==========================================================
 bool Application::Init(HINSTANCE h_Instance)
 {
 	// 幅と高さ初期化
 	//CScreen::SetSize(1280.0f, 960.0f);
 
 	//--- ウインドウ作成
-	//AddSystem<CWindow>();
-	CWindow::Create();
-	CWindow* window = CWindow::Get();
-	//window->RegisterClass(h_Instance, WINDOW_CLASS_NAME, CS_OWNDC);
+	CWindow* window = AddSystem<CWindow>();
 	window->RegisterClass(h_Instance, WINDOW_CLASS_NAME, CS_CLASSDC);
 	
 	// COM初期化
@@ -68,36 +69,33 @@ bool Application::Init(HINSTANCE h_Instance)
 		WINDOW_TITLE,
 		true);
 
+	// 必要な変数を格納
 	m_hWnd = window->GetHWND();
 	m_hInst = h_Instance;
 
-	// 読み込みが必要なシステムの関数を呼び出す
-	CFuncManager::Create();
-	//AddSystem<CFuncManager>();
+	// 読み込みが必要なシステムの関数を呼び出す	
+	AddSystem<CFuncManager>();
+
+	//--- デバイスの初期化
+	auto pDX = AddSystem<CDXDevice>();
+	pDX->Init(m_hWnd, (unsigned int)CScreen::GetWidth(), (unsigned int)CScreen::GetHeight());
+	m_pDevice = pDX->GetDevice();
+	m_pDeviceContext = pDX->GetDeviceContext();
 
 	return true;
 }
 
-void Application::Uninit()
+//==========================================================
+// 破棄
+//==========================================================
+void Application::Destroy()
 {
 	// 書き込みが必要なシステムの関数を呼び出す
-
-	// システムの解放
-	// 先に解放したいものがあればこれより先に呼び出す
-	//auto all = MainSystem.Get()->GetAll();
-	//for (auto it = all.begin(); it != all.end(); ++it)
-	//{
-	//	CBase* app = reinterpret_cast<CBase*>(*it);
-	//	if (app)
-	//		app->Uninit();
-	//}
 
 	//CWindow::Get()->Close(WINDOW_CLASS_NAME, m_hInst);
 	UnregisterClass(WINDOW_CLASS_NAME, m_hInst);
 	
 	//--- シングルトンの解放
-	CFuncManager::Destroy();
-	CWindow::Destroy();
 
 	// 最後尾から解放
 	for (auto rit = m_aSystems.rbegin(); rit != m_aSystems.rend();)
@@ -110,52 +108,53 @@ void Application::Uninit()
 	return;
 }
 
+//==========================================================
+// ゲームループ
+//==========================================================
 unsigned long Application::MainLoop()
 {
-	CWindow* window = CWindow::Get();
+	CWindow* window = GetSystem<CWindow>();
 	
-	// ゲームの変数宣言
+	// ゲーム変数宣言
 	CGameApp* gameApp = new CGameApp();	
-
-	// 読み込みが必要なシステムの関数を呼び出す
-	//CFuncManager::Get();
 
 	// ゲームの初期化処理
 	gameApp->Init(this);
 
 	//--- タイム初期化処理
-	CFps::Create();
-	CFps::Get()->Init();
+	CFps::Get().Init();
 
 	// 無限ループ
 	while (window->ExecMessage()) 
 	{
-		// fps更新
-		CFps::Get()->Update();
+		//--- fps更新
+		CFps::Get().Update();
 
-		// 固定時間更新
-		if (!CFps::Get()->IsFixedUpdate())
+		//--- 固定時間更新
+		if (!CFps::Get().IsFixedUpdate())
 			gameApp->FixedUpdate(this);
 
-		// 一定時間の更新
-		if (!CFps::Get()->IsUpdate())
+		//--- 通常更新確認
+		if (!CFps::Get().IsUpdate())
 			continue;
 
-		// 更新
+		//--- 入力更新
 		gameApp->InputUpdate();
 
-		// 関数ポインタの更新
-		CFuncManager::Get()->Update();
+		//--- 関数ポインタ更新
+		GetSystem<CFuncManager>()->Update();
 
-		// ｹﾞｰﾑ更新
+		//--- ｹﾞｰﾑ更新
 		gameApp->Run(this);
 
-		// ｹﾞｰﾑ描画
+		//--- ｹﾞｰﾑ描画
 		gameApp->Draw(this);
 	}
 
-	CFps::Get()->Uninit();
-	CFps::Destroy();
+	//--- 終了処理
+
+	// タイム終了処理
+	CFps::Get().Uninit();
 
 	// ゲームの終了処理
 	gameApp->Uninit(this);
@@ -164,11 +163,19 @@ unsigned long Application::MainLoop()
 	// 終了メッセージ
 	return window->GetMessage();
 }
+
+//==========================================================
+// デバイス取得
+//==========================================================
 ID3D11Device* Application::GetDevice()
 {
-	return CDXDevice::Get()->GetDevice();
+	return m_pDevice;
 }
+
+//==========================================================
+// デバイス取得
+//==========================================================
 ID3D11DeviceContext* Application::GetDeviceContext()
 {
-	return CDXDevice::Get()->GetDeviceContext();
+	return m_pDeviceContext;
 }

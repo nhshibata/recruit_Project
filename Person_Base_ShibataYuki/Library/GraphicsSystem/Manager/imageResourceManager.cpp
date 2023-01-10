@@ -7,22 +7,17 @@
 //--- インクルード部
 #include <GraphicsSystem/Manager/imageResourceManager.h>
 
-using namespace MySpace::System;
 using namespace MySpace::Graphics;
-
-//--- 定数定義
-
 
 CImageResourceManager::CImageResourceManager()
 {
 }
+
 CImageResourceManager::~CImageResourceManager()
-{
-}
-void CImageResourceManager::Uninit()
 {
 	UnloadAll();
 }
+// データ読み込み
 bool CImageResourceManager::Load(std::string name)
 {
 	// 読み込み済みか確認
@@ -41,6 +36,7 @@ bool CImageResourceManager::Load(std::string name)
 	m_aResourceMap.insert(IMAGE_PAIR(name, tex));
 	return true;
 }
+// 指定されたﾃﾞｰﾀの解放
 bool CImageResourceManager::Unload(std::string name)
 {
 	auto it = m_aResourceMap.find(name);
@@ -52,6 +48,7 @@ bool CImageResourceManager::Unload(std::string name)
 	}
 	return false;
 }
+// 全開放
 void CImageResourceManager::UnloadAll()
 {
 	for (auto it = m_aResourceMap.begin(); it != m_aResourceMap.end(); ++it)
@@ -60,7 +57,7 @@ void CImageResourceManager::UnloadAll()
 	}
 	m_aResourceMap.clear();
 }
-// 画像を渡す
+// 画像取得
 ImageSharedPtr CImageResourceManager::GetResource(std::string name)
 {
 	auto it = m_aResourceMap.find(name);
@@ -75,6 +72,7 @@ ImageSharedPtr CImageResourceManager::GetResource(std::string name)
 
 	return m_aResourceMap[name];
 }
+// シーン解放時確認
 int CImageResourceManager::SceneUnload()
 {
 #if _DEBUG	// 確認

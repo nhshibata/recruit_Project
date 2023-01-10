@@ -1,26 +1,38 @@
-// 球 [Sphere.cpp]
+//==========================================================
+// [Sphere.cpp]
+// 
+//==========================================================
+
+//--- インクルード部
 #include <stdio.h>
 #include <GraphicsSystem/Render/Sphere.h>
 
 using namespace MySpace::Graphics;
 
+//==========================================================
 // コンストラクタ
+//==========================================================
 CSphere::CSphere() : CMesh()
 {
 }
 
+//==========================================================
 // デストラクタ
+//==========================================================
 CSphere::~CSphere()
 {
 }
 
+//==========================================================
 // 初期化
+//==========================================================
 HRESULT CSphere::Init(int nSlice, int nStack, float fRadius)
 {
 	HRESULT hr = S_OK;
 	int nVertex = (nSlice + 1) * (nStack + 1);
 	VERTEX_3D* pVertexWk = new VERTEX_3D[nVertex];
-	// 頂点、法線ベクトル、テクスチャ座標の位置
+
+	//--- 頂点、法線ベクトル、テクスチャ座標の位置
 	VERTEX_3D* pVtx = pVertexWk;
 	for (int j = 0; j <= nStack; ++j) {
 		float v = (float)j / (float)nStack;
@@ -44,7 +56,8 @@ HRESULT CSphere::Init(int nSlice, int nStack, float fRadius)
 			++pVtx;
 		}
 	}
-	// 面のインデックス
+
+	//--- 面のインデックス
 	int nFace = nSlice * nStack * 2;
 	int* pIndexWk = new int[nFace * 3];
 	int* pIdx = pIndexWk;
@@ -61,7 +74,9 @@ HRESULT CSphere::Init(int nSlice, int nStack, float fRadius)
 			*pIdx++ = nIndex;
 		}
 	}
+
 	hr = CMesh::Init(pVertexWk, nVertex, pIndexWk, nFace * 3);
+	
 	delete[] pIndexWk;
 	delete[] pVertexWk;
 	return hr;

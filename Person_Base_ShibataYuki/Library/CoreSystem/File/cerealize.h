@@ -38,8 +38,10 @@ namespace MySpace
 			T InputFile(std::string path);
 		};
 
+		//--- 関数実装
 		// コンパイラの関係上、ファイル分割を行うと多大な労力がかかるため、ヘッダーに記載
 
+		// ファイル出力
 		template<class T>
 		void CCerealize<T>::OutputFile(std::string name, std::string path, T& type)
 		{
@@ -52,6 +54,7 @@ namespace MySpace
 			ofs.close();
 		}
 
+		// ファイル入力
 		template<class T>
 		T CCerealize<T>::InputFile(std::string path)
 		{

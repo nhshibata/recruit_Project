@@ -62,7 +62,7 @@ void CCommandStock::Update()
 	}
 
 	// インターバル更新&確認
-	InputInterval.accessor += CFps::Get()->DeltaTime();
+	InputInterval.accessor += CFps::Get().DeltaTime();
 	if (InputInterval.accessor > InputMaxInterval.accessor)
 	{
 		InputInterval.accessor = 0.0f;

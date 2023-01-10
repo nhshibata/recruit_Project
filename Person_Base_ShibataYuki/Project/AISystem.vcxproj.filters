@@ -57,6 +57,9 @@
     <ClCompile Include="..\Library\AISystem\aiFunction.cpp">
       <Filter>ソース ファイル</Filter>
     </ClCompile>
+    <ClCompile Include="..\Library\AISystem\Nav\navMeshHeight.cpp">
+      <Filter>ソース ファイル\Nav</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\Library\AISystem\Nav\navMeshBake.h">
@@ -106,6 +109,9 @@
     </ClInclude>
     <ClInclude Include="..\Library\AISystem\aiFunction.h">
       <Filter>ヘッダー ファイル</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Library\AISystem\Nav\navMeshHeight.h">
+      <Filter>ヘッダー ファイル\Nav</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

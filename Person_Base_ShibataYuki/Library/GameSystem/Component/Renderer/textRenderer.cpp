@@ -5,9 +5,11 @@
 //=========================================================
 
 //--- インクルード部
+#include <Application/Application.h>
 #include <GameSystem/Component/Renderer/textRenderer.h>
 #include <GameSystem/GameObject/gameObject.h>
 
+#include <GraphicsSystem/Manager/assetsManager.h>
 #include <GraphicsSystem/DirectX/DXDevice.h>
 #include <GraphicsSystem/Render/polygon.h>
 #include <DebugSystem/imGuiPackage.h>
@@ -16,17 +18,28 @@
 using namespace MySpace::System;
 using namespace MySpace::Game;
 using namespace MySpace::Graphics;
-		
+
+//==========================================================
+// コンストラクタ
+//==========================================================
 CTextRenderer::CTextRenderer(std::shared_ptr<CGameObject> owner)
 	:CRenderer(owner), m_fOffset(0), m_Font(L"ＭＳ Ｐ明朝"), m_bVerticalWrit(false),
 	m_Text(std::wstring()), m_uOldTextSize(0)
 {
 
 }
+
+//==========================================================
+// デストラクタ
+//==========================================================
 CTextRenderer::~CTextRenderer()
 {
 	CRenderer::~CRenderer();
 }
+
+//==========================================================
+// 生成時呼び出し
+//==========================================================
 void CTextRenderer::Awake()
 {
 #if BUILD_MODE
@@ -49,17 +62,25 @@ void CTextRenderer::Awake()
 		m_pRectTransform = GetOwner()->AddComponent<CRectTransform>();
 	}
 }
+
+//==========================================================
+// 初期化
+//==========================================================
 void CTextRenderer::Init()
 {
 	// サイズ取得
 	m_uOldTextSize = m_Text.size();
 	
 	// 文字列からﾃｸｽﾁｬ取得
-	m_aTexList = CFontTexture::Get()->GetString(m_Text, m_Font);
+	m_aTexList = Application::Get()->GetSystem<CAssetsManager>()->GetFont()->GetString(m_Text, m_Font);
 
 	// 描画依頼
 	CRenderer::Init();
 }
+
+//==========================================================
+// 更新
+//==========================================================
 void CTextRenderer::Update()
 {
 	// サイズ比較
@@ -68,14 +89,19 @@ void CTextRenderer::Update()
 	//	m_aTexList = CFontTexture::Get()->GetString(m_Text, m_Font);
 	//}
 }
+
+//==========================================================
+// 描画
+//==========================================================
 bool CTextRenderer::Draw()
 {
 	if (!CRenderer::Draw())
 		return false;
 
 	// 前準備
-	CDXDevice::Get()->SetZBuffer(false);
-	CDXDevice::Get()->SetBlendState(static_cast<int>(EBlendState::BS_ALPHABLEND));
+	auto pDX = Application::Get()->GetSystem<CDXDevice>();
+	pDX->SetZBuffer(false);
+	pDX->SetBlendState(static_cast<int>(EBlendState::BS_ALPHABLEND));
 
 	//--- 描画
 	// ﾃｸｽﾁｬの数だけ繰り返す
@@ -93,7 +119,7 @@ bool CTextRenderer::Draw()
 			CPolygon::SetTexture(tex.pTex);
 		else
 			CPolygon::SetTexture(NULL);
-		CPolygon::Draw(CDXDevice::Get()->GetDeviceContext());
+		CPolygon::Draw(pDX->GetDeviceContext());
 
 		// 縦書きか
 		if(!m_bVerticalWrit)
@@ -111,11 +137,21 @@ bool CTextRenderer::Draw()
 	CPolygon::SetFrameSize(1.0f, 1.0f);
 	CPolygon::SetTexture(NULL);
 
-	CDXDevice::Get()->SetZBuffer(true);
-	CDXDevice::Get()->SetBlendState(static_cast<int>(EBlendState::BS_NONE));
+	pDX->SetZBuffer(true);
+	pDX->SetBlendState(static_cast<int>(EBlendState::BS_NONE));
 
 	return true;
 }
+
+//==========================================================
+// テキスト設定
+//==========================================================
+void CTextRenderer::SetTextWString(std::wstring text) 
+{
+	m_Text = text;
+	m_aTexList = Application::Get()->GetSystem<CFontTexture>()->GetString(m_Text, m_Font);
+}
+
 
 #ifdef BUILD_MODE
 
@@ -129,9 +165,14 @@ void CTextRenderer::ImGuiDebug()
 	ImGui::InputFloat(u8"オフセット", &m_fOffset);
 	ImGui::Checkbox(u8"縦", &m_bVerticalWrit);
 }
+
+//==========================================================
+// 簡略用
+// 仮想キーを文字列として取得
+//==========================================================
 std::wstring CTextRenderer::VKeyToWString(int nKey)
 {
-	static std::map<int, std::wstring> retMap =
+	std::map<int, std::wstring> retMap =
 	{
 		{ 'A', L"A" },
 		{ 'B', L"B" },
@@ -163,4 +204,5 @@ std::wstring CTextRenderer::VKeyToWString(int nKey)
 	// 存在すればキーが返り、なければempty
 	return retMap.at(nKey);
 }
+
 #endif // BUILD_MODE

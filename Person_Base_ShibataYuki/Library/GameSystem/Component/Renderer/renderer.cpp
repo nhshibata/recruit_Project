@@ -15,23 +15,42 @@
 
 using namespace MySpace::Game;
 
+//==========================================================
+// コンストラクタ
+//==========================================================
 CRenderer::CRenderer(std::shared_ptr<CGameObject> owner)
 	:CComponent(owner),m_bVisible(true), m_vColor(1,1,1,1)
 {
 
 }
+
+//==========================================================
+// デストラクタ
+//==========================================================
 CRenderer::~CRenderer()
 {
-	if(auto sys = SceneManager::CSceneManager::Get()->GetDrawSystem(); sys)
+	if(auto sys = SceneManager::CSceneManager::Get().GetDrawSystem(); sys)
 		sys->ExecutSystem(m_nDrawIdx);
 }
+
+//==========================================================
+// 描画登録
+//==========================================================
 void CRenderer::RequestDraw()
 {
-	// 描画登録
-	m_nDrawIdx = SceneManager::CSceneManager::Get()->GetDrawSystem()->RegistToSystem(BaseToDerived<CRenderer>());
+	m_nDrawIdx = SceneManager::CSceneManager::Get().GetDrawSystem()->RegistToSystem(BaseToDerived<CRenderer>());
 }
+
+//==========================================================
+// 生成時呼び出し
+//==========================================================
 void CRenderer::Awake()
-{}
+{
+}
+
+//==========================================================
+// 初期化
+//==========================================================
 void CRenderer::Init()
 {
 	if(Transform())
@@ -39,19 +58,31 @@ void CRenderer::Init()
 
 	RequestDraw();
 }
+
+//==========================================================
+// 更新
+//==========================================================
 void CRenderer::Update()
 {
 }
+
+//==========================================================
+// 描画
+//==========================================================
 bool CRenderer::Draw()
 {
 	// 描画確認
 	return m_bVisible && GetOwner()->IsVision();
 }
 
+//==========================================================
+// レイヤー設定
+//==========================================================
 void CRenderer::SetLayer(int value) 
 {
 	GetOwner()->SetLayer(value); 
 }
+
 
 #ifdef BUILD_MODE
 
@@ -70,5 +101,7 @@ void CRenderer::ImGuiDebug()
 		m_vColor = Color(color.x, color.y, color.z, color.w);
 	}
 	ImGui::End();
+
 }
+
 #endif // BUILD_MODE

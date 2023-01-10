@@ -1,10 +1,10 @@
 //==========================================================
 // [navMeshBake.h]
-//----------------
+//----------------------------------------------------------
 // 作成:2022/12/05		ポイント生成成功（デバッグ用の表示も
 // 更新:2022/12/06		経路探索(A*)でルート構築成功,障害物設定も確認
 // 更新:2022/12/07		就職作品への移植
-//----------------
+//----------------------------------------------------------
 // ナビメッシュ構築用ｸﾗｽ
 // 管理も行っているため、命名ミスったかも...
 //==========================================================
@@ -20,6 +20,7 @@
 
 //--- 定数定義
 #define DEBUG_POINT_DRAW		_DEBUG | true		// *@ポイント表示用定数
+
 
 #pragma region ForwardDeclaration
 namespace MySpace
@@ -43,10 +44,8 @@ namespace AI
 	// *@ナビメッシュ構築用ｸﾗｽ
 	class CNavMeshBake
 	{
+	protected:
 		//--- 構造体定義
-#pragma region Struct
-	
-	private:
 		struct Obstacle		// 障害物ﾃﾞｰﾀ
 		{
 			Vector3 pos;
@@ -72,18 +71,15 @@ namespace AI
 			std::vector<int> surrounding;
 			std::map<int, float> aHeightMap;
 		};
-#pragma endregion
 
-		//--- エイリアス
-#pragma region Alias
 	private:
+		//--- エイリアス
 		using NavMap = std::unordered_map<int, NodeData>;		// 作成したノード情報格納(Keyにint型を用いる)
 	public:
 		using MapRoute = std::vector<Vector3>;					// マップルート引き渡し用
 		using Obstacles = std::vector<Obstacle>;				// 障害物ﾃﾞｰﾀ格納
-#pragma endregion
 
-	private:
+	protected:
 		//--- メンバ変数
 		NavMap m_aNavMap;						// Nav情報
 		Obstacles m_aObstacle;					// 障害物情報
@@ -91,34 +87,28 @@ namespace AI
 		float m_fMargin;						// グリッド毎の差
 		int m_nGrid;							// グリッド縦横
 
-	private:
+	protected:
 		//--- ﾒﾝﾊﾞ関数
+		// *@障害物追加
 		void AddScore(const Vector3& pos, const Vector3& size);
-
-		float CalcDist(Vector3 a, Vector3 b);
-		float CalcStepWeight(Vector3 a, Vector3 b, float height);
 
 	public:
 		CNavMeshBake();
 		CNavMeshBake(Vector3 pos, int grid, float margin);
-		~CNavMeshBake();
+		virtual ~CNavMeshBake();
 
+		// *@初期化関数
 		void Init();
 
 		// *@ポイント情報生成呼び出し
 		// *@引き数:線分の始点, 終点, 歩ける高さ
-		void Bake(const float startPos, const float endPos, const float wayHeight = 2.0f);
+		virtual void Bake(const float startPos, const float endPos);
 
-		// *@中心座標
-		inline void SetPos(Vector3 pos) { m_vCenter = pos; }
-		// *@マージン(幅)
-		inline void SetMargin(float value) { m_fMargin = value; }
 
 		// *@グリッド外判定
 		inline bool IsOutOfPoint(Point index)const
 		{
-			return index.x < 0 || index.y < 0 ||
-				m_nGrid <= index.x || m_nGrid <= index.y;
+			return index.x < 0 || index.y < 0 || m_nGrid <= index.x || m_nGrid <= index.y;
 		}
 
 		// *@インデックスからxy取得
@@ -156,8 +146,13 @@ namespace AI
 		// *@マップﾃﾞｰﾀからルートを構築
 		MapRoute GetRoute(Vector3 start, Vector3 end, AIMapOperator&& op);
 
-		// *@マップﾃﾞｰﾀからルートを構築
-		MapRoute GetRoute(Vector3 start, Vector3 end, float height);
+		//--- ゲッター・セッター
+
+		// *@中心座標
+		inline void SetPos(Vector3 pos) { m_vCenter = pos; }
+
+		// *@マージン(幅)
+		inline void SetMargin(float value) { m_fMargin = value; }
 
 		// *@障害物設置
 		void SetObstacle(Vector3 pos, Vector3 size) { m_aObstacle.push_back(Obstacle(pos, size)); }
@@ -168,8 +163,9 @@ namespace AI
 
 #endif // 0
 		
+
 #if DEBUG_POINT_DRAW
-	private:
+	protected:
 		std::shared_ptr<CSphere> m_pDebugSphere;
 		std::vector<std::shared_ptr<CBox>> m_aDebugBox;
 		std::vector<int> m_aDebugRoute;
@@ -180,6 +176,7 @@ namespace AI
 
 	private:
 		bool IsRoute(int idx);
+
 	public:
 		// *@ポイント描画
 		void Draw();
