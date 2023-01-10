@@ -14,7 +14,6 @@
 //--- インクルード部
 #include <Windows.h>
 
-#include <CoreSystem/Singleton.h>
 #include <CoreSystem/Math/myVector.h>
 #include <memory>
 
@@ -25,9 +24,8 @@ namespace MySpace
 		using namespace MySpace::MyMath;
 
 		//--- クラス定義
-		class CWindow : public CSingleton<CWindow>
+		class CWindow
 		{
-			friend class CSingleton<CWindow>;
 		private:
 			//--- メンバ変数
 			float m_fScreenWidth;
@@ -38,15 +36,13 @@ namespace MySpace
 			HWND m_hwnd;
 			MSG m_Message;
 		
-		private:
+		public:
 			//--- メンバ関数
 			CWindow() 
 			{
 				m_fScreenWidth = m_fScreenHeight = m_fClientWidth = m_fClientHeight = 0.0f;
 			};
 			~CWindow() = default;
-		public:
-			void Close(const char* name,HINSTANCE inst);
 
 			bool ExecMessage();
 			bool RegisterClass(

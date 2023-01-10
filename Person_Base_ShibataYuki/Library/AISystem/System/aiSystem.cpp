@@ -12,10 +12,17 @@
 using namespace AI;
 using namespace MySpace::Game;
 
+//==========================================================
+// コンストラクタ
+//==========================================================
 CAISystem::CAISystem(std::shared_ptr<CGameObject> ptr)
 	:m_pOwner(ptr), m_pRoot(NodePtr()), m_pData(nullptr)
 {
 }
+
+//==========================================================
+// デストラクタ
+//==========================================================
 CAISystem::~CAISystem()
 {	
 	for (auto & node : m_Nodes)
@@ -26,6 +33,9 @@ CAISystem::~CAISystem()
 	delete m_pData;
 }
 
+//==========================================================
+// 初期化
+//==========================================================
 void CAISystem::Init()
 {
 	for (auto & node : m_Nodes)
@@ -33,10 +43,18 @@ void CAISystem::Init()
 		node.second->OnAwake(this);
 	}
 }
+
+//==========================================================
+// ｺﾝﾎﾟｰﾈﾝﾄｸﾗｽの更新
+//==========================================================
 void CAISystem::Update()
 {
 	NodeUpdate();
 }
+
+//==========================================================
+// ノード更新
+//==========================================================
 int CAISystem::NodeUpdate()
 {
 #if _DEBUG
@@ -59,12 +77,17 @@ int CAISystem::NodeUpdate()
 	return 0;
 }
 
+//==========================================================
+// ノード追加
+//==========================================================
 CAISystem::NodePtr CAISystem::AddNode(NodePtr node)
 {
 	// ノード追加
 	m_Nodes.insert(std::make_pair(node->GetIndex() ,node));
+
 	// 未設定なら設定
 	if (!m_pRoot)
 		m_pRoot = node;
+	
 	return node;
 }

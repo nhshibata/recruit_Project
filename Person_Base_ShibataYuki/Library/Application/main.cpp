@@ -36,7 +36,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 	SetConsoleTitle("初期化");
 
 	//--- アプリケーションの開始
-	Application* Appli = &Application::Get();
+	Application* Appli = &Application::GetMain();
 	Appli->Init(hInstance);
 	
 	//--- ウィンドウ表示
@@ -47,7 +47,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 	Appli->MainLoop();
 
 	//--- 終了
-	Appli->Uninit();
+	Appli->Destroy();
 
 	HANDLE hStdout = GetStdHandle(STD_OUTPUT_HANDLE);
 	_CrtSetReportMode(_CRT_WARN, _CRTDBG_MODE_FILE);
@@ -83,8 +83,6 @@ HRESULT StartUp(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine, i
 	HRESULT hr = S_OK;
 
 	//--- 生成
-	Application::Create();
-
 	Application* Appli = Application::Get();
 	hr = Appli->Init(hInstance);
 
@@ -98,10 +96,7 @@ void ShutDown()
 	Application* Appli = Application::Get();
 
 	//--- 終了
-	Appli->Uninit();
-
-	//--- 破棄
-	Application::Destroy();
+	Appli->Destroy();
 
 #if CONSOLE
 	HANDLE hStdout = GetStdHandle(STD_OUTPUT_HANDLE);

@@ -14,18 +14,15 @@
 #include <GameSystem/GameObject/gameObject.h>
 #include <GameSystem/Component/component.h>
 #include <GameSystem/Component/Transform/transform.h>
-
-#include <ImGui/imgui.h>
-
 #include <GameSystem/Manager/sceneManager.h>
 #include <GameSystem/Manager/gameObjectManager.h>
 #include <GameSystem/Factory/componentFactory.h>
 
+#include <ImGui/imgui.h>
+
 using namespace MySpace::SceneManager;
 using namespace MySpace::Game;
 
-//--- 静的メンバ変数
-//CGameObject::GAMEOBJECT CGameObject::m_pObjects;
 
 #ifdef _DEBUG
 // オブジェクトの名前とtagが知りたい時に
@@ -36,13 +33,19 @@ static inline void CheckObj(CGameObject* obj)
 }
 #endif // _DEBUG
 
+//==========================================================
 // コンストラクタ
+//==========================================================
 CGameObject::CGameObject()
 	:m_eState(E_ObjectState::ACTIVE)
 {
 	m_pTag = std::make_shared<CTag>();
 	m_pLayer = std::make_shared<CLayer>();
 }
+
+//==========================================================
+// 引き数付きコンストラクタ
+//==========================================================
 CGameObject::CGameObject(std::string name)
 	:m_eState(E_ObjectState::ACTIVE)
 {
@@ -50,9 +53,13 @@ CGameObject::CGameObject(std::string name)
 	m_pTag = std::make_shared<CTag>();
 	m_pLayer = std::make_shared<CLayer>();
 }
+
+//==========================================================
 // コピーコンストラクタ
+//==========================================================
 CGameObject::CGameObject(const CGameObject & object)
 {
+
 #if BUILD_MODE
 	this->m_objName = object.m_objName + std::to_string(++m_nCopyCnt);
 #else
@@ -64,6 +71,7 @@ CGameObject::CGameObject(const CGameObject & object)
 	this->m_pLayer = object.m_pLayer;
 	this->m_pTag = object.m_pTag;
 	//this->m_pComponent = object.m_pComponent;
+
 	// ｺﾝﾎﾟｰﾈﾝﾄの名前から同じｺﾝﾎﾟｰﾈﾝﾄを追加
 	// TODO: 各ｺﾝﾎﾟｰﾈﾝﾄの値のｺﾋﾟｰは行えない
 	for (auto & component : object.m_pComponent)
@@ -77,12 +85,20 @@ CGameObject::CGameObject(const CGameObject & object)
 		}
 	}
 }
+
+//==========================================================
+// デストラクタ
+//==========================================================
 CGameObject::~CGameObject()
 {
 	for (auto & com : m_pComponent)
 		com.reset();
 	m_pComponent.clear();
 }
+
+//==========================================================
+// 読み込み時呼び出し
+//==========================================================
 void CGameObject::OnLoad()
 {
 	m_pTransform = GetComponent<CTransform>();
@@ -93,9 +109,12 @@ void CGameObject::OnLoad()
 		(*it)->OnLoad();
 	}
 }
-// *初期化より前に呼び出す処理
-// *オブジェクトやコンポーネントを追加するならここ
-// *名前やタグ、レイヤーの設定もここで行う
+
+//==========================================================
+// 初期化より前に呼び出す処理
+// オブジェクトやコンポーネントを追加するならここ
+// 名前やタグ、レイヤーの設定もここで行う
+//==========================================================
 void CGameObject::Awake()
 {
 	// Awakeはｺﾝﾎﾟｰﾈﾝﾄ追加時に呼び出される仕様
@@ -104,8 +123,11 @@ void CGameObject::Awake()
 
 	m_pTransform = AddComponent<CTransform>();
 }
-// *初期化
-// *オブジェクトやコンポーネントを探すならここ
+
+//==========================================================
+// 初期化
+// オブジェクトやコンポーネントを探すならここ
+//==========================================================
 void CGameObject::Init()
 {
 	// コンポーネントの初期化
@@ -114,13 +136,16 @@ void CGameObject::Init()
 		com->Init();
 	}
 }
+
+//==========================================================
 // コンポーネントの更新
 // この更新内でオブジェクトが破棄はされない
+//==========================================================
 void CGameObject::Update()
 {
 	for (auto & com : m_pComponent)
 	{
-	
+
 #if _DEBUG
 		auto name = com->GetName();
 #endif // _DEBUG
@@ -133,7 +158,10 @@ void CGameObject::Update()
 		com->Update();
 	}
 }
+
+//==========================================================
 // ゲームオブジェクトごとの遅い更新
+//==========================================================
 void CGameObject::LateUpdate()
 {
 	for (auto & com : m_pComponent)
@@ -146,7 +174,10 @@ void CGameObject::LateUpdate()
 		com->LateUpdate();
 	}
 }
-// 一定時間の更新
+
+//==========================================================
+// 一定時間更新
+//==========================================================
 void CGameObject::FixedUpdate()
 {
 	for (auto & com : m_pComponent)
@@ -159,7 +190,10 @@ void CGameObject::FixedUpdate()
 		com->FixedUpdate();
 	}
 }
-// コンポーネントの追加
+
+//==========================================================
+// コンポーネント追加
+//==========================================================
 std::shared_ptr<CComponent> CGameObject::AddComponent(std::shared_ptr<CComponent> com)
 {
 	m_pComponent.push_back(com);
@@ -167,7 +201,10 @@ std::shared_ptr<CComponent> CGameObject::AddComponent(std::shared_ptr<CComponent
 
 	return com; 
 }
+
+//==========================================================
 // コンポーネントの破棄
+//==========================================================
 template <class T>
 bool CGameObject::RemoveComponent(std::string comName)
 {
@@ -182,7 +219,10 @@ bool CGameObject::RemoveComponent(std::string comName)
 	}
 	return false;
 }
+
+//==========================================================
 // コンポーネント破棄
+//==========================================================
 bool CGameObject::RemoveComponent(std::weak_ptr<CComponent> com)
 {
 	COMPONENT::iterator it;
@@ -196,13 +236,20 @@ bool CGameObject::RemoveComponent(std::weak_ptr<CComponent> com)
 	}
 	return false;
 }
+
+//==========================================================
+// 状態設定
 // inline?
+//==========================================================
 void CGameObject::SetState(const E_ObjectState state)
 {
 	m_eState = state;
 }
+
+//==========================================================
 // タグの移動
 // ここでやるのは間違い?
+//==========================================================
 void CGameObject::SetTag(const std::string tag) 
 { 
 	if(auto scene = GetScene(); scene)
@@ -210,7 +257,10 @@ void CGameObject::SetTag(const std::string tag)
 
 	m_pTag->SetTag(tag);
 };
-// 衝突
+
+//==========================================================
+// 衝突時呼び出し
+//==========================================================
 void CGameObject::OnCollisionEnter(CGameObject* obj)
 {
 #ifdef _DEBUG
@@ -222,6 +272,10 @@ void CGameObject::OnCollisionEnter(CGameObject* obj)
 		(*it)->OnCollisionEnter(obj);
 	}
 }
+
+//==========================================================
+// 衝突中呼び出し
+//==========================================================
 void CGameObject::OnCollisionStay(CGameObject* obj)
 {
 	COMPONENT::iterator it = m_pComponent.begin();
@@ -230,6 +284,10 @@ void CGameObject::OnCollisionStay(CGameObject* obj)
 		(*it)->OnCollisionStay(obj);
 	}
 }
+
+//==========================================================
+// 衝突終了時呼び出し
+//==========================================================
 void CGameObject::OnCollisionExit(CGameObject* obj)
 {
 	COMPONENT::iterator it = m_pComponent.begin();
@@ -238,6 +296,10 @@ void CGameObject::OnCollisionExit(CGameObject* obj)
 		(*it)->OnCollisionExit(obj);
 	}
 }
+
+//==========================================================
+// 衝突時呼び出し（ﾄﾘｶﾞｰ)
+//==========================================================
 void CGameObject::OnTriggerEnter(CGameObject* obj)
 {
 	COMPONENT::iterator it = m_pComponent.begin();
@@ -246,6 +308,10 @@ void CGameObject::OnTriggerEnter(CGameObject* obj)
 		(*it)->OnTriggerEnter(obj);
 	}
 }
+
+//==========================================================
+// 衝突中呼び出し（ﾄﾘｶﾞｰ)
+//==========================================================
 void CGameObject::OnTriggerStay(CGameObject* obj)
 {
 	COMPONENT::iterator it = m_pComponent.begin();
@@ -254,6 +320,10 @@ void CGameObject::OnTriggerStay(CGameObject* obj)
 		(*it)->OnTriggerStay(obj);
 	}
 }
+
+//==========================================================
+// 衝突終了時呼び出し（ﾄﾘｶﾞｰ)
+//==========================================================
 void CGameObject::OnTriggerExit(CGameObject* obj)
 {
 	COMPONENT::iterator it = m_pComponent.begin();
@@ -262,10 +332,15 @@ void CGameObject::OnTriggerExit(CGameObject* obj)
 		(*it)->OnTriggerExit(obj);
 	}
 }
+
 //--- 静的メンバ関数
+
+//==========================================================
+// 名前が一致するオブジェクト探索
+//==========================================================
 std::weak_ptr<CGameObject> CGameObject::FindGameObject(std::string name)
 {
-	for (auto & scene : CSceneManager::Get()->GetAllScene()) 
+	for (auto & scene : CSceneManager::Get().GetAllScene()) 
 	{
 		auto obj = scene->GetObjManager()->FindGameObj(name.c_str());
 		if (obj.lock()) 
@@ -275,9 +350,13 @@ std::weak_ptr<CGameObject> CGameObject::FindGameObject(std::string name)
 	}
 	return std::shared_ptr<CGameObject>();
 }
+
+//==========================================================
+// タグ名が一致するオブジェクト探索
+//==========================================================
 std::weak_ptr<CGameObject> CGameObject::FindGameObjectWithTag(std::string tag)
 {
-	for (auto & scene : CSceneManager::Get()->GetAllScene())
+	for (auto & scene : CSceneManager::Get().GetAllScene())
 	{
 		auto obj = scene->GetObjManager()->FindGameObjWithTag(tag);
 		if (obj.lock())
@@ -287,10 +366,14 @@ std::weak_ptr<CGameObject> CGameObject::FindGameObjectWithTag(std::string tag)
 	}
 	return std::shared_ptr<CGameObject>();
 }
+
+//==========================================================
+// タグ名が一致する全オブジェクト取得
+//==========================================================
 std::list<std::weak_ptr<CGameObject>> CGameObject::FindGameObjectsWithTag(std::string tag)
 {
 	std::list<std::weak_ptr<CGameObject>> ret;
-	for (auto & scene : CSceneManager::Get()->GetAllScene())
+	for (auto & scene : CSceneManager::Get().GetAllScene())
 	{
 		auto objs = scene->GetObjManager()->FindGameObjctsWithTag(tag);
 		// 格納
@@ -301,9 +384,13 @@ std::list<std::weak_ptr<CGameObject>> CGameObject::FindGameObjectsWithTag(std::s
 	}
 	return ret;
 }
+
+//==========================================================
+// タグｸﾗｽが一致するオブジェクト取得
+//==========================================================
 std::weak_ptr<CGameObject> CGameObject::FindGameObjectWithTag(CTag tag)
 {
-	for (auto & scene : CSceneManager::Get()->GetAllScene())
+	for (auto & scene : CSceneManager::Get().GetAllScene())
 	{
 		auto obj = scene->GetObjManager()->FindGameObjWithTag(tag);
 		if (obj.lock())
@@ -313,10 +400,14 @@ std::weak_ptr<CGameObject> CGameObject::FindGameObjectWithTag(CTag tag)
 	}
 	return std::shared_ptr<CGameObject>();
 }
+
+//==========================================================
+// タグｸﾗｽが一致する全オブジェクト取得
+//==========================================================
 std::list<std::weak_ptr<CGameObject>> CGameObject::FindGameObjectsWithTag(CTag tag)
 {
 	std::list<std::weak_ptr<CGameObject>> retList;
-	for (auto & scene : CSceneManager::Get()->GetAllScene())
+	for (auto & scene : CSceneManager::Get().GetAllScene())
 	{
 		auto obj = scene->GetObjManager()->FindGameObjWithTag(tag);
 		if (obj.lock())
@@ -326,20 +417,30 @@ std::list<std::weak_ptr<CGameObject>> CGameObject::FindGameObjectsWithTag(CTag t
 	}
 	return std::list<std::weak_ptr<CGameObject>>();
 }
+
+//==========================================================
+// オブジェクト生成
+// 管理クラス側に登録された後ﾎﾟｲﾝﾀを引き渡す
+//==========================================================
 std::weak_ptr<CGameObject> CGameObject::CreateObject(CGameObject* pObj)
 {
 #ifdef _DEBUG
-	auto scene = CSceneManager::Get()->GetActiveScene();
+	auto scene = CSceneManager::Get().GetActiveScene();
 #endif // _DEBUG
 	
 	// ｺﾋﾟｰではない生成
 	if (!pObj) 
 	{
-		return CSceneManager::Get()->GetActiveScene()->GetObjManager()->CreateGameObject();
+		return CSceneManager::Get().GetActiveScene()->GetObjManager()->CreateGameObject();
 	}
-	return CSceneManager::Get()->GetActiveScene()->GetObjManager()->CreateGameObject(pObj);
+
+	return CSceneManager::Get().GetActiveScene()->GetObjManager()->CreateGameObject(pObj);
 }
+
+//==========================================================
+// 管理してほしくないオブジェクト生成
 // 作るだけで管理は受け取った側に委任
+//==========================================================
 std::shared_ptr<CGameObject> CGameObject::CreateDebugObject(std::shared_ptr<CGameObject> pObj)
 {
 	// 自身のweakPtrを渡す
@@ -350,29 +451,31 @@ std::shared_ptr<CGameObject> CGameObject::CreateDebugObject(std::shared_ptr<CGam
 	pObj.get()->Init();
 	return pObj;
 }
+
+//==========================================================
+// オブジェクト破棄
+// manager更新時の確認で破棄される
+//==========================================================
 void CGameObject::Destroy(std::weak_ptr<CGameObject> pObj)
 {
 	// 破棄状態に変更
-	// manager更新時の確認で破棄される
 	pObj.lock()->SetState(E_ObjectState::DESTROY);
-	/*for (auto & scene : CSceneManager::Get()->GetAllScene())
-	{
-		if (scene->GetObjManager()->DestroyObject(pObj))
-		{
-			return;
-		}
-	}*/
 }
+
+//==========================================================
+// 非破壊登録
+//==========================================================
 void CGameObject::DontDestroy(std::weak_ptr<CGameObject> pObj)
 {
-	CSceneManager::Get()->GetActiveScene()->GetObjManager()->DontDestroy(pObj);
+	CSceneManager::Get().GetActiveScene()->GetObjManager()->DontDestroy(pObj);
 }
+
 
 #ifdef BUILD_MODE
 
 void CGameObject::ImGuiDebug()
 {
-	static const char* szState[CGameObject::MAX_OBJECT_STATE] = {
+	const char* szState[CGameObject::MAX_OBJECT_STATE] = {
 		"ACTIVE",				// 更新状態
 		"WAIT",				// 待機
 		"DESTROY",			// 削除
@@ -380,6 +483,7 @@ void CGameObject::ImGuiDebug()
 		"STOP",				// デバッグ?
 	};
 
+	//--- 状態変更
 	if (ImGui::BeginMenuBar()) 
 	{
 		if (ImGui::BeginMenu(u8"State"))
@@ -395,11 +499,12 @@ void CGameObject::ImGuiDebug()
 		ImGui::EndMenuBar();
 	}
 
+	//--- タグ変更
 	if (ImGui::BeginMenuBar()) 
 	{
 		if (ImGui::BeginMenu(u8"tag"))
 		{
-			auto tagList = CTagManager::Get()->GetNameList();
+			auto tagList = CTag::GetNameList();
 			for (int state = 0; state < static_cast<int>(tagList.size()); ++state)
 			{
 				auto tagName = tagList[state].c_str();
@@ -412,6 +517,7 @@ void CGameObject::ImGuiDebug()
 		ImGui::EndMenuBar();
 	}
 	
+	//--- 名前変更
 	char name[256] = "";
 	strcpy_s(name, GetName().c_str());
 	ImGui::InputText(u8"*名前:", name, 256);
@@ -437,7 +543,7 @@ void CGameObject::ImGuiDebug()
 	ImGui::Text(u8"*ｺﾝﾎﾟｰﾈﾝﾄ数:%d", GetComponentList().size());
 	ImGui::SameLine();
 	ImGui::Text(u8"*state:%s", szState[m_eState]);
-	//ImGui::RadioButton("state", &m_eState, E_ObjectState::ACTIVE);
+	
 }
 
 #endif // BUILD_MODE

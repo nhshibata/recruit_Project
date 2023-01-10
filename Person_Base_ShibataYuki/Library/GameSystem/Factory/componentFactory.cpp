@@ -14,16 +14,26 @@
 using namespace MySpace::Game;
 using namespace MySpace::Debug;
 
+//==========================================================
+// コンストラクタ
+//==========================================================
 CComponentFactory::CComponentFactory()
 {
 
 }
 
+//==========================================================
+// 型の名前取得
+//==========================================================
 std::vector<std::string> CComponentFactory::GetNameList()
 {
 	CreateComponentType();
 	return CTypeSaveManager::Get()->GetTypeNameList();
 }
+
+//==========================================================
+// オブジェクトに型名からｺﾝﾎﾟｰﾈﾝﾄを追加
+//==========================================================
 bool CComponentFactory::ObjSetComponent(CGameObject& obj, std::string name)
 {
 	if (auto type = CTypeSaveManager::Get()->GetTypeSave(name); type)
@@ -33,19 +43,31 @@ bool CComponentFactory::ObjSetComponent(CGameObject& obj, std::string name)
 	}
 	return false;
 }
-std::shared_ptr<CComponent> CComponentFactory::CreateComponent(std::string name)
-{
-	CTypeSave<CComponent>* com = dynamic_cast<CTypeSave<CComponent>*>(CTypeSaveManager::Get()->GetTypeSave(name));
-	
-	return com->MakeType();
-}
-template <class T>
-T* CComponentFactory::CreateComponent()
-{
-	return CTypeSaveManager::Get()->GetTypeSave<T>();
-}
-template <class T>
-std::shared_ptr<T> CComponentFactory::MakeComponent()
-{
-	return CTypeSaveManager::Get()->MakeType<T>();
-}
+
+//==========================================================
+// ｺﾝﾎﾟｰﾈﾝﾄ作成
+//==========================================================
+//std::shared_ptr<CComponent> CComponentFactory::CreateComponent(std::string name)
+//{
+//	CTypeSave<CComponent>* com = dynamic_cast<CTypeSave<CComponent>*>(CTypeSaveManager::Get()->GetTypeSave(name));
+//	
+//	return com->MakeType();
+//}
+
+//==========================================================
+// ｺﾝﾎﾟｰﾈﾝﾄ作成
+//==========================================================
+//template <class T>
+//T* CComponentFactory::CreateComponent()
+//{
+//	return CTypeSaveManager::Get()->GetTypeSave<T>();
+//}
+
+//==========================================================
+// ｺﾝﾎﾟｰﾈﾝﾄ作成
+//==========================================================
+//template <class T>
+//std::shared_ptr<T> CComponentFactory::MakeComponent()
+//{
+//	return CTypeSaveManager::Get()->MakeType<T>();
+//}

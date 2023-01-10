@@ -4,10 +4,11 @@
 //---------------------------------------------------------
 //=========================================================
 
+//--- インクルード部
+#include <Application/Application.h>
 #include <GraphicsSystem/Render/mesh.h>
 #include <GraphicsSystem/Shader/shader.h>
 #include <GraphicsSystem/Manager/shaderManager.h>
-#include <GraphicsSystem/DirectX/DXDevice.h>
 
 #include <GameSystem/Component/Camera/camera.h>
 #include <GameSystem/Component/Light/directionalLight.h>
@@ -16,11 +17,8 @@
 using namespace MySpace::Game;
 using namespace MySpace::System;
 using namespace MySpace::Graphics;
-//using namespace DirectX;
 
-//*****************************************************************************
-// マクロ定義
-//*****************************************************************************
+//--- マクロ定義
 #define M_DIFFUSE				MySpace::MyMath::Vector4(1.0f,1.0f,1.0f,1.0f)
 #define M_SPECULAR				MySpace::MyMath::Vector4(0.1f,0.1f,0.1f,1.0f)
 #define M_POWER					(0.0f)
@@ -28,16 +26,17 @@ using namespace MySpace::Graphics;
 #define M_EMISSIVE				MySpace::MyMath::Vector4(0.0f,0.0f,0.0f,1.0f)
 #define MAX_MESH_INSTANCING		1024
 
-//*****************************************************************************
-// 構造体定義
-//*****************************************************************************
+//--- 構造体定義
 // シェーダに渡す値
-struct SHADER_GLOBAL {
+struct SHADER_GLOBAL 
+{
 	DirectX::XMMATRIX	mVP;		// ワールド×ビュー×射影行列(転置行列)
 	DirectX::XMMATRIX	mW;			// ワールド行列(転置行列)
 	DirectX::XMMATRIX	mTex;		// テクスチャ行列(転置行列)
 };
-struct SHADER_GLOBAL2 {
+
+struct SHADER_GLOBAL2 
+{
 	XMVECTOR	vEye;		// 視点座標
 	// 光源
 	XMVECTOR	vLightDir;	// 光源方向
@@ -49,6 +48,19 @@ struct SHADER_GLOBAL2 {
 	XMVECTOR	vDiffuse;	// ディフューズ色
 	XMVECTOR	vSpecular;	// スペキュラ色(+スペキュラ強度)
 	XMVECTOR	vEmissive;	// エミッシブ色
+
+	void SetData(CCamera* pCam, CDirectionalLight* pLight, CMeshMaterial* pMat, ID3D11ShaderResourceView* pTex)
+	{
+		this->vEye = XMLoadFloat3(&pCam->GetPos());
+		this->vLightDir = XMLoadFloat3(&pLight->GetDir());
+		this->vLa = XMLoadFloat4(&pLight->GetAmbient());
+		this->vLd = XMLoadFloat4(&pLight->GetDiffuse());
+		this->vLs = XMLoadFloat4(&pLight->GetSpecular());
+		this->vDiffuse = XMLoadFloat4(&pMat->m_Diffuse);
+		this->vAmbient = XMVectorSet(pMat->m_Ambient.x, pMat->m_Ambient.y, pMat->m_Ambient.z, pTex ? 1.f : 0.f);
+		this->vSpecular = XMVectorSet(pMat->m_Specular.x, pMat->m_Specular.y, pMat->m_Specular.z, pMat->m_Power);
+		this->vEmissive = XMLoadFloat4(&pMat->m_Emissive);
+	}
 };
 
 struct SHADER_MESH_INSTANCING
@@ -63,14 +75,16 @@ struct SHADER_MESH_INSTANCING
 	}
 };
 
-// 静的メンバ
+//--- 静的メンバ
 ID3D11Buffer* CMesh::m_pConstantBuffer[2];	// 定数バッファ
 ID3D11SamplerState* CMesh::m_pSamplerState;	// テクスチャ サンプラ
 ID3D11VertexShader* CMesh::m_pVertexShader;	// 頂点シェーダ
 ID3D11InputLayout* CMesh::m_pInputLayout;	// 頂点フォーマット
 ID3D11PixelShader* CMesh::m_pPixelShader;	// ピクセルシェーダ
 
+//==========================================================
 // コンストラクタ
+//==========================================================
 CMesh::CMesh()
 {
 	m_pVertexBuffer = nullptr;
@@ -78,17 +92,19 @@ CMesh::CMesh()
 	XMStoreFloat4x4(&m_mWorld, XMMatrixIdentity());
 }
 
+//==========================================================
 // デストラクタ
+//==========================================================
 CMesh::~CMesh()
 {
 }
-
+//==========================================================
 // シェーダ初期化
+//==========================================================
 HRESULT CMesh::InitShader()
 {
 	HRESULT hr = S_OK;
-	ID3D11Device* pDevice = CDXDevice::Get()->GetDevice();
-
+	ID3D11Device* pDevice = Application::Get()->GetDevice();
 
 	// シェーダ初期化
 	static const D3D11_INPUT_ELEMENT_DESC layout[] = {
@@ -117,10 +133,10 @@ HRESULT CMesh::InitShader()
 	cb_sg->Make(sizeof(SHADER_GLOBAL), 0, CConstantBuffer::EType::Vertex);
 	cb_sg2->Make(sizeof(SHADER_GLOBAL2), 0, CConstantBuffer::EType::Pixel);
 
-	CShaderManager::Get()->SetConstantBuffer("SHADER_GLOBAL", cb_sg);
-	CShaderManager::Get()->SetConstantBuffer("SHADER_GLOBAL2", cb_sg2);
-	CShaderManager::Get()->SetVS("Vertex", vs);
-	CShaderManager::Get()->SetPS("Pixel", ps);
+	CShaderManager::GetMain()->SetConstantBuffer("SHADER_GLOBAL", cb_sg);
+	CShaderManager::GetMain()->SetConstantBuffer("SHADER_GLOBAL2", cb_sg2);
+	CShaderManager::GetMain()->SetVS("Vertex", vs);
+	CShaderManager::GetMain()->SetPS("Pixel", ps);
 
 #endif // 0
 
@@ -164,7 +180,9 @@ HRESULT CMesh::InitShader()
 	return hr;
 }
 
+//==========================================================
 // シェーダ終了処理
+//==========================================================
 void CMesh::FinShader()
 {
 	// 定数バッファの解放
@@ -180,11 +198,13 @@ void CMesh::FinShader()
 	SAFE_RELEASE(m_pConstantBufferI);
 }
 
+//==========================================================
 // 初期化
+//==========================================================
 HRESULT CMesh::Init(const VERTEX_3D vertexWk[], int nVertex, int indexWk[], int nIndex)
 {
 	HRESULT hr = S_OK;
-	ID3D11Device* pDevice = CDXDevice::Get()->GetDevice();
+	ID3D11Device* pDevice = Application::Get()->GetDevice();
 
 	SAFE_RELEASE(m_pVertexBuffer);
 	SAFE_RELEASE(m_pIndexBuffer);
@@ -236,18 +256,22 @@ HRESULT CMesh::Init(const VERTEX_3D vertexWk[], int nVertex, int indexWk[], int 
 	return hr;
 }
 
+//==========================================================
 // 終了処理
+//==========================================================
 void CMesh::Fin()
 {
 	SAFE_RELEASE(m_pVertexBuffer);
 	SAFE_RELEASE(m_pIndexBuffer);
 }
 
+//==========================================================
 // 描画
+//==========================================================
 void CMesh::Draw(ID3D11ShaderResourceView* pTexture, XMFLOAT4X4* mWorld)
 {
 	// シェーダ設定
-	ID3D11DeviceContext* pDeviceContext = CDXDevice::Get()->GetDeviceContext();
+	ID3D11DeviceContext* pDeviceContext = Application::Get()->GetDeviceContext();
 	pDeviceContext->VSSetShader(m_pVertexShader, nullptr, 0);
 	pDeviceContext->PSSetShader(m_pPixelShader, nullptr, 0);
 	pDeviceContext->IASetInputLayout(m_pInputLayout);
@@ -262,9 +286,9 @@ void CMesh::Draw(ID3D11ShaderResourceView* pTexture, XMFLOAT4X4* mWorld)
 	pDeviceContext->IASetIndexBuffer(m_pIndexBuffer, DXGI_FORMAT_R32_UINT, 0);
 
 	pDeviceContext->PSSetSamplers(0, 1, &m_pSamplerState);
-	// 追加
-	//if(pTexture)
-	pDeviceContext->PSSetShaderResources(0, 1, &pTexture);
+	
+	if(pTexture)
+		pDeviceContext->PSSetShaderResources(0, 1, &pTexture);
 
 	SHADER_GLOBAL cb;
 	DirectX::XMMATRIX mtxWorld = XMLoadFloat4x4(&m_mWorld);
@@ -288,17 +312,10 @@ void CMesh::Draw(ID3D11ShaderResourceView* pTexture, XMFLOAT4X4* mWorld)
 	}
 	pDeviceContext->UpdateSubresource(m_pConstantBuffer[0], 0, nullptr, &cb, 0, 0);
 	pDeviceContext->VSSetConstantBuffers(0, 1, &m_pConstantBuffer[0]);
+
 	SHADER_GLOBAL2 cb2;
-	cb2.vEye = XMLoadFloat3(&pCamera->GetPos());
-	CDirectionalLight* pLight = dynamic_cast<CDirectionalLight*>(CLight::Get());
-	cb2.vLightDir = XMLoadFloat3(&pLight->GetDir());
-	cb2.vLa = XMLoadFloat4(&pLight->GetAmbient());
-	cb2.vLd = XMLoadFloat4(&pLight->GetDiffuse());
-	cb2.vLs = XMLoadFloat4(&pLight->GetSpecular());
-	cb2.vDiffuse = XMLoadFloat4(&m_material.m_Diffuse);
-	cb2.vAmbient = XMVectorSet(m_material.m_Ambient.x, m_material.m_Ambient.y, m_material.m_Ambient.z, (pTexture != nullptr) ? 1.f : 0.f);
-	cb2.vSpecular = XMVectorSet(m_material.m_Specular.x, m_material.m_Specular.y, m_material.m_Specular.z, m_material.m_Power);
-	cb2.vEmissive = XMLoadFloat4(&m_material.m_Emissive);
+	cb2.SetData(pCamera, dynamic_cast<CDirectionalLight*>(CLight::GetMain()), &m_material, pTexture);
+
 	pDeviceContext->UpdateSubresource(m_pConstantBuffer[1], 0, nullptr, &cb2, 0, 0);
 	pDeviceContext->PSSetConstantBuffers(1, 1, &m_pConstantBuffer[1]);
 
@@ -320,11 +337,14 @@ void CMesh::Draw(ID3D11ShaderResourceView* pTexture, XMFLOAT4X4* mWorld)
 	pDeviceContext->DrawIndexed(m_nNumIndex, 0, 0);
 }
 
+//==========================================================
 // 描画
+// インスタンシング
+//==========================================================
 void CMesh::DrawInstancing(std::vector<CMesh*> aMesh, ID3D11ShaderResourceView* pTexture, XMFLOAT4X4* mWorld)
 {
 	// シェーダ設定
-	ID3D11DeviceContext* pDeviceContext = CDXDevice::Get()->GetDeviceContext();
+	ID3D11DeviceContext* pDeviceContext = Application::Get()->GetDeviceContext();
 	pDeviceContext->VSSetShader(m_pInstancingVertexShader, nullptr, 0);
 	pDeviceContext->PSSetShader(m_pPixelShader, nullptr, 0);
 	pDeviceContext->IASetInputLayout(m_pInputLayout);
@@ -339,7 +359,7 @@ void CMesh::DrawInstancing(std::vector<CMesh*> aMesh, ID3D11ShaderResourceView* 
 	pDeviceContext->IASetIndexBuffer(aMesh[0]->m_pIndexBuffer, DXGI_FORMAT_R32_UINT, 0);
 
 	pDeviceContext->PSSetSamplers(0, 1, &m_pSamplerState);
-	// 追加
+
 	if (pTexture)
 		pDeviceContext->PSSetShaderResources(0, 1, &pTexture);
 
@@ -366,16 +386,8 @@ void CMesh::DrawInstancing(std::vector<CMesh*> aMesh, ID3D11ShaderResourceView* 
 	pDeviceContext->UpdateSubresource(m_pConstantBuffer[0], 0, nullptr, &cb, 0, 0);
 	pDeviceContext->VSSetConstantBuffers(0, 1, &m_pConstantBuffer[0]);
 	SHADER_GLOBAL2 cb2;
-	cb2.vEye = XMLoadFloat3(&pCamera->GetPos());
-	CDirectionalLight* pLight = dynamic_cast<CDirectionalLight*>(CLight::Get());
-	cb2.vLightDir = XMLoadFloat3(&pLight->GetDir());
-	cb2.vLa = XMLoadFloat4(&pLight->GetAmbient());
-	cb2.vLd = XMLoadFloat4(&pLight->GetDiffuse());
-	cb2.vLs = XMLoadFloat4(&pLight->GetSpecular());
-	cb2.vDiffuse = XMLoadFloat4(&aMesh[0]->m_material.m_Diffuse);
-	cb2.vAmbient = XMVectorSet(aMesh[0]->m_material.m_Ambient.x, aMesh[0]->m_material.m_Ambient.y, aMesh[0]->m_material.m_Ambient.z, (pTexture != nullptr) ? 1.f : 0.f);
-	cb2.vSpecular = XMVectorSet(aMesh[0]->m_material.m_Specular.x, aMesh[0]->m_material.m_Specular.y, aMesh[0]->m_material.m_Specular.z, aMesh[0]->m_material.m_Power);
-	cb2.vEmissive = XMLoadFloat4(&aMesh[0]->m_material.m_Emissive);
+	cb2.SetData(pCamera, dynamic_cast<CDirectionalLight*>(CLight::GetMain()), &aMesh[0]->m_material, pTexture);
+
 	pDeviceContext->UpdateSubresource(m_pConstantBuffer[1], 0, nullptr, &cb2, 0, 0);
 	pDeviceContext->PSSetConstantBuffers(1, 1, &m_pConstantBuffer[1]);
 
@@ -398,7 +410,7 @@ void CMesh::DrawInstancing(std::vector<CMesh*> aMesh, ID3D11ShaderResourceView* 
 	pDeviceContext->VSSetConstantBuffers(1, 1, &m_pConstantBufferI);
 
 	// プリミティブ形状をセット
-	static const D3D11_PRIMITIVE_TOPOLOGY pt[] = {
+	const D3D11_PRIMITIVE_TOPOLOGY pt[] = {
 		D3D11_PRIMITIVE_TOPOLOGY_TRIANGLESTRIP,	// 0なら三角形ストリップ
 		D3D11_PRIMITIVE_TOPOLOGY_POINTLIST,
 		D3D11_PRIMITIVE_TOPOLOGY_LINELIST,
@@ -412,10 +424,14 @@ void CMesh::DrawInstancing(std::vector<CMesh*> aMesh, ID3D11ShaderResourceView* 
 	pDeviceContext->DrawIndexedInstanced(static_cast<UINT>(aMesh[0]->m_nNumIndex), static_cast<UINT>(aMesh.size()), 0, 0, 0);
 }
 
+//==========================================================
+// インスタンシング描画
+// マトリックスだけ用
+//==========================================================
 void CMesh::DrawInstancing(std::vector<XMFLOAT4X4> aWorld)
 {
 	// シェーダ設定
-	ID3D11DeviceContext* pDeviceContext = CDXDevice::Get()->GetDeviceContext();
+	ID3D11DeviceContext* pDeviceContext = Application::Get()->GetDeviceContext();
 	pDeviceContext->VSSetShader(m_pInstancingVertexShader, nullptr, 0);
 	pDeviceContext->PSSetShader(m_pPixelShader, nullptr, 0);
 	pDeviceContext->IASetInputLayout(m_pInputLayout);
@@ -430,7 +446,6 @@ void CMesh::DrawInstancing(std::vector<XMFLOAT4X4> aWorld)
 	pDeviceContext->IASetIndexBuffer(m_pIndexBuffer, DXGI_FORMAT_R32_UINT, 0);
 
 	pDeviceContext->PSSetSamplers(0, 1, &m_pSamplerState);
-	//pDeviceContext->PSSetShaderResources(0, 1, NULL);
 
 	SHADER_GLOBAL cb;
 	//DirectX::XMMATRIX mtxWorld = XMLoadFloat4x4(&m_mWorld);
@@ -451,24 +466,17 @@ void CMesh::DrawInstancing(std::vector<XMFLOAT4X4> aWorld)
 	pDeviceContext->UpdateSubresource(m_pConstantBuffer[0], 0, nullptr, &cb, 0, 0);
 	pDeviceContext->VSSetConstantBuffers(0, 1, &m_pConstantBuffer[0]);
 	SHADER_GLOBAL2 cb2;
-	cb2.vEye = XMLoadFloat3(&pCamera->GetPos());
-	CDirectionalLight* pLight = dynamic_cast<CDirectionalLight*>(CLight::Get());
-	cb2.vLightDir = XMLoadFloat3(&pLight->GetDir());
-	cb2.vLa = XMLoadFloat4(&pLight->GetAmbient());
-	cb2.vLd = XMLoadFloat4(&pLight->GetDiffuse());
-	cb2.vLs = XMLoadFloat4(&pLight->GetSpecular());
-	cb2.vDiffuse = XMLoadFloat4(&m_material.m_Diffuse);
-	cb2.vAmbient = XMVectorSet(m_material.m_Ambient.x, m_material.m_Ambient.y, m_material.m_Ambient.z, (nullptr) ? 1.f : 0.f);
-	cb2.vSpecular = XMVectorSet(m_material.m_Specular.x, m_material.m_Specular.y, m_material.m_Specular.z, m_material.m_Power);
-	cb2.vEmissive = XMLoadFloat4(&m_material.m_Emissive);
+	cb2.SetData(pCamera, dynamic_cast<CDirectionalLight*>(CLight::GetMain()), &m_material, nullptr);
+
 	pDeviceContext->UpdateSubresource(m_pConstantBuffer[1], 0, nullptr, &cb2, 0, 0);
 	pDeviceContext->PSSetConstantBuffers(1, 1, &m_pConstantBuffer[1]);
+
 
 	//CShaderManager::Get()->ConstantWrite("SHADER_GLOBAL2", &cb2);
 	//CShaderManager::Get()->BindCB("SHADER_GLOBAL2");
 
 	// プリミティブ形状をセット
-	static const D3D11_PRIMITIVE_TOPOLOGY pt[] = {
+	const D3D11_PRIMITIVE_TOPOLOGY pt[] = {
 		D3D11_PRIMITIVE_TOPOLOGY_TRIANGLESTRIP,	// 0なら三角形ストリップ
 		D3D11_PRIMITIVE_TOPOLOGY_POINTLIST,
 		D3D11_PRIMITIVE_TOPOLOGY_LINELIST,
@@ -481,6 +489,8 @@ void CMesh::DrawInstancing(std::vector<XMFLOAT4X4> aWorld)
 	//--- データセット
 	D3D11_MAPPED_SUBRESOURCE pData;
 	int cntNum = 0;
+
+	//--- インスタンシング描画全て終わるまで
 	while (cntNum < aWorld.size())
 	{
 		int cnt = 0;
@@ -507,7 +517,9 @@ void CMesh::DrawInstancing(std::vector<XMFLOAT4X4> aWorld)
 	}
 }
 
+//==========================================================
 // マテリアル設定
+//==========================================================
 void CMesh::SetMaterial(const CMeshMaterial* pMaterial)
 {
 	if (pMaterial) {

@@ -6,26 +6,30 @@
 
 #include <fadeController.h>
 #include <GameSystem/Component/component.h>
+#include <GameSystem/Manager/sceneManager.h>
 
 //
 CFadeController::CFadeController(std::shared_ptr<CGameObject> owner)
 	:CComponent(owner), m_fFadeTime(60), m_eState(E_FadeState::NONE)
 {
 }
+
 void CFadeController::Awake()
 {
 	/*if (CGameObject::FindGameObjectWithTag("Fade").lock())
 		return;*/
 
 	//CGameObject::DontDestroy(GetOwner(0));
-	
+	m_SceneName.clear();
+
 	GetOwner()->SetName("FadeController");
 	GetOwner()->GetTagPtr()->CreateTag("Fade");
-	m_pPolygon = AddComponent<CPolygonRenderer>();
+	m_pPolygon = GetOwner()->AddComponent<CPolygonRenderer>();
 	m_pPolygon.lock()->SetColor(Color(0, 0, 0, 0));
 	m_pPolygon.lock()->GetRectTransform()->SetSize(CScreen::GetWidth(), CScreen::GetHeight());
 	GetOwner()->SetLayer(static_cast<int>(CLayer::E_Layer::FOG));
 }
+
 void CFadeController::Update()
 {
 	switch (m_eState)
@@ -43,8 +47,16 @@ void CFadeController::Update()
 		m_pPolygon.lock()->SetColor(color);
 		if (color.a >= 1.0f)
 		{
+			Call(m_eState);
 			m_eState = E_FadeState::NONE;
-			Call(E_FadeState::FADE_OUT);
+			
+			//--- 次のScene名が指定されていれば
+			if (!m_SceneName.empty())
+			{
+				CSceneManager::Get().CreateNewScene<CScene>(m_SceneName);
+				m_SceneName.clear();
+				m_eState = E_FadeState::FADE_IN_START;
+			}
 		}
 		break;
 	}
@@ -70,17 +82,34 @@ void CFadeController::Update()
 		break;
 	}
 }
+
+//========================================================
+// Scene設定用
+//========================================================
+void CFadeController::SetScene(std::string sceneName)
+{
+	m_SceneName = sceneName;
+	StartFadeOut();
+}
+
+//========================================================
+// フェードアウト開始
+//========================================================
 void CFadeController::StartFadeOut()
 {
 	if (m_eState == E_FadeState::FADE_OUT_START || m_eState == E_FadeState::FADE_OUT)
 		return;
-	m_pPolygon.lock()->SetColor({0,0,0,0});
+	m_pPolygon.lock()->SetColor({ 0,0,0,0 });
 	m_eState = E_FadeState::FADE_OUT_START;
 }
+
+//========================================================
+// フェードイン開始
+//========================================================
 void CFadeController::StartFadeIn()
 {
 	if (m_eState == E_FadeState::FADE_IN_START || m_eState == E_FadeState::FADE_IN)
 		return;
-	m_pPolygon.lock()->SetColor({0,0,0,1});
+	m_pPolygon.lock()->SetColor({ 0,0,0,1 });
 	m_eState = E_FadeState::FADE_IN_START;
 }

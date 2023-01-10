@@ -35,8 +35,8 @@ namespace MySpace
 			CMapSystemBase() { m_aIntMap.clear(); };
 			virtual ~CMapSystemBase() { m_aIntMap.clear(); };
 
-			// *“o˜^
-			// *“o˜^‚µ‚½”Ô†‚ğ•Ô‚·
+			// *@“o˜^
+			// *@“o˜^‚µ‚½Û‚É”Ô†‚ğ•Ô‚·
 			_NODISCARD inline int RegistToSystem(T type)
 			{
 				int ret = static_cast<int>(m_nRegistCnt);
@@ -44,7 +44,8 @@ namespace MySpace
 				++m_nRegistCnt;
 				return ret;
 			}
-			// *”jŠü(map‚Ì‚½‚ßA®—ñ‚Í‚³‚¹‚È‚¢)
+
+			// *@”jŠü(map‚Ì‚½‚ßA®—ñ‚Í‚³‚¹‚È‚¢)
 			virtual inline T ExecutSystem(int idx)
 			{
 				T ret = m_aIntMap[idx];
@@ -52,12 +53,15 @@ namespace MySpace
 				return ret;
 			}
 
+			// *@ƒf[ƒ^æ“¾
+			// *@¶¬‚É“n‚µ‚½id‚©‚çÃŞ°À‚ğ“n‚·
 			inline T IDToData(int idx)
 			{
 				if (m_aIntMap.count(idx))
 					return m_aIntMap[idx];
 				return T();
 			}
+
 		};
 	}
 }

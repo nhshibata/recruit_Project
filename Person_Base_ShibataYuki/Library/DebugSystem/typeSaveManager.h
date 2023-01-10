@@ -11,7 +11,6 @@
 #define __TYPE_SAVE_MANAGER_H__
 
 //--- インクルード部
-#include <CoreSystem/Singleton.h>
 #include <CoreSystem/Util/stl.h>
 #include <DebugSystem/debug.h>
 #include <GameSystem/GameObject/gameObject.h>
@@ -70,9 +69,8 @@ namespace MySpace
 		};
 
 		//--- クラス定義
-		class CTypeSaveManager : public CSingleton<CTypeSaveManager>
+		class CTypeSaveManager
 		{
-			friend class CSingleton<CTypeSaveManager>;
 		private:
 			//--- エイリアス
 			using StockMap = std::map<std::string, CTypeSaveBase*>;
@@ -88,21 +86,19 @@ namespace MySpace
 			//--- メンバ関数
 			CTypeSaveManager() = default;
 			~CTypeSaveManager();
-
 		public:
+
 			void Uninit();
 
 			//--- ゲッター・セッター
+			// *@シングルトンの取得
+			static CTypeSaveManager* Get() { static CTypeSaveManager pInstance; return &pInstance; }
 
 			// *@格納されたｸﾗｽを名前で取得
 			CTypeSaveBase* GetTypeSave(std::string name) { return m_aStockType[name]; }
 
 			// *@所持しているタイプの名前を取得
 			std::vector<std::string> GetTypeNameList();
-
-			// *@生ポインタ生成
-			template <class T>
-			T* GetTypeSave();
 
 			// 格納
 			template <class T>
@@ -119,13 +115,17 @@ namespace MySpace
 				m_aStockType.insert(StockPAIR(typeid(T).name(), add));
 			}
 			
-			// *@SP生成
-			template <class T>
-			std::shared_ptr<T> MakeType();
-
 			// *@タイプを所持しているか
 			bool IsType(std::string name);
 
+			// *@SP生成
+			//template <class T>
+			//std::shared_ptr<T> MakeType();
+
+			// *@生ポインタ生成
+			//template <class T>
+			//T* GetTypeSave();
+		
 		};
 	}
 }

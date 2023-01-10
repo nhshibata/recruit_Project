@@ -59,10 +59,15 @@ namespace MySpace
 			bool m_bFrustum;
 #endif // _DEBUG
 
-		public:
+		private:
 			//--- メンバ関数
+			void Sort();
+			void InstancingDraw();
+
+		public:
 			CDrawSystem();
 			~CDrawSystem();
+
 			void Update();
 
 			//--- 描画するコンポーネント

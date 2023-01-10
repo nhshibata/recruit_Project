@@ -34,6 +34,8 @@ namespace MySpace
 			{
 				archive(CEREAL_NVP(m_aTexList), CEREAL_NVP(m_aModelList)/*, CEREAL_NVP(m_EffectList)*/);
 			}
+
+		private:
 			//--- エイリアス
 			using RESOURCE_LIST = std::vector<std::string>;
 			using EFFECT_RESOURCE_LIST = std::vector<std::u16string>;

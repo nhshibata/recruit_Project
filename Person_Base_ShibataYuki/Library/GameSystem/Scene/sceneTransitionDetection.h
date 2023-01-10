@@ -90,10 +90,12 @@ namespace MySpace
 
 			// *@登録された関数呼び出し
 			// *@シーン遷移
-			void Call(CScene* prev, CScene* next);	
+			void Call(CScene* prev, CScene* next);
+
 			// *@登録された関数の呼び出し
 			// *@シーン読み込み時
-			void Call(CScene* scene, int);			
+			void Call(CScene* scene, int);
+
 			// *@登録された関数の呼び出し
 			// *@シーン破棄時
 			void Call(CScene* scene);				
@@ -105,6 +107,7 @@ namespace MySpace
 			{
 				m_pChangeFunc.push_back(CCallFunc<T, CScene*, CScene*>(std::bind(func, ptr, std::placeholders::_1, std::placeholders::_2)));
 			}
+
 			// *@シーン読み込み時
 			// *@ﾃﾝﾌﾟﾚｰﾄｸﾗｽ:渡したい関数の型
 			template <class T>

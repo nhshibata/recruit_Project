@@ -13,8 +13,8 @@
 //--- インクルード部
 #define NOMINMAX
 #include <Windows.h>
-#include <CoreSystem/Singleton.h>
 #include <DebugSystem/debug.h>
+#include <memory>
 
 //--- 定数定義
 #define FPS			(60)
@@ -24,9 +24,8 @@ namespace MySpace
 	namespace System
 	{
 		//--- クラス定義
-		class CFps : public CSingleton<CFps>
+		class CFps
 		{
-			friend class CSingleton<CFps>;
 		private:
 			struct STFixedTime 
 			{
@@ -61,9 +60,17 @@ namespace MySpace
 			CFps();
 			~CFps();
 		public:
+
+//#pragma warning(push)
+//#pragma warning(disable:4789)
+			// *@シングルトンの取得
+			static CFps& Get();
+//#pragma warning(pop)   
+
 			void Init();
 			void Uninit();
 			void Update();
+
 			// *@更新してもいいか確認
 			_NODISCARD inline bool IsUpdate()			{ return m_bUpdate; }
 			// *@固定時間更新確認
@@ -79,8 +86,8 @@ namespace MySpace
 			//--- ゲッター・セッター
 			_NODISCARD inline DWORD GetTime()			{ return m_dwCurrentTime; }
 			_NODISCARD inline float GetTimeScale()		{ return m_fTimeScale; }
-			_NODISCARD inline float DeltaTime()			{ return (static_cast<float>(m_dwDeltaTime) / 1000) * m_fTimeScale; }
-			_NODISCARD inline float UnScaleDeltaTime()	{ return (static_cast<float>(m_dwDeltaTime) / 1000); }
+			_NODISCARD inline float DeltaTime()			{ return static_cast<float>(m_dwDeltaTime) / 1000 * m_fTimeScale; }
+			_NODISCARD inline float UnScaleDeltaTime()	{ return static_cast<float>(m_dwDeltaTime) / 1000; }
 
 			inline void SetCurrentTime(const DWORD currentTime) { m_dwCurrentTime = currentTime; };
 			//inline void SetLastTime(const DWORD lastTime)		{ m_dwFixedExecLastTime = lastTime; };

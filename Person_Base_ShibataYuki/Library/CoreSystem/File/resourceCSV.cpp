@@ -95,6 +95,7 @@ bool CResourceCSV::Load(std::string fileName)
 	return true;
 
 }
+
 // 
 std::string CResourceCSV::GetStr(int y, int x)
 {
@@ -104,19 +105,22 @@ std::string CResourceCSV::GetStr(int y, int x)
 	}*/
 	return m_grid[y][x];
 }
+
 int CResourceCSV::GetInt(int y, int x)
 {
 	return atoi(m_grid[y][x].c_str());
 }
+
 float CResourceCSV::GetFloat(int y, int x)
 {
 	return static_cast<float>(atof(m_grid[y][x].c_str()));
 }
+
 std::vector<std::vector<int>> CResourceCSV::GetintArray()
 {
-	TwoArray intArray;		// int“ñŸŒ³”z—ñ
+	TwoArray aRet;		// int“ñŸŒ³”z—ñ
 	int y, x;
-	intArray.resize(m_grid.size());
+	aRet.resize(m_grid.size());
 	y = x = 0;
 	// c—ñÅ‘å”‚æ‚è’á‚¢ŒÀ‚èŒJ‚è•Ô‚·
 	while (y < (int)m_grid.size())
@@ -124,30 +128,31 @@ std::vector<std::vector<int>> CResourceCSV::GetintArray()
 		// ‰¡—ñÅ‘å”‚æ‚è’á‚¢ŒÀ‚èŒJ‚è•Ô‚·
 		while (x < (int)m_grid[y].size())
 		{
-			intArray[y].push_back(atoi(m_grid[y][x].c_str()));
+			aRet[y].push_back(atoi(m_grid[y][x].c_str()));
 			++x;	// ‰¡—ñˆÚ“®
 		}
 		++y;	// c—ñˆÚ“®
 		x = 0;	// ‰¡—ñ‰Šú‰»
 	}
 
-	return intArray;
+	return aRet;
 }
 
 std::vector<std::vector<int>> CResourceCSV::GetintArray(int start, int range)
 {
-	TwoArray intArray;		// int“ñŸŒ³”z—ñ
+	TwoArray aRet;		// int“ñŸŒ³”z—ñ
 	int y, x;
-	intArray.resize(range + 1);
+	aRet.resize(range + 1);
 	y = 0;
 	x = 0;
+
 	// c—ñÅ‘å”‚æ‚è’á‚¢ŒÀ‚èŒJ‚è•Ô‚·
 	while (y < (int)m_grid.size())
 	{
 		// ‰¡—ñÅ‘å”‚æ‚è’á‚¢ŒÀ‚èŒJ‚è•Ô‚·
 		while (x < (int)m_grid[y].size())
 		{
-			intArray[y].push_back(atoi(m_grid[start + y][x].c_str()));
+			aRet[y].push_back(atoi(m_grid[start + y][x].c_str()));
 			++x;	// ‰¡—ñˆÚ“®
 		}
 		++y;	// c—ñˆÚ“®
@@ -159,5 +164,5 @@ std::vector<std::vector<int>> CResourceCSV::GetintArray(int start, int range)
 		}
 	}
 
-	return intArray;
+	return aRet;
 }

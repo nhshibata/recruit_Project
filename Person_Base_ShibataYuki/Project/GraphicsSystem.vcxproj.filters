@@ -129,6 +129,9 @@
     <ClInclude Include="..\Library\GraphicsSystem\Texture\spriteAnimation.h">
       <Filter>ヘッダー ファイル\Texture</Filter>
     </ClInclude>
+    <ClInclude Include="..\Library\GraphicsSystem\Manager\assetsManager.h">
+      <Filter>ヘッダー ファイル\Manager</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\Library\GraphicsSystem\Texture\Texture.cpp">
@@ -205,6 +208,9 @@
     </ClCompile>
     <ClCompile Include="..\Library\GraphicsSystem\DirectX\depthStencil.cpp">
       <Filter>ソース ファイル\DirectX</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Library\GraphicsSystem\Manager\assetsManager.cpp">
+      <Filter>ソース ファイル\Manager</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

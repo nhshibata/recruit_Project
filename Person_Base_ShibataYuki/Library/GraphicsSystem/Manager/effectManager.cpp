@@ -8,11 +8,12 @@
 //==============================================
 
 //--- インクルード部
+#include <Application/Application.h>
 #include <GraphicsSystem/Manager/effectManager.h>
-#include <CoreSystem/Input/input.h>
 #include <GraphicsSystem/DirectX/DXDevice.h>
 #include <GameSystem/Component/Camera/camera.h>
 #include <GameSystem/Component/Light/directionalLight.h>
+#include <CoreSystem/Input/input.h>
 #include <uchar.h>
 
 // --- 定数定義 ---
@@ -27,16 +28,25 @@ using namespace MySpace::Graphics;
 //Effekseer::ManagerRef CEffekseer::m_manager;
 //Effekseer::Handle  CEffekseer::m_handle;
 
+//==========================================================
 // コンストラクタ
+//==========================================================
 CEffekseer::CEffekseer()
 	:m_vLight(0,0,0,0), m_vParameter(0,0,0,0),m_nTimer(0), m_mMatrix()
 {
+	
 }
+
+//==========================================================
 // デストラクタ
+//==========================================================
 CEffekseer::~CEffekseer()
 {
 }
+
+//==========================================================
 // シーン毎に一度だけ呼び出す
+//==========================================================
 void CEffekseer::Init(ID3D11Device* device, ID3D11DeviceContext* context)
 {
 	HRESULT hr = S_OK;
@@ -54,45 +64,46 @@ void CEffekseer::Init(ID3D11Device* device, ID3D11DeviceContext* context)
 	//   どのような色が表示されるか指定する
 
 	// 円柱オブジェクト作成
-	struct CylinderVertex
-	{
-		DirectX::XMFLOAT3 pos;
-		DirectX::XMFLOAT3 normal;
-		DirectX::XMFLOAT2 uv;
-	};
-	const static int CylinderVtxCount = 16;
-	CylinderVertex cylinderVtx[(CylinderVtxCount + 1) * 2];
-	for (int i = 0; i <= CylinderVtxCount; ++i)
-	{
-		float rad = i * DirectX::XM_PI * 2.f / CylinderVtxCount;
-		float u = static_cast<float>(i * 3.0f) / CylinderVtxCount;
-		DirectX::XMFLOAT3 normal(sinf(rad), 0.0f, -cosf(rad));
-		int idx = i * 2;
-		// 上段
-		cylinderVtx[idx + 0].normal = normal;
-		cylinderVtx[idx + 0].pos = normal;
-		cylinderVtx[idx + 0].pos.y = 1.0f;
-		cylinderVtx[idx + 0].uv = DirectX::XMFLOAT2(u, 0.0f);
-		// 下段
-		cylinderVtx[idx + 1].normal = normal;
-		cylinderVtx[idx + 1].pos = normal;
-		cylinderVtx[idx + 1].pos.y = -1.0f;
-		cylinderVtx[idx + 1].uv = DirectX::XMFLOAT2(u, 1.0f);
-	}
-	CylinderVertex polyVtx[4] = {
-		{ DirectX::XMFLOAT3(-1, 1,0), DirectX::XMFLOAT3(0,0,1), DirectX::XMFLOAT2(0, 0) },
-		{ DirectX::XMFLOAT3(1, 1,0), DirectX::XMFLOAT3(0,0,1), DirectX::XMFLOAT2(1, 0) },
-		{ DirectX::XMFLOAT3(-1,-1,0), DirectX::XMFLOAT3(0,0,1), DirectX::XMFLOAT2(0, 1) },
-		{ DirectX::XMFLOAT3(1,-1,0), DirectX::XMFLOAT3(0,0,1), DirectX::XMFLOAT2(1, 1) },
-	};
+	//struct CylinderVertex
+	//{
+	//	DirectX::XMFLOAT3 pos;
+	//	DirectX::XMFLOAT3 normal;
+	//	DirectX::XMFLOAT2 uv;
+	//};
+	//const static int CylinderVtxCount = 16;
+	//CylinderVertex cylinderVtx[(CylinderVtxCount + 1) * 2];
+	//for (int i = 0; i <= CylinderVtxCount; ++i)
+	//{
+	//	float rad = i * DirectX::XM_PI * 2.f / CylinderVtxCount;
+	//	float u = static_cast<float>(i * 3.0f) / CylinderVtxCount;
+	//	DirectX::XMFLOAT3 normal(sinf(rad), 0.0f, -cosf(rad));
+	//	int idx = i * 2;
+	//	// 上段
+	//	cylinderVtx[idx + 0].normal = normal;
+	//	cylinderVtx[idx + 0].pos = normal;
+	//	cylinderVtx[idx + 0].pos.y = 1.0f;
+	//	cylinderVtx[idx + 0].uv = DirectX::XMFLOAT2(u, 0.0f);
+	//	// 下段
+	//	cylinderVtx[idx + 1].normal = normal;
+	//	cylinderVtx[idx + 1].pos = normal;
+	//	cylinderVtx[idx + 1].pos.y = -1.0f;
+	//	cylinderVtx[idx + 1].uv = DirectX::XMFLOAT2(u, 1.0f);
+	//}
+	//CylinderVertex polyVtx[4] = {
+	//	{ DirectX::XMFLOAT3(-1, 1,0), DirectX::XMFLOAT3(0,0,1), DirectX::XMFLOAT2(0, 0) },
+	//	{ DirectX::XMFLOAT3(1, 1,0), DirectX::XMFLOAT3(0,0,1), DirectX::XMFLOAT2(1, 0) },
+	//	{ DirectX::XMFLOAT3(-1,-1,0), DirectX::XMFLOAT3(0,0,1), DirectX::XMFLOAT2(0, 1) },
+	//	{ DirectX::XMFLOAT3(1,-1,0), DirectX::XMFLOAT3(0,0,1), DirectX::XMFLOAT2(1, 1) },
+	//};
 
 	// 定数バッファ作成
 	CCamera* pCamera = CCamera::GetMain();
-	if (!pCamera) { hr = E_FAIL; return; }
-
-	DirectX::XMStoreFloat4x4(&m_mMatrix.world, DirectX::XMMatrixIdentity());
-	DirectX::XMStoreFloat4x4(&m_mMatrix.view, pCamera->GetLookAtMatrix());
-	DirectX::XMStoreFloat4x4(&m_mMatrix.proj, pCamera->GetProjectionMatrix());
+	if (pCamera)
+	{
+		DirectX::XMStoreFloat4x4(&m_mMatrix.world, DirectX::XMMatrixIdentity());
+		DirectX::XMStoreFloat4x4(&m_mMatrix.view, pCamera->GetLookAtMatrix());
+		DirectX::XMStoreFloat4x4(&m_mMatrix.proj, pCamera->GetProjectionMatrix());
+	}
 
 	//// シェーダ読み込み
 	//HRESULT hr = S_OK;
@@ -136,6 +147,7 @@ void CEffekseer::Init(ID3D11Device* device, ID3D11DeviceContext* context)
 	// カメラ行列を設定
 	m_renderer->SetCameraMatrix(
 		::Effekseer::Matrix44().LookAtRH(eye, ::Effekseer::Vector3D(0.0f, 0.0f, 0.0f), ::Effekseer::Vector3D(0.0f, 1.0f, 0.0f)));
+	
 	// 2バイト文字の取得
 	//m_effect = Effekseer::Effect::Create(m_manager, u"data/Assets/wind.efkefc");
 	//m_effect = Effekseer::Effect::Create(m_manager, u"data/Assets/ice.efk");
@@ -144,6 +156,10 @@ void CEffekseer::Init(ID3D11Device* device, ID3D11DeviceContext* context)
 
 	m_nTimer = 0;
 }
+
+//==========================================================
+// 解放処理
+//==========================================================
 void CEffekseer::Uninit()
 {
 	auto it = m_aResourceMap.begin();
@@ -173,22 +189,26 @@ void CEffekseer::Uninit()
 	}*/
 }
 
+//==========================================================
+// 更新
+//==========================================================
 void CEffekseer::Update()
 {
-	// エフェクトの再生 	
-	//m_handle = m_manager->Play(m_effect[rand()%3][0], m_vPos.x, m_vPos.y, m_vPos.z);
 
+#ifdef _DEBUG
+	// エフェクトの再生 
 	if (CInput::GetKeyTrigger(VK_Q))
 	{
 		Play(u"laser", DirectX::XMFLOAT3(0, 0, 0));
 		// stop effects
 		//m_manager->StopEffect(m_handle);
 	}
+#endif // !_DEBUG
 
 	CCamera* pCamera = CCamera::GetMain();
 	if (!pCamera)return;
 
-	// 行列
+	//--- 行列
 	DirectX::XMFLOAT3 cameraPos = pCamera->GetPos();
 	DirectX::XMFLOAT3 cameraLook = pCamera->GetTarget();
 	DirectX::XMFLOAT3 cameraUp = pCamera->GetUpVector();
@@ -199,8 +219,7 @@ void CEffekseer::Update()
 	m_renderer->SetProjectionMatrix(::Effekseer::Matrix44().PerspectiveFovLH(
 		pCamera->GetFOV(), pCamera->GetAspect(), pCamera->GetNearClip(), pCamera->GetFarZ()));
 	// カメラ行列を設定
-	m_renderer->SetCameraMatrix(
-		::Effekseer::Matrix44().LookAtLH(eye, look, up));
+	m_renderer->SetCameraMatrix(::Effekseer::Matrix44().LookAtLH(eye, look, up));
 
 	// ライトの移動
 	//static float rad = 0.0f;
@@ -238,27 +257,35 @@ void CEffekseer::Update()
 	}
 
 	// 更新(すべてのエフェクト)
-	// update the manager
 	m_manager->Update();
 }
 
+//==========================================================
+// 描画
+//==========================================================
 void CEffekseer::Draw()
 {
-	// エフェクトの描画
+	//--- エフェクトの描画
 	m_renderer->SetTime(m_nTimer++ / 60.0f);	// 内部の時間を進める
 
+	auto pDX = Application::Get()->GetSystem<CDXDevice>();
+	// 描画開始
+	pDX->SetZBuffer(false);
+	pDX->SetBlendState((int)EBlendState::BS_ALPHABLEND);	
+	m_renderer->BeginRendering();
+
 	// 描画
-	CDXDevice::Get()->SetZBuffer(false);
-	CDXDevice::Get()->SetBlendState((int)EBlendState::BS_ALPHABLEND);
-	m_renderer->BeginRendering();			// 描画開始
-
 	m_manager->Draw();
-
-	m_renderer->EndRendering();				// 描画終了
-	CDXDevice::Get()->SetBlendState((int)EBlendState::BS_NONE);
-	CDXDevice::Get()->SetZBuffer(true);
+	
+	// 描画終了
+	m_renderer->EndRendering();				
+	pDX->SetBlendState((int)EBlendState::BS_NONE);
+	pDX->SetZBuffer(true);
 }
 
+//==========================================================
+// マトリックス設定
+//==========================================================
 void CEffekseer::SetMatrix(Effekseer::Matrix43* mtx, XMFLOAT4X4 XMmtx)
 {
 	mtx->Value[0][0] = XMmtx._11;
@@ -277,7 +304,10 @@ void CEffekseer::SetMatrix(Effekseer::Matrix43* mtx, XMFLOAT4X4 XMmtx)
 	mtx->Value[3][1] = XMmtx._42;
 	mtx->Value[3][2] = XMmtx._43;
 }
-// kari
+
+//==========================================================
+// ファイル読み込み
+//==========================================================
 bool CEffekseer::Load(std::u16string fileName)
 {
 	if (m_aResourceMap.find(fileName.c_str()) != m_aResourceMap.end())
@@ -289,32 +319,10 @@ bool CEffekseer::Load(std::u16string fileName)
 	));
 	return true;
 }
-// ﾌｧｲﾙ読み込み用
-bool CEffekseer::Load(std::vector<std::string> EffectName, std::vector<std::u16string> fileName)
-{
-	//std::vector<std::string>::iterator nameIt = EffectName.begin();
-	//std::vector<std::u16string>::iterator fileIt = fileName.begin();
-	//// 格納されているファイル名を受け取り、エフェクトを作成
-	//while (fileIt != fileName.end())
-	//{
-	//	// 読み込んでないか調べる
-	//	if (m_Effect.find((*nameIt).c_str()) != m_Effect.end())
-	//	{
-	//		// キーが見つかった = 既に読み込まれたファイル
-	//		++nameIt;
-	//		++fileIt;
-	//		continue;
-	//	}
-	//	// ファイル名とエフェクトを追加
-	//	m_Effect.insert(EffectMapPair((*nameIt).c_str(), Effekseer::Effect::Create(m_manager, (*fileIt).c_str())
-	//	));
 
-	//	++nameIt;
-	//	++fileIt;
-	//}
-	return true;
-}
-// 設定した名前のエフェクトを再生
+//==========================================================
+// 設定された名前のエフェクトを再生
+//==========================================================
 int CEffekseer::Play(std::u16string effectName, XMFLOAT3 pos)
 {
 	// 設定されたエフェクトじゃなければ処理を返す
@@ -329,7 +337,10 @@ int CEffekseer::Play(std::u16string effectName, XMFLOAT3 pos)
 
 	return handle;
 }
-// 設定した名前のエフェクトを再生
+
+//==========================================================
+// 設定された名前のエフェクトを再生
+//==========================================================
 int CEffekseer::Play(std::u16string effectName, XMFLOAT3 pos, XMFLOAT3 size, XMFLOAT4 rot)
 {
 	// 設定されたエフェクトじゃなければ処理を返す
@@ -349,13 +360,20 @@ int CEffekseer::Play(std::u16string effectName, XMFLOAT3 pos, XMFLOAT3 size, XMF
 	m_manager->SetRotation(handle, Effekseer::Vector3D(rot.x, rot.y, rot.z), rot.w);
 	return handle;
 }
+
+//==========================================================
 // 停止
+//==========================================================
 int CEffekseer::Stop(int handle)
 {
 	m_manager->StopEffect(handle);
 
 	return -1;
 }
+
+//==========================================================
+// エフェクトの位置移動
+//==========================================================
 int CEffekseer::Move(int handle, XMFLOAT3 pos)
 {
 	if (!m_manager->Exists(handle))

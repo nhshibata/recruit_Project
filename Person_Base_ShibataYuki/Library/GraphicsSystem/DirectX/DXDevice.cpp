@@ -9,10 +9,11 @@
 #include <ImGui/imgui_impl_win32.h>
 #include <ImGui/imgui_impl_dx11.h>
 
-using namespace MySpace::System;
 using namespace MySpace::Graphics;
 
-
+//==========================================================
+// 初期化
+//==========================================================
 HRESULT CDXDevice::Init(HWND hWnd, unsigned int Width, unsigned int Height, bool full)
 {
 	HRESULT hr = S_OK;
@@ -131,12 +132,11 @@ HRESULT CDXDevice::Init(HWND hWnd, unsigned int Width, unsigned int Height, bool
 	sd.SampleDesc.Quality = 0;		// マルチサンプルのクオリティ
 	sd.SwapEffect = DXGI_SWAP_EFFECT_DISCARD;
 
-	if (full) {
+	if (full) 
 		sd.Windowed = false;				// ウインドウモード
-	}
-	else {
+	else 
 		sd.Windowed = TRUE;				// ウインドウモード
-	}
+	
 	sd.Flags = DXGI_SWAP_CHAIN_FLAG_ALLOW_MODE_SWITCH;		// モードの自動切り替え
 
 	for (UINT driverTypeIndex = 0; driverTypeIndex < numDriverTypes; driverTypeIndex++)
@@ -158,9 +158,9 @@ HRESULT CDXDevice::Init(HWND hWnd, unsigned int Width, unsigned int Height, bool
 		if (SUCCEEDED(hr))
 			break;
 	}
-	if (FAILED(hr)) {
+	if (FAILED(hr))
 		return false;
-	}
+	
 
 	// レンダリングターゲットを作成
 	// バックバッファのポインタを取得
@@ -280,7 +280,7 @@ HRESULT CDXDevice::Init(HWND hWnd, unsigned int Width, unsigned int Height, bool
 	//g_pDeviceContext->RSSetState(g_pRs[0].Get());
 	
 
-	// ビューポートを設定
+	//--- ビューポートを設定
 	m_viewPort = std::make_shared<D3D11_VIEWPORT>();
 	m_viewPort.get()->Width = static_cast<FLOAT>(Width);
 	m_viewPort.get()->Height = static_cast<FLOAT>(Height);
@@ -290,19 +290,10 @@ HRESULT CDXDevice::Init(HWND hWnd, unsigned int Width, unsigned int Height, bool
 	m_viewPort.get()->TopLeftY = 0;
 	g_pDeviceContext->RSSetViewports(1, m_viewPort.get());
 
-	/*D3D11_VIEWPORT vp;
-	vp.Width = (FLOAT)Width;
-	vp.Height = (FLOAT)Height;
-	vp.MinDepth = 0.0f;
-	vp.MaxDepth = 1.0f;
-	vp.TopLeftX = 0;
-	vp.TopLeftY = 0;
-	g_pDeviceContext->RSSetViewports(1, &vp);*/
-
 	//ブレンドステート初期化
 	ZeroMemory(&blendStateDescription, sizeof(D3D11_BLEND_DESC));
 
-	//ブレンドステート設定（アルファブレンド可）
+	//--- ブレンドステート設定（アルファブレンド可）
 	blendStateDescription.RenderTarget[0].BlendEnable = false;
 	//blendStateDescription.RenderTarget[0].SrcBlend = D3D11_BLEND_ONE;
 	blendStateDescription.RenderTarget[0].SrcBlend = D3D11_BLEND_SRC_ALPHA;
@@ -314,28 +305,28 @@ HRESULT CDXDevice::Init(HWND hWnd, unsigned int Width, unsigned int Height, bool
 	blendStateDescription.RenderTarget[0].BlendOpAlpha = D3D11_BLEND_OP_ADD;
 	blendStateDescription.RenderTarget[0].RenderTargetWriteMask = 0x0f;
 
-	//ブレンドステート作成
+	//--- ブレンドステート作成
+	// ブレンドステート作成1
 	hr = g_pDevice->CreateBlendState(&blendStateDescription, g_pBlendState[0].GetAddressOf());
 	if (FAILED(hr)) { return false; }
 
+	// ブレンドステート作成2
 	blendStateDescription.RenderTarget[0].BlendEnable = TRUE;
-	//ブレンドステート作成
 	hr = g_pDevice->CreateBlendState(&blendStateDescription, g_pBlendState[1].GetAddressOf());
 	if (FAILED(hr)) { return false; }
 
+	//ブレンドステート作成3
 	blendStateDescription.RenderTarget[0].DestBlend = D3D11_BLEND_ONE;
-	//ブレンドステート作成
 	hr = g_pDevice->CreateBlendState(&blendStateDescription, g_pBlendState[2].GetAddressOf());
 	if (FAILED(hr)) { return false; }
 
-	// ブレンド ステート生成 (減算合成用)
+	// ブレンド ステート生成4 (減算合成用)
 	blendStateDescription.RenderTarget[0].BlendOp = D3D11_BLEND_OP_REV_SUBTRACT;
 	hr = g_pDevice->CreateBlendState(&blendStateDescription, g_pBlendState[3].GetAddressOf());
 	SetBlendState((int)EBlendState::BS_ALPHABLEND);
 	if (FAILED(hr)) { return hr; }
 
-#if 1
-	// 深度ステンシルステート生成
+	//--- 深度ステンシルステート生成
 	CD3D11_DEFAULT def;
 	CD3D11_DEPTH_STENCIL_DESC dsd(def);
 	dsd.DepthWriteMask = D3D11_DEPTH_WRITE_MASK_ZERO;
@@ -346,25 +337,10 @@ HRESULT CDXDevice::Init(HWND hWnd, unsigned int Width, unsigned int Height, bool
 	dsd2.DepthFunc = D3D11_COMPARISON_LESS;
 	dsd2.StencilEnable = FALSE;
 	hr = g_pDevice->CreateDepthStencilState(&dsd2, g_pDSS[1].GetAddressOf());
-	if (FAILED(hr)) {
+	if (FAILED(hr)) 
 		return hr;
-	}
-#else
-	//CD3D11_DEFAULT def;
-	//CD3D11_DEPTH_STENCIL_DESC dsd(def);
-	//dsd.DepthWriteMask = D3D11_DEPTH_WRITE_MASK_ALL;
-	//dsd.DepthEnable = TRUE;
-	//dsd.DepthFunc = D3D11_COMPARISON_LESS;
-	//dsd.StencilEnable = FALSE;
-	//g_pDevice->CreateDepthStencilState(&dsd, &g_pDSS[0]);
-
-	//CD3D11_DEPTH_STENCIL_DESC dsd2(def);
-	//dsd2.DepthEnable = FALSE;
-	//dsd2.DepthWriteMask = D3D11_DEPTH_WRITE_MASK_ZERO;
-	//g_pDevice->CreateDepthStencilState(&dsd2, &g_pDSS[1]);
-#endif // 0
-
-	// サンプラーステート設定
+	
+	//--- サンプラーステート設定
 	D3D11_SAMPLER_DESC samplerDesc;
 	ZeroMemory(&samplerDesc, sizeof(samplerDesc));
 	samplerDesc.Filter = D3D11_FILTER_ANISOTROPIC;
@@ -583,120 +559,10 @@ HRESULT CDXDevice::Init(HWND hWnd, unsigned int Width, unsigned int Height, bool
 	// デバイスコンテキスト取得
 	return true;
 }
-//
-HRESULT CDXDevice::CreateBackBuffer(unsigned int Width, unsigned int Height)
-{
-	HRESULT hr = S_OK;
-	// レンダーターゲットビュー生成
-	ID3D11Texture2D* pBackBuffer = nullptr;
-	hr = g_pSwapChain->GetBuffer(0, __uuidof(ID3D11Texture2D), (LPVOID*)&pBackBuffer);
-	if (FAILED(hr))
-		return hr;
 
-	hr = g_pDevice->CreateRenderTargetView(pBackBuffer, nullptr, g_pRenderTargetView.GetAddressOf());
-	//SAFE_RELEASE(pBackBuffer);
-	pBackBuffer->Release();
-	pBackBuffer = nullptr;
-	if (FAILED(hr))
-		return hr;
-
-	// Zバッファ用テクスチャ生成
-	D3D11_TEXTURE2D_DESC td;
-	ZeroMemory(&td, sizeof(td));
-	td.Width = Width;
-	td.Height = Height;
-	td.MipLevels = 1;
-	td.ArraySize = 1;
-	td.Format = DXGI_FORMAT_D24_UNORM_S8_UINT;
-	td.SampleDesc.Count = 1;
-	td.SampleDesc.Quality = 0;
-	td.Usage = D3D11_USAGE_DEFAULT;
-	td.BindFlags = D3D11_BIND_DEPTH_STENCIL;
-#if 1
-	// ???
-	td.CPUAccessFlags = 0;
-	td.MiscFlags = 0;
-	hr = g_pDevice->CreateTexture2D(&td, nullptr, g_pDepthStencilTexture.GetAddressOf());
-	if (FAILED(hr)) {
-		return hr;
-	}
-#endif
-
-#if 0
-	D3D11_TEXTURE2D_DESC depthBufferDesc;
-	D3D11_DEPTH_STENCIL_DESC depthStencilDesc;
-	// ステンシル設定構造体初期化
-	ZeroMemory(&depthStencilDesc, sizeof(depthStencilDesc));
-	depthStencilDesc.DepthEnable = true;
-	depthStencilDesc.DepthWriteMask = D3D11_DEPTH_WRITE_MASK_ALL;
-	depthStencilDesc.DepthFunc = D3D11_COMPARISON_LESS;
-
-	// set up the description of the stencl state
-	depthStencilDesc.StencilEnable = true;
-	depthStencilDesc.StencilReadMask = 0xFF;
-	depthStencilDesc.StencilWriteMask = 0xFF;
-
-	// stencil operation if pixel is front-facing
-	depthStencilDesc.FrontFace.StencilFailOp = D3D11_STENCIL_OP_KEEP;
-	depthStencilDesc.FrontFace.StencilDepthFailOp = D3D11_STENCIL_OP_INCR;
-	depthStencilDesc.FrontFace.StencilPassOp = D3D11_STENCIL_OP_KEEP;
-	depthStencilDesc.FrontFace.StencilFunc = D3D11_COMPARISON_ALWAYS;
-
-	// stencil operation if pixel is　back-facing
-	depthStencilDesc.BackFace.StencilFailOp = D3D11_STENCIL_OP_KEEP;
-	depthStencilDesc.BackFace.StencilDepthFailOp = D3D11_STENCIL_OP_DECR;
-	depthStencilDesc.BackFace.StencilPassOp = D3D11_STENCIL_OP_KEEP;
-	depthStencilDesc.BackFace.StencilFunc = D3D11_COMPARISON_ALWAYS;
-
-#endif // 0
-
-	//g_pDeviceContext.get()->OMSetDepthStencilState(&g_pDSS[0].get());
-
-	// Zバッファターゲットビュー生成
-	D3D11_DEPTH_STENCIL_VIEW_DESC dsvd;
-	ZeroMemory(&dsvd, sizeof(dsvd));
-	dsvd.Format = td.Format;
-	dsvd.ViewDimension = D3D11_DSV_DIMENSION_TEXTURE2DMS;
-	hr = g_pDevice->CreateDepthStencilView(g_pDepthStencilTexture.Get(),
-		&dsvd, g_pDepthStencilView.GetAddressOf());
-	if (FAILED(hr)) {
-		return hr;
-	}
-
-	// 各ターゲットビューをレンダーターゲットに設定
-	//auto dsv = g_pDepthStencilView.get();
-	g_pDeviceContext->OMSetRenderTargets(1, g_pRenderTargetView.GetAddressOf(), g_pDepthStencilView.Get());
-
-#if 0
-	// bind the render target view and depth stencil buffer to the output render pipeline
-	//g_pDeviceContext->OMSetRenderTargets(1, m_lpRenderTargetView.GetAddressOf(), m_depthStencilView.Get());
-
-	// setup the raster description which will determine how and what polygons will be drawn
-	rasterDesc.AntialiasedLineEnable = false;
-	rasterDesc.CullMode = D3D11_CULL_NONE;
-	rasterDesc.DepthBias = 0;
-	rasterDesc.DepthBiasClamp = 0.0f;
-	rasterDesc.DepthClipEnable = true;
-	//	rasterDesc.FillMode = D3D11_FILL_WIREFRAME;		// ワイヤフレームにしたいとき
-	rasterDesc.FillMode = D3D11_FILL_SOLID;
-	rasterDesc.FrontCounterClockwise = false;
-	rasterDesc.MultisampleEnable = false;
-	rasterDesc.ScissorEnable = false;
-	rasterDesc.SlopeScaledDepthBias = 0.0f;
-#endif // 0
-	
-	// ビューポート設定
-	m_viewPort = std::make_shared< D3D11_VIEWPORT>();
-	m_viewPort.get()->Width = (float)Width;
-	m_viewPort.get()->Height = (float)Height;
-	m_viewPort.get()->MinDepth = 0.0f;
-	m_viewPort.get()->MaxDepth = 1.0f;
-	m_viewPort.get()->TopLeftX = 0;
-	m_viewPort.get()->TopLeftY = 0;
-	g_pDeviceContext->RSSetViewports(1, m_viewPort.get());
-
-	return S_OK;
-}
+//==========================================================
+// 解放処理
+//==========================================================
 void CDXDevice::Uninit()
 {
 	if (g_pDeviceContext.Get())
@@ -713,25 +579,25 @@ void CDXDevice::Uninit()
 	// 勝手に解放すると怒られる
 #if 0
 	// 明示的な解放
-	g_pDevice.Get()->Release();				// デバイス
-	g_pDeviceContext.Get()->Release();		// デバイス コンテキスト
-	g_pSwapChain.Get()->Release();			// スワップチェーン
-	g_pRenderTargetView.Get()->Release();	// フレームバッファ
-	g_pDepthStencilTexture.Get()->Release();	// Zバッファ用メモリ
-	g_pDepthStencilView.Get()->Release();	// Zバッファ
+	g_pDevice.GetMain()->Release();				// デバイス
+	g_pDeviceContext.GetMain()->Release();		// デバイス コンテキスト
+	g_pSwapChain.GetMain()->Release();			// スワップチェーン
+	g_pRenderTargetView.GetMain()->Release();	// フレームバッファ
+	g_pDepthStencilTexture.GetMain()->Release();	// Zバッファ用メモリ
+	g_pDepthStencilView.GetMain()->Release();	// Zバッファ
 	for (int cnt = 0; cnt < (int)ECullMode::MAX_CULLMODE; ++cnt)
 	{
-		g_pRs[cnt].Get()->Release();	// ラスタライザ ステート
+		g_pRs[cnt].GetMain()->Release();	// ラスタライザ ステート
 	}
 	for (int cnt = 0; cnt < (int)EBlendState::MAX_BLENDSTATE; ++cnt)
 	{
-		if(g_pBlendState[cnt].Get())
-			g_pBlendState[cnt].Get()->Release();// ブレンド ステート
+		if(g_pBlendState[cnt].GetMain())
+			g_pBlendState[cnt].GetMain()->Release();// ブレンド ステート
 	}
-	g_pDSS[0].Get()->Release();				// Z/ステンシル ステート
-	g_pDSS[1].Get()->Release();				// Z/ステンシル ステート
+	g_pDSS[0].GetMain()->Release();				// Z/ステンシル ステート
+	g_pDSS[1].GetMain()->Release();				// Z/ステンシル ステート
 	m_viewPort.reset();
-	if(m_SamplerState.Get())m_SamplerState.Get()->Release();
+	if(m_SamplerState.GetMain())m_SamplerState.GetMain()->Release();
 
 
 	if(g_pDevice)g_pDevice.Reset();				// デバイス

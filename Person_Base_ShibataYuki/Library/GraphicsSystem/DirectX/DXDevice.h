@@ -14,10 +14,7 @@
 #include <memory>
 #include <wrl/client.h>
 
-#include <CoreSystem/Singleton.h>
-
 using Microsoft::WRL::ComPtr;
-using MySpace::System::CSingleton;
 
 namespace MySpace
 {
@@ -43,9 +40,8 @@ namespace MySpace
 		};
 
 		//--- クラス定義
-		class CDXDevice : public CSingleton<CDXDevice>
+		class CDXDevice
 		{
-			friend class CSingleton<CDXDevice>; // Singleton でのインスタンス作成は許可
 		private:
 			//--- メンバ変数
 			ComPtr<ID3D11Device>			g_pDevice;				// デバイス
@@ -65,15 +61,12 @@ namespace MySpace
 			int								m_Height = 0;				// バックバッファＹサイズ
 			std::shared_ptr<D3D11_VIEWPORT> m_viewPort;
 			ComPtr<ID3D11SamplerState>		m_SamplerState;
-
-		private:
+		
+		public:
 			//--- メンバ関数
 			CDXDevice() = default;
 			~CDXDevice() = default;
-
-		public:
 			
-			HRESULT CreateBackBuffer(unsigned int Width, unsigned int Height);
 			HRESULT Init(HWND hWnd, unsigned int Width, unsigned int Height, bool full = false);
 			void Uninit();
 
@@ -83,22 +76,28 @@ namespace MySpace
 			// *@デバイス コンテキスト取得
 			inline ID3D11DeviceContext* GetDeviceContext() { return g_pDeviceContext.Get(); }
 
+			// *@スワップチェイン
 			inline IDXGISwapChain* GetSwapChain() { return g_pSwapChain.Get(); }
 
+			// *@レンダーターゲット
 			inline ID3D11RenderTargetView* GetRenderTargetView() { return g_pRenderTargetView.Get(); }
 
+			// *@深度
 			inline ID3D11DepthStencilView* GetDepthStencilView() { return g_pDepthStencilView.Get(); }
 
+			// *@深度
 			inline ID3D11DepthStencilState* GetDepthStencilState(int no) { return g_pDSS[no].Get(); }
 
+			// *@ラスタイザ
 			inline ID3D11RasterizerState* GetRasterizerState(int no) { return g_pRs[no].Get(); }
 
-			// ビューポートの高さを取得する
+			// *@ビューポートの高さを取得する
 			inline int GetViewPortHeight() const { return m_Height; }
 
-			// ビューポートの幅を取得する
+			// *@ビューポートの幅を取得する
 			inline int GetViewPortWidth() const { return m_Width; }
 
+			// *@ビューポート取得
 			inline D3D11_VIEWPORT* GetViewPort() { return m_viewPort.get(); };
 
 			// *@深度バッファ有効無効制御
@@ -106,11 +105,13 @@ namespace MySpace
 			{
 				g_pDeviceContext->OMSetDepthStencilState((bEnable) ? nullptr : g_pDSS[1].Get(), 0);
 			}
+
 			// *@深度バッファ更新有効無効制御
 			inline void SetZWrite(bool bEnable)
 			{
 				g_pDeviceContext->OMSetDepthStencilState((bEnable) ? nullptr : g_pDSS[0].Get(), 0);
 			}
+
 			// *@ブレンド ステート設定
 			inline void SetBlendState(int nBlendState)
 			{
@@ -120,6 +121,7 @@ namespace MySpace
 					g_pDeviceContext->OMSetBlendState(g_pBlendState[nBlendState].Get(), blendFactor, 0xffffffff);
 				}
 			}
+
 			// *@カリング設定
 			inline void SetCullMode(int nCullMode)
 			{
@@ -133,10 +135,13 @@ namespace MySpace
 			// *@nullptrで通常に戻す
 			void SwitchRender(ID3D11RenderTargetView* pRTV, ID3D11DepthStencilView* pDSV)
 			{
-				GetDeviceContext()->OMSetRenderTargets(1,
-												 pRTV ? &pRTV : g_pRenderTargetView.GetAddressOf(),
-												 pDSV ? pDSV : g_pDepthStencilView.Get());
+				GetDeviceContext()->OMSetRenderTargets(
+					1,
+					pRTV ? &pRTV : g_pRenderTargetView.GetAddressOf(),
+					pDSV ? pDSV : g_pDepthStencilView.Get()
+				);
 			}
+
 		};
 	}
 }

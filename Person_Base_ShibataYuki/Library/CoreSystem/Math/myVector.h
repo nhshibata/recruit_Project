@@ -52,7 +52,7 @@ namespace MySpace
 			Vector2 operator-(const XMFLOAT2& vec) { return Vector2(x - vec.x, y - vec.y); }
 			Vector2 operator*(const XMFLOAT2& vec) { return Vector2(x * vec.x, y * vec.y); }
 			Vector2 operator/(const XMFLOAT2& vec) { return Vector2(x / vec.x, y / vec.y); }
-			Vector2 operator* (const float & f) const { return Vector2(x, y) * f; }
+			Vector2 operator* (const float & f) const { return Vector2(x * f, y * f); }
 			Vector2 operator/ (const float & f) const { return Vector2(x / f, y / f); }
 			bool operator== (const Vector2& vec)const { return (x == vec.x) && (y == vec.y); }
 			bool operator!= (const Vector2& vec)const { return !(*this == vec); }

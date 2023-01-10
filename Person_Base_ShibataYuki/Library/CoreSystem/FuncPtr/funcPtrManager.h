@@ -15,28 +15,29 @@
 #include <memory>
 #include <CoreSystem/FuncPtr/funcPtr.h>
 #include <CoreSystem/FuncPtr/timeFuncPtr.h>
-#include <CoreSystem/Singleton.h>
 
 namespace MySpace
 {
 	namespace System
 	{
 		//--- クラス定義
-		class CFuncManager : public CSingleton<CFuncManager>
+		class CFuncManager
 		{
-			friend class CSingleton<CFuncManager>;
 		private:
 			using FUNC_VEC = std::vector<std::shared_ptr<CBaseFuncPtr>>;
+
 		private:
 			//--- メンバ変数
 			FUNC_VEC m_FuncPtr;
 			bool m_bDebug;
 
-		private:
-			//--- メンバ変数
-			CFuncManager():m_bDebug(false){ };
-			~CFuncManager() = default;
 		public:
+			//--- メンバ変数
+			CFuncManager()
+				:m_bDebug(false)
+			{ };
+			~CFuncManager() = default;
+		
 			void Update();
 			void Uninit();
 

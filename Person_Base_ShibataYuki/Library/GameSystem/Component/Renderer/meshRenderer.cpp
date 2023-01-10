@@ -15,6 +15,9 @@
 using namespace MySpace::Game;
 using namespace MySpace::Graphics;
 
+//==========================================================
+// コンストラクタ
+//==========================================================
 CMeshRenderer::CMeshRenderer() 
 	:m_vCenter(0, 0, 0), m_bLightEnable(true), m_fBSRadius(1),m_nStaticMode(static_cast<int>(EStaticMode::NONE))
 {
@@ -25,6 +28,10 @@ CMeshRenderer::CMeshRenderer()
 		Vector4(0.0f, 0.0f, 0.0f, 1.0f),
 		1.0f);
 }
+
+//==========================================================
+// 引き数付きコンストラクタ
+//==========================================================
 CMeshRenderer::CMeshRenderer(std::shared_ptr<CGameObject> owner)
 	: CRenderer(owner), m_vCenter(0,0,0), m_bLightEnable(true), m_fBSRadius(1), m_nStaticMode(static_cast<int>(EStaticMode::NONE))
 {
@@ -35,37 +42,53 @@ CMeshRenderer::CMeshRenderer(std::shared_ptr<CGameObject> owner)
 		Vector4(0.0f, 0.0f, 0.0f, 1.0f),
 		1.0f);
 }
+
+//==========================================================
+// デストラクタ
+//==========================================================
 CMeshRenderer::~CMeshRenderer()
 {
 }
-void CMeshRenderer::Awake()
-{
-}
+
+//==========================================================
+// 初期化
+//==========================================================
 void CMeshRenderer::Init()
 {
 	// 描画登録
 	CRenderer::Init();
 }
-void CMeshRenderer::Update()
-{
-}
+
+//==========================================================
+// 描画
+//==========================================================
 bool CMeshRenderer::Draw()
 {
 	return CRenderer::Draw();
 }
+
+//==========================================================
+// 中心座標
+//==========================================================
 Vector3 CMeshRenderer::GetCenter(int n) 
 {
 	return m_vCenter + Transform()->GetPos(); 
 }
 
+//==========================================================
+// バウンディングスフィア取得
+//==========================================================
 float CMeshRenderer::GetBSRadius()
 {
 	return m_fBSRadius * Transform()->GetScale().GetLargeValue(); 
 };
 
+//==========================================================
+// インスタンシング設定
+//==========================================================
 void CMeshRenderer::SetInstancing(CMesh* mesh, std::string name)
 {
-	auto sys = SceneManager::CSceneManager::Get()->GetDrawSystem();
+	auto sys = SceneManager::CSceneManager::Get().GetDrawSystem();
 	//--- インスタンシング依頼
 	if (!name.empty())
 	{
@@ -79,6 +102,7 @@ void CMeshRenderer::SetInstancing(CMesh* mesh, std::string name)
 		);
 	}
 }
+
 
 #if BUILD_MODE
 
@@ -115,6 +139,7 @@ void CMeshRenderer::ImGuiDebug()
 	}
 	ImGui::EndTabBar();
 	//CRenderer::ImGuiDebug();
+
 }
 
 #endif // BUILD_MODE

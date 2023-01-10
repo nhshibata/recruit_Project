@@ -9,19 +9,29 @@
 
 using namespace MySpace::System;
 
-//
+//==========================================================
+// コンストラクタ
+//==========================================================
 CTimeFuncPtr::CTimeFuncPtr(PTR ptr, float time, bool loop)
 	:/*m_Func(ptr),*/m_fTime(time), m_bLoop(loop)
 {
 
 }
+
+//==========================================================
+// デストラクタ
+//==========================================================
 CTimeFuncPtr::~CTimeFuncPtr()
 {
 	m_Func = nullptr;
 }
+
+//==========================================================
+// 更新
+//==========================================================
 bool CTimeFuncPtr::Update()
 {
-	m_fTime -= CFps::Get()->DeltaTime();
+	m_fTime -= CFps::Get().DeltaTime();
 	
 	// 0以下
 	if (m_fTime <= 0)

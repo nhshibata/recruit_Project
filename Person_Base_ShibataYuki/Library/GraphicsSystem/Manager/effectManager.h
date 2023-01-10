@@ -12,9 +12,7 @@
 #define __EFFECT_MANAGER_H__
 
 // --- インクルード部 ---
-//#include <Application/main.h>
 #include <GraphicsSystem/Manager/resourceMap.h>
-#include <CoreSystem/Singleton.h>
 #include <CoreSystem/Math/MyMath.h>
 #include <CoreSystem/Util/stl.h>
 
@@ -49,7 +47,7 @@ namespace MySpace
 
 namespace MySpace
 {
-	namespace System
+	namespace Graphics
 	{
 		//--- エイリアス
 		using MySpace::Graphics::CResourceMap;
@@ -58,9 +56,8 @@ namespace MySpace
 		class CEffekseerParam;	
 
 		// --- クラス定義 ---
-		class CEffekseer : public CSingleton<CEffekseer>, public CResourceMap<std::u16string, Effekseer::EffectRef>
+		class CEffekseer : public CResourceMap<std::u16string, Effekseer::EffectRef>
 		{
-			friend class CSingleton<CEffekseer>;
 		private:
 			//--- 構造体定義
 			// 頂点シェーダに送る変換行列
@@ -91,12 +88,11 @@ namespace MySpace
 
 		private:
 			// --- メンバ関数 ---
-			CEffekseer();
-			~CEffekseer();
 			void SetMatrix(Effekseer::Matrix43*, XMFLOAT4X4);
 
 		public:
-			//~CEffekseer();
+			CEffekseer();
+			~CEffekseer();
 
 			void Init(ID3D11Device* device, ID3D11DeviceContext* context);
 			void Uninit();
@@ -132,6 +128,7 @@ namespace MySpace
 			XMFLOAT3 m_vScale;					// サイズ
 			int m_nMaxFream;					// 描画最大時間
 			int m_nCurrentFream;				// エフェクト描画カウント
+
 		public:
 			CEffekseerParam() :m_vPos(0, 0, 0), m_vRot(0, 0, 0, 0), m_vScale(1, 1, 1)
 			{};

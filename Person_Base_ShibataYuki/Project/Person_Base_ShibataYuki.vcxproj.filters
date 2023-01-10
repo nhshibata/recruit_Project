@@ -21,9 +21,6 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="..\Library\Source\Main.cpp">
-      <Filter>ソース ファイル</Filter>
-    </ClCompile>
     <ClCompile Include="..\Library\Source\startUp.cpp">
       <Filter>ソース ファイル</Filter>
     </ClCompile>
@@ -48,9 +45,6 @@
     <ClCompile Include="..\Library\Source\spel\commandSpell.cpp">
       <Filter>Spel</Filter>
     </ClCompile>
-    <ClCompile Include="..\Library\Source\common\fadeController.cpp">
-      <Filter>common</Filter>
-    </ClCompile>
     <ClCompile Include="..\Library\Source\common\eventMessage.cpp">
       <Filter>common</Filter>
     </ClCompile>
@@ -59,6 +53,30 @@
     </ClCompile>
     <ClCompile Include="..\Library\Source\spel\partnerNode.cpp">
       <Filter>Spel</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Source\stageBuild.cpp">
+      <Filter>ソース ファイル</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Source\stageManager.cpp">
+      <Filter>ソース ファイル</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Source\spellPlayer.cpp">
+      <Filter>ソース ファイル</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Source\gameManager.cpp">
+      <Filter>ソース ファイル</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Source\fadeController.cpp">
+      <Filter>ソース ファイル</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Source\titleSceneManager.cpp">
+      <Filter>ソース ファイル</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Source\gameSceneManager.cpp">
+      <Filter>ソース ファイル</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Source\titleMove.cpp">
+      <Filter>ソース ファイル</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -86,14 +104,38 @@
     <ClInclude Include="..\Library\Source\common\eventMessage.h">
       <Filter>common</Filter>
     </ClInclude>
-    <ClInclude Include="..\Library\Source\common\fadeController.h">
-      <Filter>common</Filter>
-    </ClInclude>
     <ClInclude Include="..\Library\Source\spel\partner.h">
       <Filter>Spel</Filter>
     </ClInclude>
     <ClInclude Include="..\Library\Source\spel\partnerNode.h">
       <Filter>Spel</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Source\stageBuild.h">
+      <Filter>ヘッダー ファイル</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Source\stageManager.h">
+      <Filter>ヘッダー ファイル</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Source\spellPlayer.h">
+      <Filter>ヘッダー ファイル</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Source\spellDefine.h">
+      <Filter>ヘッダー ファイル</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Source\gameManager.h">
+      <Filter>ヘッダー ファイル</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Source\fadeController.h">
+      <Filter>ヘッダー ファイル</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Source\titleSceneManager.h">
+      <Filter>ヘッダー ファイル</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Source\gameSceneManager.h">
+      <Filter>ヘッダー ファイル</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Source\titleMove.h">
+      <Filter>ヘッダー ファイル</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

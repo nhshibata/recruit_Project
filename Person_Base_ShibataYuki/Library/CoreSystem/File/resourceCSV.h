@@ -38,6 +38,8 @@ public:
 	std::vector<std::vector<int>> GetintArray();
 	std::vector<std::vector<int>> GetintArray(int start, int range);
 
+	int GetWidth() { return (int)m_grid.size(); }
+	int GetHeight() { return (int)m_grid.front().size(); }
 };
 
 #endif // !__RESOURCE_CSV_H__

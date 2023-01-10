@@ -13,13 +13,22 @@
 
 using namespace MySpace::Debug;
 
+//--- 定数定義
 #define TYPE_PATH		FORDER_DIR(data/.type)
 
 //=========================================================
+
+//==========================================================
+// デストラクタ
+//==========================================================
 CTypeSaveManager::~CTypeSaveManager()
 {
 	Uninit();
 }
+
+//==========================================================
+// 解放処理
+//==========================================================
 void CTypeSaveManager::Uninit()
 {
 	for (auto it = m_aStockType.begin(); it != m_aStockType.end(); ++it)
@@ -29,12 +38,20 @@ void CTypeSaveManager::Uninit()
 	}
 	m_aStockType.clear();
 }
+
+//==========================================================
+// 一致するものがあるか
+//==========================================================
 bool CTypeSaveManager::IsType(std::string name) {
 	if (auto it = m_aStockType.find(name); it != m_aStockType.end()) 
 		return true;
 
 	return false;
 }
+
+//==========================================================
+// 格納されている型の名前取得
+//==========================================================
 std::vector<std::string> CTypeSaveManager::GetTypeNameList()
 {
 	std::vector<std::string> list;
@@ -45,33 +62,35 @@ std::vector<std::string> CTypeSaveManager::GetTypeNameList()
 	}
 	return list;
 }
-template <class T>
-T* CTypeSaveManager::GetTypeSave()
-{
-	auto it = m_aStockType.begin();
-	for (; it != m_aStockType.end(); ++it)
-	{
-		// キャスト
-		CTypeSave<T> save = dynamic_cast<T>(*it);
-		if (!save)continue;
 
-		return save.CreateType();
-	}
-	return nullptr;
-}
 
-template <class T>
-std::shared_ptr<T> CTypeSaveManager::MakeType()
-{
-	auto it = m_aStockType.begin();
-	for (; it != m_aStockType.end(); ++it)
-	{
-		// キャスト
-		CTypeSave<T> save = dynamic_cast<T>(*it);
-		if (!save)continue;
-		return save.MakeType();
-	}
-	return std::shared_ptr<T>;
-}
+//template <class T>
+//T* CTypeSaveManager::GetTypeSave()
+//{
+//	auto it = m_aStockType.begin();
+//	for (; it != m_aStockType.end(); ++it)
+//	{
+//		// キャスト
+//		CTypeSave<T> save = dynamic_cast<T>(*it);
+//		if (!save)continue;
+//
+//		return save.CreateType();
+//	}
+//	return nullptr;
+//}
+
+//template <class T>
+//std::shared_ptr<T> CTypeSaveManager::MakeType()
+//{
+//	auto it = m_aStockType.begin();
+//	for (; it != m_aStockType.end(); ++it)
+//	{
+//		// キャスト
+//		CTypeSave<T> save = dynamic_cast<T>(*it);
+//		if (!save)continue;
+//		return save.MakeType();
+//	}
+//	return std::shared_ptr<T>;
+//}
 
 //#endif BUILD_MODE

@@ -14,7 +14,6 @@
 #include <cctype>
 #include <stdio.h>
 #include <CoreSystem/Util/stl.h>
-#include <CoreSystem/Singleton.h>
 #include <CoreSystem/Util/define.h>
 
 #include <ImGui/imgui.h>
@@ -47,7 +46,6 @@ namespace MySpace
 {
 	namespace Debug
 	{
-		using MySpace::System::CSingleton;
 		using MySpace::Game::CGameObject;
 		using MySpace::Game::CDebugCamera;
 		using MySpace::Debug::CMyGizmo;
@@ -55,9 +53,8 @@ namespace MySpace
 		using MySpace::Graphics::CDepthStencil;
 
 		// ImGui管理クラス
-		class ImGuiManager : public CSingleton<ImGuiManager>
+		class ImGuiManager
 		{
-			friend class CSingleton<ImGuiManager>;
 		public:
 			//--- 列挙体定義
 			// *@マウスの状態を確認するフラグ
@@ -105,14 +102,15 @@ namespace MySpace
 
 		private:
 			//--- メンバ関数
-			ImGuiManager();
-			~ImGuiManager() = default;
 			// *@ログ表示
 			void DispLog();
 			// *@ポーズ処理
 			void Pause();													
 
 		public:
+			ImGuiManager();
+			~ImGuiManager() = default;
+
 			void Init(HWND hWnd, ID3D11Device* device, ID3D11DeviceContext* context);
 			void Update();
 			void Render();
@@ -141,13 +139,16 @@ namespace MySpace
 			//--- マウス等確認
 			// *@マウスの状態取得
 			inline EMouseHovered GetHover() { return m_eHover; };
+			
 			// *@指定の状態か確認
 			inline bool IsHover(EMouseHovered hover) { return m_eHover & hover; };
+			
 			// *@ビットを立てる
 			inline void UpHover(EMouseHovered hover)
 			{
 				m_eHover = static_cast<EMouseHovered>(m_eHover | hover);
 			}
+
 			// *@ビットが立っていたら下す
 			inline void DownHover(EMouseHovered hover)
 			{
@@ -156,6 +157,7 @@ namespace MySpace
 					m_eHover = static_cast<EMouseHovered>(m_eHover ^ hover);
 				}
 			}
+
 			// *@マウス状態取得用関数セット
 			void HoverStateSet();
 

@@ -6,31 +6,43 @@
 
 //--- インクルード部
 #include <GraphicsSystem/Shader/meshBuffer.h>
-#include <GraphicsSystem/DirectX/DXDevice.h>
+#include <Application/Application.h>
 
 using namespace MySpace::Graphics;
 
-
+//==========================================================
+// コンストラクタ
+//==========================================================
 CMeshBuffer::CMeshBuffer()
 	:m_pIdxBuffer(nullptr), m_pVtxBuffer(nullptr)
 {
-
 }
+
+//==========================================================
+// 引き数付きコンストラクタ
+//==========================================================
 CMeshBuffer::CMeshBuffer(Description desc)
 	:m_stDesc(desc),m_pIdxBuffer(nullptr),m_pVtxBuffer(nullptr)
 {
 	CreateVertex();
 	if (m_stDesc.pIdx)CreateIndex();
 }
+
+//==========================================================
+// デストラクタ
+//==========================================================
 CMeshBuffer::~CMeshBuffer()
 {
 	SAFE_RELEASE(m_pIdxBuffer);
 	SAFE_RELEASE(m_pVtxBuffer);
 }
 
+//==========================================================
+// 割り当て
+//==========================================================
 void CMeshBuffer::Bind(UINT slot)
 {
-	ID3D11DeviceContext* pDC = CDXDevice::Get()->GetDeviceContext();
+	ID3D11DeviceContext* pDC = Application::Get()->GetDeviceContext();
 
 	D3D11_PRIMITIVE_TOPOLOGY topology;
 	switch (m_stDesc.topology)
@@ -61,11 +73,15 @@ void CMeshBuffer::Bind(UINT slot)
 		pDC->Draw(m_stDesc.vtxCount, 0);
 	}
 }
+
+//==========================================================
+// 書き込み
+//==========================================================
 void CMeshBuffer::Write(void* data)
 {
 	if (!m_stDesc.isWrite) { return; }
 
-	ID3D11DeviceContext* pDC = CDXDevice::Get()->GetDeviceContext();
+	ID3D11DeviceContext* pDC = Application::Get()->GetDeviceContext();
 	D3D11_MAPPED_SUBRESOURCE mapResource;
 
 	if (FAILED(pDC->Map(m_pVtxBuffer, 0, D3D11_MAP_WRITE_DISCARD, 0, &mapResource)))
@@ -77,6 +93,10 @@ void CMeshBuffer::Write(void* data)
 	memcpy_s(mapResource.pData, size, data, size);
 	pDC->Unmap(m_pVtxBuffer, 0);
 }
+
+//==========================================================
+// 構築
+//==========================================================
 HRESULT CMeshBuffer::Make(Description desc)
 {
 	HRESULT hr = S_OK;
@@ -85,6 +105,10 @@ HRESULT CMeshBuffer::Make(Description desc)
 	if(m_stDesc.pIdx)hr = CreateIndex();
 	return hr;
 }
+
+//==========================================================
+// インデックスバッファ生成
+//==========================================================
 HRESULT CMeshBuffer::CreateIndex()
 {
 	// バッファの情報を設定
@@ -97,9 +121,13 @@ HRESULT CMeshBuffer::CreateIndex()
 	subResource.pSysMem = m_stDesc.pIdx;
 
 	// インデックスバッファ生成
-	return CDXDevice::Get()->GetDevice()->CreateBuffer(&bufDesc, &subResource, &m_pIdxBuffer);
+	return Application::Get()->GetDevice()->CreateBuffer(&bufDesc, &subResource, &m_pIdxBuffer);
 	
 }
+
+//==========================================================
+// 頂点バッファ生成
+//==========================================================
 HRESULT CMeshBuffer::CreateVertex()
 {
 	//--- 作成するバッファの情報
@@ -118,5 +146,5 @@ HRESULT CMeshBuffer::CreateVertex()
 	subResource.pSysMem = m_stDesc.pVtx;
 
 	//--- 頂点バッファの作成
-	return CDXDevice::Get()->GetDevice()->CreateBuffer(&bufDesc, &subResource, &m_pVtxBuffer);
+	return Application::Get()->GetDevice()->CreateBuffer(&bufDesc, &subResource, &m_pVtxBuffer);
 }

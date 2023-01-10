@@ -10,11 +10,12 @@
 #include <ImGui/imgui.h>
 
 //#pragma comment(lib, "winmm.lib")	// winmm.libを使用する
-// --- 定数定義 ---
 
 using namespace MySpace::System;
 
+//==========================================================
 // コンストラクタ
+//==========================================================
 CFps::CFps()
 	:m_nSlowFramPerSec(60), m_dwExecLastTime(0), m_eSlow(ESlow::SLOW_NONE), m_bUpdate(true), m_dwCurrentTime(0),
 	m_dwDeltaTime(0), m_dwSlowTime(0), m_fTimeScale(1.0f),m_nHitStopFrame(0), m_dwDebugSlow(0), m_nDebugFPS(FPS)
@@ -23,17 +24,22 @@ CFps::CFps()
 	m_dwFPSLastTime = 0;
 	m_dwFrameCount = 0;
 	m_nCountFPS = 0;
-	
 #endif // DEBUG
 
 	SetSlow(FPS);
 }
+
+//==========================================================
 // デストラクタ
+//==========================================================
 CFps::~CFps()
 {
 	Uninit();
 }
 
+//==========================================================
+// 初期化
+//==========================================================
 void CFps::Init()
 {
 	// 精度を上げる
@@ -47,12 +53,18 @@ void CFps::Init()
 	srand(::GetTickCount());
 }
 
+//==========================================================
+// 終了処理
+//==========================================================
 void CFps::Uninit()
 {
 	// 精度を戻す
 	timeEndPeriod(1);
 }
+
+//==========================================================
 // 更新
+//==========================================================
 void CFps::Update()
 {
 	// 更新フラグ初期化
@@ -131,13 +143,19 @@ void CFps::Update()
 		}
 	}
 }
+
+//==========================================================
 // スロー開始
+//==========================================================
 void CFps::StartSlow(const int nSlowfps)
 {
 	m_eSlow = ESlow::SLOW_ON;
 	SetSlow(nSlowfps);
 }
+
+//==========================================================
 // スロー時間設定
+//==========================================================
 void CFps::SetSlow(const int nSlowfps)
 {
 	// 60より上なら修正
@@ -150,13 +168,26 @@ void CFps::SetSlow(const int nSlowfps)
 		return;
 	m_nSlowFramPerSec = nSlowfps;
 }
+
+//==========================================================
 // スロー時間設定
+//==========================================================
 void CFps::SetSlow(const int nSlowfps, const int nTime)
 {
 	// 秒で決めたいため、60をかける
 	m_dwSlowTime = nTime * 60;
 	SetSlow(nSlowfps);
 }
+
+//==========================================================
+// シングルトン取得
+//==========================================================
+CFps& CFps::Get()
+{
+	static CFps pInstance;
+	return pInstance;
+}
+
 
 #if BUILD_MODE
 
@@ -165,10 +196,10 @@ void CFps::ImGuiDebug()
 	//--- 情報表示
 	ImGui::Checkbox(u8"更新フレーム", &m_bUpdate);
 	
-	ImGui::Text(u8"現在のDeltaTime : %.5f", CFps::Get()->DeltaTime());
-	ImGui::Text(u8"現在のUnScaleDeltaTime : %.5f", CFps::Get()->UnScaleDeltaTime());
-	ImGui::Text(u8"現在のTimeScale : %.5f", CFps::Get()->GetTimeScale());
-	ImGui::Text(u8"現在のCount : %d", CFps::Get()->GetFPSCount());
+	ImGui::Text(u8"現在のDeltaTime : %.5f", CFps::Get().DeltaTime());
+	ImGui::Text(u8"現在のUnScaleDeltaTime : %.5f", CFps::Get().UnScaleDeltaTime());
+	ImGui::Text(u8"現在のTimeScale : %.5f", CFps::Get().GetTimeScale());
+	ImGui::Text(u8"現在のCount : %d", CFps::Get().GetFPSCount());
 
 	//--- 設定
 	if (ImGui::Button(u8"FPS Set"))
@@ -196,6 +227,7 @@ void CFps::ImGuiDebug()
 	ImGui::Checkbox(u8"Fixed Update", &m_FixedData.m_bUpdate);
 	ImGui::SameLine();
 	ImGui::Text(u8"Fixed Time : %d", m_FixedData.m_dwFixedTime);
+
 }
 
 #endif // BUILD_MODE

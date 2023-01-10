@@ -9,26 +9,33 @@
 
 //--- インクルード部
 #include <GameSystem/Manager/gameObjectManager.h>
+#include <GameSystem/Manager/sceneManager.h>
 #include <GameSystem/GameObject/gameObject.h>
 #include <GameSystem/Component/component.h>
 #include <GameSystem/Component/Transform/Tween.h>
 #include <GameSystem/Component/Light/directionalLight.h>
 #include <GameSystem/Component/Camera/camera.h>
 
-#include <GameSystem/Manager/sceneManager.h>
-
 using namespace MySpace::Game;
 
+//==========================================================
 // コンストラクタ
+//==========================================================
 CGameObjectManager::CGameObjectManager(std::shared_ptr<CScene> scene)
 {
 	this->m_pAffiliationScene = scene;
 }
+
+//==========================================================
 // デストラクタ
+//==========================================================
 CGameObjectManager::~CGameObjectManager()
 {
 }
+
+//==========================================================
 // 初期化
+//==========================================================
 void CGameObjectManager::Init()
 {
 	for (auto & obj : m_aGameObjList)
@@ -36,7 +43,10 @@ void CGameObjectManager::Init()
 		obj->Init();
 	}
 }
+
+//==========================================================
 // 解放
+//==========================================================
 void CGameObjectManager::Uninit()
 {
 	// 全て除外
@@ -46,7 +56,10 @@ void CGameObjectManager::Uninit()
 	}
 	m_aGameObjList.clear();
 }
+
+//==========================================================
 // 更新
+//==========================================================
 void CGameObjectManager::Update()
 {
 	WeakList pActiveObj(0);		// アクティブなオブジェクトを格納
@@ -81,15 +94,12 @@ void CGameObjectManager::Update()
 		}
 	}
 
-	// Tweenの更新(順番検討)
-	CTweenManager::Get()->Update();
-
-	//--- アクティブのものだけ
+	//--- アクティブだけ
 	// コンポーネントの更新
 	for (auto & obj : pActiveObj)
 	{
 		// component内でシーンが破棄された場合、処理を抜ける
-		if (MySpace::SceneManager::CSceneManager::Get()->Escape())
+		if (MySpace::SceneManager::CSceneManager::Get().Escape())
 			return;
 #ifdef _DEBUG
 
@@ -103,7 +113,7 @@ void CGameObjectManager::Update()
 	for (auto & obj : pActiveObj)
 	{
 		// component内でシーンが破棄された場合、処理を抜ける
-		if (MySpace::SceneManager::CSceneManager::Get()->Escape())
+		if (MySpace::SceneManager::CSceneManager::Get().Escape())
 			return;
 		obj.lock()->LateUpdate();
 	}
@@ -122,7 +132,10 @@ void CGameObjectManager::Update()
 	pActiveObj.clear();
 	pDestoroyObj.clear();
 }
+
+//==========================================================
 // 更新
+//==========================================================
 void CGameObjectManager::UpdateInDebug()
 {
 	WeakList pDestoroyObj(0);	// 破棄オブジェクトを格納
@@ -165,6 +178,10 @@ void CGameObjectManager::UpdateInDebug()
 	// 配列のリセット
 	pDestoroyObj.clear();
 }
+
+//==========================================================
+// 固定更新
+//==========================================================
 void CGameObjectManager::FixedUpdate()
 {
 	// オブジェクト更新
@@ -172,7 +189,7 @@ void CGameObjectManager::FixedUpdate()
 	for (auto & obj : m_aGameObjList)
 	{
 		// component内でシーンが破棄された場合、処理を抜ける
-		if (MySpace::SceneManager::CSceneManager::Get()->Escape())
+		if (MySpace::SceneManager::CSceneManager::Get().Escape())
 			return;
 
 		// 状態により分岐
@@ -182,7 +199,10 @@ void CGameObjectManager::FixedUpdate()
 		}
 	}
 }
-// オブジェクトの追加
+
+//==========================================================
+// オブジェクト追加
+//==========================================================
 bool CGameObjectManager::ObjectListUpdate()
 {
 	// 追加オブジェクトが空でない時
@@ -195,20 +215,14 @@ bool CGameObjectManager::ObjectListUpdate()
 		// 格納し、処理を呼び出す
 		for (auto & addObj : addList)
 		{
-			if (addObj)
-			{
-				addObj->Awake();
-				SetGameObject(addObj);
-			}
-		}
-		for (auto & addObj : addList)
-		{
+
 #ifdef _DEBUG
 			auto name = addObj->GetName();
 #endif // !_DEBUG
 
 			if (addObj)
 			{
+				SetGameObject(addObj);
 				addObj->Init();
 			}
 		}
@@ -216,7 +230,10 @@ bool CGameObjectManager::ObjectListUpdate()
 	
 	return false;
 }
+
+//==========================================================
 // 描画に必要なオブジェクトの作成セット
+//==========================================================
 void CGameObjectManager::CreateBasicObject()
 {
 	std::shared_ptr<CGameObject> pObj = CreateGameObject();
@@ -227,7 +244,10 @@ void CGameObjectManager::CreateBasicObject()
 	pObj = CreateGameObject();
 	pObj->AddComponent<CDirectionalLight>();
 }
-// *配列追加
+
+//==========================================================
+// 更新配列への追加
+//==========================================================
 void CGameObjectManager::SetGameObject(std::shared_ptr<CGameObject> obj)
 {
 	if (!obj)
@@ -240,6 +260,10 @@ void CGameObjectManager::SetGameObject(std::shared_ptr<CGameObject> obj)
 	m_aGameObjList.push_back(obj);
 	TagMove(obj->GetTag(), obj);
 }
+
+//==========================================================
+// tag用の連想配列内の移動
+//==========================================================
 void CGameObjectManager::TagMove(std::string NextTag, std::weak_ptr<CGameObject> obj)
 {
 	// 同一タグ
@@ -255,6 +279,7 @@ void CGameObjectManager::TagMove(std::string NextTag, std::weak_ptr<CGameObject>
 	
 	auto list = m_aTagMap[obj.lock()->GetTag()];
 	auto it = list.FindObj(obj.lock());
+
 	// 現在のtagから除外
 	if(it != list.list.end())
 		m_aTagMap[obj.lock()->GetTag()].list.erase(it);
@@ -262,10 +287,14 @@ void CGameObjectManager::TagMove(std::string NextTag, std::weak_ptr<CGameObject>
 	// 変更後のtagへ移動
 	m_aTagMap[NextTag].list.push_back(obj);
 }
+
+//==========================================================
+// オブジェクト生成
+//==========================================================
 std::shared_ptr<CGameObject> CGameObjectManager::CreateGameObject(CGameObject* pObj)
 {
 	std::shared_ptr<CGameObject> spObj;
-	// ｺﾋﾟｰ
+	//--- ｺﾋﾟｰ確認
 	if (pObj)
 	{
 		spObj = std::make_shared<CGameObject>(*pObj);
@@ -293,6 +322,9 @@ std::shared_ptr<CGameObject> CGameObjectManager::CreateGameObject(CGameObject* p
 	return spObj;
 };
 
+//==========================================================
+// オブジェクト破棄
+//==========================================================
 bool CGameObjectManager::DestroyObject(std::weak_ptr<CGameObject> pObj)
 {
 	// 検索

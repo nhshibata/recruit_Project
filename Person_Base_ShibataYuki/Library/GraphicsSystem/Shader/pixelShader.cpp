@@ -4,17 +4,26 @@
 //---------------------------------------------------------
 //=========================================================
 
+//--- 警告抑止
 #define _CRT_SECURE_NO_WARNINGS
+
 //--- インクルード部
 #include <GraphicsSystem/Shader/pixelShader.h>
-#include <GraphicsSystem/DirectX/DXDevice.h>
+#include <Application/Application.h>
 
 using namespace MySpace::Graphics;
 
+//==========================================================
+// コンストラクタ
+//==========================================================
 CPixelShader::CPixelShader()
 	:m_pShader(nullptr)
 {
 }
+
+//==========================================================
+// デストラクタ
+//==========================================================
 CPixelShader::~CPixelShader()
 {
 	if (m_pShader)
@@ -23,11 +32,19 @@ CPixelShader::~CPixelShader()
 		m_pShader = nullptr;
 	}
 }
+
+//==========================================================
+// 割り当て
+//==========================================================
 void CPixelShader::Bind(UINT slot)
 {
-	ID3D11DeviceContext* pDC = CDXDevice::Get()->GetDeviceContext();
+	ID3D11DeviceContext* pDC = Application::Get()->GetDeviceContext();
 	pDC->PSSetShader(m_pShader, nullptr, 0);
 }
+
+//==========================================================
+// 構築
+//==========================================================
 HRESULT CPixelShader::Make(std::string fileName)
 {
 	//-- シェーダーロード --
@@ -46,7 +63,7 @@ HRESULT CPixelShader::Make(std::string fileName)
 	fread(pData, fileSize, 1, fp);
 	fclose(fp);
 
-	ID3D11Device* pDevice = CDXDevice::Get()->GetDevice();
+	ID3D11Device* pDevice = Application::Get()->GetDevice();
 	hr = pDevice->CreatePixelShader(pData, fileSize, nullptr, &m_pShader);
 	if (FAILED(hr)) {
 		if (pData) delete[] pData;

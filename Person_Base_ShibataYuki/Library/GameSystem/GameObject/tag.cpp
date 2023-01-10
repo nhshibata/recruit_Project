@@ -12,7 +12,12 @@
 using namespace MySpace::Game;
 using namespace MySpace::System;
 
+//--- 定数定義
+#define TAG_PATH		FORDER_DIR(data/SystemData/tag.json)
+
+//==========================================================
 // コンストラクタ
+//==========================================================
 CTag::CTag()
 	:m_nTagID(0)
 {
@@ -20,15 +25,38 @@ CTag::CTag()
 	SetTag(CDefaultTagChar::DEFAULT);
 }
 
+//==========================================================
+// コンストラクタ
+//==========================================================
 CTag::CTag(std::string name)
 {
 	CreateTag(name);
 	m_nTagID = GetID(name);
 }
 
+//==========================================================
+// デストラクタ
+//==========================================================
 CTag::~CTag()
 {
 
 }
 
+//==========================================================
+// ファイル出力
+//==========================================================
+void CTag::SaveSystem()
+{
+	CCerealize<std::vector<std::string>> sirial;
+	sirial.OutputFile("tagList", TAG_PATH, m_aTagName);
+}
+
+//==========================================================
+// ファイル読み込み
+//==========================================================
+void CTag::LoadSystem()
+{
+	CCerealize<std::vector<std::string>> sirial;
+	m_aTagName = sirial.InputFile(TAG_PATH);
+}
 

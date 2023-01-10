@@ -11,6 +11,9 @@
 
 using namespace AI;
 
+//==========================================================
+// 実行
+//==========================================================
 CAINode::EStatus CStateNode::Execute(CAISystem* system)
 {
 	//--- 遷移確認
@@ -30,6 +33,9 @@ CAINode::EStatus CStateNode::Execute(CAISystem* system)
 	return Update(system);
 }
 
+//==========================================================
+// 更新
+//==========================================================
 CAINode::EStatus CStateNode::Update(CAISystem* system)
 {
 	//--- 所有ノードの実行

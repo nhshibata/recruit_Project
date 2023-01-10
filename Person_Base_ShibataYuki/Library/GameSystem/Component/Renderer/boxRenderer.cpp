@@ -10,33 +10,57 @@
 #include <GameSystem/Component/Renderer/boxRenderer.h>
 #include <GameSystem/Component/Transform/transform.h>
 #include <GameSystem/Manager/sceneManager.h>
-#include <ImGui/imgui.h>
 #include <GraphicsSystem/DirectX/DXDevice.h>
+
+#include <ImGui/imgui.h>
 
 using namespace MySpace::Game;
 using namespace MySpace::Graphics;
 
+//==========================================================
+// 引き数付きコンストラクタ
+//==========================================================
 CBoxRenderer::CBoxRenderer(std::shared_ptr<CGameObject> ptr)
 	:CMeshRenderer(ptr), m_vSize(1, 1, 1), m_pBBox(nullptr)
 {
 	SetBox(m_vSize);
 }
+
+//==========================================================
+// デストラクタ
+//==========================================================
 CBoxRenderer::~CBoxRenderer()
 {
 	m_pBBox->Fin();
 	m_pBBox.reset();
 }
+
+//==========================================================
+// 生成時呼び出し
+//==========================================================
 void CBoxRenderer::Awake()
 {
 }
+
+//==========================================================
+// 初期化
+//==========================================================
 void CBoxRenderer::Init()
 {
 	CMeshRenderer::Init();
 }
+
+//==========================================================
+// 更新
+//==========================================================
 void CBoxRenderer::Update()
 {
 	CMeshRenderer::Update();
 }
+
+//==========================================================
+// 描画
+//==========================================================
 bool CBoxRenderer::Draw()
 {
 	if (!CMeshRenderer::Draw())return false;
@@ -76,6 +100,10 @@ bool CBoxRenderer::Draw()
 
 	return true;
 }
+
+//==========================================================
+// 箱サイズ設定
+//==========================================================
 HRESULT CBoxRenderer::SetBox(Vector3 vBBox)
 {
 	HRESULT hr = S_OK;
@@ -92,6 +120,7 @@ HRESULT CBoxRenderer::SetBox(Vector3 vBBox)
 	return hr;
 }
 
+
 #if BUILD_MODE
 
 void CBoxRenderer::ImGuiDebug()
@@ -103,6 +132,7 @@ void CBoxRenderer::ImGuiDebug()
 		SetBox(m_vSize);
 	}
 	CMeshRenderer::ImGuiDebug();
+
 }
 
 #endif // 0

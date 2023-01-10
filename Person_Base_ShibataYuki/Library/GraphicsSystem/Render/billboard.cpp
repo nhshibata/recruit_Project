@@ -5,7 +5,6 @@
 
 #include <GraphicsSystem/Render/billboard.h>
 #include <GraphicsSystem/Texture/spriteAnimation.h>
-#include <GraphicsSystem/DirectX/DXDevice.h>
 #include <GameSystem/Component/Camera/camera.h>
 #include <GameSystem/Component/Light/directionalLight.h>
 
@@ -13,14 +12,23 @@ using namespace MySpace::System;
 using namespace MySpace::Game;
 using namespace MySpace::Graphics;
 
-
+//==========================================================
+// コンストラクタ
+//==========================================================
 CBillboard::CBillboard()
 {
 }
+
+//==========================================================
+// デストラクタ
+//==========================================================
 CBillboard::~CBillboard()
 {
-
 }
+
+//==========================================================
+// 初期化
+//==========================================================
 HRESULT CBillboard::Init()
 {
 	// 一時的な頂点配列を生成
@@ -65,6 +73,9 @@ HRESULT CBillboard::Init()
 	return hr;
 }
 
+//==========================================================
+// 更新
+//==========================================================
 void CBillboard::Update(Vector3 pos, Vector2 size)
 {
 	// ビューマトリックスを取得
@@ -101,8 +112,3 @@ void CBillboard::Update(Vector3 pos, Vector2 size)
 	//if (GetMaterial()->m_Diffuse.x > 1)
 	//	GetMaterial()->m_Diffuse.x = 0;
 }
-//
-//void CBillboard::Draw(ID3D11ShaderResourceView* pTex, CSpriteAnimation* pSprite)
-//{
-//	
-//}

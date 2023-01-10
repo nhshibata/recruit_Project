@@ -7,24 +7,34 @@
 
 //--- インクルード部
 #include <GraphicsSystem/DirectX/renderTarget.h>
-#include <GraphicsSystem/DirectX/DXDevice.h>
+#include <Application/Application.h>
 
 using namespace MySpace::Graphics;
 
-
+//==========================================================
+// コンストラクタ
+//==========================================================
 CRenderTarget::CRenderTarget(DXGI_FORMAT format, UINT width, UINT height)
 	:m_pRTV(nullptr)
 {
 	HRESULT hr = Create(format, width, height);
 }
+
+//==========================================================
+// デストラクタ
+//==========================================================
 CRenderTarget::~CRenderTarget()
 {
 	Release();
 }
 
+//==========================================================
+// 生成
+//==========================================================
 HRESULT CRenderTarget::Create(DXGI_FORMAT format, UINT width, UINT height)
 {
 	HRESULT hr = S_OK;
+	Application* pApp = Application::Get();
 
 	D3D11_TEXTURE2D_DESC desc = {};
 	desc.Usage = D3D11_USAGE_DEFAULT;
@@ -39,42 +49,46 @@ HRESULT CRenderTarget::Create(DXGI_FORMAT format, UINT width, UINT height)
 	desc.MiscFlags = 0;
 	desc.BindFlags |= D3D11_BIND_RENDER_TARGET;
 
-	// テクスチャ作成
+	//--- テクスチャ作成
 	D3D11_SUBRESOURCE_DATA data = {};
 	data.pSysMem = nullptr;
 	data.SysMemPitch = desc.Width * 4;
-	hr = CDXDevice::Get()->GetDevice()->CreateTexture2D(&desc, nullptr, &m_pTex);
+	hr = pApp->GetDevice()->CreateTexture2D(&desc, nullptr, &m_pTex);
 	if (FAILED(hr))
 	{
 		return hr;
 	}
 
-	// 設定
+	//--- ﾃｸｽﾁｬ設定
 	D3D11_SHADER_RESOURCE_VIEW_DESC srvDesc = {};
 	srvDesc.Format = desc.Format;
 	srvDesc.ViewDimension = D3D11_SRV_DIMENSION_TEXTURE2D;
 	srvDesc.Texture2D.MipLevels = 1;
 	// 生成
-	hr = CDXDevice::Get()->GetDevice()->CreateShaderResourceView(m_pTex, &srvDesc, &m_pSRV);
+	hr = pApp->GetDevice()->CreateShaderResourceView(m_pTex, &srvDesc, &m_pSRV);
 	if (FAILED(hr))
 	{
 		return hr;
 	}
 
-	// 設定
+	//--- レンダーターゲット設定
 	D3D11_RENDER_TARGET_VIEW_DESC rtvDesc = {};
 	rtvDesc.Format = desc.Format;
 	rtvDesc.ViewDimension = D3D11_RTV_DIMENSION_TEXTURE2D;
 
-	// 生成
-	hr = CDXDevice::Get()->GetDevice()->CreateRenderTargetView(m_pTex, &rtvDesc, &m_pRTV);
+	//--- 生成
+	hr = pApp->GetDevice()->CreateRenderTargetView(m_pTex, &rtvDesc, &m_pRTV);
 	if (FAILED(hr))
 	{
 		return hr;
 	}
+
 	return hr;
 }
 
+//==========================================================
+// 解放処理
+//==========================================================
 void CRenderTarget::Release()
 {
 	CImageResource::Unload();
@@ -82,7 +96,10 @@ void CRenderTarget::Release()
 	m_pRTV = nullptr;
 }
 
+//==========================================================
+// レンダー ﾃﾞｰﾀリセット
+//==========================================================
 void CRenderTarget::Clear(float* color)
 {
-	CDXDevice::Get()->GetDeviceContext()->ClearRenderTargetView(GetView(), color);
+	Application::Get()->GetDeviceContext()->ClearRenderTargetView(GetView(), color);
 }

@@ -7,28 +7,37 @@
 #include <GameSystem/Scene/scene.h>
 #include <GameSystem/Manager/gameObjectManager.h>
 #include <GameSystem/Component/Camera/camera.h>
-//#include "collision.h"
 
-//using MyLibrary::System::CGameObjectManager;
 using namespace MySpace::SceneManager;
 using namespace MySpace::Game;
 
+//==========================================================
 // コンストラクタ
+//==========================================================
 CScene::CScene()
 	:m_SceneName("none")
 {
 }
+
+//==========================================================
 // コンストラクタ
+//==========================================================
 CScene::CScene(std::string name)
 	:m_SceneName(name)
 {
 }
+
+//==========================================================
 // デストラクタ
+//==========================================================
 CScene::~CScene()
 {
 	m_pObjeManager.reset();
 }
+
+//==========================================================
 // 初期化
+//==========================================================
 void CScene::Init(std::weak_ptr<CScene> scene)
 {
 	m_spPtr = scene;
@@ -36,32 +45,49 @@ void CScene::Init(std::weak_ptr<CScene> scene)
 	// シーンに対してゲームオブジェクトを引き渡す
 	//m_objeManager->Init();
 }
+
+//==========================================================
 // 解放
+//==========================================================
 void CScene::Uninit()
 {
 	// シーンを破棄した際、スマートポインタで破棄される
 	m_pObjeManager->Uninit();
 }
+
+//==========================================================
 // 更新
+//==========================================================
 void CScene::Update()
 {
 	m_pObjeManager->Update();
 }
-// 一定時間の更新
+
+//==========================================================
+// 一定時間更新
+//==========================================================
 void CScene::FixedUpdate()
 {
 	m_pObjeManager->FixedUpdate();
 }
+
+//==========================================================
 // 描画
+//==========================================================
 void CScene::Draw()
 {
 }
+
+//==========================================================
+// ｶﾒﾗとﾗｲﾄのみだけのScene生成
+//==========================================================
 void CScene::CreateEmptyScene()
 {
 	if (m_pObjeManager)
 	{
 		m_pObjeManager->Uninit();
 	}
+
 	m_pObjeManager->CreateBasicObject();
 	if(m_SceneName.empty())
 		m_SceneName = "empty";

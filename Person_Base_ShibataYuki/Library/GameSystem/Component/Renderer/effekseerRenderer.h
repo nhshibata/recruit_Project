@@ -51,8 +51,10 @@ namespace MySpace
 				:m_pEffekseer(nullptr), m_nHandle(-1), m_EffectName(std::u16string()),m_bLoop(false),m_fAngle(0)
 			{};
 			CEffekseerRenderer(std::shared_ptr<CGameObject> owner);
+			
 			// *@コピーコンストラクタ
-			CEffekseerRenderer(const CEffekseerRenderer & copy) {
+			CEffekseerRenderer(const CEffekseerRenderer & copy) 
+			{
 				this->m_pEffekseer = copy.m_pEffekseer;
 				this->m_nHandle = copy.m_nHandle;
 				this->m_EffectName = copy.m_EffectName;
@@ -66,7 +68,7 @@ namespace MySpace
 			virtual void Update();
 			virtual bool Draw();
 
-			void SetImageName(std::u16string name);
+			void SetEffect(std::u16string name);
 			inline void SetLoop(bool flg) { m_bLoop = flg; }
 
 #ifdef BUILD_MODE

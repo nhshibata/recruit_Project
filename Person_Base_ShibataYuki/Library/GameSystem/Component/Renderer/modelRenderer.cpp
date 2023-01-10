@@ -7,6 +7,7 @@
 //=========================================================
 
 //--- インクルード部
+#include <Application/Application.h>
 #include <GameSystem/Component/Renderer/modelRenderer.h>
 #include <GameSystem/Component/Transform/transform.h>
 #include <GameSystem/Component/Light/directionalLight.h>
@@ -14,6 +15,7 @@
 #include <GameSystem/Manager/drawSystem.h>
 
 #include <GraphicsSystem/DirectX/DXDevice.h>
+#include <GraphicsSystem/Manager/assetsManager.h>
 #include <DebugSystem/imGuiPackage.h>
 #include <CoreSystem/File/filePath.h>
 
@@ -21,13 +23,19 @@ using namespace MySpace::System;
 using namespace MySpace::Game;
 using namespace MySpace::Graphics;
 
+//==========================================================
+// コンストラクタ
+//==========================================================
 CModelRenderer::CModelRenderer(std::shared_ptr<CGameObject> owner)
 	:CMeshRenderer(owner), m_modelName(CHARACTER_PATH(mukade_head.obj)),
 	m_pIndex(nullptr), m_pVertex(nullptr), m_nVertex(0), m_nIndex(0),
 	m_bInstancing(false)
-{
-	
+{	
 }
+
+//==========================================================
+// デストラクタ
+//==========================================================
 CModelRenderer::~CModelRenderer()
 {
 	if(m_pIndex && m_pVertex)
@@ -38,10 +46,16 @@ CModelRenderer::~CModelRenderer()
 		m_pModel.reset();
 	}
 }
+
+//==========================================================
+// モデル設定
+//==========================================================
 void CModelRenderer::SetModel(std::string name)
 {
+	auto modelMgr = Application::Get()->GetSystem<CAssetsManager>()->GetModelManager();
+	
 	// ポインタを受け取る
-	if (m_pModel = CModelManager::Get()->GetModel(name); m_pModel)
+	if (m_pModel = modelMgr->GetModel(name); m_pModel)
 	{
 		m_modelName = name;
 
@@ -58,7 +72,7 @@ void CModelRenderer::SetModel(std::string name)
 		SetBSRadius(m_pModel->GetRadius());
 
 		// 自身と管理ｸﾗｽ以外に所有者が居た時
-		if (int num = CModelManager::Get()->GetModelCnt(name); num > 2)
+		if (int num = modelMgr->GetModelCnt(name); num > 2)
 		{
 			m_bInstancing = true;
 		}
@@ -67,86 +81,120 @@ void CModelRenderer::SetModel(std::string name)
 	// 頂点配列、インデックス配列を取得しておく
 	InitVertexArray();
 }
+
+//==========================================================
+// 生成時呼び出し
+//==========================================================
 void CModelRenderer::Awake()
 {
 	GetOwner()->SetLayer(CLayer::E_Layer::MODEL);
 	SetModel(m_modelName);
 }
+
+//==========================================================
+// 初期化
+//==========================================================
 void CModelRenderer::Init()
 {
 	//SetModel(m_modelName);
 	CMeshRenderer::Init();
 }
+
+//==========================================================
+// 更新
+//==========================================================
 void CModelRenderer::Update()
 {
 }
+
+//==========================================================
+// 描画
+// インスタンシング対応
+// DrawSystem側から呼び出される
+//==========================================================
 bool CModelRenderer::Draw()
 {
 	if (!CMeshRenderer::Draw())return false;
 	if (!m_pModel)return false;
 
+	auto pModelMgr = Application::Get()->GetSystem<CAssetsManager>()->GetModelManager();
+	auto pDX = Application::Get()->GetSystem<CDXDevice>();
+	
 	XMFLOAT4X4 mtx = Transform()->GetWorldMatrix();
 	//--- インスタンシング描画
 	// 自身と管理以外が所持しているか確認
-	if (m_bInstancing || CModelManager::Get()->GetModelCnt(m_modelName) > 2)
+	if (m_bInstancing || pModelMgr->GetModelCnt(m_modelName) > 2)
 	{
 		// システム側に依頼を出し、まとめて描画してもらう
-		SceneManager::CSceneManager::Get()->GetDrawSystem()->SetInstanchingModel(m_modelName, mtx);
+		SceneManager::CSceneManager::Get().GetDrawSystem()->SetInstanchingModel(m_modelName, mtx);
 		return true;
 	}
 
 	//--- 不透明描画
-	CLight* pLight = CLight::Get();
+	CLight* pLight = CLight::GetMain();
 	if (!pLight)return false;
 	pLight->SetDisable(GetLightEnable());	// ライティング無効
 	
-	m_pModel->Draw(CDXDevice::Get()->GetDeviceContext(), mtx, EByOpacity::eOpacityOnly);
+	m_pModel->Draw(pDX->GetDeviceContext(), mtx, EByOpacity::eOpacityOnly);
 
 	pLight->SetEnable();	// ライティング有効
 
 	//--- 半透明部分描画
-	CDXDevice::Get()->SetZBuffer(false);
-	CDXDevice::Get()->SetBlendState(static_cast<int>(EBlendState::BS_ALPHABLEND));
+	pDX->SetZBuffer(false);
+	pDX->SetBlendState(static_cast<int>(EBlendState::BS_ALPHABLEND));
 
-	m_pModel->Draw(CDXDevice::Get()->GetDeviceContext(), mtx, EByOpacity::eTransparentOnly);
+	m_pModel->Draw(pDX->GetDeviceContext(), mtx, EByOpacity::eTransparentOnly);
 
-	CDXDevice::Get()->SetZBuffer(true);			// αブレンディング無効
-	CDXDevice::Get()->SetBlendState(static_cast<int>(EBlendState::BS_NONE));		// 光源有効
+	pDX->SetZBuffer(true);			// αブレンディング無効
+	pDX->SetBlendState(static_cast<int>(EBlendState::BS_NONE));		// 光源有効
 
 	return true;
 }
+
+//==========================================================
+// 描画
+// インスタンシング非対応
+//==========================================================
 bool CModelRenderer::Draw(int no)
 {
-	XMFLOAT4X4 mtx = Transform()->GetWorldMatrix();
-	
 	if (!m_pModel)return false;
+	
+	auto pDX = Application::Get()->GetSystem<CDXDevice>();
 
+	XMFLOAT4X4 mtx = Transform()->GetWorldMatrix();
 	//--- 不透明描画
-	CLight* pLight = CLight::Get();
+	CLight* pLight = CLight::GetMain();
 	if (!pLight)return false;
 	pLight->SetDisable(GetLightEnable());	// ライティング無効
-
-	m_pModel->Draw(CDXDevice::Get()->GetDeviceContext(), mtx, EByOpacity::eOpacityOnly);
+	
+	m_pModel->Draw(pDX->GetDeviceContext(), mtx, EByOpacity::eOpacityOnly);
 
 	pLight->SetEnable();	// ライティング有効
 
 	//--- 半透明部分描画
-	CDXDevice::Get()->SetZBuffer(false);
-	CDXDevice::Get()->SetBlendState(static_cast<int>(EBlendState::BS_ALPHABLEND));
+	pDX->SetZBuffer(false);
+	pDX->SetBlendState(static_cast<int>(EBlendState::BS_ALPHABLEND));
 
-	m_pModel->Draw(CDXDevice::Get()->GetDeviceContext(), mtx, EByOpacity::eTransparentOnly);
+	m_pModel->Draw(pDX->GetDeviceContext(), mtx, EByOpacity::eTransparentOnly);
 
-	CDXDevice::Get()->SetZBuffer(true);			// αブレンディング無効
-	CDXDevice::Get()->SetBlendState(static_cast<int>(EBlendState::BS_NONE));		// 光源有効
+	pDX->SetZBuffer(true);			// αブレンディング無効
+	pDX->SetBlendState(static_cast<int>(EBlendState::BS_NONE));		// 光源有効
 
 	return true;
 }
+
+//==========================================================
 // 頂点/インデックス配列解放
+//==========================================================
 void CModelRenderer::FinVertexArray()
 {
 	SAFE_DELETE_ARRAY(m_pIndex);
 	SAFE_DELETE_ARRAY(m_pVertex);
 }
+
+//==========================================================
+// 頂点情報保存
+//==========================================================
 void CModelRenderer::InitVertexArray()
 {
 	FinVertexArray();
@@ -157,7 +205,11 @@ void CModelRenderer::InitVertexArray()
 	m_pIndex = new UINT[m_nIndex];
 	pModel->GetVertex(m_pVertex, m_pIndex);
 }
+
+//==========================================================
 // レイとの当たり判定
+// 衝突地点格納
+//==========================================================
 bool CModelRenderer::CollisionRay(XMFLOAT3 vP0, XMFLOAT3 vW, XMFLOAT3* pX, XMFLOAT3* pN)
 {
 	// 全ての三角形について繰り返し
@@ -228,7 +280,10 @@ bool CModelRenderer::CollisionRay(XMFLOAT3 vP0, XMFLOAT3 vW, XMFLOAT3* pX, XMFLO
 	return false;	// 当たっていない
 }
 
+//==========================================================
 // 線分との当たり判定
+// 衝突地点格納
+//==========================================================
 bool CModelRenderer::CollisionLineSegment(XMFLOAT3 vP0, XMFLOAT3 vP1, XMFLOAT3* pX, XMFLOAT3* pN)
 {
 	// 全ての三角形について繰り返し
@@ -307,7 +362,11 @@ bool CModelRenderer::CollisionLineSegment(XMFLOAT3 vP0, XMFLOAT3 vP1, XMFLOAT3* 
 	}
 	return false;	// 当たっていない
 }
+
+//==========================================================
 // 線分との当たり判定
+// 衝突地点格納(全て)
+//==========================================================
 bool CModelRenderer::CollisionLineSegment(XMFLOAT3 vP0, XMFLOAT3 vP1, std::vector<Vector3>* pX)
 {
 	Matrix4x4 mtx = Transform()->GetWorldMatrix();
@@ -316,16 +375,11 @@ bool CModelRenderer::CollisionLineSegment(XMFLOAT3 vP0, XMFLOAT3 vP1, std::vecto
 	// 全ての三角形について繰り返し
 	for (UINT i = 0; i < m_nIndex; )
 	{
-		// 三角形の3頂点
-		/*XMFLOAT3& vV0 = m_pVertex[m_pIndex[i++]].vPos;
-		XMFLOAT3& vV1 = m_pVertex[m_pIndex[i++]].vPos;
-		XMFLOAT3& vV2 = m_pVertex[m_pIndex[i++]].vPos;
-		*/
+		// 三角形の3頂点を現在のマトリックスから計算
 		XMFLOAT3 v0 = m_pVertex[m_pIndex[i++]].vPos;
 		XMFLOAT3 v1 = m_pVertex[m_pIndex[i++]].vPos;
 		XMFLOAT3 v2 = m_pVertex[m_pIndex[i++]].vPos;
 
-		//mtxPoint = mtxPoint.CalcWorld(m_pVertex[m_pIndex[i++]].vPos) * mtx;
 		mtxPoint.Identity();
 		mtxPoint._41 = v0.x;
 		mtxPoint._42 = v0.y;
@@ -334,7 +388,6 @@ bool CModelRenderer::CollisionLineSegment(XMFLOAT3 vP0, XMFLOAT3 vP1, std::vecto
 		pos = XMFLOAT3(mtxPoint._41, mtxPoint._42, mtxPoint._43);
 		v0 = pos;
 
-		//mtxPoint = mtxPoint.CalcWorld(m_pVertex[m_pIndex[i++]].vPos) * mtx;
 		mtxPoint.Identity();
 		mtxPoint._41 = v1.x;
 		mtxPoint._42 = v1.y;
@@ -343,7 +396,6 @@ bool CModelRenderer::CollisionLineSegment(XMFLOAT3 vP0, XMFLOAT3 vP1, std::vecto
 		pos = XMFLOAT3(mtxPoint._41, mtxPoint._42, mtxPoint._43);
 		v1 = pos;
 
-		//mtxPoint = mtxPoint.CalcWorld(m_pVertex[m_pIndex[i++]].vPos) * mtx;
 		mtxPoint.Identity();
 		mtxPoint._41 = v2.x;
 		mtxPoint._42 = v2.y;
@@ -426,6 +478,7 @@ bool CModelRenderer::CollisionLineSegment(XMFLOAT3 vP0, XMFLOAT3 vP1, std::vecto
 	return false;	// 当たっていない
 }
 
+
 #ifdef BUILD_MODE
 
 void CModelRenderer::ImGuiDebug()
@@ -434,6 +487,7 @@ void CModelRenderer::ImGuiDebug()
 
 	CMeshRenderer::ImGuiDebug();
 
+	//--- フォルダからファイル名取得
 	if (m_aXModelList.empty() && m_aObjModelList.empty() && m_aFbxModelList.empty() || ImGui::Button("モデル reload"))
 	{
 		MySpace::System::CFilePath file;
@@ -445,7 +499,9 @@ void CModelRenderer::ImGuiDebug()
 	// 名前入力
 	m_modelName = InputString(m_modelName, u8"設定モデル");
 
-	// モデル
+	//--- モデル選択読み込み
+
+	// xファイル
 	if (auto name = DispMenuBar(m_aXModelList, "xFile"); !name.empty())
 	{
 		m_modelName = name;
@@ -454,6 +510,7 @@ void CModelRenderer::ImGuiDebug()
 		SetModel(name);
 	}
 	
+	// objファイル
 	if (auto name = DispMenuBar(m_aObjModelList, "objFile"); !name.empty())
 	{
 		m_modelName = name;
@@ -462,6 +519,7 @@ void CModelRenderer::ImGuiDebug()
 		SetModel(name);
 	}
 	
+	// fbxファイル
 	if (auto name = DispMenuBar(m_aFbxModelList, "fbxFile"); !name.empty())
 	{
 		m_modelName = name;
@@ -469,6 +527,7 @@ void CModelRenderer::ImGuiDebug()
 		// ポインタを受け取る
 		SetModel(name);
 	}
+
 }
 
 #endif // BUILD_MODE

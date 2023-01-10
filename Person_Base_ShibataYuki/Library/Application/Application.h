@@ -37,6 +37,8 @@ private:
 	HWND					m_hWnd;						// Windowハンドル
 	HINSTANCE				m_hInst;					// インスタンスハンドル
 	std::map<std::string, void*>	m_aSystems;
+	ID3D11Device* m_pDevice;
+	ID3D11DeviceContext* m_pDeviceContext;
 
 private:
 	//--- メンバ関数
@@ -46,7 +48,7 @@ private:
 public:
 	bool Init(HINSTANCE h_cpInstance);					// システム有効化
 	
-	void Uninit();										// システム無効化
+	void Destroy();										// システム無効化
 	unsigned long MainLoop();							// メインループ
 
 	//--- ゲッター・セッター
@@ -63,11 +65,12 @@ public:
 		std::string name = typeid(T).name();
 		if (m_aSystems.count(name))
 		{
-			return m_aSystems[name];
+			T* ret = reinterpret_cast<T*>(m_aSystems[name]);
+			return ret;
 		}
 
 		m_aSystems[name] = new T;
-		return m_aSystems[name];
+		return reinterpret_cast<T*>(m_aSystems[name]);
 	}
 
 	// *@型指定によるﾎﾟｲﾝﾀの取得

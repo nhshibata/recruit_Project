@@ -17,7 +17,9 @@
 
 using namespace MySpace::Game;
 
-//
+//==========================================================
+// 引き数付きコンストラクタ
+//==========================================================
 CBoxCollision::CBoxCollision(std::shared_ptr<CGameObject> owner, Vector3 size)
 	: CCollision(owner),m_vSize(size), m_bOBBMode(true)
 {
@@ -26,15 +28,20 @@ CBoxCollision::CBoxCollision(std::shared_ptr<CGameObject> owner, Vector3 size)
 	m_pDebugBox->Init(size);
 #endif // BUILD_MODE
 }
+
+//==========================================================
+// デストラクタ
+//==========================================================
 CBoxCollision::~CBoxCollision()
 {
 #if BUILD_MODE
 	m_pDebugBox.reset();
 #endif // BUILD_MODE
 }
-// <Summary> 
-// 当たり判定計算関数
-// </Summary>
+
+//==========================================================
+// 当たり判定関数
+//==========================================================
 bool CBoxCollision::Box(Vector3 Apos, Vector3 Asize, Vector3 Bpos, Vector3 Bsize)
 {
 	return (Apos.x - Asize.x <= Bpos.x + Bsize.x) &&
@@ -44,7 +51,10 @@ bool CBoxCollision::Box(Vector3 Apos, Vector3 Asize, Vector3 Bpos, Vector3 Bsize
 		(Apos.z - Asize.z <= Bpos.z + Bsize.z) &&
 		(Bpos.z - Bsize.z <= Apos.z + Asize.z);
 }
-// 当たり判定
+
+//==========================================================
+// 自身と引き数情報からの当たり判定
+//==========================================================
 bool CBoxCollision::CollisionAABB(Vector3 pos, Vector3 size)
 {
 	if (Box(Transform()->GetPos(), m_vSize, pos, size))
@@ -53,7 +63,10 @@ bool CBoxCollision::CollisionAABB(Vector3 pos, Vector3 size)
 	}
 	return false;
 }
-// 当たり判定
+
+//==========================================================
+// 当たり判定OBB
+//==========================================================
 bool CBoxCollision::CollisionOBB(CTransform* trans, Vector3 center, Vector3 size)
 {
 	// ワールドマトリックス取得
@@ -135,9 +148,11 @@ bool CBoxCollision::CollisionOBB(CTransform* trans, Vector3 center, Vector3 size
 	}
 	return true;
 }
-// <Summary> 
+
+//==========================================================
+// Collision同士の当たり判定
 // コリジョンｸﾗｽを引き数にとって、当たり判定を行う
-// </Summary>
+//==========================================================
 bool CBoxCollision::HitCheckPtr(CCollision* other)
 {
 	// 持ち主の取得
@@ -189,6 +204,10 @@ bool CBoxCollision::HitCheckPtr(CCollision* other)
 
 	return true;
 }
+
+//==========================================================
+// 押し出し
+//==========================================================
 Vector3 CBoxCollision::PosAdjustment(Vector3 pos, Vector3 size)
 {
 	Vector3 checkPos = Transform()->GetPos();
@@ -229,6 +248,7 @@ Vector3 CBoxCollision::PosAdjustment(Vector3 pos, Vector3 size)
 	return checkPos;
 }
 
+
 #ifdef BUILD_MODE
 
 void CBoxCollision::ImGuiDebug()
@@ -242,6 +262,7 @@ void CBoxCollision::ImGuiDebug()
 	}
 	ImGui::Checkbox(u8"OBB", (bool*)&m_bOBBMode);
 
+	//--- デバッグ表示
 	if (m_bOBBMode)
 	{
 		// 平行移動マトリックス生成

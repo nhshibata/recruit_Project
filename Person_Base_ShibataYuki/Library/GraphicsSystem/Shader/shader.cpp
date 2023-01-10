@@ -26,8 +26,9 @@ namespace MySpace
 
 	namespace Graphics
 	{
-		// シェーダ読み込み
-
+		//==========================================================
+		// 頂点シェーダ読み込み
+		//==========================================================
 		HRESULT LoadVertexShader(LPCWSTR pwszVSFName, ID3D11VertexShader** ppVertexShader,
 			ID3D11InputLayout** ppVertexLayout,
 			const D3D11_INPUT_ELEMENT_DESC* pInpElemDesc, UINT uNumElem)
@@ -143,6 +144,10 @@ namespace MySpace
 				delete[] pbData;
 			return hr;
 		}
+
+		//==========================================================
+		// ピクセルシェーダ読み込み
+		//==========================================================
 		HRESULT LoadPixelShader(LPCWSTR pwszPSFName, ID3D11PixelShader** ppPixelShader)
 		{
 			WCHAR wszPath[_MAX_PATH], wszDrive[_MAX_DRIVE],
@@ -229,6 +234,10 @@ namespace MySpace
 			return hr;
 
 		}
+
+		//==========================================================
+		// シェーダ一括読み込み
+		//==========================================================
 		HRESULT LoadShader(LPCWSTR pwszVSFName, LPCWSTR pwszPSFName,
 			ID3D11VertexShader** ppVertexShader, ID3D11InputLayout** ppVertexLayout, ID3D11PixelShader** ppPixelShader,
 			const D3D11_INPUT_ELEMENT_DESC* pInpElemDesc, UINT uNumElem)
@@ -239,6 +248,10 @@ namespace MySpace
 			// ピクセルシェーダ読み込み
 			return LoadPixelShader(pwszPSFName, ppPixelShader);
 		}
+
+		//==========================================================
+		// 頂点シェーダ読み込み確認
+		//==========================================================
 		HRESULT LoadVertexShader(LPCSTR pszVSFName, ID3D11VertexShader** ppVertexShader,
 			ID3D11InputLayout** ppVertexLayout,
 			const D3D11_INPUT_ELEMENT_DESC* pInpElemDesc, UINT uNumElem)
@@ -252,6 +265,10 @@ namespace MySpace
 			wszVSFName[nLen] = L'\0';
 			return LoadVertexShader(wszVSFName, ppVertexShader, ppVertexLayout, pInpElemDesc, uNumElem);
 		}
+
+		//==========================================================
+		// ピクセルシェーダ読み込み確認
+		//==========================================================
 		HRESULT LoadPixelShader(LPCSTR pszPSFName, ID3D11PixelShader** ppPixelShader)
 		{
 			if (IS_INTRESOURCE(pszPSFName)) {
@@ -263,6 +280,10 @@ namespace MySpace
 			wszPSFName[nLen] = L'\0';
 			return LoadPixelShader(wszPSFName, ppPixelShader);
 		}
+
+		//==========================================================
+		// シェーダ一括読み込み確認
+		//==========================================================
 		HRESULT LoadShader(LPCSTR pszVSFName, LPCSTR pszPSFName,
 			ID3D11VertexShader** ppVertexShader, ID3D11InputLayout** ppVertexLayout,
 			ID3D11PixelShader** ppPixelShader,

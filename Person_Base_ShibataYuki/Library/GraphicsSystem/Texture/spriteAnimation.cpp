@@ -2,28 +2,44 @@
 // [spriteAnimation.cpp]
 // 作成: 2022/07/04
 //=========================================================
+
+//--- インクルード部
+#include <Application/Application.h>
 #include <GraphicsSystem/Texture/spriteAnimation.h>
+#include <GraphicsSystem/Manager/assetsManager.h>
 #include <GraphicsSystem/Manager/imageResourceManager.h>
 #include <DebugSystem/imGuiPackage.h>
 
 using namespace MySpace::Graphics;
-using namespace MySpace::System;
 
-
+//==========================================================
+// コンストラクタ
+//==========================================================
 CSpriteAnimation::CSpriteAnimation() 
 	:m_nAnimNo(0),m_nSplitX(1),m_nSplitY(1),m_nCnt(3)
 {
 }
+
+//==========================================================
+// デストラクタ
+//==========================================================
 CSpriteAnimation::~CSpriteAnimation()
 {
-	//m_pImage.reset();
+	m_pImage.reset();
 }
+
+//==========================================================
+// 更新
+//==========================================================
 void CSpriteAnimation::Update()
 {
 	if (m_nSplitX == 1 && m_nSplitY == 1)
 		return;
 
+	//--- ｱﾆﾒｰｼｮﾝ時間更新
 	--m_nCnt;
+
+	//--- コマ更新
 	if (m_nCnt <= 0)
 	{
 		++m_nAnimNo;
@@ -36,16 +52,27 @@ void CSpriteAnimation::Update()
 			m_nAnimNo = 0;
 		}
 	}
+
 }
+
+//==========================================================
+// 画像設定
+//==========================================================
 void CSpriteAnimation::SetImage(std::string name)
 {
 	// 管理クラスからポインタを受け取る
-	//if (CImageResourceManager::Get()->Load(name))
+	m_pImage = Application::Get()->GetSystem<CAssetsManager>()->GetImageManager()->GetResource(name);
+	if(m_pImage)
 	{
 		m_ImageName = name;
-		m_pImage = CImageResourceManager::Get()->GetResource(m_ImageName);
 	}
+
 }
+
+//==========================================================
+// UV取得
+// コマ番号から計算
+//==========================================================
 Vector2 CSpriteAnimation::GetUV(int no)
 {
 	//int u = no % m_nSplitX;
@@ -55,16 +82,25 @@ Vector2 CSpriteAnimation::GetUV(int no)
 	int v = no / m_nSplitX;
 	return Vector2((float)u / (float)m_nSplitX, (float)v / (float)m_nSplitY);
 }
+
+//==========================================================
+// UV取得
+//==========================================================
 Vector2 CSpriteAnimation::GetUV()
 {
 	if (m_stParam.size() <= m_nAnimNo)
 		return Vector2(0, 0);
 	return GetUV(m_stParam[m_nAnimNo].nAnimNo);
 }
+
+//==========================================================
+// 分割数からUVサイズ取得
+//==========================================================
 Vector2 CSpriteAnimation::GetFrameSize() 
 {
 	return Vector2(1.0f / m_nSplitX, 1.0f / m_nSplitY);
 };
+
 
 #ifdef BUILD_MODE
 
@@ -79,7 +115,7 @@ void CSpriteAnimation::ImGuiDebug()
 	ImGui::Text(u8"ﾃｸｽﾁｬ座標 %f %f", GetUV().x, GetUV().y);
 
 	int size = static_cast<int>(m_stParam.size());
-	// サイズ調整
+	//--- サイズ調整
 	if (ImGui::InputInt(u8"size", &size) && size >= 0)
 	{
 		/*if (param.size() - size == 1)
@@ -94,12 +130,14 @@ void CSpriteAnimation::ImGuiDebug()
 	if (m_nAnimNo < 0)
 		m_nAnimNo = 0;
 
+	//--- 分割数変更
 	ImGui::InputInt(u8"分割x", &m_nSplitX);
 	ImGui::InputInt(u8"分割y", &m_nSplitY);
 	if (m_nSplitX < 0)
 		m_nSplitX = 0;
 	if (m_nSplitY < 0)
 		m_nSplitY = 0;
+
 
 	for (int i = 0; i < m_stParam.size(); i++)
 	{
@@ -138,21 +176,22 @@ void CSpriteAnimation::ImGuiDebug()
 		uv1//texSize											// フレームサイズ
 	);
 
-	// UV表示
+	//--- UV表示
 	for (int cnt = 0; cnt < split.x * split.y; ++cnt)
 	{
 		uv = GetUV(cnt).Convert<ImVec2>();
 		ImGui::Image(
 			(void*)GetImage().lock()->GetSRV(),	// 画像
-			ImVec2(80, 80),									// サイズ
-			uv,												// UV
-			texSize											// フレームサイズ
+			ImVec2(80, 80),						// サイズ
+			uv,									// UV
+			texSize								// フレームサイズ
 		);
+
 		// 段落
-		//if (cnt % split.x != 0)
 		if ((cnt+1) % 3 == 0)
 			ImGui::SameLine();
 	}
 
 }
+
 #endif // BUILD_MODE

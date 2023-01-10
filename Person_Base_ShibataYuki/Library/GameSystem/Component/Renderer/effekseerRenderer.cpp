@@ -10,6 +10,9 @@
 #include <GameSystem/GameObject/gameObject.h>
 
 #include <GraphicsSystem/DirectX/DXDevice.h>
+#include <GraphicsSystem/Manager/assetsManager.h>
+
+#include <Application/Application.h>
 
 #include <DebugSystem/imGuiPackage.h>
 #include <DebugSystem/imguiManager.h>
@@ -21,30 +24,47 @@ using namespace MySpace::Graphics;
 
 #define EFFECT_PATH1		FORDER_DIR(Data/effect/)
 
+//==========================================================
 // コンストラクタ
+//==========================================================
 CEffekseerRenderer::CEffekseerRenderer(std::shared_ptr<CGameObject> owner)
-	:CRenderer(owner),m_bLoop(false),m_fAngle(0.0f),m_nHandle(-1),m_pEffekseer(nullptr)
+	:CRenderer(owner), m_bLoop(false), m_fAngle(0.0f), m_nHandle(-1), m_pEffekseer(nullptr)
 	,m_EffectName(std::u16string())
 {
 	
 }
+
+//==========================================================
+// デストラクタ
+//==========================================================
 CEffekseerRenderer::~CEffekseerRenderer()
 {
-	
 }
+
+//==========================================================
+// 生成時呼び出し
+//==========================================================
 void CEffekseerRenderer::Awake()
 {
-	m_pEffekseer = CEffekseer::Get();
+	m_pEffekseer = Application::Get()->GetSystem<MySpace::Graphics::CAssetsManager>()->GetEffekseer();
 }
+
+//==========================================================
+// 初期化
+//==========================================================
 void CEffekseerRenderer::Init()
 {
 	// 描画依頼
 	CRenderer::Init();
 }
+
+//==========================================================
+// 更新
+//==========================================================
 void CEffekseerRenderer::Update()
 {
 #if BUILD_MODE
-	if (!m_bRead || Debug::ImGuiManager::Get()->CheckPlayMode())
+	if (!m_bRead || Application::Get()->GetSystem<Debug::ImGuiManager>()->CheckPlayMode())
 		return;
 #endif // 0
 
@@ -56,14 +76,18 @@ void CEffekseerRenderer::Update()
 		CGameObject::Destroy(GetOwner(0));
 	}
 }
+
+//==========================================================
+// 描画
+//==========================================================
 bool CEffekseerRenderer::Draw()
 {
 	if (!CRenderer::Draw())
 	{
 		m_pEffekseer->Stop(m_nHandle);
-
 		return false;
 	}
+
 	if (m_nHandle == -1 && m_bLoop)
 	{
 		XMFLOAT3 rot = Transform()->GetRot();
@@ -73,13 +97,18 @@ bool CEffekseerRenderer::Draw()
 
 	return true;
 }
-void CEffekseerRenderer::SetImageName(std::u16string name)
+
+//==========================================================
+// エフェクト設定
+//==========================================================
+void CEffekseerRenderer::SetEffect(std::u16string name)
 {
 	m_EffectName = name;
 	XMFLOAT3 rot = Transform()->GetRot();
 	m_pEffekseer->Load(name);
 	m_nHandle = m_pEffekseer->Play(name, Transform()->GetPos(), Transform()->GetScale(), XMFLOAT4(rot.x, rot.y, rot.z, m_fAngle));
 }
+
 
 #ifdef BUILD_MODE
 
@@ -109,5 +138,7 @@ void CEffekseerRenderer::ImGuiDebug()
 	{
 		m_bLoop ^= true;
 	}
+
 }
+
 #endif // BUILD_MODE

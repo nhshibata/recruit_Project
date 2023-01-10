@@ -10,18 +10,14 @@
 
 //--- インクルード部
 #include <d3d11.h>
-#include <CoreSystem/Singleton.h>
 #include <CoreSystem/Util/stl.h>
 
 namespace MySpace
 {
 	namespace Graphics
 	{
-		class CFontTexture : public CSingleton<CFontTexture>
+		class CFontTexture
 		{
-			friend class Application;
-			friend class CSingleton<CFontTexture>;
-
 		public:
 			//--- 構造体定義
 			struct STCharaData
@@ -51,11 +47,11 @@ namespace MySpace
 			FontMap m_aStringMap;		// 格納用
 			std::wstring m_FontName;	// 現在保持フォント名
 		
-		private:
+		public:
 			//--- メンバ関数
 			CFontTexture();
 			~CFontTexture();
-		public:
+		
 			HRESULT Init();
 			void Uninit();
 			

@@ -15,8 +15,10 @@ namespace MySpace
 {
 	namespace Debug
 	{
-		// 文字列入力用
 #pragma region STRING
+		//==========================================================
+		// 文字列入力
+		//==========================================================
 		std::string InputString(std::string text, std::string desc)
 		{
 			char name[256];
@@ -29,8 +31,10 @@ namespace MySpace
 		}
 #pragma endregion
 
-		// 指定パスのフォルダ内のファイル名を表示する
 #pragma region DISP_FILE
+		//==========================================================
+		// 指定パスのフォルダ内のファイル名を表示する
+		//==========================================================
 		std::string DispFileMenuBar(std::string path, std::string desc, std::string ext)
 		{
 			CFilePath file;
@@ -38,7 +42,10 @@ namespace MySpace
 			return ret;
 		}
 
+		//==========================================================
 		// メニューバーの表示
+		// 表示されたアイテムが選択された場合は文字列取得
+		//==========================================================
 		std::string DispMenuBar(std::vector<std::string> list, std::string desc)
 		{
 			std::string ret = std::string();
@@ -62,11 +69,16 @@ namespace MySpace
 			return ret;
 		}
 
-		// メニューバーの表示
+		//==========================================================
+		// メニューバーの表示(Effekseer用)
+		// パス先からファイル名を読み込み表示
+		// 表示されたアイテムが選択された場合は文字列取得
+		//==========================================================
 		std::u16string DispFileMenuBar16(std::string path, std::string desc, std::string ext)
 		{
-			CFilePath filePath;
 			std::u16string ret = std::u16string();
+			CFilePath filePath;
+			//--- パス内のファイルを全取得
 			auto DispList = filePath.GetAllFileName(path, ext);		// 表示用
 			auto NameList = filePath.GetAllFileNameTo16(path, ext);	// 戻り値用
 			if (ImGui::BeginMenuBar())
@@ -88,7 +100,10 @@ namespace MySpace
 			return ret;
 		}
 		
+		//==========================================================
 		// メニューバーの表示
+		// 受け取ったリストから表示
+		//==========================================================
 		std::u16string DispFileMenuBar16(std::vector<std::string> name,std::vector<std::u16string> file, std::string desc)
 		{
 			int cnt = 0;
@@ -113,48 +128,17 @@ namespace MySpace
 		}
 #pragma endregion
 
-
-#pragma region INPUT_CAST
-		DirectX::XMFLOAT3 InputInt(DirectX::XMFLOAT3 value)
-		{
-			DirectX::XMINT3 input = {
-				static_cast<int>(value.x),
-				static_cast<int>(value.y),
-				static_cast<int>(value.z)
-			};
-			ImGui::InputInt(u8"x", &input.x);
-			ImGui::InputInt(u8"y", &input.y);
-			ImGui::InputInt(u8"z", &input.z);
-
-			return DirectX::XMFLOAT3(
-				static_cast<float>(input.x),
-				static_cast<float>(input.y),
-				static_cast<float>(input.z));
-		}
-		
-		DirectX::XMFLOAT2 InputInt(DirectX::XMFLOAT2 value)
-		{
-			DirectX::XMINT2 input = {
-				static_cast<int>(value.x),
-				static_cast<int>(value.y)
-			};
-			ImGui::InputInt(u8"x", &input.x);
-			ImGui::InputInt(u8"y", &input.y);
-
-			return DirectX::XMFLOAT2(
-				static_cast<float>(input.x),
-				static_cast<float>(input.y)
-				);
-		}
-#pragma endregion
-
-		// メニューポップ
 #pragma region POP_MENU
+		
+		//==========================================================
+		// ポップアップ表示
+		//==========================================================
 		// -1はなにも選択していない判定
 		int PopupMenu(std::vector<std::string> vec, std::string name, bool open)
 		{
 			if (!open)
 				return -1;
+			
 			ImGui::OpenPopup(name.c_str());
 			int cnt = -1;
 			if (ImGui::BeginPopup(name.c_str(), ImGuiWindowFlags_::ImGuiWindowFlags_MenuBar))
@@ -173,7 +157,11 @@ namespace MySpace
 		}
 #pragma endregion
 
-#pragma region BUTTON_
+
+#pragma region BUTTON
+		//==========================================================
+		// ラジオボタン表示
+		//==========================================================
 		int CreateRadio(std::vector<std::string> vec, int current)
 		{
 			for (int cnt = 0; cnt < vec.size(); cnt++)
@@ -185,7 +173,12 @@ namespace MySpace
 			}
 			return current;
 		}
+
+
+		//==========================================================
+		// ラジオボタン表示
 		// ビット確認できる定数や列挙体用
+		//==========================================================
 		int CreateRadioForBit(std::vector<std::string> vec, int current)
 		{
 			if (ImGui::RadioButton(vec[0].c_str(), 0 == current))
@@ -200,7 +193,10 @@ namespace MySpace
 			}
 			return current;
 		}
+
+		//==========================================================
 		// ビットで複数切替ボタン
+		//==========================================================
 		int CreateSelectableForBit(std::vector<std::string> vec, int current, int newLine, float width)
 		{
 			ImVec2 size = ImVec2(width, 0);
@@ -221,6 +217,7 @@ namespace MySpace
 			}
 			return current;
 		}
+
 #pragma endregion
 
 	}

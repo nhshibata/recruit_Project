@@ -79,9 +79,10 @@ namespace MySpace
 
 			// *@font設定
 			inline void SetFont(std::wstring text) { m_Font = text; }
+			
 			// *@テキストに何を表示させるか
 			// *@ワイド文字指定
-			inline void SetTextWString(std::wstring text) { m_Text = text; m_aTexList = CFontTexture::Get()->GetString(m_Text, m_Font);}
+			void SetTextWString(std::wstring text);
 
 			// *@文字間距離の設定
 			inline void SetOffSet(float offset) { m_fOffset = offset; }

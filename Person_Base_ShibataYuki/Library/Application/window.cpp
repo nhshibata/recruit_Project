@@ -19,6 +19,9 @@ IMGUI_IMPL_API LRESULT ImGui_ImplWin32_WndProcHandler(HWND hWnd, UINT msg, WPARA
 LRESULT ImGui_WndProc(HWND hwnd, UINT message, WPARAM wParam, LPARAM lParam);
 
 
+//==========================================================
+// ウィンドウコールバック
+//==========================================================
 LRESULT CALLBACK WndProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lparam)
 {
 	// コールバックが設定されていなければ終了
@@ -114,6 +117,9 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lparam)
 	return 0;
 }
 
+//==========================================================
+// ウィンドウ登録
+//==========================================================
 bool CWindow::RegisterClass(HINSTANCE	 h_Instance,
 	const char*	 h_ClassName,
 	unsigned long h_Style)
@@ -235,10 +241,14 @@ void CWindow::SetWindow(HINSTANCE		h_Instance,
 		}
 	}
 
-	if (!m_hwnd) {
+	if (!m_hwnd) 
 		MessageBox(nullptr, "CreateWindow Error", "error", MB_OK);
-	}
+	
 }
+
+//==========================================================
+// ウィンドウ状態確認
+//==========================================================
 bool CWindow::ExecMessage()
 {
 	// メッセージ確認
@@ -256,7 +266,9 @@ bool CWindow::ExecMessage()
 	return true;
 }
 
-
+//==========================================================
+// ウィンドウ状態感知
+//==========================================================
 LRESULT ImGui_ImplWin32_WndProcHandler(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam);
 LRESULT ImGui_WndProc(HWND hwnd, 		// ウィンドウハンドル
 	UINT message,	// メッセージ識別子
@@ -267,27 +279,27 @@ LRESULT ImGui_WndProc(HWND hwnd, 		// ウィンドウハンドル
 	/*if (ImGui_ImplWin32_WndProcHandler(hwnd, message, wParam, lParam))
 		return true;*/
 
-	switch (message) {
+	switch (message) 
+	{
 
 	case WM_KEYDOWN:						// キーボード押下	
-		switch (wParam) {
+		switch (wParam) 
+		{
 		case VK_ESCAPE:
 			// ウインドウを終了させる
 			DestroyWindow(hwnd);
 			break;
 		}
 		break;
+
 	case WM_DESTROY:						// ウインドウ終了時
 		PostQuitMessage(0);
 		break;
+
 	default:
-	return 0;
+		return 0;
 		//return DefWindowProc(hwnd, message, wParam, lParam);
 	}
 
 	return 0;
-}
-
-void CWindow::Close(const char* name, HINSTANCE inst)
-{
 }
