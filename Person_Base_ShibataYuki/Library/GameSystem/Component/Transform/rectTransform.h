@@ -58,8 +58,8 @@ namespace MySpace
 			CRectTransform(std::shared_ptr<CGameObject> owner);
 			~CRectTransform();
 
-			void Init() {};
-			void Update() {};
+			// *@生成時呼び出し
+			virtual void Awake() {};
 
 			//--- ゲッター・セッター
 			_NODISCARD inline Vector2 GetPos() { return m_vPos; }

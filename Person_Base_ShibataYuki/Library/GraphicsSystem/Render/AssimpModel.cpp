@@ -965,7 +965,7 @@ void CAssimpModel::DrawInstancing(ID3D11DeviceContext* pDC, INSTANCHING_DATA& mt
 	// テクスチャサンプラをセット
 	pDC->PSSetSamplers(0, 1, &m_pSampleLinear);
 
-#if INSTANCE
+#if !INSTANCE
 	D3D11_MAPPED_SUBRESOURCE pData;
 	int cnt = 0;
 	if (SUCCEEDED(pDC->Map(m_pConstantBufferI, 0, D3D11_MAP_WRITE_DISCARD, 0, &pData)))
@@ -988,6 +988,46 @@ void CAssimpModel::DrawInstancing(ID3D11DeviceContext* pDC, INSTANCHING_DATA& mt
 
 	DrawInstanchidNode(pDC, m_pScene->mRootNode, *piMatrix, byOpacity, mtxWorld);
 	
+#else
+	D3D11_MAPPED_SUBRESOURCE pData;
+	int cntNum = 0;
+	while (cntNum < mtxWorld.size())
+	{
+		int cnt = 0;
+		if (SUCCEEDED(pDC->Map(m_pConstantBufferI, 0, D3D11_MAP_WRITE_DISCARD, 0, &pData)))
+		{
+			SHADER_INSTANCE si;	// ｼｪｰﾀﾞｰに渡す情報
+			for (; cnt < MAX_WORLD_MATRIX; ++cnt, ++cntNum)
+			{
+				if (cnt >= mtxWorld.size() || cntNum >= mtxWorld.size())
+					break;
+				si.mWorld[cnt] = XMMatrixTranspose(XMLoadFloat4x4(&mtxWorld[cnt]));
+			}
+			memcpy_s(pData.pData, pData.RowPitch, (void*)&si, sizeof(SHADER_INSTANCE));
+			pDC->Unmap(m_pConstantBufferI, 0);
+		}
+		pDC->VSSetConstantBuffers(3, 1, &m_pConstantBufferI);
+
+		// ノード単位で描画
+		XMFLOAT4X4 mWorld;
+		XMStoreFloat4x4(&mWorld, XMMatrixIdentity());
+		aiMatrix4x4* piMatrix = (aiMatrix4x4*)&mWorld;
+		
+		//---
+		if (mtxWorld.size() >= MAX_WORLD_MATRIX)
+		{
+			INSTANCHING_DATA aData;
+			for (int i = 0; i < cnt; i++)
+			{
+				aData.push_back(mtxWorld[i]);
+			}
+			DrawInstanchidNode(pDC, m_pScene->mRootNode, *piMatrix, byOpacity, aData);
+			
+		}
+		else
+			DrawInstanchidNode(pDC, m_pScene->mRootNode, *piMatrix, byOpacity, mtxWorld);
+
+	}
 #endif // INSTANCE
 
 }
@@ -1095,7 +1135,7 @@ void CAssimpModel::Release()
 	for (int i = 0; i < m_aMesh.size(); ++i) {
 		m_aMesh[i].Release();
 	}
-	m_aMesh.clear();//加藤先生、ありがとう!
+	m_aMesh.clear();
 	SAFE_DELETE(m_pAnimator);
 	if (m_pScene) {
 		aiReleaseImport(m_pScene);

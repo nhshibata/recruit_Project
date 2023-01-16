@@ -1,8 +1,8 @@
 //==========================================================
-// [renderTarget.h]
-//-------------------------
+// [renderTarget.cpp]
+//----------------------------------------------------------
 // 作成:2022/12/12
-//-------------------------
+//----------------------------------------------------------
 //==========================================================
 
 //--- インクルード部
@@ -14,10 +14,63 @@ using namespace MySpace::Graphics;
 //==========================================================
 // コンストラクタ
 //==========================================================
+CRenderTarget::CRenderTarget()
+	:m_pRTV(nullptr)
+{
+	HRESULT hr = Create();
+}
+
+//==========================================================
+// 引き数付きコンストラクタ
+//==========================================================
 CRenderTarget::CRenderTarget(DXGI_FORMAT format, UINT width, UINT height)
 	:m_pRTV(nullptr)
 {
 	HRESULT hr = Create(format, width, height);
+}
+
+//==========================================================
+// コンストラクタ
+//==========================================================
+CRenderTarget::CRenderTarget(IDXGISwapChain* swap, ID3D11Device* device)
+	:m_pRTV(nullptr)
+{
+	HRESULT hr = S_OK;
+
+	// バックバッファのポインタを取得
+	ID3D11Texture2D* pBackBuffer = NULL;
+	hr = swap->GetBuffer(0, __uuidof(ID3D11Texture2D), (LPVOID*)&m_pTex);
+
+	// バックバッファへのポインタを指定してレンダーターゲットビューを作成
+	if (SUCCEEDED(hr))
+	{
+		D3D11_RENDER_TARGET_VIEW_DESC rtvDesc = {};
+		rtvDesc.ViewDimension = D3D11_RTV_DIMENSION_TEXTURE2D;
+		rtvDesc.Format = DXGI_FORMAT_R8G8B8A8_UNORM_SRGB;
+		rtvDesc.Texture2D.MipSlice = 0;
+		hr = device->CreateRenderTargetView(m_pTex, &rtvDesc, &m_pRTV);
+		if (SUCCEEDED(hr))
+		{
+			D3D11_TEXTURE2D_DESC desc;
+			m_pTex->GetDesc(&desc);
+		}
+	}
+
+	// 作成に失敗していたら削除
+	if (FAILED(hr))
+	{
+		return;
+	}
+}
+
+//==========================================================
+// コピーコンストラクタ
+//==========================================================
+CRenderTarget::CRenderTarget(const CRenderTarget& copy)
+{
+	this->m_pRTV = copy.m_pRTV;
+	this->m_pSRV = copy.m_pSRV;
+	this->m_pTex = copy.m_pTex;
 }
 
 //==========================================================
@@ -92,8 +145,11 @@ HRESULT CRenderTarget::Create(DXGI_FORMAT format, UINT width, UINT height)
 void CRenderTarget::Release()
 {
 	CImageResource::Unload();
-	m_pRTV->Release();
-	m_pRTV = nullptr;
+	if (m_pRTV)
+	{
+		m_pRTV->Release();
+		m_pRTV = nullptr;
+	}
 }
 
 //==========================================================

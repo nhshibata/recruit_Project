@@ -141,7 +141,9 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 			scene.lock()->GetObjManager()->CreateBasicObject();
 
 			auto obj = CGameObject::CreateObject().lock();
-			obj->AddComponent<Spell::CGameManager>();
+			auto game = obj->AddComponent<Spell::CGameManager>();
+			game->GetOwner()->SetName("GameManager");
+			//game->Awake();
 
 			//--- –¼‘OÝ’è
 			scene.lock()->SetSceneName("StartScene");

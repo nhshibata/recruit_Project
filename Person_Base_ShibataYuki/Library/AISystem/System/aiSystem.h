@@ -55,7 +55,9 @@ namespace AI
 		CAISystem(std::shared_ptr<CGameObject> ptr);
 		~CAISystem();
 		
-		// *@
+		// *@¶¬ŒÄ‚Ño‚µ
+		virtual void Awake() {};
+		// *@‰Šú‰»
 		virtual void Init();
 
 		void Update();

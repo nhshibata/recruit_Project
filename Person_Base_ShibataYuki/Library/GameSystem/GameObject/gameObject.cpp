@@ -39,8 +39,8 @@ static inline void CheckObj(CGameObject* obj)
 CGameObject::CGameObject()
 	:m_eState(E_ObjectState::ACTIVE)
 {
-	m_pTag = std::make_shared<CTag>();
-	m_pLayer = std::make_shared<CLayer>();
+	m_pTag = std::make_unique<CTag>();
+	m_pLayer = std::make_unique<CLayer>();
 }
 
 //==========================================================
@@ -50,8 +50,8 @@ CGameObject::CGameObject(std::string name)
 	:m_eState(E_ObjectState::ACTIVE)
 {
 	SetName(name);
-	m_pTag = std::make_shared<CTag>();
-	m_pLayer = std::make_shared<CLayer>();
+	m_pTag = std::make_unique<CTag>();
+	m_pLayer = std::make_unique<CLayer>();
 }
 
 //==========================================================
@@ -68,13 +68,14 @@ CGameObject::CGameObject(const CGameObject & object)
 
 	this->m_pTransform = object.m_pTransform;
 	this->m_eState = object.m_eState;
-	this->m_pLayer = object.m_pLayer;
-	this->m_pTag = object.m_pTag;
-	//this->m_pComponent = object.m_pComponent;
+	this->m_pLayer = std::make_unique<CLayer>();
+	this->m_pTag = std::make_unique<CTag>();
+	this->m_pLayer.get()->SetLayer(*object.m_pLayer.get()->GetLayer());
+	this->m_pTag.get()->SetTag(object.m_pTag.get()->GetTag());
 
 	// ｺﾝﾎﾟｰﾈﾝﾄの名前から同じｺﾝﾎﾟｰﾈﾝﾄを追加
 	// TODO: 各ｺﾝﾎﾟｰﾈﾝﾄの値のｺﾋﾟｰは行えない
-	for (auto & component : object.m_pComponent)
+	for (auto & component : object.m_aComponent)
 	{
 		// コンポーネントを保存しているｸﾗｽに追加してもらう
 		if (CComponentFactory::ObjSetComponent(*this, component->GetName()))
@@ -91,9 +92,9 @@ CGameObject::CGameObject(const CGameObject & object)
 //==========================================================
 CGameObject::~CGameObject()
 {
-	for (auto & com : m_pComponent)
+	for (auto & com : m_aComponent)
 		com.reset();
-	m_pComponent.clear();
+	m_aComponent.clear();
 }
 
 //==========================================================
@@ -104,7 +105,7 @@ void CGameObject::OnLoad()
 	m_pTransform = GetComponent<CTransform>();
 
 	// コンポーネントのロード呼び出し
-	for (COMPONENT::iterator it = m_pComponent.begin(); it != m_pComponent.end(); ++it)
+	for (Component_List::iterator it = m_aComponent.begin(); it != m_aComponent.end(); ++it)
 	{
 		(*it)->OnLoad();
 	}
@@ -130,10 +131,14 @@ void CGameObject::Awake()
 //==========================================================
 void CGameObject::Init()
 {
-	// コンポーネントの初期化
-	for (auto & com : m_pComponent)
+	// コンポーネント初期化呼び出し
+	/*for (auto & com : m_pComponent)
 	{
 		com->Init();
+	}*/
+	for (auto it = m_aComponent.begin(); it != m_aComponent.end(); ++it)
+	{
+		(*it)->Init();
 	}
 }
 
@@ -143,7 +148,7 @@ void CGameObject::Init()
 //==========================================================
 void CGameObject::Update()
 {
-	for (auto & com : m_pComponent)
+	for (auto & com : m_aComponent)
 	{
 
 #if _DEBUG
@@ -164,7 +169,7 @@ void CGameObject::Update()
 //==========================================================
 void CGameObject::LateUpdate()
 {
-	for (auto & com : m_pComponent)
+	for (auto & com : m_aComponent)
 	{
 		if (!com->IsActive())
 		{
@@ -180,7 +185,7 @@ void CGameObject::LateUpdate()
 //==========================================================
 void CGameObject::FixedUpdate()
 {
-	for (auto & com : m_pComponent)
+	for (auto & com : m_aComponent)
 	{
 		if (!com->IsActive())
 		{
@@ -192,14 +197,14 @@ void CGameObject::FixedUpdate()
 }
 
 //==========================================================
-// コンポーネント追加
+// コンポーネント設定
 //==========================================================
-std::shared_ptr<CComponent> CGameObject::AddComponent(std::shared_ptr<CComponent> com)
+void CGameObject::ComponentAddPreparation(std::shared_ptr<CComponent> com)
 {
-	m_pComponent.push_back(com);
-	com->SetOwner(GetPtr()); 
-
-	return com; 
+	//m_pComponent.push_back(com);
+	com->SetPtr(com);					// 自身のポインタの設定
+	com->SetOwner(GetPtr().lock());		// 所持gameobjectの設定
+	//com.get()->Awake();
 }
 
 //==========================================================
@@ -208,12 +213,12 @@ std::shared_ptr<CComponent> CGameObject::AddComponent(std::shared_ptr<CComponent
 template <class T>
 bool CGameObject::RemoveComponent(std::string comName)
 {
-	COMPONENT::iterator it;
-	for (it = m_pComponent.begin(); it != m_pComponent.end(); ++it)
+	Component_List::iterator it;
+	for (it = m_aComponent.begin(); it != m_aComponent.end(); ++it)
 	{
 		if (typeid(T).name == (*it)->GetName())
 		{
-			m_pComponent.erase(it);
+			m_aComponent.erase(it);
 			return true;
 		}
 	}
@@ -225,12 +230,12 @@ bool CGameObject::RemoveComponent(std::string comName)
 //==========================================================
 bool CGameObject::RemoveComponent(std::weak_ptr<CComponent> com)
 {
-	COMPONENT::iterator it;
-	for (it = m_pComponent.begin(); it != m_pComponent.end(); ++it)
+	Component_List::iterator it;
+	for (it = m_aComponent.begin(); it != m_aComponent.end(); ++it)
 	{
 		if ((*it) == com.lock())
 		{
-			m_pComponent.erase(it);
+			m_aComponent.erase(it);
 			return true;
 		}
 	}
@@ -250,7 +255,7 @@ void CGameObject::SetState(const E_ObjectState state)
 // タグの移動
 // ここでやるのは間違い?
 //==========================================================
-void CGameObject::SetTag(const std::string tag) 
+void CGameObject::SetObjTag(const std::string tag) 
 { 
 	if(auto scene = GetScene(); scene)
 		scene->GetObjManager()->TagMove(tag, GetPtr());
@@ -267,7 +272,7 @@ void CGameObject::OnCollisionEnter(CGameObject* obj)
 	CheckObj(obj);
 #endif // _DEBUG
 
-	for (COMPONENT::iterator it = m_pComponent.begin(); it != m_pComponent.end(); ++it)
+	for (Component_List::iterator it = m_aComponent.begin(); it != m_aComponent.end(); ++it)
 	{
 		(*it)->OnCollisionEnter(obj);
 	}
@@ -278,8 +283,8 @@ void CGameObject::OnCollisionEnter(CGameObject* obj)
 //==========================================================
 void CGameObject::OnCollisionStay(CGameObject* obj)
 {
-	COMPONENT::iterator it = m_pComponent.begin();
-	for (; it != m_pComponent.end(); ++it)
+	Component_List::iterator it = m_aComponent.begin();
+	for (; it != m_aComponent.end(); ++it)
 	{
 		(*it)->OnCollisionStay(obj);
 	}
@@ -290,8 +295,8 @@ void CGameObject::OnCollisionStay(CGameObject* obj)
 //==========================================================
 void CGameObject::OnCollisionExit(CGameObject* obj)
 {
-	COMPONENT::iterator it = m_pComponent.begin();
-	for (; it != m_pComponent.end(); ++it)
+	Component_List::iterator it = m_aComponent.begin();
+	for (; it != m_aComponent.end(); ++it)
 	{
 		(*it)->OnCollisionExit(obj);
 	}
@@ -302,8 +307,8 @@ void CGameObject::OnCollisionExit(CGameObject* obj)
 //==========================================================
 void CGameObject::OnTriggerEnter(CGameObject* obj)
 {
-	COMPONENT::iterator it = m_pComponent.begin();
-	for (; it != m_pComponent.end(); ++it)
+	Component_List::iterator it = m_aComponent.begin();
+	for (; it != m_aComponent.end(); ++it)
 	{
 		(*it)->OnTriggerEnter(obj);
 	}
@@ -314,8 +319,8 @@ void CGameObject::OnTriggerEnter(CGameObject* obj)
 //==========================================================
 void CGameObject::OnTriggerStay(CGameObject* obj)
 {
-	COMPONENT::iterator it = m_pComponent.begin();
-	for (; it != m_pComponent.end(); ++it)
+	Component_List::iterator it = m_aComponent.begin();
+	for (; it != m_aComponent.end(); ++it)
 	{
 		(*it)->OnTriggerStay(obj);
 	}
@@ -326,8 +331,8 @@ void CGameObject::OnTriggerStay(CGameObject* obj)
 //==========================================================
 void CGameObject::OnTriggerExit(CGameObject* obj)
 {
-	COMPONENT::iterator it = m_pComponent.begin();
-	for (; it != m_pComponent.end(); ++it)
+	Component_List::iterator it = m_aComponent.begin();
+	for (; it != m_aComponent.end(); ++it)
 	{
 		(*it)->OnTriggerExit(obj);
 	}

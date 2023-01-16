@@ -16,18 +16,18 @@ CFadeController::CFadeController(std::shared_ptr<CGameObject> owner)
 
 void CFadeController::Awake()
 {
-	/*if (CGameObject::FindGameObjectWithTag("Fade").lock())
-		return;*/
-
-	//CGameObject::DontDestroy(GetOwner(0));
 	m_SceneName.clear();
 
 	GetOwner()->SetName("FadeController");
-	GetOwner()->GetTagPtr()->CreateTag("Fade");
-	m_pPolygon = GetOwner()->AddComponent<CPolygonRenderer>();
+	GetOwner()->AddComponent<CPolygonRenderer>();
+}
+
+void CFadeController::Init()
+{
+	m_pPolygon = GetOwner()->GetComponent<CPolygonRenderer>();
 	m_pPolygon.lock()->SetColor(Color(0, 0, 0, 0));
 	m_pPolygon.lock()->GetRectTransform()->SetSize(CScreen::GetWidth(), CScreen::GetHeight());
-	GetOwner()->SetLayer(static_cast<int>(CLayer::E_Layer::FOG));
+	m_pPolygon.lock()->SetZ(static_cast<int>(CLayer::E_Layer::FOG));
 }
 
 void CFadeController::Update()

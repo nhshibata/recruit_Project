@@ -30,7 +30,7 @@ CLight::CLight(std::shared_ptr<CGameObject> owner)
 	:CComponent(owner), m_bEnable(true)
 {
 	GetOwner()->GetTagPtr()->CreateTag("light");
-	GetOwner()->SetTag("light");
+	GetOwner()->SetObjTag("light");
 	Set(this);
 }
 
@@ -48,7 +48,7 @@ CLight::~CLight()
 void CLight::Awake()
 {
 	GetOwner()->GetTagPtr()->CreateTag("light");
-	GetOwner()->SetTag("light");
+	GetOwner()->SetObjTag("light");
 	Set(this);
 	m_bEnable = true;
 }

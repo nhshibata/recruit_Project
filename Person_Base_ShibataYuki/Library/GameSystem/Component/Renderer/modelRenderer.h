@@ -53,7 +53,6 @@ namespace MySpace
 			TAssimpVertex* m_pVertex;	// 頂点配列
 			UINT m_nIndex;				// インデックス数
 			UINT* m_pIndex;				// インデックス配列
-			bool m_bInstancing;
 
 		private:
 			//--- メンバ関数
@@ -61,9 +60,7 @@ namespace MySpace
 			void FinVertexArray();
 
 		public:
-			CModelRenderer()
-				:m_modelName(std::string()), m_nVertex(0), m_pVertex(nullptr), m_nIndex(0), m_pIndex(nullptr), m_bInstancing(false)
-			{};
+			CModelRenderer();	
 			CModelRenderer(std::shared_ptr<CGameObject> owner);
 			~CModelRenderer();
 
@@ -71,6 +68,7 @@ namespace MySpace
 			virtual void Init();
 			virtual void Update();
 			virtual bool Draw();
+			virtual bool DrawAlpha();
 			bool Draw(int);
 
 			// *@レイとの当たり判定

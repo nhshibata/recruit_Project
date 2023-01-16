@@ -26,10 +26,17 @@ using namespace MySpace::Graphics;
 //==========================================================
 // コンストラクタ
 //==========================================================
+CModelRenderer::CModelRenderer()
+	:m_modelName(std::string()), m_nVertex(0), m_pVertex(nullptr), m_nIndex(0), m_pIndex(nullptr)
+{	
+}
+
+//==========================================================
+// 引き数コンストラクタ
+//==========================================================
 CModelRenderer::CModelRenderer(std::shared_ptr<CGameObject> owner)
 	:CMeshRenderer(owner), m_modelName(CHARACTER_PATH(mukade_head.obj)),
-	m_pIndex(nullptr), m_pVertex(nullptr), m_nVertex(0), m_nIndex(0),
-	m_bInstancing(false)
+	m_pIndex(nullptr), m_pVertex(nullptr), m_nVertex(0), m_nIndex(0)
 {	
 }
 
@@ -40,11 +47,9 @@ CModelRenderer::~CModelRenderer()
 {
 	if(m_pIndex && m_pVertex)
 		FinVertexArray();
+	// 所有権の放棄
 	if (m_pModel)
-	{
-		// 所有権の放棄
 		m_pModel.reset();
-	}
 }
 
 //==========================================================
@@ -72,10 +77,8 @@ void CModelRenderer::SetModel(std::string name)
 		SetBSRadius(m_pModel->GetRadius());
 
 		// 自身と管理ｸﾗｽ以外に所有者が居た時
-		if (int num = modelMgr->GetModelCnt(name); num > 2)
-		{
-			m_bInstancing = true;
-		}
+		//if (int num = modelMgr->GetModelCnt(name); num > 2)
+		
 	}
 
 	// 頂点配列、インデックス配列を取得しておく
@@ -87,7 +90,6 @@ void CModelRenderer::SetModel(std::string name)
 //==========================================================
 void CModelRenderer::Awake()
 {
-	GetOwner()->SetLayer(CLayer::E_Layer::MODEL);
 	SetModel(m_modelName);
 }
 
@@ -119,11 +121,11 @@ bool CModelRenderer::Draw()
 
 	auto pModelMgr = Application::Get()->GetSystem<CAssetsManager>()->GetModelManager();
 	auto pDX = Application::Get()->GetSystem<CDXDevice>();
-	
 	XMFLOAT4X4 mtx = Transform()->GetWorldMatrix();
+	
 	//--- インスタンシング描画
 	// 自身と管理以外が所持しているか確認
-	if (m_bInstancing || pModelMgr->GetModelCnt(m_modelName) > 2)
+	if (pModelMgr->GetModelCnt(m_modelName) > 2)
 	{
 		// システム側に依頼を出し、まとめて描画してもらう
 		SceneManager::CSceneManager::Get().GetDrawSystem()->SetInstanchingModel(m_modelName, mtx);
@@ -133,20 +135,33 @@ bool CModelRenderer::Draw()
 	//--- 不透明描画
 	CLight* pLight = CLight::GetMain();
 	if (!pLight)return false;
-	pLight->SetDisable(GetLightEnable());	// ライティング無効
+
+	pLight->SetEnable(GetLightEnable());	// ライティング変更
 	
 	m_pModel->Draw(pDX->GetDeviceContext(), mtx, EByOpacity::eOpacityOnly);
 
 	pLight->SetEnable();	// ライティング有効
 
+	return true;
+}
+
+//==========================================================
+// 描画
+// インスタンシング非対応
+//==========================================================
+bool CModelRenderer::DrawAlpha()
+{
+	auto pDX = Application::Get()->GetSystem<CDXDevice>();
+	XMFLOAT4X4 mtx = Transform()->GetWorldMatrix();
+
 	//--- 半透明部分描画
-	pDX->SetZBuffer(false);
 	pDX->SetBlendState(static_cast<int>(EBlendState::BS_ALPHABLEND));
+	pDX->SetZBuffer(false);
 
 	m_pModel->Draw(pDX->GetDeviceContext(), mtx, EByOpacity::eTransparentOnly);
 
-	pDX->SetZBuffer(true);			// αブレンディング無効
-	pDX->SetBlendState(static_cast<int>(EBlendState::BS_NONE));		// 光源有効
+	pDX->SetZBuffer(true);
+	pDX->SetBlendState(static_cast<int>(EBlendState::BS_NONE)); // αブレンディング無効
 
 	return true;
 }
@@ -475,6 +490,7 @@ bool CModelRenderer::CollisionLineSegment(XMFLOAT3 vP0, XMFLOAT3 vP1, std::vecto
 	}
 	if(pX->size() != 0)
 		return true;
+
 	return false;	// 当たっていない
 }
 
@@ -505,7 +521,6 @@ void CModelRenderer::ImGuiDebug()
 	if (auto name = DispMenuBar(m_aXModelList, "xFile"); !name.empty())
 	{
 		m_modelName = name;
-
 		// ポインタを受け取る
 		SetModel(name);
 	}
@@ -514,7 +529,6 @@ void CModelRenderer::ImGuiDebug()
 	if (auto name = DispMenuBar(m_aObjModelList, "objFile"); !name.empty())
 	{
 		m_modelName = name;
-
 		// ポインタを受け取る
 		SetModel(name);
 	}
@@ -523,7 +537,6 @@ void CModelRenderer::ImGuiDebug()
 	if (auto name = DispMenuBar(m_aFbxModelList, "fbxFile"); !name.empty())
 	{
 		m_modelName = name;
-
 		// ポインタを受け取る
 		SetModel(name);
 	}

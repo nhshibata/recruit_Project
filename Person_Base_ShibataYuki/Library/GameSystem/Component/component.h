@@ -1,5 +1,8 @@
 //=========================================================
-//作成:2022/04/19 (火曜日)
+// [component.h]
+//---------------------------------------------------------
+//作成:2022/04/19
+//---------------------------------------------------------
 // コンポーネントｸﾗｽ : 基底クラス
 //=========================================================
 
@@ -17,10 +20,6 @@
 #include <CoreSystem/Math/MyMath.h>
 #include <Application/screen.h>
 #include <CoreSystem/Time/fps.h>
-#include <memory>
-
-
-#define LIVE_POINTER			0
 
 #pragma region ForwardDeclaration
 namespace MySpace
@@ -68,24 +67,23 @@ namespace MySpace
 		private:
 			//--- メンバ変数
 			Ptr m_pSelfPtr;							// 自身のスマートポインタ
-			std::weak_ptr<CGameObject> m_pOwner;		// 親オブジェクト	
-			bool m_bActive;								// アクティブ状態
-
-#if BUILD_MODE
-			//std::string m_Name;
-#endif // BUILD_MODE
+			std::weak_ptr<CGameObject> m_pOwner;	// 親オブジェクト	
+			bool m_bActive;							// アクティブ状態
 
 		public:
 			//--- ﾒﾝﾊﾞ関数
 			CComponent();
+			CComponent(const CComponent& copy);
 			CComponent(std::shared_ptr<CGameObject> owner);
 			virtual ~CComponent();
 
 			//--- 基本
 			// *@生成時に呼び出される
-			virtual void Awake();
+			virtual void Awake() = 0;
+
 			// *@初期化 他コンポーネントの取得などを行う
 			virtual void Init();
+
 			// *@終了処理
 			virtual void Uninit();
 			// *@更新 必ず実装
@@ -131,9 +129,6 @@ namespace MySpace
 			template <class T>
 			inline T* AddComponent(int n) { return m_pOwner.lock()->AddComponent<T>().get(); }
 
-			// *@gameobjectｸﾗｽへ直接ｺﾝﾎﾟｰﾈﾝﾄを追加する 使わない?
-			inline void AddComponent(std::shared_ptr<CComponent> com) { m_pOwner.lock()->AddComponent(com); }
-
 			// *@持ち主から型指定したコンポーネントを取得する
 			template <class T>
 			inline T* GetComponent() { std::weak_ptr<T> com = m_pOwner.lock()->GetComponent<T>(); return com.lock().get(); };
@@ -146,8 +141,8 @@ namespace MySpace
 			// *@トランスフォームポインタ取得
 			CTransform* Transform()const;
 
-			// *@ tag取得
-			// *@ ownerがnullならエラー
+			// *@tag取得
+			// *@ownerがnullならエラー
 			std::string Tag()const;
 			
 			// *@レイヤー番号取得

@@ -18,6 +18,7 @@ using namespace MySpace::Graphics;
 CSpriteAnimation::CSpriteAnimation() 
 	:m_nAnimNo(0),m_nSplitX(1),m_nSplitY(1),m_nCnt(3)
 {
+
 }
 
 //==========================================================
@@ -25,7 +26,7 @@ CSpriteAnimation::CSpriteAnimation()
 //==========================================================
 CSpriteAnimation::~CSpriteAnimation()
 {
-	m_pImage.reset();
+	//m_pImage.reset();
 }
 
 //==========================================================
@@ -62,6 +63,7 @@ void CSpriteAnimation::SetImage(std::string name)
 {
 	// 管理クラスからポインタを受け取る
 	m_pImage = Application::Get()->GetSystem<CAssetsManager>()->GetImageManager()->GetResource(name);
+
 	if(m_pImage)
 	{
 		m_ImageName = name;

@@ -113,7 +113,7 @@ void CCamera::Awake()
 
 	// tag‚ÌÝ’è
 	GetOwner()->GetTagPtr()->CreateTag(CDefaultTagChar::CAMERA);
-	GetOwner()->SetTag(CDefaultTagChar::CAMERA);
+	GetOwner()->SetObjTag(CDefaultTagChar::CAMERA);
 
 	DirectX::XMStoreFloat4x4(&m_mtxView, XMMatrixIdentity());
 	DirectX::XMStoreFloat4x4(&m_mtxProj, XMMatrixIdentity());

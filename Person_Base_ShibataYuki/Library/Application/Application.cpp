@@ -28,7 +28,7 @@ using namespace MySpace::Graphics;
 
 namespace
 {
-	const char*		WINDOW_TITLE = "SPEL"; //"タイトル";
+	const char*		WINDOW_TITLE = "SPELL"; //"タイトル";
 	const char*		WINDOW_CLASS_NAME = CLASS_NAME;
 
 	const uint32_t	WINDOW_STYLE_WINDOWED = (WS_VISIBLE | WS_CAPTION | WS_SYSMENU);
@@ -156,7 +156,7 @@ unsigned long Application::MainLoop()
 	// タイム終了処理
 	CFps::Get().Uninit();
 
-	// ゲームの終了処理
+	// ゲーム終了処理
 	gameApp->Uninit(this);
 	delete gameApp;
 	

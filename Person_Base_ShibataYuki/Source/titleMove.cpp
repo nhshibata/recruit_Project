@@ -30,8 +30,14 @@ CTitleMove::~CTitleMove()
 
 void CTitleMove::Awake()
 {
-	m_pPolygon = AddComponent<CPolygonRenderer>().get();
+	auto com = GetOwner()->GetComponent<CPolygonRenderer>();
+	m_pPolygon = com.lock().get();
+}
 
+void CTitleMove::Init()
+{
+	auto com = GetOwner()->GetComponent<CPolygonRenderer>();
+	m_pPolygon = com.lock().get();
 }
 
 void CTitleMove::Update()

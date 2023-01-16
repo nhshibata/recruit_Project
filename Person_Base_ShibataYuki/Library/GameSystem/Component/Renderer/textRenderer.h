@@ -1,6 +1,9 @@
 //=========================================================
 // [textRenerer.h] 
-// 作成: 2022/08/04
+//---------------------------------------------------------
+// 作成:2022/08/04
+// 更新:2023/01/13 CRendererからCPolygonRendererへ継承元を変更
+//				(ポリゴン使ってるのに継承しないのは...?)
 //---------------------------------------------------------
 // polygonを通して文字描画を行う
 //=========================================================
@@ -10,7 +13,7 @@
 #define __TEXT_RENERER_H__
 
 //--- インクルード部
-#include <GameSystem/Component/Renderer/renderer.h>
+#include <GameSystem/Component/Renderer/polygonRenderer.h>
 #include <GameSystem/Component/Transform/rectTransform.h>
 #include <GraphicsSystem/Manager/FontTexture.h>
 #include <CoreSystem/Util/stringConvert.h>
@@ -22,7 +25,7 @@ namespace MySpace
 		using namespace MySpace::Graphics;
 
 		//--- クラス定義
-		class CTextRenderer : public CRenderer
+		class CTextRenderer : public CPolygonRenderer
 		{
 		private:
 			// シリアライズ
@@ -32,7 +35,7 @@ namespace MySpace
 			void save(Archive& archive) const
 			{
 				std::string text = WStringToString(m_Text);	// wstringを保存するためstringとして変換
-				archive(cereal::make_nvp("TextRender", cereal::base_class<CRenderer>(this)),
+				archive(cereal::make_nvp("TextRender", cereal::base_class<CPolygonRenderer>(this)),
 					CEREAL_NVP(m_fOffset), CEREAL_NVP(m_bVerticalWrit),
 					CEREAL_NVP(text)
 				);
@@ -41,7 +44,7 @@ namespace MySpace
 			void load(Archive& archive)
 			{
 				std::string text; // 文字列受け取り
-				archive(cereal::make_nvp("TextRender", cereal::base_class<CRenderer>(this)),
+				archive(cereal::make_nvp("TextRender", cereal::base_class<CPolygonRenderer>(this)),
 					CEREAL_NVP(m_fOffset), CEREAL_NVP(m_bVerticalWrit),
 					CEREAL_NVP(text)
 				);
@@ -52,7 +55,7 @@ namespace MySpace
 
 		private:
 			//--- メンバ変数
-			RectTransWeakPtr m_pRectTransform;					// 描画情報
+			RectTransWeakPtr m_pRectTransform;
 			std::vector<CFontTexture::STCharaData> m_aTexList;	// ○○番目の文字取得などがしやすいvector
 			
 			std::wstring m_Font;		// 読み込みフォント名
@@ -75,8 +78,6 @@ namespace MySpace
 			virtual bool Draw();
 
 			//--- ゲッター・セッター
-			RectTransSharedPtr GetRectTransform() { return m_pRectTransform.lock(); }
-
 			// *@font設定
 			inline void SetFont(std::wstring text) { m_Font = text; }
 			

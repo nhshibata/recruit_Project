@@ -23,7 +23,7 @@ using namespace MySpace::Graphics;
 // コンストラクタ
 //==========================================================
 CTextRenderer::CTextRenderer(std::shared_ptr<CGameObject> owner)
-	:CRenderer(owner), m_fOffset(0), m_Font(L"ＭＳ Ｐ明朝"), m_bVerticalWrit(false),
+	:CPolygonRenderer(owner), m_fOffset(0), m_Font(L"ＭＳ Ｐ明朝"), m_bVerticalWrit(false),
 	m_Text(std::wstring()), m_uOldTextSize(0)
 {
 
@@ -53,7 +53,7 @@ void CTextRenderer::Awake()
 
 	m_Text = L"Text";
 
-	GetOwner()->SetLayer(CLayer::E_Layer::UI);
+	SetZ(CPolygonRenderer::EZValue::DEFAULT);
 
 	// コンポーネントの取得
 	// なければ追加

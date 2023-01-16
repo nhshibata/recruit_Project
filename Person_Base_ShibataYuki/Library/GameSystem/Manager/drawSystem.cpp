@@ -1,10 +1,13 @@
 //==========================================================
 // [drawSystem.cpp]
-// 派生クラス
-//---------------
+//----------------------------------------------------------
 // 作成:2022/06/07 ｸﾗｽ名変更するかも
 // 更新:2022/09/11 視錘台当たり判定を調整
-// 更新:2022/11/09 クラス名変更(DrawManager) -> (drawSystem)
+// 更新:2022/11/09 名前変更(DrawManager) -> (drawSystem)
+// 更新:2022/12/15 インスタンシング描画対応
+// 更新:2023/01/12 インスタンシング描画の実装に伴うバグ修正
+//----------------------------------------------------------
+// 描画管理
 //==========================================================
 
 //--- インクルード部
@@ -26,16 +29,15 @@
 
 using namespace MySpace::Game;
 
-
 //==========================================================
 // コンストラクタ
 //==========================================================
 CDrawSystem::CDrawSystem()
 	:m_bIsSortNecessary(true), m_bFrustum(true)
 {
-	m_pDrawSortList.clear();
+	m_aPolygonList.clear();
 	m_aInstancingModelMap.clear();
-	m_aInstancingMesh.clear();
+	m_aInstancingMeshMap.clear();
 	
 #if BUILD_MODE
 	m_nSkipCnt = m_nDrawCnt = m_nInstancingCnt = 0;
@@ -48,6 +50,40 @@ CDrawSystem::CDrawSystem()
 //==========================================================
 CDrawSystem::~CDrawSystem()
 {
+}
+
+//==========================================================
+// 登録
+//==========================================================
+int CDrawSystem::PolygonRegist(std::weak_ptr<CPolygonRenderer> render)
+{
+	//--- アップキャスト
+	int ret = CMapSystemBase::RegistToSystem(render.lock());
+	m_aPolygonList.push_back(render);
+	return ret;
+}
+
+//==========================================================
+// 登録
+//==========================================================
+std::weak_ptr<CRenderer> CDrawSystem::ExecutSystem(int idx)
+{
+	auto release = IDToData(idx);
+
+	// ポリゴンなら破棄されるｺﾝﾎﾟｰﾈﾝﾄを探し、整列リストから除外
+	if (auto polygon = std::dynamic_pointer_cast<CPolygonRenderer>(release.lock()); polygon)
+	{
+		for (auto it = m_aPolygonList.begin(); it != m_aPolygonList.end(); ++it)
+		{
+			if (release.lock() == (*it).lock())
+			{
+				m_aPolygonList.erase(it);
+				break;
+			}
+		}
+	}
+	CMapSystemBase::ExecutSystem(idx);
+	return release;
 }
 
 //==========================================================
@@ -66,26 +102,65 @@ void CDrawSystem::Update()
 		Sort();
 		m_bIsSortNecessary = false;
 	}
-	
-	//--- 描画
-	for (auto & render : m_pDrawSortList)
+
+	//--- BGの描画
+	int UIIdx = 0;	// UIが何番目記憶するための変数
+	for (int cnt = 0; cnt < m_aPolygonList.size(); ++cnt, ++UIIdx)
 	{
+		// ポインタ確認
+		if (!m_aPolygonList[cnt].lock())
+			continue;
+
+		if (m_aPolygonList[cnt].lock()->GetZ() > static_cast<int>(CPolygonRenderer::EZValue::BG))
+			break;
+
+		// 描画可能な状態か確認
+		if (!m_aPolygonList[cnt].lock()->IsActive() || !m_aPolygonList[cnt].lock()->IsVisible())
+			continue;
+
+		//--- 描画
+		m_aPolygonList[cnt].lock()->Draw();
+	}
+
+	{
+		for (int cnt = UIIdx; cnt < m_aPolygonList.size(); ++cnt)
+		{
+			// ポインタ確認
+			if (!m_aPolygonList[cnt].lock())
+				continue;
+
+			// 描画可能な状態か確認
+			if (!m_aPolygonList[cnt].lock()->IsActive() || !m_aPolygonList[cnt].lock()->IsVisible())
+				continue;
+
+			//--- 描画
+			m_aPolygonList[cnt].lock()->Draw();
+		}
+		m_aInstancingMeshMap.clear();
+		m_aInstancingModelMap.clear();
+		return;
+	}
+
+	//--- 通常描画
+	for (auto & it : m_aIntMap)
+	{
+		auto render = it.second;
+
 		// ポインタ確認
 		if (!render.lock())
 			continue;
 
 		// 描画可能な状態か確認
-		if (!render.lock()->IsActive())
+		if (!render.lock()->IsActive() || !render.lock()->IsVisible())
 			continue;
 
 #ifdef BUILD_MODE
 		++m_nDrawCnt;
 		auto name = render.lock()->GetName();
-		auto layer = render.lock()->GetLayer();
 #endif // _DEBUG
 
 		//--- Meshｺﾝﾎﾟｰﾈﾝﾄ(および継承)か確認
-		// カリングフラグがONかも確認
+		// カリングフラグも確認
 		if (auto mesh = render.lock()->BaseToDerived<CMeshRenderer>().get(); mesh && m_bFrustum)
 		{	
 			float fRadius = mesh->GetBSRadius();
@@ -94,7 +169,7 @@ void CDrawSystem::Update()
 			fRadius = (mW._22 > fRadius) ? mW._22 : fRadius;
 			fRadius = (mW._33 > fRadius) ? mW._33 : fRadius;
 			
-			// ｶﾒﾗに映るか判定
+			//--- ｶﾒﾗに映るか判定
 			//if (CCamera::GetMain()->CollisionViewFrustum(&mesh->GetCenter(0), mesh->GetBSRadius()) == CCamera::EFrustumResult::OUTSIDE)
 			if (CCamera::GetMain()->CollisionViewFrustum(&Vector3(mW._41, mW._42 ,mW._43), fRadius) == CCamera::EFrustumResult::OUTSIDE)
 			{
@@ -103,14 +178,29 @@ void CDrawSystem::Update()
 #endif // _DEBUG
 				continue;
 			}
-		}
 
-		//--- ここまできたら描画
-		render.lock()->Draw();
+			//--- ここまできたら描画
+			render.lock()->Draw();
+		}
 	}
 
-	//--- インスタンシング
+	//--- インスタンシング長いので分割
 	InstancingDraw();
+
+	//--- UI部分描画
+	for (int cnt = UIIdx; cnt < m_aPolygonList.size(); ++cnt)
+	{
+		// ポインタ確認
+		if (!m_aPolygonList[cnt].lock())
+			continue;
+
+		// 描画可能な状態か確認
+		if (!m_aPolygonList[cnt].lock()->IsActive() || !m_aPolygonList[cnt].lock()->IsVisible())
+			continue;
+
+		//--- 描画
+		m_aPolygonList[cnt].lock()->Draw();
+	}
 
 }
 
@@ -119,12 +209,26 @@ void CDrawSystem::Update()
 //==========================================================
 void CDrawSystem::Sort()
 {
-	// 整列
-	//m_pObjectList.back().lock()->;
-	std::sort(m_pDrawSortList.begin(), m_pDrawSortList.end(), [](auto const& s1, auto const& s2)->bool
+	//--- 解放確認(ここで処理eraceされるのはおかしい)
+	/*for (auto it = m_aPolygonList.begin(); it != m_aPolygonList.end();)
 	{
-		return s1.lock()->GetLayer() < s2.lock()->GetLayer();
+		if (!(*it).lock())
+		{
+			it = m_aPolygonList.erase(it);
+			continue;
+		}
+		++it;
+	}*/
+
+	if (m_aPolygonList.size() <= 1)
+		return;
+	
+	//--- ラムダ式で整列(昇順)
+	std::sort(m_aPolygonList.begin(), m_aPolygonList.end(), [](auto const& s1, auto const& s2)->bool
+	{
+		return s1.lock()->GetZ() < s2.lock()->GetZ();
 	});
+	
 }
 
 //==========================================================
@@ -137,52 +241,45 @@ void CDrawSystem::InstancingDraw()
 
 	CLight* pLight = CLight::GetMain();
 	pLight->SetDisable(false);			// ライティング無効
+	pDX->SetZBuffer(true);				// Z書き込み
 
-	//--- 登録された名前別に描画
+	//--- 登録されたモデル名別に描画
 	const int MAX_INSTANCING = 100;
-	for (auto & draw : m_aInstancingModelMap)
+	//--- 不透明描画
+	for (auto & intancingModel : m_aInstancingModelMap)
 	{
-		auto model = pAssets->GetModelManager()->GetModel(draw.first);
-		//--- 定数以上の時
-		// インスタンシングには定数分しか領域を確保していないため、その値以上の場合は一旦区切る
-		if (draw.second.size() >= MAX_INSTANCING)
-		{
-			std::vector<DirectX::XMFLOAT4X4> inData;
-			for (int idxCnt = 0; idxCnt < static_cast<int>(draw.second.size()); ++idxCnt)
-			{
-				int idx = idxCnt % MAX_INSTANCING;
-				if (idxCnt != 0 && idx == MAX_INSTANCING - 1)
-				{
-					model->DrawInstancing(pDX->GetDeviceContext(), inData);
-					inData.clear();
-					continue;
-				}
-				inData[idx] = draw.second[idx];
-			}
-			// 次のモデルへ
-			draw.second.clear();
-			continue;
-		}
-
-		model->DrawInstancing(pDX->GetDeviceContext(), draw.second);
-		draw.second.clear();
+		//--- 描画するモデルの取得
+		auto model = pAssets->GetModelManager()->GetModel(intancingModel.first);
+		model->DrawInstancing(pDX->GetDeviceContext(), intancingModel.second, EByOpacity::eOpacityOnly);
+		pLight->SetEnable();
 
 #if BUILD_MODE
 		++m_nInstancingCnt;
 #endif // _DEBUG
-
 	}
+	pLight->SetDisable(true);			// ライティング有効
+
+
+	//--- 半透明部分描画
+	pDX->SetBlendState(static_cast<int>(EBlendState::BS_ALPHABLEND));
+	pDX->SetZBuffer(false);
+	for (auto & intancingModel : m_aInstancingModelMap)
+	{
+		//--- 描画するモデルの取得
+		auto model = pAssets->GetModelManager()->GetModel(intancingModel.first);
+		model->DrawInstancing(pDX->GetDeviceContext(), intancingModel.second, EByOpacity::eOpacityOnly);
+		intancingModel.second.clear();	// 使用終了
+	}
+	pDX->SetZBuffer(true);
+	pDX->SetBlendState(static_cast<int>(EBlendState::BS_NONE));
 	// クリア
 	m_aInstancingModelMap.clear();
 
 	//--- メッシュインスタンシング描画
-	for (auto & mesh : m_aInstancingMesh)
+	for (auto & mesh : m_aInstancingMeshMap)
 	{
 		if (mesh.second.size() == 0)// 一応確認
 			continue;
-#if BUILD_MODE
-		++m_nInstancingCnt;
-#endif // _DEBUG
 
 		// ビルボードか確認
 		CBillboard* bill = dynamic_cast<CBillboard*>(mesh.second[0]);
@@ -196,22 +293,24 @@ void CDrawSystem::InstancingDraw()
 		{
 			CMesh::DrawInstancing(mesh.second);
 		}
+#if BUILD_MODE
+		++m_nInstancingCnt;
+#endif // _DEBUG
 	}
-	m_aInstancingMesh.clear();	// クリア
+	// クリア
+	m_aInstancingMeshMap.clear();
 
 	//--- 設定を戻す
 	pLight->SetEnable();		// ライティング有効
 	pDX->SetZBuffer(true);
 	//CDXDevice::Get()->SetBlendState(static_cast<int>(EBlendState::BS_NONE));		// αブレンディング無効
-
 }
-
 
 #ifdef BUILD_MODE
 
 void CDrawSystem::ImGuiDebug()
 {
-	ImGui::Text(u8"描画リスト数 : %d", m_pDrawSortList.size());
+	ImGui::Text(u8"描画リスト数 : %d", m_aPolygonList.size());
 	ImGui::Text(u8"描画OK数 : %d", m_nDrawCnt);
 	ImGui::SameLine();
 	ImGui::Text(u8"描画スキップ数 : %d", m_nSkipCnt);
@@ -231,3 +330,49 @@ void CDrawSystem::ImGuiDebug()
 }
 
 #endif
+
+
+
+#if POST_TEST
+
+//==========================================================
+// コンストラクタ
+//==========================================================
+CDrawSystemMap::CDrawSystemMap()
+{
+
+}
+
+//==========================================================
+// デストラクタ
+//==========================================================
+CDrawSystemMap::~CDrawSystemMap()
+{
+
+}
+
+//==========================================================
+// 更新
+//==========================================================
+void CDrawSystemMap::Update()
+{
+	// TODO:後で変える。実際の登録されたLayer順でなければ無駄が多い
+	auto layer = static_cast<int>(CLayer::E_Layer::FOG);
+
+	//--- レイヤー順に描画
+	for (int cnt = 0; cnt < layer; ++cnt)
+	{
+		if (!m_aLayerMap.count(cnt))
+			continue;
+		
+		//--- 前準備
+		// 描画先変更や効果を掛けたい
+		// 未作成:CPostProcessクラスがレイヤーに存在するか確認
+		// 存在していれば効果を掛ける?
+
+		// 描画処理
+		m_aLayerMap[cnt].Update();
+	}
+}
+
+#endif // POST_TEST
