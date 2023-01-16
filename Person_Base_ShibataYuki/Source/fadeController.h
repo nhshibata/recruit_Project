@@ -62,7 +62,8 @@ public:
 	CFadeController(std::shared_ptr<CGameObject> owner);
 	~CFadeController() {};
 
-	void Awake();
+	virtual void Awake();
+	virtual void Init();
 	void Update();
 
 	void SetScene(std::string sceneName);

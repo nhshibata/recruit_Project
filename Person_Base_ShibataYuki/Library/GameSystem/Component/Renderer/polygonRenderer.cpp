@@ -1,5 +1,5 @@
 //=========================================================
-// [renderer.cpp] 
+// [polygonRenderer.cpp] 
 // 作成: 2022/06/27
 //---------------------------------------------------------
 //=========================================================
@@ -8,6 +8,8 @@
 #include <Application/Application.h>
 #include <GameSystem/Component/Renderer/polygonRenderer.h>
 #include <GameSystem/Component/Transform/transform.h>
+#include <GameSystem/Manager/sceneManager.h>
+#include <GameSystem/Manager/drawSystem.h>
 
 #include <GraphicsSystem/DirectX/DXDevice.h>
 #include <GraphicsSystem/Manager/imageResourceManager.h>
@@ -19,13 +21,13 @@ using namespace MySpace::System;
 using namespace MySpace::Game;
 using namespace MySpace::Graphics;
 
-
 //==========================================================
 // コンストラクタ
 //==========================================================
 CPolygonRenderer::CPolygonRenderer()
+	:m_nZValue(0)
 {
-	m_pSprite = std::make_shared<CSpriteAnimation>();
+	m_pSprite = std::make_unique<CSpriteAnimation>();
 }
 
 //==========================================================
@@ -33,8 +35,9 @@ CPolygonRenderer::CPolygonRenderer()
 //==========================================================
 CPolygonRenderer::CPolygonRenderer(std::shared_ptr<CGameObject> owner)
 	:CRenderer(owner)
+	, m_nZValue(0)
 {
-	m_pSprite = std::make_shared<CSpriteAnimation>();
+	m_pSprite = std::make_unique<CSpriteAnimation>();
 }
 
 //==========================================================
@@ -48,13 +51,12 @@ CPolygonRenderer::~CPolygonRenderer()
 //==========================================================
 // 生成時呼び出し
 //==========================================================
+#pragma optimize("", off)
 void CPolygonRenderer::Awake()
 {
-	GetOwner()->SetLayer(CLayer::E_Layer::UI);
-
 	// ﾃｸｽﾁｬの追加
 	if (!m_pSprite)
-		m_pSprite = std::make_shared<CSpriteAnimation>();
+		m_pSprite = std::make_unique<CSpriteAnimation>();
 
 	// コンポーネントの取得
 	m_pRectTransform = GetOwner()->GetComponent<CRectTransform>();
@@ -67,6 +69,7 @@ void CPolygonRenderer::Awake()
 		rect->SetSize(100, 100);
 	}
 }
+#pragma optimize("", on)
 
 //==========================================================
 // 初期化
@@ -74,7 +77,10 @@ void CPolygonRenderer::Awake()
 void CPolygonRenderer::Init()
 {
 	// 描画依頼
-	CRenderer::Init();
+	//CRenderer::Init();
+	Transform()->Update();
+
+	m_nDrawIdx = SceneManager::CSceneManager::Get().GetDrawSystem()->PolygonRegist(BaseToDerived<CPolygonRenderer>());
 }
 
 //==========================================================
@@ -94,27 +100,29 @@ bool CPolygonRenderer::Draw()
 {
 	if (!CRenderer::Draw())return false;
 
-	// 前準備
+	//--- 前準備
 	auto pDX = Application::Get()->GetSystem<CDXDevice>();
 	pDX->SetZBuffer(false);
 	pDX->SetBlendState(static_cast<int>(EBlendState::BS_ALPHABLEND));
 
-	// 描画
-	CPolygon::SetColor(GetColor(1));
-	//CPolygon::SetAlpha(GetColor().a);
+	//--- 描画設定
+	CPolygon::SetColor(GetColor(1));	// rgba
+	CPolygon::SetAlpha(GetColor().a);	// rgba
 	CPolygon::SetAngle(m_pRectTransform.lock()->GetAngle());
 	CPolygon::SetSize(m_pRectTransform.lock()->GetSize());
 	CPolygon::SetPos(m_pRectTransform.lock()->GetPos());
 	CPolygon::SetUV((XMFLOAT2)m_pSprite->GetUV());
 	CPolygon::SetFrameSize((XMFLOAT2)m_pSprite->GetFrameSize());
+	//--- ﾃｸｽﾁｬ設定
 	if(m_pSprite->GetImage().lock())
 		CPolygon::SetTexture(m_pSprite->GetImage().lock()->GetSRV());
 	else
 		CPolygon::SetTexture(NULL);
+	//--- 描画
 	CPolygon::Draw(pDX->GetDeviceContext());
 
-	// 設定の初期化
-	CPolygon::SetColor(0,0,0,1);
+	//--- 設定の初期化
+	CPolygon::SetColor(1, 1, 1, 1);
 	CPolygon::SetAngle(0);
 	CPolygon::SetSize(1,1);
 	CPolygon::SetPos(0,0);
@@ -128,6 +136,23 @@ bool CPolygonRenderer::Draw()
 	return true;
 }
 
+//==========================================================
+// Z
+//==========================================================
+void CPolygonRenderer::SetZ(const int z)
+{
+	m_nZValue = z;
+	SceneManager::CSceneManager::Get().GetDrawSystem()->SortOn();
+}
+
+//==========================================================
+// Z
+//==========================================================
+void CPolygonRenderer::SetZ(const EZValue z)
+{
+	m_nZValue = static_cast<int>(z);
+	SceneManager::CSceneManager::Get().GetDrawSystem()->SortOn();
+}
 
 #ifdef BUILD_MODE
 
@@ -136,13 +161,18 @@ void CPolygonRenderer::ImGuiDebug()
 	using namespace MySpace::Debug;
 	static std::vector<std::string> s_FileList;
 
-	Color color = GetColor();
+	CRenderer::ImGuiDebug();
+	
 	ImGui::Text(u8"PolygonRenderer");
 	ImGui::Text(u8"filaName : %s", m_pSprite->GetImageName().c_str());
-	ImGui::InputFloat4(u8"色", (float*)&color);
-	SetColor(color);
 	
 	m_pSprite->ImGuiDebug();
+
+	int z = m_nZValue;
+	if (ImGui::InputInt("Z", &z))
+	{
+		SetZ(z);
+	}
 
 	//--- ファイル内検索
 	if (s_FileList.empty() || ImGui::Button(u8"画像 reload"))

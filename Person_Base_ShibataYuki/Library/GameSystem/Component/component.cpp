@@ -27,6 +27,17 @@ CComponent::CComponent(std::shared_ptr<CGameObject> owner)
 #if BUILD_MODE
 	//m_Name = GetName();
 #endif // BUILD_MODE
+
+};
+
+//==========================================================
+// ｺﾋﾟｰコンストラクタ
+//==========================================================
+CComponent::CComponent(const CComponent& copy)
+{
+	this->m_pOwner = copy.m_pOwner;
+	this->m_bActive = copy.m_bActive;
+	this->m_pSelfPtr = copy.m_pSelfPtr;
 };
 
 //==========================================================
@@ -44,17 +55,21 @@ CComponent::~CComponent()
 //==========================================================
 // 生成時に呼び出される
 //==========================================================
-void CComponent::Awake() 
-{
-}
+//#pragma optimize("", off)
+//void CComponent::Awake() 
+//{
+//}
+//#pragma optimize("", on)
 
 //==========================================================
 // 初期化 
 // 他コンポーネントの取得などを行う
 //==========================================================
+#pragma optimize("", off)
 void CComponent::Init() 
 {
 }
+#pragma optimize("", on)
 
 //==========================================================
 // 終了処理

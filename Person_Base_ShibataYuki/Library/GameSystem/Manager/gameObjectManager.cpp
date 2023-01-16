@@ -173,7 +173,8 @@ void CGameObjectManager::UpdateInDebug()
 	}
 
 	// 追加オブジェクトの確認、追加
-	ObjectListUpdate();
+	if(m_aAddObjList.size() != 0)
+		ObjectListUpdate();
 	
 	// 配列のリセット
 	pDestoroyObj.clear();
@@ -220,11 +221,8 @@ bool CGameObjectManager::ObjectListUpdate()
 			auto name = addObj->GetName();
 #endif // !_DEBUG
 
-			if (addObj)
-			{
-				SetGameObject(addObj);
-				addObj->Init();
-			}
+			SetGameObject(addObj);
+			addObj->Init();
 		}
 	}
 	
@@ -240,9 +238,11 @@ void CGameObjectManager::CreateBasicObject()
 	// 必須
 	// ｶﾒﾗ
 	pObj->AddComponent<CCamera>();
+	pObj->SetName("MainCamera");
 	// ライト
 	pObj = CreateGameObject();
 	pObj->AddComponent<CDirectionalLight>();
+	pObj->SetName("DirectionalLight");
 }
 
 //==========================================================
@@ -277,12 +277,24 @@ void CGameObjectManager::TagMove(std::string NextTag, std::weak_ptr<CGameObject>
 		return;
 	}
 	
-	auto list = m_aTagMap[obj.lock()->GetTag()];
-	auto it = list.FindObj(obj.lock());
+	//--- 現在のtagから除外
+	const auto tag = obj.lock()->GetTag();
+	//auto it = currentTag.FindObj(obj.lock());
+	auto it = m_aTagMap[tag].list.begin();
+	for (; it != m_aTagMap[tag].list.end();)
+	{
+		if (obj.lock() == (*it).lock())
+		{
+			m_aTagMap[tag].list.erase(it);
+			break;
+		}
+		++it;
+	}
 
-	// 現在のtagから除外
-	if(it != list.list.end())
-		m_aTagMap[obj.lock()->GetTag()].list.erase(it);
+	/*if (it != currentTag.list.end())
+	{
+		m_aTagMap[tag].list.erase(it);
+	}*/
 	
 	// 変更後のtagへ移動
 	m_aTagMap[NextTag].list.push_back(obj);

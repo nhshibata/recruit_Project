@@ -46,7 +46,8 @@ namespace Spell
 		CGameManager(CGameObject::Ptr owner);
 		~CGameManager();
 
-		void Awake();
+		virtual void Awake()override;
+		virtual void Init()override;
 		void Update();
 
 		// *@シーン切替時呼び出し用

@@ -27,7 +27,9 @@ namespace Spell
 		CTitleMove(CGameObject::Ptr owner);
 		~CTitleMove();
 
-		void Awake();
+		// *@¶¬ŒÄ‚Ño‚µ
+		virtual void Awake();
+		void Init()override;
 
 		void Update();
 

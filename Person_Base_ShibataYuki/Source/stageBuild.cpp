@@ -64,7 +64,7 @@ bool CStageBuild::Build(CResourceCSV* csv)
 			obj = CGameObject::CreateObject();
 
 			// tagÝ’è
-			obj.lock()->SetTag(Spell::TAG_LAND);
+			obj.lock()->SetObjTag(Spell::TAG_LAND);
 
 			// ˆÊ’uŒˆ’è
 			Vector3 pos = m_vStartPos;

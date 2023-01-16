@@ -1,0 +1,44 @@
+
+構成要素
+	・Data
+		使用しているモデルやTextureなど
+	・Library
+		プログラムを構成するライブラリとコード
+		・AISystem
+			AIプログラム
+		・Application
+			ウィンドウやDirectXを起動させるためのｸﾗｽ群
+		・CoreSystem
+			他プロジェクトで用いられる数学ｸﾗｽや便利関数を定義
+		・DebugSystem
+			ImGuiを使ったデバッグプログラム
+		・GameSystem
+			GameObject, Component, Sceneなど、ゲームを構築するクラス群
+		・GraphicsSystem
+			描画関係実装
+	・Project
+		プロジェクトファイル
+	・exe
+		実行ファイル
+	・Source
+		Libraryを使ったゲームのソースファイル
+
+C++17準拠でコード記述しています
+
+フォルダ構成
+	ソリューションファイル(.sln)を基点にした設定
+
+命名規則
+	・変数はハンガリアン記法に習って命名
+		・仮引き数やローカル変数はまちまち
+	・関数名はPascal 形式
+	・定数名などにはアッパー記法
+
+使用ライブラリ
+	Assimp
+	DirectXTex
+	diar ImGui
+	cereal
+
+
+

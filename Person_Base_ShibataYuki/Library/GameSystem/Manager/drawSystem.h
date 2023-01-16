@@ -21,6 +21,7 @@ namespace MySpace
 	namespace Game
 	{
 		class CRenderer;
+		class CPolygonRenderer;
 	}
 	namespace Graphics
 	{
@@ -38,18 +39,20 @@ namespace MySpace
 		//--- クラス定義
 		class CDrawSystem : public CMapSystemBase<std::weak_ptr<CRenderer>>
 		{
+			friend class CRenderer;
+			friend class CPolygonRenderer;
 		private:
 			//--- エイリアス
-			using RenderWeakList = std::vector<std::weak_ptr<CRenderer>>;
+			using PolygonRenderWeakList = std::vector<std::weak_ptr<CPolygonRenderer>>;
 			using InstancingMap = std::map<std::string, std::vector<DirectX::XMFLOAT4X4>>;
 			using InstancingMeshMap = std::map<std::string, std::vector<CMesh*>>;
-
+			
 		private:
 			//--- メンバ変数
-			bool m_bIsSortNecessary;
-			RenderWeakList m_pDrawSortList;				// 管理しているmapをソートした結果を入れる変数
-			InstancingMap m_aInstancingModelMap;
-			InstancingMeshMap m_aInstancingMesh;
+			bool m_bIsSortNecessary;					// 整列実行フラグ
+			PolygonRenderWeakList m_aPolygonList;		// 管理しているmapをソートした結果を入れる
+			InstancingMap m_aInstancingModelMap;		// インスタンシング描画格納用
+			InstancingMeshMap m_aInstancingMeshMap;		// インスタンシング描画格納用
 
 #if BUILD_MODE
 			// 確認用変数
@@ -62,8 +65,9 @@ namespace MySpace
 		private:
 			//--- メンバ関数
 			void Sort();
+			void SortOn() { m_bIsSortNecessary = true; };
 			void InstancingDraw();
-
+			
 		public:
 			CDrawSystem();
 			~CDrawSystem();
@@ -75,28 +79,14 @@ namespace MySpace
 			_NODISCARD int RegistToSystem(std::weak_ptr<CRenderer> render)
 			{
 				int ret = CMapSystemBase::RegistToSystem(render);
-				m_pDrawSortList.push_back(render);
 				return ret;
 			}
+			
+			// *@登録
+			_NODISCARD int PolygonRegist(std::weak_ptr<CPolygonRenderer> render);
 
 			// *@破棄 overlide
-			std::weak_ptr<CRenderer> ExecutSystem(int idx)
-			{
-				auto release = IDToData(idx);
-
-				// 破棄されたｺﾝﾎﾟｰﾈﾝﾄを探し、整列リストから除外
-				for (auto it = m_pDrawSortList.begin(); it != m_pDrawSortList.end();)
-				{
-					if (release.lock() == (*it).lock())
-					{
-						m_pDrawSortList.erase(it);
-						break;
-					}
-					++it;
-				}
-				CMapSystemBase::ExecutSystem(idx);
-				return release;
-			}
+			std::weak_ptr<CRenderer> ExecutSystem(int idx);
 
 			// *@インスタンシング描画のために情報を格納する
 			inline void SetInstanchingModel(std::string name, DirectX::XMFLOAT4X4 mtx)
@@ -107,13 +97,18 @@ namespace MySpace
 			// *@インスタンシング描画のために情報を格納する
 			inline void SetInstanchingMesh(std::string name, CMesh* mesh)
 			{
-				m_aInstancingMesh[name].push_back(mesh);
+				m_aInstancingMeshMap[name].push_back(mesh);
 			}
 
-			// *@
+			// *@所持リスト
 			_NODISCARD inline std::vector<std::weak_ptr<CRenderer>> GetList()
 			{
-				return m_pDrawSortList;
+				std::vector<std::weak_ptr<CRenderer>> ret;
+				for (auto & it : m_aIntMap)
+				{
+					ret.push_back(it.second);
+				}
+				return ret;
 			}
 
 #if BUILD_MODE
@@ -123,6 +118,53 @@ namespace MySpace
 #endif // BUILD_MODE
 
 		};
+
+
+#define POST_TEST	0
+#if POST_TEST
+
+		class CDrawSystemMap
+		{
+		private:
+			std::unordered_map<int, CDrawSystem> m_aLayerMap;
+
+		public:
+			CDrawSystemMap();
+			~CDrawSystemMap();
+
+			void Update();
+
+			// *@登録
+			int Regist(std::weak_ptr<CRenderer> add, int layer) 
+			{
+				return m_aLayerMap[layer].RegistToSystem(add); 
+			}
+
+			// *@除外
+			bool Remove(int layer, int idx)
+			{
+				auto res = m_aLayerMap[layer].ExecutSystem(idx);
+				return (res.lock() ? false : true);
+			}
+
+			// *@レイヤー移動
+			int Move(int oldLayer, int nextLayer, int idx)
+			{
+				// ﾎﾟｲﾝﾀ取得
+				auto render = m_aLayerMap[oldLayer].IDToData(idx);
+				// 現在layer除外
+				if (Remove(oldLayer, idx))
+				{
+					// 新規登録
+					return Regist(render.lock(), nextLayer);
+				}
+			}
+
+		};
+
+#endif // POST
+
 	}
 }
+
 #endif

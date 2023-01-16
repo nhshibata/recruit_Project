@@ -51,17 +51,28 @@ void CGameManager::Awake()
 	{
 		auto obj = CGameObject::CreateObject().lock();
 		m_pFade = obj->AddComponent<CFadeController>();
+		obj->SetObjTag(Spell::TAG_FADE);
+
 		// ”ñ”j‰ó“o˜^
 		CGameObject::DontDestroy(obj);
 	}
 
-	{
-		auto obj = CGameObject::CreateObject().lock();
-		obj->AddComponent<Spell::CTitleSceneManager>();
-	}
-
 	// ŠÖ”ƒ|ƒCƒ“ƒ^İ’è
 	MySpace::SceneManager::CSceneManager::Get().SceneChanged<Spell::CGameManager>(&CGameManager::SceneResponce, this);
+
+
+	{
+		auto obj = CGameObject::CreateObject().lock();
+		auto title = obj->AddComponent<Spell::CTitleSceneManager>();
+		title->Create();
+	}
+}
+
+//========================================================
+// ‰Šú‰»
+//========================================================
+void CGameManager::Init()
+{
 
 }
 

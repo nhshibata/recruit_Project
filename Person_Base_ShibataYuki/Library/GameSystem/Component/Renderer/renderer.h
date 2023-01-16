@@ -44,11 +44,12 @@ namespace MySpace
 			//--- ƒƒ“ƒo•Ï”
 			bool m_bVisible;		// •`‰æƒtƒ‰ƒO
 			Color m_vColor;
+		protected:
 			int m_nDrawIdx = -1;	// DrawSystem‚É“o˜^‚µ‚½Û‚É“n‚³‚ê‚éID
 
 		private:
 			//--- ƒƒ“ƒoŠÖ”
-			void RequestDraw();
+			void DrawRequest();
 		public:
 			CRenderer():m_bVisible(true), m_nDrawIdx(-1)
 			{};

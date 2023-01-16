@@ -97,14 +97,16 @@ void ImGuiManager::Init(HWND hWnd, ID3D11Device* device, ID3D11DeviceContext* co
 	m_pRT = std::make_shared<CRenderTarget>();
 	
 	//--- デバッグカメラの生成
-	if(0)
-	{
+	if(1)
+	{	
+		m_bEditFlg = true;
 		m_pDebugObj = std::make_shared<CGameObject>();
 		CGameObject::CreateDebugObject(m_pDebugObj);
 		m_pDebugCamera = m_pDebugObj->AddComponent<CDebugCamera>();
 		m_pDebugCamera.lock()->Init();
 		m_pDebugObj->GetTransform()->SetScale({ 10, 10, 10 });
-		m_pDebugObj->GetTransform()->Update();		
+		m_pDebugObj->GetTransform()->Update();
+		m_pDebugCamera.lock()->ResumeCamera(m_bEditFlg);
 	}
 	else
 	{
@@ -182,8 +184,8 @@ void ImGuiManager::Update()
 
 	// 左表示
 	ImGui::PushStyleColor(ImGuiCol_TitleBgActive, ImVec4(0.0f, 0.7f, 0.2f, 1.0f));
-	ImGui::SetNextWindowPos(ImVec2(0, 300), ImGuiCond_Once);
-	ImGui::SetNextWindowSize(ImVec2(300, 300), ImGuiCond_Once);
+	ImGui::SetNextWindowPos(ImVec2(0, 400), ImGuiCond_Once);
+	ImGui::SetNextWindowSize(ImVec2(350, 300), ImGuiCond_Once);
 	ImGui::Begin(u8"ステータス", &m_bEditFlg, ImGuiWindowFlags_::ImGuiWindowFlags_MenuBar);
 	ImGui::BeginTabBar("##tabs", ImGuiTabBarFlags_None);
 	
@@ -287,8 +289,6 @@ void ImGuiManager::Update()
 	//--- ログ表示
 	DispLog();
 	
-	// 関数ポインタ表示
-
 	//--- タブを閉じる
 	ImGui::EndTabBar();
 

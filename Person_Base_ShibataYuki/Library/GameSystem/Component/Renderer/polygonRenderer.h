@@ -42,32 +42,46 @@ namespace MySpace
 					CEREAL_NVP(m_pSprite), CEREAL_NVP(m_pRectTransform)
 				);
 			}
+		public:
+			enum class EZValue : int
+			{
+				BG = 0,
+				DEFAULT = 50,
+				FOG = 1000,
+			};
+
 		private:
-			std::shared_ptr<CSpriteAnimation> m_pSprite;	// 描画テクスチャ
+			std::unique_ptr<CSpriteAnimation> m_pSprite;	// 描画テクスチャ
 			RectTransWeakPtr m_pRectTransform;				// 描画情報
+			int m_nZValue;
 
 		public:
 			CPolygonRenderer();
 			CPolygonRenderer(std::shared_ptr<CGameObject> owner);
 			~CPolygonRenderer();
 
-			void Awake();
+			virtual void Awake();
 			virtual void Init();
 			virtual void Update();
 			virtual bool Draw();
 
-			
+			inline RectTransSharedPtr GetRectTransform() { return m_pRectTransform.lock(); }
+			inline CSpriteAnimation* GetSprite() { return m_pSprite.get(); }
+			inline std::string GetImageName() { return m_pSprite->GetImageName(); }
+			inline int GetZ() { return m_nZValue; }
+
 			inline void SetRectTransform(RectTransSharedPtr ptr) { m_pRectTransform = ptr; }
-			
 			inline void SetImageName(std::string name)
 			{
 				m_pSprite->SetImage(name);
 			}
-			inline RectTransSharedPtr GetRectTransform() { return m_pRectTransform.lock(); }
-			inline std::shared_ptr<CSpriteAnimation> GetSprite() { return m_pSprite; }
-			inline std::string GetImageName() { return m_pSprite->GetImageName(); }
+			void SetZ(const int z);
+			void SetZ(const EZValue z);
 
+#if BUILD_MODE
 			virtual void ImGuiDebug();
+#endif // BUILD_MODE
+
 		};
 	}
 }

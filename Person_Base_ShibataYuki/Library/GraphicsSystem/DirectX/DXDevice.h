@@ -1,12 +1,13 @@
 //=========================================================
 // [DXDevice.h] 
 // 作成:2022/06/19
+// 更新:2023/01/12 RenderTargetとDepthStencilをクラスに変更
 //---------------------------------------------------------
 //=========================================================
 
 //--- インクルードガード
-#ifndef __DEX_DEVICE_H__
-#define __DEX_DEVICE_H__
+#ifndef __DX_DEVICE_H__
+#define __DX_DEVICE_H__
 
 #define NOMINMAX
 //--- インクルード部
@@ -15,6 +16,25 @@
 #include <wrl/client.h>
 
 using Microsoft::WRL::ComPtr;
+
+#define RT_DS_TEST		0
+
+#if RT_DS_TEST
+
+#pragma region ForwardDeclaration
+
+namespace MySpace
+{
+	namespace Graphics
+	{
+		class CRenderTarget;
+		class CDepthStencil;
+	}
+}
+
+#pragma endregion
+#endif // RT_DS_TEST
+
 
 namespace MySpace
 {
@@ -47,21 +67,29 @@ namespace MySpace
 			ComPtr<ID3D11Device>			g_pDevice;				// デバイス
 			ComPtr<ID3D11DeviceContext>		g_pDeviceContext;		// デバイス コンテキスト
 			ComPtr<IDXGISwapChain> 			g_pSwapChain;			// スワップチェーン
-			ComPtr<ID3D11RenderTargetView>	g_pRenderTargetView;	// フレームバッファ
-			ComPtr<ID3D11Texture2D>			g_pDepthStencilTexture;	// Zバッファ用メモリ
-			ComPtr<ID3D11DepthStencilView>	g_pDepthStencilView;	// Zバッファ
-			ComPtr<ID3D11RasterizerState>	g_pRs[(int)ECullMode::MAX_CULLMODE];	// ラスタライザ ステート
+
+			ComPtr<ID3D11RasterizerState>	g_pRs[(int)ECullMode::MAX_CULLMODE];			// ラスタライザ ステート
 			ComPtr<ID3D11BlendState>		g_pBlendState[(int)EBlendState::MAX_BLENDSTATE];// ブレンド ステート
 			ComPtr<ID3D11DepthStencilState>	g_pDSS[2];				// Z/ステンシル ステート
 
 			UINT							g_uSyncInterval = 0;	// 垂直同期 (0:無, 1:有)
-			D3D_DRIVER_TYPE					m_DriverType;				// ドライバタイプ
-			D3D_FEATURE_LEVEL				m_FeatureLevel;				// 機能レベル
-			int								m_Width = 0;				// バックバッファＸサイズ
-			int								m_Height = 0;				// バックバッファＹサイズ
+			D3D_DRIVER_TYPE					m_DriverType;			// ドライバタイプ
+			D3D_FEATURE_LEVEL				m_FeatureLevel;			// 機能レベル
+			int								m_Width = 0;			// バックバッファＸサイズ
+			int								m_Height = 0;			// バックバッファＹサイズ
 			std::shared_ptr<D3D11_VIEWPORT> m_viewPort;
 			ComPtr<ID3D11SamplerState>		m_SamplerState;
-		
+			
+#if RT_DS_TEST
+			// unique_ptrにしたかったが循環参照防止のため断念
+			std::shared_ptr<Graphics::CRenderTarget> m_pRenderTarget;
+			std::shared_ptr<Graphics::CDepthStencil> m_pDepthStencil;
+#else
+			ComPtr<ID3D11RenderTargetView>	g_pRenderTargetView;	// フレームバッファ
+			ComPtr<ID3D11Texture2D>			g_pDepthStencilTexture;	// Zバッファ用メモリ
+			ComPtr<ID3D11DepthStencilView>	g_pDepthStencilView;	// Zバッファ
+#endif // RT_DS_TEST
+
 		public:
 			//--- メンバ関数
 			CDXDevice() = default;
@@ -79,11 +107,18 @@ namespace MySpace
 			// *@スワップチェイン
 			inline IDXGISwapChain* GetSwapChain() { return g_pSwapChain.Get(); }
 
+#if !RT_DS_TEST
 			// *@レンダーターゲット
 			inline ID3D11RenderTargetView* GetRenderTargetView() { return g_pRenderTargetView.Get(); }
-
+			
 			// *@深度
 			inline ID3D11DepthStencilView* GetDepthStencilView() { return g_pDepthStencilView.Get(); }
+#else
+			ID3D11RenderTargetView* GetRenderTargetView();
+			ID3D11DepthStencilView* GetDepthStencilView();
+#endif // RT_DS_TEST
+
+			
 
 			// *@深度
 			inline ID3D11DepthStencilState* GetDepthStencilState(int no) { return g_pDSS[no].Get(); }
@@ -131,6 +166,7 @@ namespace MySpace
 				}
 			}
 
+#if !RT_DS_TEST
 			// *@描画先の変更
 			// *@nullptrで通常に戻す
 			void SwitchRender(ID3D11RenderTargetView* pRTV, ID3D11DepthStencilView* pDSV)
@@ -140,7 +176,13 @@ namespace MySpace
 					pRTV ? &pRTV : g_pRenderTargetView.GetAddressOf(),
 					pDSV ? pDSV : g_pDepthStencilView.Get()
 				);
+				
 			}
+#else
+			// *@描画先の変更
+			// *@nullptrで通常に戻す
+			void SwitchRender(ID3D11RenderTargetView* pRTV, ID3D11DepthStencilView* pDSV);
+#endif // RT_DS_TEST
 
 		};
 	}

@@ -77,7 +77,11 @@
     <ClCompile Include="..\Library\GameSystem\Component\Renderer\effekseerRenderer.cpp" />
     <ClCompile Include="..\Library\GameSystem\Component\Renderer\meshRenderer.cpp" />
     <ClCompile Include="..\Library\GameSystem\Component\Renderer\modelRenderer.cpp" />
-    <ClCompile Include="..\Library\GameSystem\Component\Renderer\polygonRenderer.cpp" />
+    <ClCompile Include="..\Library\GameSystem\Component\Renderer\polygonRenderer.cpp">
+      <Optimization Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Disabled</Optimization>
+      <IntrinsicFunctions Condition="'$(Configuration)|$(Platform)'=='Release|x64'">false</IntrinsicFunctions>
+      <WholeProgramOptimization Condition="'$(Configuration)|$(Platform)'=='Release|x64'">false</WholeProgramOptimization>
+    </ClCompile>
     <ClCompile Include="..\Library\GameSystem\Component\Renderer\renderer.cpp" />
     <ClCompile Include="..\Library\GameSystem\Component\Renderer\sphereRenderer.cpp" />
     <ClCompile Include="..\Library\GameSystem\Component\Renderer\textRenderer.cpp" />
@@ -87,6 +91,7 @@
     <ClCompile Include="..\Library\GameSystem\Component\Transform\Tween.cpp" />
     <ClCompile Include="..\Library\GameSystem\Factory\componentFactory.cpp" />
     <ClCompile Include="..\Library\GameSystem\GameObject\gameObject.cpp" />
+    <ClCompile Include="..\Library\GameSystem\GameObject\layer.cpp" />
     <ClCompile Include="..\Library\GameSystem\GameObject\tag.cpp" />
     <ClCompile Include="..\Library\GameSystem\Manager\collisionSystem.cpp" />
     <ClCompile Include="..\Library\GameSystem\Manager\drawSystem.cpp" />
@@ -237,11 +242,11 @@
       <ConformanceMode>true</ConformanceMode>
       <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
       <AdditionalIncludeDirectories>$(SolutionDir)..\..\DirectXTex;$(SolutionDir)..\..\Assimp\include;$(SolutionDir)..\..\Assimp;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-      <AdditionalOptions>/bigobj %(AdditionalOptions)</AdditionalOptions>
       <LanguageStandard>stdcpp17</LanguageStandard>
-      <InlineFunctionExpansion>OnlyExplicitInline</InlineFunctionExpansion>
+      <InlineFunctionExpansion>AnySuitable</InlineFunctionExpansion>
       <PrecompiledHeaderFile />
       <WholeProgramOptimization>true</WholeProgramOptimization>
+      <AdditionalOptions>/bigobj %(AdditionalOptions)</AdditionalOptions>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>

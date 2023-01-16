@@ -10,10 +10,15 @@
 #ifndef __MAP_SYSTEM_BASE_H__
 #define __MAP_SYSTEM_BASE_H__
 
+#define NOMINMAX
+
 //--- ƒCƒ“ƒNƒ‹[ƒh•”
 #include <CoreSystem/Util/stl.h>
+#include <limits>
 
 #pragma region ForwardDeclaration
+#pragma endregion
+
 namespace MySpace
 {
 	namespace Game
@@ -39,10 +44,22 @@ namespace MySpace
 			// *@“o˜^‚µ‚½Û‚É”Ô†‚ğ•Ô‚·
 			_NODISCARD inline int RegistToSystem(T type)
 			{
-				int ret = static_cast<int>(m_nRegistCnt);
-				m_aIntMap[ret] = type;
+				//int ret = static_cast<int>(m_nRegistCnt);
+				//--- intŒ^Å‘å’l
+				int nMax = (std::numeric_limits<int>::max)();
+				if(m_aIntMap.size() >= nMax)
+					return -1;
+				//--- Ši”[æ’Tõ
+				int retIdx = 0;
+				while (1)
+				{
+					retIdx = rand() % nMax;
+					if (!m_aIntMap.count(retIdx))
+						break;
+				}
+				m_aIntMap[retIdx] = type;
 				++m_nRegistCnt;
-				return ret;
+				return retIdx;
 			}
 
 			// *@”jŠü(map‚Ì‚½‚ßA®—ñ‚Í‚³‚¹‚È‚¢)
@@ -65,6 +82,5 @@ namespace MySpace
 		};
 	}
 }
-#pragma endregion
 
 #endif //__MAP_SYSTEM_BASE_H__

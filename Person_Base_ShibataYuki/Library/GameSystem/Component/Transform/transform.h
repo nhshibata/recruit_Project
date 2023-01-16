@@ -81,6 +81,8 @@ namespace MySpace
 			CTransform(std::shared_ptr<CGameObject> owner);
 			~CTransform();
 
+			// *@¶¬ŒÄ‚Ño‚µ
+			virtual void Awake() {};
 			void Init();
 			virtual void Uninit();
 			void Update();

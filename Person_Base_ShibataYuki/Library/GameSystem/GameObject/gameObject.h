@@ -1,7 +1,8 @@
 //=========================================================
 // [CGameObject.h]
 //-----------------------
-// 作成:2022/04/19 (火曜日)
+// 作成:2022/04/19
+// 更新:2023/01/11 AddComponent関数にSetComponentを追加
 //-----------------------
 // ゲーム内オブジェクトクラス
 // ｺﾝﾎﾟｰﾈﾝﾄを持つことが出来る、タグとレイヤーを設定できる 
@@ -53,7 +54,7 @@ namespace MySpace
 			{
 				archive(cereal::make_nvp("gameObject", cereal::base_class<CBaseObject>(this)),
 					CEREAL_NVP(m_eState), CEREAL_NVP(m_pLayer), CEREAL_NVP(m_pTag),
-					CEREAL_NVP(m_pComponent)/*, CEREAL_NVP(m_pTransform)*/
+					CEREAL_NVP(m_aComponent)/*, CEREAL_NVP(m_pTransform)*/
 				);
 			}
 			template<class Archive>
@@ -61,11 +62,11 @@ namespace MySpace
 			{
 				archive(cereal::make_nvp("gameObject", cereal::base_class<CBaseObject>(this)),
 					CEREAL_NVP(m_eState), CEREAL_NVP(m_pLayer), CEREAL_NVP(m_pTag),
-					CEREAL_NVP(m_pComponent)/*, CEREAL_NVP(m_pTransform)*/
+					CEREAL_NVP(m_aComponent)/*, CEREAL_NVP(m_pTransform)*/
 				);
 				
 				// ｺﾝﾎﾟｰﾈﾝﾄ側でserial化するとエラー
-				for (auto & com : m_pComponent)
+				for (auto & com : m_aComponent)
 				{
 					com->SetOwner(GetPtr().lock());
 				}
@@ -85,16 +86,20 @@ namespace MySpace
 			using Ptr = std::shared_ptr<CGameObject>;
 			using PtrWeak = std::weak_ptr<CGameObject>;
 		private:
-			using COMPONENT = std::list<std::shared_ptr<CComponent>>;
+			using Component_List = std::list<std::shared_ptr<CComponent>>;
 
 		private:
 			//--- メンバ変数
-			COMPONENT m_pComponent;					// 所持コンポーネント
+			Component_List m_aComponent;			// 所持コンポーネント
 			E_ObjectState m_eState;					// 状態
-			std::shared_ptr<CTag> m_pTag;			// タグ
-			std::shared_ptr<CLayer> m_pLayer;		// レイヤー
+			std::unique_ptr<CTag> m_pTag;			// タグ
+			std::unique_ptr<CLayer> m_pLayer;		// レイヤー
 			std::weak_ptr<CTransform> m_pTransform;	// パラメータ
 			std::weak_ptr<CScene> m_pScene;			// 所属シーン
+
+		private:
+			// *@コンポーネントの追加準備			
+			void ComponentAddPreparation(std::shared_ptr<CComponent> com);
 
 		public:
 			//--- メンバ関数
@@ -121,28 +126,25 @@ namespace MySpace
 
 			// *@生成することで追加する
 			// *@持ち主設定、自SPの設定などを行い、生成時処理を呼び出す
-			template <class T = CComponent>
+			template <class T>
 			std::shared_ptr<T> AddComponent()
 			{
-				std::shared_ptr<T> com = std::make_shared<T>(GetPtr().lock());
-				com->SetPtr(com);					// 自身のポインタの設定
-				com->SetOwner(GetPtr().lock());		// 所持gameobjectの設定
-
-				com->Awake();
-				AddComponent(com);				// 配列への追加
-				return com;
+				std::shared_ptr<T> sp = std::make_shared<T>(GetPtr().lock());
+				m_aComponent.push_back(sp);		// 配列への追加
+				T* com = dynamic_cast<T*>(sp.get());
+				ComponentAddPreparation(sp);	// ｺﾝﾎﾟｰﾈﾝﾄ追加準備
+				com->Awake();					// 生成時呼び出し
+				return sp;
 			}
-			
-			// *@コンポーネントの追加
-			// *@他onjのcomの場合、comの共有となる
-			std::shared_ptr<CComponent> AddComponent(std::shared_ptr<CComponent> com);
+
 			// *@コンポーネントの破棄
 			template <class T>
 			bool RemoveComponent(std::string comName);
 			// *@コンポーネントの破棄(引き数:SP)
 			bool RemoveComponent(std::weak_ptr<CComponent> com);
+
 			// *@コンポーネントListの取得
-			_NODISCARD inline COMPONENT GetComponentList() { return m_pComponent; }
+			_NODISCARD inline Component_List GetComponentList() { return m_aComponent; }
 
 			// *@コンポーネントの取得
 			// *@weak_ptrが返る
@@ -150,7 +152,7 @@ namespace MySpace
 			_NODISCARD std::weak_ptr<T> GetComponent()
 			{
 				std::weak_ptr<T> component;
-				for (COMPONENT::iterator it = m_pComponent.begin(); it != m_pComponent.end(); ++it) 
+				for (Component_List::iterator it = m_aComponent.begin(); it != m_aComponent.end(); ++it) 
 				{
 					component = std::dynamic_pointer_cast<T>((*it));
 					// 監視対象の判定
@@ -158,7 +160,6 @@ namespace MySpace
 					if (component.expired())continue;
 					return component;
 				}
-				//return component;
 				return std::weak_ptr<T>();	// 実質null
 			}
 
@@ -177,11 +178,11 @@ namespace MySpace
 			// *@obj状態取得
 			inline E_ObjectState GetState() { return m_eState; };															
 			// *@ﾀｸﾞｸﾗｽの取得
-			inline std::shared_ptr<CTag> GetTagPtr() { return m_pTag; };													
+			inline CTag* GetTagPtr() { return m_pTag.get(); };
 			// *@ﾀｸﾞ文字の取得
-			inline std::string GetTag() { return GetTagPtr()->GetTag(); };													
+			inline std::string GetTag() { return GetTagPtr()->GetTag(); };											
 			// *@ﾚｲﾔｸﾗｽの取得
-			inline std::shared_ptr<CLayer> GetLayerPtr() { return m_pLayer; };												
+			inline CLayer* GetLayerPtr() { return m_pLayer.get(); };
 			// *@ﾚｲﾔｰ番号
 			inline int GetLayer() { return *m_pLayer->GetLayer(); };														
 
@@ -193,7 +194,7 @@ namespace MySpace
 			// *@レイヤーｸﾗｽの設定
 			inline void SetLayer(CLayer::E_Layer layer) { m_pLayer->SetLayer(layer); };
 			// *@タグ名の設定
-			void SetTag(const std::string tag);
+			void SetObjTag(const std::string tag);
 			// *@状態により親子関係にあるオブジェクトの状態を変える
 			void SetState(const E_ObjectState state);
 			//inline void SetTransform(std::shared_ptr<CTransform> trans) { m_pTransform = trans; };

@@ -25,10 +25,12 @@ namespace MySpace
 
 		private:
 			//--- ÉÅÉìÉoä÷êî
-			HRESULT Create(UINT width, UINT height, bool useStencil);
+			HRESULT Create(CDXDevice* dx = nullptr, UINT width = 1280, UINT height = 720, bool useStencil = true);
 
 		public:
-			CDepthStencil(UINT width = 1280, UINT height = 720, bool useStencil = true);
+			CDepthStencil(CDXDevice* dx = nullptr);
+			CDepthStencil(UINT width, UINT height, bool useStencil);
+			CDepthStencil(const CDepthStencil&);
 			~CDepthStencil();
 
 			virtual void Release();

@@ -1,5 +1,8 @@
 //=========================================================
+// [GameApp.cpp]
+//---------------------------------------------------------
 //作成:2022/05/24
+//---------------------------------------------------------
 // ゲーム実行ｸﾗｽ
 //=========================================================
 
@@ -191,12 +194,13 @@ void CGameApp::InputUpdate()
 //==========================================================
 void CGameApp::Draw(Application* app)
 {
-	//--- 描画先設定
-	BeginRender(app);	// 描画準備
+	//--- 描画クリア
+	BeginRender(app);
 
 #ifdef BUILD_MODE
 	auto imgui = app->GetSystem<ImGuiManager>();
 
+	//--- 描画先変更
 	if (imgui->IsSceneRender())
 	{
 		imgui->SceneRenderClear();
@@ -212,7 +216,7 @@ void CGameApp::Draw(Application* app)
 	if (CCamera::GetMain() && CLight::GetMain())
 	{
 		// スカイドーム描画
-		CCamera::GetMain()->DrawSkyDome();
+		//CCamera::GetMain()->DrawSkyDome();
 		
 		// シーンの描画
 		CSceneManager::Get().DrawScene();
@@ -234,7 +238,6 @@ void CGameApp::Draw(Application* app)
 	imgui->Render();
 
 #else
-
 	// オブジェクトが存在しないとき
 	if (CCamera::GetMain() && CLight::GetMain())
 	{
@@ -260,6 +263,7 @@ void CGameApp::BeginRender(Application* app)
 	float ClearColor[4] = { 0.117647f, 0.254902f, 0.352941f, 1.0f };
 	auto pDX = app->GetSystem<CDXDevice>();
 	ID3D11DeviceContext* pDC = pDX->GetDeviceContext();
+	//--- ﾒｲﾝ画面クリア
 	pDC->ClearRenderTargetView(pDX->GetRenderTargetView(), ClearColor);
 	pDC->ClearDepthStencilView(pDX->GetDepthStencilView(),
 		D3D11_CLEAR_DEPTH | D3D11_CLEAR_STENCIL, 1.0f, 0);

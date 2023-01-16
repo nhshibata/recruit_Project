@@ -104,6 +104,8 @@ namespace MySpace
 			CRigidbody(std::shared_ptr<CGameObject> owner);
 			~CRigidbody();
 			
+			// *@生成時呼び出し
+			virtual void Awake() {};
 			void Update();
 
 			//--- ゲッター・セッター

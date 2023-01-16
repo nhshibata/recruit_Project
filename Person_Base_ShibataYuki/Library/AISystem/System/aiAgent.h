@@ -35,6 +35,9 @@ namespace AI
 		CAIAgent(std::shared_ptr<CGameObject> owner);
 		~CAIAgent();
 		
+		// *@生成時呼び出し
+		virtual void Awake() {};
+
 		int NodeUpdate();
 
 		//--- ゲッター・セッター
@@ -50,4 +53,5 @@ namespace AI
 		inline bool IsStoping() { return m_bIsStoping; }
 	};
 }
+
 #endif // !__AI_AGENT_H__

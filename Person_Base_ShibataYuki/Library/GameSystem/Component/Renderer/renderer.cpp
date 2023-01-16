@@ -34,9 +34,9 @@ CRenderer::~CRenderer()
 }
 
 //==========================================================
-// •`‰æ“o˜^
+// •`‰æ\¿
 //==========================================================
-void CRenderer::RequestDraw()
+void CRenderer::DrawRequest()
 {
 	m_nDrawIdx = SceneManager::CSceneManager::Get().GetDrawSystem()->RegistToSystem(BaseToDerived<CRenderer>());
 }
@@ -56,7 +56,7 @@ void CRenderer::Init()
 	if(Transform())
 		Transform()->Update();
 
-	RequestDraw();
+	DrawRequest();
 }
 
 //==========================================================
@@ -93,14 +93,12 @@ void CRenderer::ImGuiDebug()
 	ImGui::Checkbox("bool", &m_bVisible);
 	if (ImGui::Begin(u8"ColorWindow", &disp))
 	{
-		if (!disp)
-			return;
 		Vector4 color = Vector4(m_vColor.a, m_vColor.g, m_vColor.b, m_vColor.a);
 		ImGui::ColorPicker4("color4", (float*)&color);
 		//ImGui::ColorEdit4("color", (float*)&color);
 		m_vColor = Color(color.x, color.y, color.z, color.w);
-	}
 	ImGui::End();
+	}
 
 }
 

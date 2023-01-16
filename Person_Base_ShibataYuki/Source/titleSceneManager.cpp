@@ -1,9 +1,9 @@
 //========================================================
 // [gameSceneManager.cpp]
-//------------------------
+//---------------------------------------------------------
 // 作成:2023/01/02
-//------------------------
-//
+//---------------------------------------------------------
+// 
 //========================================================
 
 //--- インクルード部
@@ -33,7 +33,9 @@ public:
 	{};
 	~CAlphaMove() {};
 	
-	void Init() 
+	// *@生成時呼び出し
+	virtual void Awake() {};
+	void Init()
 	{
 		m_pPolygon = GetOwner()->GetComponent<CPolygonRenderer>().lock().get();
 	}
@@ -205,7 +207,7 @@ CTitleSceneManager::~CTitleSceneManager()
 //========================================================
 // 生成時呼び出し
 //========================================================
-void CTitleSceneManager::Awake()
+void CTitleSceneManager::Create()
 {
 	// 名前設定
 	GetOwner()->SetName(Spell::OBJ_NAME_TITLE);
@@ -217,9 +219,10 @@ void CTitleSceneManager::Awake()
 	{
 		//--- ロゴ
 		CGameObject::Ptr obj = CGameObject::CreateObject().lock();
-		auto image = obj->AddComponent<CPolygonRenderer>();
+		const auto image = obj->AddComponent<CPolygonRenderer>();
+		int num = image.use_count();
 		image->SetImageName(FORDER_DIR(Data/Texture/title_Logo.png));
-		image->SetLayer(static_cast<int>(CLayer::E_Layer::UI));
+		image->SetZ(static_cast<int>(CPolygonRenderer::EZValue::DEFAULT));
 		image->GetRectTransform()->SetPos(0, CScreen::GetHalfHeight() - CScreen::GetHalfHeight() * 0.6f);
 		image->GetRectTransform()->SetSize(CScreen::GetWidth() / 3, CScreen::GetHeight() / 3);
 		obj->SetName("Logo");
@@ -229,7 +232,7 @@ void CTitleSceneManager::Awake()
 		CGameObject::Ptr obj = CGameObject::CreateObject().lock();
 		auto image = obj->AddComponent<CPolygonRenderer>().get();
 		image->SetImageName(FORDER_DIR(Data/Texture/title_Logo.png));
-		image->SetLayer(static_cast<int>(CLayer::E_Layer::UI)-1);
+		image->SetZ(static_cast<int>(CPolygonRenderer::EZValue::DEFAULT) - 1);
 		image->GetRectTransform()->SetPos(0, CScreen::GetHalfHeight() - CScreen::GetHalfHeight() * 0.6f);
 		image->GetRectTransform()->SetSize(CScreen::GetWidth() / 3 * 1.05f, CScreen::GetHeight() / 3 * 1.05f);
 		obj->AddComponent<CColorMove>();
@@ -241,22 +244,22 @@ void CTitleSceneManager::Awake()
 		CGameObject* obj = CGameObject::CreateObject().lock().get();
 		auto image = obj->AddComponent<CPolygonRenderer>().get();
 		image->SetImageName(FORDER_DIR(Data/Texture/title_Button.png));
-		image->SetLayer(static_cast<int>(CLayer::E_Layer::UI));
+		image->SetZ(static_cast<int>(CPolygonRenderer::EZValue::DEFAULT));
 		image->GetRectTransform()->SetPos(0, -CScreen::GetHalfHeight() + CScreen::GetHalfHeight() * 0.5f);
 		image->GetRectTransform()->SetSize(CScreen::GetWidth() / 6, CScreen::GetHeight() / 6);
 		obj->AddComponent<CAlphaMove>();
 		obj->SetName("Button");
 	}
 
-	//{
-	//	//--- 背景
-	//	CGameObject* obj = CGameObject::CreateObject().lock().get();
-	//	auto image = obj->AddComponent<CPolygonRenderer>();
-	//	image->SetImageName(FORDER_DIR(Data/Texture/title_BG.png));
-	//	image->SetLayer(static_cast<int>(CLayer::E_Layer::BG));
-	//	image->GetRectTransform()->SetSize(CScreen::GetWidth(), CScreen::GetHeight());
-	//	obj->SetName("BG");
-	//}
+	{
+		//--- 背景
+		CGameObject* obj = CGameObject::CreateObject().lock().get();
+		auto image = obj->AddComponent<CPolygonRenderer>();
+		image->SetImageName(FORDER_DIR(Data/Texture/title_BG.png));
+		image->SetZ(static_cast<int>(CPolygonRenderer::EZValue::BG));
+		image->GetRectTransform()->SetSize(CScreen::GetWidth(), CScreen::GetHeight());
+		obj->SetName("BG");
+	}
 
 	//--- パーティクル
 	//const LPCSTR aImage[] = {
@@ -279,26 +282,30 @@ void CTitleSceneManager::Awake()
 	//--- 曲線移動オブジェクト
 	{
 		CGameObject* obj = CGameObject::CreateObject().lock().get();
-	 	auto move = obj->AddComponent<Spell::CTitleMove>();
+		obj->AddComponent<CPolygonRenderer>();
+		auto move = obj->AddComponent<Spell::CTitleMove>();
 		move->SetStartPos(Vector2(-CScreen::GetWidth(), CScreen::GetHalfHeight() - CScreen::GetHalfHeight() / 7));
 		auto image = obj->GetComponent<CPolygonRenderer>().lock().get();
 		image->SetImageName(FORDER_DIR(Data/Texture/sticon4d-3.png));
+		image->SetZ(static_cast<int>(CPolygonRenderer::EZValue::DEFAULT));
 		image->GetRectTransform()->SetSize(CScreen::GetHalfWidth() / 6, CScreen::GetHalfHeight() / 6);
 		obj->SetName("Curve1");
 	}
-	
+
 	{
 		CGameObject* obj = CGameObject::CreateObject().lock().get();
+		obj->AddComponent<CPolygonRenderer>();
 		auto move = obj->AddComponent<Spell::CTitleMove>();
 		move->SetStartPos(Vector2(CScreen::GetWidth(), -CScreen::GetHalfHeight() + CScreen::GetHalfHeight() / 7));
 		auto image = obj->GetComponent<CPolygonRenderer>().lock().get();
 		image->SetImageName(FORDER_DIR(Data/Texture/sticon4f-3.png));
+		image->SetZ(static_cast<int>(CPolygonRenderer::EZValue::DEFAULT));
 		image->GetRectTransform()->SetSize(CScreen::GetHalfWidth() / 6, CScreen::GetHalfHeight() / 6);
 		obj->SetName("Curve2");
 	}
-
 }
 
+#pragma optimize("", off)
 //========================================================
 // 初期化
 //========================================================
@@ -307,7 +314,10 @@ void CTitleSceneManager::Init()
 	// ﾎﾟｲﾝﾀの取得
 	auto obj = CGameObject::FindGameObjectWithTag(Spell::TAG_FADE);
 	m_pFade = obj.lock()->GetComponent<CFadeController>();
+
+
 }
+#pragma optimize("", on)
 
 //========================================================
 // 更新

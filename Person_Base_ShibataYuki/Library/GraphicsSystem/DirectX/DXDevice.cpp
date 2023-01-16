@@ -1,11 +1,15 @@
 //=========================================================
 // [DXDevice.cpp] 
+//---------------------------------------------------------
 // 作成: / /
 //---------------------------------------------------------
 //=========================================================
 
 //--- インクルード部
 #include <GraphicsSystem/DirectX/DXDevice.h>
+#include <GraphicsSystem/DirectX/renderTarget.h>
+#include <GraphicsSystem/DirectX/depthStencil.h>
+
 #include <ImGui/imgui_impl_win32.h>
 #include <ImGui/imgui_impl_dx11.h>
 
@@ -26,7 +30,6 @@ HRESULT CDXDevice::Init(HWND hWnd, unsigned int Width, unsigned int Height, bool
 	unsigned int numerator = 60;			// 分子
 	unsigned int denominator = 1;			// 分母
 	DXGI_MODE_DESC* displayModeList;
-	D3D11_BLEND_DESC blendStateDescription;
 	m_Width = Width;
 	m_Height = Height;
 
@@ -117,12 +120,12 @@ HRESULT CDXDevice::Init(HWND hWnd, unsigned int Width, unsigned int Height, bool
 	// スワップチェインとは、ウインドウへの表示ダブルバッファを管理する
 	// クラス　マルチサンプリング、リフレッシュレートが設定できる
 	DXGI_SWAP_CHAIN_DESC sd;
-	ZeroMemory(&sd, sizeof(sd));					// ゼロクリア
+	ZeroMemory(&sd, sizeof(sd));						// ゼロクリア
 	sd.BufferCount = 1;									// バックバッファの数
 	sd.BufferDesc.Width = Width;						// バックバッファの幅
 	sd.BufferDesc.Height = Height;						// バックバッファの高さ
 	sd.BufferDesc.Format = DXGI_FORMAT_R8G8B8A8_UNORM;	// バックバッファフォーマット(R,G,B 範囲０．０から１．０)
-	sd.BufferDesc.RefreshRate.Numerator = numerator;			// リフレッシュレート（分母）
+	sd.BufferDesc.RefreshRate.Numerator = numerator;				// リフレッシュレート（分母）
 	sd.BufferDesc.RefreshRate.Denominator = denominator;			// リフレッシュレート（分子）
 	sd.BufferDesc.ScanlineOrdering = DXGI_MODE_SCANLINE_ORDER_UNSPECIFIED;
 	sd.BufferDesc.Scaling = DXGI_MODE_SCALING_UNSPECIFIED;
@@ -151,9 +154,8 @@ HRESULT CDXDevice::Init(HWND hWnd, unsigned int Width, unsigned int Height, bool
 			D3D11_SDK_VERSION,	// 
 			&sd,				// スワップチェインの設定
 			g_pSwapChain.GetAddressOf(),		// IDXGIDwapChainインタフェース	
-			g_pDevice.GetAddressOf(),		// ID3D11Deviceインタフェース
-			&m_FeatureLevel,	// サポートされている機能レベル
-			//featureLevels,
+			g_pDevice.GetAddressOf(),			// ID3D11Deviceインタフェース
+			&m_FeatureLevel,					// サポートされている機能レベル
 			g_pDeviceContext.GetAddressOf());	// デバイスコンテキスト
 		if (SUCCEEDED(hr))
 			break;
@@ -161,7 +163,7 @@ HRESULT CDXDevice::Init(HWND hWnd, unsigned int Width, unsigned int Height, bool
 	if (FAILED(hr))
 		return false;
 	
-
+#if !RT_DS_TEST
 	// レンダリングターゲットを作成
 	// バックバッファのポインタを取得
 	ID3D11Texture2D* pBackBuffer = NULL;
@@ -170,18 +172,24 @@ HRESULT CDXDevice::Init(HWND hWnd, unsigned int Width, unsigned int Height, bool
 		return false;
 
 	// バックバッファへのポインタを指定してレンダーターゲットビューを作成
-	hr = g_pDevice->CreateRenderTargetView(pBackBuffer, NULL, g_pRenderTargetView.GetAddressOf());				//  ts
+	hr = g_pDevice->CreateRenderTargetView(pBackBuffer, NULL, g_pRenderTargetView.GetAddressOf());
 	pBackBuffer->Release();
 	pBackBuffer = 0;
 	if (FAILED(hr))
 		return false;
+#else
+	//--- メモリ確保
+	m_pRenderTarget = std::make_shared<Graphics::CRenderTarget>(g_pSwapChain.Get(), GetDevice());
+	m_pDepthStencil = std::make_shared<Graphics::CDepthStencil>(this);
+#endif // RT_DS_TEST
 
 	// Zバッファ
-	D3D11_TEXTURE2D_DESC depthBufferDesc;
 	D3D11_DEPTH_STENCIL_DESC depthStencilDesc;
 	D3D11_DEPTH_STENCIL_VIEW_DESC depthStencilViewDesc;
 	D3D11_RASTERIZER_DESC rasterDesc;
 
+#if !RT_DS_TEST
+	D3D11_TEXTURE2D_DESC depthBufferDesc;
 	ZeroMemory(&depthBufferDesc, sizeof(depthBufferDesc));
 
 	depthBufferDesc.Width = Width;
@@ -200,6 +208,9 @@ HRESULT CDXDevice::Init(HWND hWnd, unsigned int Width, unsigned int Height, bool
 	if (FAILED(hr)) {
 		return false;
 	}
+#else
+
+#endif // RT_DS_TEST
 
 	// ステンシルステート作成
 
@@ -242,6 +253,8 @@ HRESULT CDXDevice::Init(HWND hWnd, unsigned int Width, unsigned int Height, bool
 	depthStencilViewDesc.ViewDimension = D3D11_DSV_DIMENSION_TEXTURE2D;
 	depthStencilViewDesc.Texture2D.MipSlice = 0;
 
+
+#if !RT_DS_TEST
 	// create the depth stencil view
 	hr = g_pDevice->CreateDepthStencilView(g_pDepthStencilTexture.Get(), &depthStencilViewDesc, g_pDepthStencilView.GetAddressOf());
 	if (FAILED(hr)) {
@@ -250,6 +263,10 @@ HRESULT CDXDevice::Init(HWND hWnd, unsigned int Width, unsigned int Height, bool
 
 	// bind the render target view and depth stencil buffer to the output render pipeline
 	g_pDeviceContext->OMSetRenderTargets(1, g_pRenderTargetView.GetAddressOf(), g_pDepthStencilView.Get());
+#else	
+	auto rtAdress = m_pRenderTarget.get()->GetView();
+	g_pDeviceContext->OMSetRenderTargets(1, &rtAdress, m_pDepthStencil.get()->GetView());
+#endif // RT_DS_TEST
 
 	// setup the raster description which will determine how and what polygons will be drawn
 	rasterDesc.AntialiasedLineEnable = false;
@@ -290,6 +307,9 @@ HRESULT CDXDevice::Init(HWND hWnd, unsigned int Width, unsigned int Height, bool
 	m_viewPort.get()->TopLeftY = 0;
 	g_pDeviceContext->RSSetViewports(1, m_viewPort.get());
 
+#if 0
+	D3D11_BLEND_DESC blendStateDescription;
+
 	//ブレンドステート初期化
 	ZeroMemory(&blendStateDescription, sizeof(D3D11_BLEND_DESC));
 
@@ -326,6 +346,40 @@ HRESULT CDXDevice::Init(HWND hWnd, unsigned int Width, unsigned int Height, bool
 	SetBlendState((int)EBlendState::BS_ALPHABLEND);
 	if (FAILED(hr)) { return hr; }
 
+#else
+	// ブレンド ステート生成
+	D3D11_BLEND_DESC BlendDesc;
+	ZeroMemory(&BlendDesc, sizeof(BlendDesc));
+	BlendDesc.AlphaToCoverageEnable = FALSE;
+	BlendDesc.IndependentBlendEnable = FALSE;
+	BlendDesc.RenderTarget[0].BlendEnable = FALSE;
+	BlendDesc.RenderTarget[0].SrcBlend = D3D11_BLEND_SRC_ALPHA;
+	BlendDesc.RenderTarget[0].DestBlend = D3D11_BLEND_INV_SRC_ALPHA;
+	BlendDesc.RenderTarget[0].BlendOp = D3D11_BLEND_OP_ADD;
+	BlendDesc.RenderTarget[0].SrcBlendAlpha = D3D11_BLEND_ONE;
+	BlendDesc.RenderTarget[0].DestBlendAlpha = D3D11_BLEND_ZERO;
+	BlendDesc.RenderTarget[0].BlendOpAlpha = D3D11_BLEND_OP_ADD;
+	BlendDesc.RenderTarget[0].RenderTargetWriteMask = D3D11_COLOR_WRITE_ENABLE_ALL;
+	hr = g_pDevice->CreateBlendState(&BlendDesc, g_pBlendState[0].GetAddressOf());
+	if (FAILED(hr))
+	{
+		return hr;
+	}
+
+	// 設定と作成
+	// ブレンド ステート生成 (アルファ ブレンド用)
+	//BlendDesc.AlphaToCoverageEnable = TRUE;
+	BlendDesc.RenderTarget[0].BlendEnable = TRUE;
+	g_pDevice->CreateBlendState(&BlendDesc, &g_pBlendState[1]);
+	// ブレンド ステート生成 (加算合成用)
+	BlendDesc.RenderTarget[0].DestBlend = D3D11_BLEND_ONE;
+	g_pDevice->CreateBlendState(&BlendDesc, &g_pBlendState[2]);
+	// ブレンド ステート生成 (減算合成用)
+	BlendDesc.RenderTarget[0].BlendOp = D3D11_BLEND_OP_REV_SUBTRACT;
+	g_pDevice->CreateBlendState(&BlendDesc, &g_pBlendState[3]);
+	SetBlendState((int)EBlendState::BS_ALPHABLEND);
+#endif // 0
+
 	//--- 深度ステンシルステート生成
 	CD3D11_DEFAULT def;
 	CD3D11_DEPTH_STENCIL_DESC dsd(def);
@@ -359,12 +413,8 @@ HRESULT CDXDevice::Init(HWND hWnd, unsigned int Width, unsigned int Height, bool
 
 	SetZWrite(false);
 
-	m_Height = Height;
-	m_Width = Width;
 
 #elif 0
-
-
 	// Zバッファターゲットビュー生成
 	dsvd.ViewDimension = D3D11_DSV_DIMENSION_TEXTURE2DMS;
 	
@@ -556,7 +606,6 @@ HRESULT CDXDevice::Init(HWND hWnd, unsigned int Width, unsigned int Height, bool
 	m_Width = Width;
 #endif // 1
 
-	// デバイスコンテキスト取得
 	return true;
 }
 
@@ -622,3 +671,21 @@ void CDXDevice::Uninit()
 
 #endif // 0
 }
+
+#if RT_DS_TEST
+
+ID3D11RenderTargetView* CDXDevice::GetRenderTargetView() { return m_pRenderTarget.get()->GetView(); }
+
+ID3D11DepthStencilView* CDXDevice::GetDepthStencilView() { return m_pDepthStencil.get()->GetView(); }
+
+void CDXDevice::SwitchRender(ID3D11RenderTargetView* pRTV, ID3D11DepthStencilView* pDSV)
+{
+	auto rt = m_pRenderTarget.get()->GetView();
+	GetDeviceContext()->OMSetRenderTargets(
+		1,
+		pRTV ? &pRTV : &rt,
+		pDSV ? pDSV : m_pDepthStencil.get()->GetView()
+	);
+}
+
+#endif // RT_DS_TEST

@@ -41,9 +41,12 @@ namespace Spell
 		CTitleSceneManager(CGameObject::Ptr owner);
 		~CTitleSceneManager();
 
-		void Awake();
-		void Init();
+		// *@¶¬ŒÄ‚Ño‚µ
+		virtual void Awake() {};
+		void Init()override;
 		void Update();
+		
+		void Create();
 
 	};
 
