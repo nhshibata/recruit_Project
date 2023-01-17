@@ -58,7 +58,7 @@
 #include <Application/Application.h>
 #include <GameSystem/Manager/sceneManager.h>
 //#include <gameCentipedeMarch.h>
-#include <gameManager.h>
+#include <spellComponents.h>
 
 //--- ライブラリ参照
 // プロパティで指定するか、ここで指定するか…悩みどころ
@@ -93,32 +93,43 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 
 	//_CrtDumpMemoryLeaks();
 
+#if 1
+
+
 	// *@シーン作成時に呼び出すｸﾗｽ
 	// *@静的なシーン作成の場合、動的な作成はファイル書き込みと読み込みを行う
 	// *@通常の関数でもいいような
-	//class CMyScene
-	//{
-	//public:
-	//	CMyScene()
-	//	{
-	//	}
-	//	~CMyScene()
-	//	{
-	//	}
-	//	void* Load(CScene* scene, int mode)
-	//	{
-	//		//auto obj = scene->GetObjManager()->CreateGameObject();
-	//		//obj->AddComponent<CGameCentipedeMarch>();
-	//		scene->SetSceneName("BuildeScene");
-	//		scene->CreateEmptyScene();
-	//		return nullptr;
-	//	}
-	//};
+	class CMyScene
+	{
+	public:
+		CMyScene()
+		{
+		}
+		~CMyScene()
+		{
+		}
+		void* Load(CScene* scene, int mode)
+		{
+			scene->CreateEmptyScene();
+
+			auto obj = CGameObject::CreateObject().lock();
+			auto game = obj->AddComponent<Spell::CGameManager>();
+			game->GetOwner()->SetName("GameManager");
+			//game->Awake();
+
+			//--- 名前設定
+			scene->SetSceneName("StartScene");
+			return nullptr;
+		}
+	};
+
+	CreateComponentSpell();
 
 	//--- シーン読み込み時呼び出す関数を設定
-	//CMyScene my;
-	//CSceneManager::Get().SceneLoaded<CMyScene>(&CMyScene::Load, &my);	
-
+	CMyScene my;
+	CSceneManager::Get().SceneLoaded<CMyScene>(&CMyScene::Load, &my);
+	
+#else
 	class CStartScene : public CScene
 	{
 	public:
@@ -154,6 +165,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 	//--- メモリ確保
 	std::shared_ptr<CStartScene> startScene = std::make_shared<CStartScene>();
 	CSceneManager::Get().SetStartScene(startScene);
+#endif // 1
 
 
 #if !_DEBUG

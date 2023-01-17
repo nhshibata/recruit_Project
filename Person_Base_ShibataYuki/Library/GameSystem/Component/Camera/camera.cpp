@@ -174,9 +174,12 @@ void CCamera::DrawSkyDome()
 	if (!m_pSky.lock())
 		return;
 
+	auto pDX = Application::Get()->GetSystem<CDXDevice>();
+	pDX->SetZBuffer(false);
 	m_pSky.lock()->SetVisible(true);
 	m_pSky.lock()->Draw(0);
 	m_pSky.lock()->SetVisible(false);
+	pDX->SetZBuffer(true);
 }
 
 //==========================================================

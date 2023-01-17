@@ -276,7 +276,7 @@ void CGameObjectManager::TagMove(std::string NextTag, std::weak_ptr<CGameObject>
 			m_aTagMap[NextTag].list.push_back(obj);
 		return;
 	}
-	
+
 	//--- Œ»Ý‚Ìtag‚©‚çœŠO
 	const auto tag = obj.lock()->GetTag();
 	//auto it = currentTag.FindObj(obj.lock());

@@ -122,24 +122,6 @@ void CDrawSystem::Update()
 		m_aPolygonList[cnt].lock()->Draw();
 	}
 
-	{
-		for (int cnt = UIIdx; cnt < m_aPolygonList.size(); ++cnt)
-		{
-			// ポインタ確認
-			if (!m_aPolygonList[cnt].lock())
-				continue;
-
-			// 描画可能な状態か確認
-			if (!m_aPolygonList[cnt].lock()->IsActive() || !m_aPolygonList[cnt].lock()->IsVisible())
-				continue;
-
-			//--- 描画
-			m_aPolygonList[cnt].lock()->Draw();
-		}
-		m_aInstancingMeshMap.clear();
-		m_aInstancingModelMap.clear();
-		return;
-	}
 
 	//--- 通常描画
 	for (auto & it : m_aIntMap)
@@ -239,9 +221,11 @@ void CDrawSystem::InstancingDraw()
 	auto pAssets = Application::Get()->GetSystem<CAssetsManager>();
 	auto pDX = Application::Get()->GetSystem<CDXDevice>();
 
+	pDX->SetCullMode((int)ECullMode::CULLMODE_CCW);
 	CLight* pLight = CLight::GetMain();
-	pLight->SetDisable(false);			// ライティング無効
-	pDX->SetZBuffer(true);				// Z書き込み
+	pLight->SetDisable();			// ライティング無効
+	//pDX->SetZBuffer(true);		// Z書き込み
+	pDX->SetZWrite(true);			// Z書き込み
 
 	//--- 登録されたモデル名別に描画
 	const int MAX_INSTANCING = 100;
@@ -257,12 +241,14 @@ void CDrawSystem::InstancingDraw()
 		++m_nInstancingCnt;
 #endif // _DEBUG
 	}
-	pLight->SetDisable(true);			// ライティング有効
+	pLight->SetEnable();			// ライティング有効
 
+
+	pDX->SetZWrite(false);			// Z書き込み
 
 	//--- 半透明部分描画
 	pDX->SetBlendState(static_cast<int>(EBlendState::BS_ALPHABLEND));
-	pDX->SetZBuffer(false);
+	
 	for (auto & intancingModel : m_aInstancingModelMap)
 	{
 		//--- 描画するモデルの取得
@@ -270,7 +256,8 @@ void CDrawSystem::InstancingDraw()
 		model->DrawInstancing(pDX->GetDeviceContext(), intancingModel.second, EByOpacity::eOpacityOnly);
 		intancingModel.second.clear();	// 使用終了
 	}
-	pDX->SetZBuffer(true);
+	
+	pDX->SetZWrite(true);			// Z書き込み
 	pDX->SetBlendState(static_cast<int>(EBlendState::BS_NONE));
 	// クリア
 	m_aInstancingModelMap.clear();
@@ -302,7 +289,7 @@ void CDrawSystem::InstancingDraw()
 
 	//--- 設定を戻す
 	pLight->SetEnable();		// ライティング有効
-	pDX->SetZBuffer(true);
+	//pDX->SetZBuffer(true);
 	//CDXDevice::Get()->SetBlendState(static_cast<int>(EBlendState::BS_NONE));		// αブレンディング無効
 }
 

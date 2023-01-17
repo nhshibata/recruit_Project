@@ -69,7 +69,8 @@ public:
 			return ret;
 		}
 
-		m_aSystems[name] = new T;
+		//m_aSystems[name] = new T;
+		m_aSystems.insert(std::make_pair(name, new T));
 		return reinterpret_cast<T*>(m_aSystems[name]);
 	}
 

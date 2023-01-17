@@ -203,8 +203,8 @@ void CGameObject::ComponentAddPreparation(std::shared_ptr<CComponent> com)
 {
 	//m_pComponent.push_back(com);
 	com->SetPtr(com);					// 自身のポインタの設定
-	com->SetOwner(GetPtr().lock());		// 所持gameobjectの設定
-	//com.get()->Awake();
+	//com->SetOwner(GetPtr().lock());		// 所持gameobjectの設定
+	//com->Awake();
 }
 
 //==========================================================

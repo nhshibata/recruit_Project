@@ -198,6 +198,7 @@
       <WholeProgramOptimization Condition="'$(Configuration)|$(Platform)'=='Release|x64'">false</WholeProgramOptimization>
     </ClCompile>
     <ClCompile Include="..\Source\gameSceneManager.cpp" />
+    <ClCompile Include="..\Source\spellComponents.cpp" />
     <ClCompile Include="..\Source\spellPlayer.cpp" />
     <ClCompile Include="..\Source\stageBuild.cpp" />
     <ClCompile Include="..\Source\stageManager.cpp" />
@@ -227,6 +228,7 @@
     <ClInclude Include="..\Source\fadeController.h" />
     <ClInclude Include="..\Source\gameManager.h" />
     <ClInclude Include="..\Source\gameSceneManager.h" />
+    <ClInclude Include="..\Source\spellComponents.h" />
     <ClInclude Include="..\Source\spellDefine.h" />
     <ClInclude Include="..\Source\spellPlayer.h" />
     <ClInclude Include="..\Source\stageBuild.h" />

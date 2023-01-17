@@ -7,11 +7,11 @@
 //========================================================
 
 //--- インクルード部
-#include "spellPlayer.h"
-#include "fadeController.h"
-#include "stageManager.h"
-#include "gameSceneManager.h"
-#include "spellDefine.h"
+#include <spellPlayer.h>
+#include <fadeController.h>
+#include <stageManager.h>
+#include <gameSceneManager.h>
+#include <spellDefine.h>
 
 #include <CoreSystem/Sound/Sound.h>
 
@@ -63,7 +63,7 @@ void CGameSceneManager::Awake()
 	{
 		auto obj = CGameObject::CreateObject().lock();
 		auto stage = obj->AddComponent<CStageManager>();
-		stage->StartBuild(FORDER_DIR(Data / CSV / stage01.csv));
+		stage->StartBuild(FORDER_DIR(Data/CSV/stage01.csv));
 	}
 
 }

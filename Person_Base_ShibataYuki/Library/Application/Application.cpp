@@ -43,14 +43,14 @@ namespace
 //==========================================================
 // 初期化
 //==========================================================
-bool Application::Init(HINSTANCE h_Instance)
+bool Application::Init(HINSTANCE hInstance)
 {
 	// 幅と高さ初期化
 	//CScreen::SetSize(1280.0f, 960.0f);
 
 	//--- ウインドウ作成
 	CWindow* window = AddSystem<CWindow>();
-	window->RegisterClass(h_Instance, WINDOW_CLASS_NAME, CS_CLASSDC);
+	window->RegisterClass(hInstance, WINDOW_CLASS_NAME, CS_CLASSDC);
 	
 	// COM初期化
 	if (FAILED(CoInitializeEx(nullptr, COINIT_MULTITHREADED))) 
@@ -59,7 +59,7 @@ bool Application::Init(HINSTANCE h_Instance)
 		return false;
 	}
 
-	window->SetWindow(h_Instance,
+	window->SetWindow(hInstance,
 		WINDOW_STYLE_WINDOWED,
 		WINDOW_EX_STYLE_WINDOWED,
 		NULL,
@@ -71,7 +71,7 @@ bool Application::Init(HINSTANCE h_Instance)
 
 	// 必要な変数を格納
 	m_hWnd = window->GetHWND();
-	m_hInst = h_Instance;
+	m_hInst = hInstance;
 
 	// 読み込みが必要なシステムの関数を呼び出す	
 	AddSystem<CFuncManager>();

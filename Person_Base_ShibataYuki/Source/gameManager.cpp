@@ -7,11 +7,11 @@
 //========================================================
 
 //--- インクルード部
-#include "gameManager.h"
-#include "fadeController.h"
-#include "gameSceneManager.h"
-#include "titleSceneManager.h"
-#include "spellDefine.h"
+#include <gameManager.h>
+#include <fadeController.h>
+#include <gameSceneManager.h>
+#include <titleSceneManager.h>
+#include <spellDefine.h>
 
 #include <GameSystem/Manager/sceneManager.h>
 
@@ -89,6 +89,8 @@ void CGameManager::Update()
 //========================================================
 void* CGameManager::SceneResponce(MySpace::SceneManager::CScene* prev, MySpace::SceneManager::CScene* next)
 {
+	next->CreateEmptyScene();
+
 	if (next->GetSceneName() == Spell::OBJ_NAME_TITLE)
 	{
 		auto obj = CGameObject::CreateObject().lock();

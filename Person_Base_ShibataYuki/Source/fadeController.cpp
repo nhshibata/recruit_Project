@@ -19,12 +19,12 @@ void CFadeController::Awake()
 	m_SceneName.clear();
 
 	GetOwner()->SetName("FadeController");
-	GetOwner()->AddComponent<CPolygonRenderer>();
+	GetOwner()->AddComponent<MySpace::Game::CPolygonRenderer>();
 }
 
 void CFadeController::Init()
 {
-	m_pPolygon = GetOwner()->GetComponent<CPolygonRenderer>();
+	m_pPolygon = GetOwner()->GetComponent<MySpace::Game::CPolygonRenderer>();
 	m_pPolygon.lock()->SetColor(Color(0, 0, 0, 0));
 	m_pPolygon.lock()->GetRectTransform()->SetSize(CScreen::GetWidth(), CScreen::GetHeight());
 	m_pPolygon.lock()->SetZ(static_cast<int>(CLayer::E_Layer::FOG));
@@ -53,7 +53,7 @@ void CFadeController::Update()
 			//--- ŽŸ‚ÌScene–¼‚ªŽw’è‚³‚ê‚Ä‚¢‚ê‚Î
 			if (!m_SceneName.empty())
 			{
-				CSceneManager::Get().CreateNewScene<CScene>(m_SceneName);
+				CSceneManager::Get().SceneTransition(m_SceneName);
 				m_SceneName.clear();
 				m_eState = E_FadeState::FADE_IN_START;
 			}

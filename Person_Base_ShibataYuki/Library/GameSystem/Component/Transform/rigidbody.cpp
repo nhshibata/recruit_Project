@@ -65,11 +65,14 @@ void CRigidbody::Update()
 		//m_vVel.y += m_fGravity * CFps::Get().DeltaTime();
 
 		m_vForce.y += m_fGravity * CFps::Get().DeltaTime();
-		Vector3 vec = m_vForce / m_fMass;
-		m_vVel += vec * CFps::Get().DeltaTime();
-		pos += m_vVel * CFps::Get().DeltaTime();
-		
 	}
+
+	// TODO:óvïœçX
+	Vector3 vec = m_vForce / m_fMass;
+	m_vVel += vec * CFps::Get().DeltaTime();
+	pos += m_vVel * CFps::Get().DeltaTime();
+
+	m_vVel = Vector3(0, 0, 0);
 
 	// à íuå≈íË
 	m_pFreezPos.Fix(pos);
