@@ -35,10 +35,10 @@ void CRectTransform::ImGuiDebug()
 {
 	// 3次元座標
 	//ImGui::InputFloat3(u8"プレイヤー座標", (float*)&this->GetPos());
-	ImGui::DragFloat2(u8"座標", (float*)m_vPos);
-	ImGui::DragFloat2(u8"サイズ", (float*)m_vSize);
-	ImGui::DragFloat(u8"角度", (float*)&m_fAngle);
-	ImGui::SliderAngle(u8"角度", &m_fAngle);
+	ImGui::DragFloat2(u8"rect座標", (float*)m_vPos);
+	ImGui::DragFloat2(u8"rectサイズ", (float*)m_vSize);
+	ImGui::DragFloat(u8"rect角度", (float*)&m_fAngle);
+	ImGui::SliderAngle(u8"rect角度", &m_fAngle);
 
 }
 

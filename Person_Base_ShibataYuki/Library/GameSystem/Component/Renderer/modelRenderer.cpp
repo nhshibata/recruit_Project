@@ -187,12 +187,10 @@ bool CModelRenderer::Draw(int no)
 	pLight->SetEnable();	// ライティング有効
 
 	//--- 半透明部分描画
-	pDX->SetZBuffer(false);
 	pDX->SetBlendState(static_cast<int>(EBlendState::BS_ALPHABLEND));
 
 	m_pModel->Draw(pDX->GetDeviceContext(), mtx, EByOpacity::eTransparentOnly);
 
-	pDX->SetZBuffer(true);			// αブレンディング無効
 	pDX->SetBlendState(static_cast<int>(EBlendState::BS_NONE));		// 光源有効
 
 	return true;

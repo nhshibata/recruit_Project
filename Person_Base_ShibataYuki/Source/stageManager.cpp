@@ -7,9 +7,9 @@
 //========================================================
 
 //--- インクルード部
-#include "stageManager.h"
-#include "stageBuild.h"
-#include "spellDefine.h"
+#include <stageManager.h>
+#include <stageBuild.h>
+#include <spellDefine.h>
 
 using namespace Spell;
 
@@ -62,7 +62,7 @@ void CStageManager::StartBuild(std::string file)
 	m_pCSV->Load(file);
 
 	//--- ステージ構築
-	CStageBuild build(PointToPos(GridPoint(0, 0)), 1);
+	CStageBuild build(PointToPos(GridPoint(0, 0)), 0.5f);
 	build.Build(m_pCSV);
 }
 

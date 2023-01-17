@@ -7,8 +7,8 @@
 //========================================================
 
 //--- インクルード部
-#include "spellPlayer.h"
-#include "spellDefine.h"
+#include <spellPlayer.h>
+#include <spellDefine.h>
 #include <CoreSystem/Input/input.h>
 #include <GameSystem/Component/Transform/rigidbody.h>
 #include <GameSystem/Component/Collision/boxCollision.h>
@@ -33,7 +33,7 @@ CSpellPlayer::CSpellPlayer(CGameObject::Ptr owner)
 }
 
 //========================================================
-// 
+// デスクトラクタ
 //========================================================
 CSpellPlayer::~CSpellPlayer()
 {

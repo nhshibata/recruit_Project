@@ -7,7 +7,7 @@
 //========================================================
 
 //--- インクルード部
-#include "titleMove.h"
+#include <titleMove.h>
 
 using namespace Spell;
 

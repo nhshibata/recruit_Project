@@ -44,8 +44,9 @@ bool CStageBuild::Build(CResourceCSV* csv)
 	CGameObject::PtrWeak obj;
 	int data = 0;
 	const char* aModelName[] = {
-		MODEL_PATH2(block01.x),
-		MODEL_PATH2(block02.x),
+		MODEL_PATH2(ToyStage/WorkBlock.fbx),
+		MODEL_PATH2(ToyStage/WorkOctagon.fbx),
+		MODEL_PATH2(ToyStage/MovingBlock.fbx),
 	};
 
 	// 縦
@@ -62,6 +63,9 @@ bool CStageBuild::Build(CResourceCSV* csv)
 
 			//--- オブジェクト生成
 			obj = CGameObject::CreateObject();
+
+			// 仮の名前設定
+			obj.lock()->SetName("Cell_" + std::to_string(column) + std::to_string(row));
 
 			// tag設定
 			obj.lock()->SetObjTag(Spell::TAG_LAND);
@@ -81,6 +85,7 @@ bool CStageBuild::Build(CResourceCSV* csv)
 			auto box = obj.lock()->AddComponent<CBoxCollision>();
 			// ﾄﾘｶﾞｰ設定
 			box->SetTrigger(false);
+
 		}
 
 	}

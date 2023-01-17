@@ -129,12 +129,11 @@ namespace MySpace
 			template <class T>
 			std::shared_ptr<T> AddComponent()
 			{
-				std::shared_ptr<T> sp = std::make_shared<T>(GetPtr().lock());
-				m_aComponent.push_back(sp);		// 配列への追加
-				T* com = dynamic_cast<T*>(sp.get());
-				ComponentAddPreparation(sp);	// ｺﾝﾎﾟｰﾈﾝﾄ追加準備
-				com->Awake();					// 生成時呼び出し
-				return sp;
+				std::shared_ptr<T> com = std::make_shared<T>(GetPtr().lock());
+				m_aComponent.push_back(com);	// 配列への追加
+				ComponentAddPreparation(com);	// ｺﾝﾎﾟｰﾈﾝﾄ準備
+				com.get()->Awake();			// 生成時呼び出し
+				return com;
 			}
 
 			// *@コンポーネントの破棄

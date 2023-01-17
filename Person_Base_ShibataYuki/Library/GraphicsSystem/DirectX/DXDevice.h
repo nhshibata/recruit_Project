@@ -174,7 +174,7 @@ namespace MySpace
 				GetDeviceContext()->OMSetRenderTargets(
 					1,
 					pRTV ? &pRTV : g_pRenderTargetView.GetAddressOf(),
-					pDSV ? pDSV : g_pDepthStencilView.Get()
+					pDSV
 				);
 				
 			}

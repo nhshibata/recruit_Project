@@ -99,10 +99,6 @@ void CGameApp::Init(Application* app)
 #ifdef BUILD_MODE
 	//--- imGuiの初期化処理
 	auto imgui = app->AddSystem<ImGuiManager>();
-	if (!imgui)
-	{
-		int a = 0;
-	}
 	imgui->Init(hWnd, pDevice, pDC);
 #endif // BUILD_MODE
 
@@ -141,7 +137,6 @@ void CGameApp::Uninit(Application* app)const
 //==========================================================
 void CGameApp::Run(Application* app)
 {
-	
 	// 音更新
 	CSound::Update();
 
@@ -161,6 +156,7 @@ void CGameApp::Run(Application* app)
 	}
 #endif // DEBUG
 
+	//--- シーン更新
 	CSceneManager::Get().UpdateScene();
 
 	// Tweenの更新(順番検討)
@@ -216,7 +212,7 @@ void CGameApp::Draw(Application* app)
 	if (CCamera::GetMain() && CLight::GetMain())
 	{
 		// スカイドーム描画
-		//CCamera::GetMain()->DrawSkyDome();
+		CCamera::GetMain()->DrawSkyDome();
 		
 		// シーンの描画
 		CSceneManager::Get().DrawScene();
@@ -265,13 +261,12 @@ void CGameApp::BeginRender(Application* app)
 	ID3D11DeviceContext* pDC = pDX->GetDeviceContext();
 	//--- ﾒｲﾝ画面クリア
 	pDC->ClearRenderTargetView(pDX->GetRenderTargetView(), ClearColor);
-	pDC->ClearDepthStencilView(pDX->GetDepthStencilView(),
-		D3D11_CLEAR_DEPTH | D3D11_CLEAR_STENCIL, 1.0f, 0);
+	pDC->ClearDepthStencilView(pDX->GetDepthStencilView(), D3D11_CLEAR_DEPTH | D3D11_CLEAR_STENCIL, 1.0f, 0);
 
-	/*ID3D11RenderTargetView* pViews[] = {
+	ID3D11RenderTargetView* pViews[] = {
 		pDX->GetRenderTargetView()
-	};*/
-	//pDC->OMSetRenderTargets(1, pViews, nullptr);
+	};
+	pDC->OMSetRenderTargets(1, pViews, pDX->GetDepthStencilView());
 }
 
 //==========================================================

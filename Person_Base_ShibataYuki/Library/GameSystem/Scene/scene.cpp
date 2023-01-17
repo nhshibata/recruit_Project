@@ -83,11 +83,10 @@ void CScene::Draw()
 //==========================================================
 void CScene::CreateEmptyScene()
 {
-	if (m_pObjeManager)
+	/*if (m_pObjeManager)
 	{
 		m_pObjeManager->Uninit();
-	}
-
+	}*/
 	m_pObjeManager->CreateBasicObject();
 	if(m_SceneName.empty())
 		m_SceneName = "empty";

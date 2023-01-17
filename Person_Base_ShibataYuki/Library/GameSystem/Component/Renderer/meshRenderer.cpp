@@ -19,7 +19,7 @@ using namespace MySpace::Graphics;
 // コンストラクタ
 //==========================================================
 CMeshRenderer::CMeshRenderer() 
-	:m_vCenter(0, 0, 0), m_bLightEnable(true), m_fBSRadius(1),m_nStaticMode(static_cast<int>(EStaticMode::NONE))
+	:m_vCenter(0, 0, 0), m_bLightEnable(false), m_fBSRadius(1),m_nStaticMode(static_cast<int>(EStaticMode::NONE))
 {
 	m_MeshMaterial = CMeshMaterial(
 		Vector4(0.0f, 1.0f, 0.0f, 0.3f),

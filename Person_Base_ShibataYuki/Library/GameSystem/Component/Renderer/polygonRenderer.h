@@ -32,14 +32,14 @@ namespace MySpace
 			void save(Archive& archive) const
 			{
 				archive(cereal::make_nvp("polygonRender", cereal::base_class<CRenderer>(this)),
-					CEREAL_NVP(m_pSprite), CEREAL_NVP(m_pRectTransform)
+					CEREAL_NVP(m_pSprite), CEREAL_NVP(m_pRectTransform), CEREAL_NVP(m_nZValue)
 				);
 			}
 			template<class Archive>
 			void load(Archive& archive)
 			{
 				archive(cereal::make_nvp("polygonRender", cereal::base_class<CRenderer>(this)),
-					CEREAL_NVP(m_pSprite), CEREAL_NVP(m_pRectTransform)
+					CEREAL_NVP(m_pSprite), CEREAL_NVP(m_pRectTransform), CEREAL_NVP(m_nZValue)
 				);
 			}
 		public:
@@ -51,14 +51,19 @@ namespace MySpace
 			};
 
 		private:
-			std::unique_ptr<CSpriteAnimation> m_pSprite;	// 描画テクスチャ
-			RectTransWeakPtr m_pRectTransform;				// 描画情報
+			CSpriteAnimation m_pSprite;	// 描画テクスチャ
+			RectTransWeakPtr m_pRectTransform;
 			int m_nZValue;
 
 		public:
-			CPolygonRenderer();
+			//CPolygonRenderer();
+			CPolygonRenderer()
+				:m_nZValue(0)
+			{
+			}
 			CPolygonRenderer(std::shared_ptr<CGameObject> owner);
-			~CPolygonRenderer();
+			CPolygonRenderer(const CPolygonRenderer&);
+			virtual ~CPolygonRenderer();
 
 			virtual void Awake();
 			virtual void Init();
@@ -66,14 +71,14 @@ namespace MySpace
 			virtual bool Draw();
 
 			inline RectTransSharedPtr GetRectTransform() { return m_pRectTransform.lock(); }
-			inline CSpriteAnimation* GetSprite() { return m_pSprite.get(); }
-			inline std::string GetImageName() { return m_pSprite->GetImageName(); }
-			inline int GetZ() { return m_nZValue; }
+			inline CSpriteAnimation* GetSprite() { return &m_pSprite; }
+			inline std::string GetImageName() { return m_pSprite.GetImageName(); }
+			inline const int GetZ() { return m_nZValue; }
 
 			inline void SetRectTransform(RectTransSharedPtr ptr) { m_pRectTransform = ptr; }
 			inline void SetImageName(std::string name)
 			{
-				m_pSprite->SetImage(name);
+				m_pSprite.SetImage(name);
 			}
 			void SetZ(const int z);
 			void SetZ(const EZValue z);
@@ -88,4 +93,4 @@ namespace MySpace
 
 CEREAL_REGISTER_TYPE(MySpace::Game::CPolygonRenderer)
 
-#endif // !__RENDERER_H_
+#endif // !__POLYGON_RENDERER_COMPONENT_H__

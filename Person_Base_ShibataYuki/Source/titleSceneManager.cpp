@@ -7,10 +7,10 @@
 //========================================================
 
 //--- インクルード部
-#include "titleSceneManager.h"
-#include "fadeController.h"
-#include "spellDefine.h"
-#include "titleMove.h"
+#include <titleSceneManager.h>
+#include <fadeController.h>
+#include <spellDefine.h>
+#include <titleMove.h>
 
 #include <CoreSystem/Input/input.h>
 #include <CoreSystem/Sound/Sound.h>
