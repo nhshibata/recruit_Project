@@ -141,7 +141,6 @@ public:
 		{
 			auto color = m_pPolygon->GetColor();
 			Vector3 vec1, vec2, startPos, endPos;
-			int num = rand() % 15 + 10;
 			float dir = color.r + color.g + color.b;
 			startPos.x = color.r;
 			startPos.y = color.g;
@@ -159,7 +158,7 @@ public:
 				endPos = Vector3(0.3f, 0.3f, 0.3f);
 			}
 
-			m_aCurveList = ST_MyMath::MakeHermiteCurve(startPos, vec1, endPos, vec2, num);
+			m_aCurveList = ST_MyMath::MakeHermiteCurve(startPos, vec1, endPos, vec2, rand() % 15 + 10);
 			return;
 		}
 
@@ -220,7 +219,6 @@ void CTitleSceneManager::Create()
 		//--- ƒƒS
 		CGameObject::Ptr obj = CGameObject::CreateObject().lock();
 		const auto image = obj->AddComponent<CPolygonRenderer>();
-		int num = image.use_count();
 		image->SetImageName(FORDER_DIR(Data/Texture/title_Logo.png));
 		image->SetZ(static_cast<int>(CPolygonRenderer::EZValue::DEFAULT));
 		image->GetRectTransform()->SetPos(0, CScreen::GetHalfHeight() - CScreen::GetHalfHeight() * 0.6f);
@@ -291,7 +289,7 @@ void CTitleSceneManager::Create()
 		image->GetRectTransform()->SetSize(CScreen::GetHalfWidth() / 6, CScreen::GetHalfHeight() / 6);
 		obj->SetName("Curve1");
 	}
-
+	
 	{
 		CGameObject* obj = CGameObject::CreateObject().lock().get();
 		obj->AddComponent<CPolygonRenderer>();

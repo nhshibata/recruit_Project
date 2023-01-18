@@ -42,6 +42,7 @@ void CScene::Init(std::weak_ptr<CScene> scene)
 {
 	m_spPtr = scene;
 	m_pObjeManager = std::make_shared<CGameObjectManager>(scene.lock());
+
 	// シーンに対してゲームオブジェクトを引き渡す
 	//m_objeManager->Init();
 }
@@ -87,6 +88,7 @@ void CScene::CreateEmptyScene()
 	{
 		m_pObjeManager->Uninit();
 	}*/
+
 	m_pObjeManager->CreateBasicObject();
 	if(m_SceneName.empty())
 		m_SceneName = "empty";

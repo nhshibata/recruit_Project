@@ -25,6 +25,7 @@ AIMap::AIMap(int dataSize, int grid, AIMapOperator&& op)
 	int totalGrid = m_grid * m_grid;
 	for (int i = 0; i < totalGrid; ++i)
 	{
+#pragma warning(suppress: 26451)
 		op.Operator(PointToPos(IndexToPoint(i)), m_pData + m_stride * i);
 	}
 }
@@ -68,6 +69,7 @@ void AIMap::AddScore(const Vector3& pos, const Vector3& size, AIMapOperator&& op
 		for (point.x = startPoint.x; point.x <= endPoint.x; ++point.x)
 		{
 			if (IsOutOfPoint(point)) { continue; }
+#pragma warning(suppress: 26451)
 			op.Operator(PointToPos(point), m_pData + m_stride * PointToIndex(point));
 		}
 	}
@@ -84,7 +86,8 @@ Vector3 AIMap::SearchTarget(const Vector3 start, AIMapOperator&& op)
 	for (int i = 0; i < grid; ++i)
 	{
 		Vector3 pos = PointToPos(IndexToPoint(i));
-		float score = op.Operator(pos, m_pData + m_stride * i);
+#pragma warning(suppress: 26451)
+		float score = op.Operator(pos, m_pData + m_stride * i );
 		if (score > maxScore)
 		{
 			maxScore = score;
@@ -183,7 +186,8 @@ AIMap::Route AIMap::SearchRoute(const Vector3 start, const Vector3 target, AIMap
 				// 新しくオープンリストへ追加
 				ptr->parent = minScoreList;
 				ptr->point = pt;
-				ptr->score = op.Operator(PointToPos(pt), m_pData + m_stride * idx);
+#pragma warning(suppress: 26451)
+				ptr->score = op.Operator(PointToPos(pt), m_pData + m_stride * idx );
 				openList.push_back(ptr);
 			}
 		}

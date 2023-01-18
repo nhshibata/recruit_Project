@@ -16,8 +16,9 @@
 #include <CoreSystem/Util/stl.h>
 #include <CoreSystem/Util/define.h>
 
-#include <ImGui/imgui.h>
+#include <CoreSystem/systemBase.h>
 
+#include <ImGui/imgui.h>
 #include "D3D11.h"
 
 #pragma region ForwardDeclaration
@@ -53,7 +54,7 @@ namespace MySpace
 		using MySpace::Graphics::CDepthStencil;
 
 		// ImGui管理クラス
-		class ImGuiManager
+		class ImGuiManager : public MySpace::System::CSystemBase
 		{
 		public:
 			//--- 列挙体定義
@@ -76,6 +77,7 @@ namespace MySpace
 				Debug,
 				Release,
 			};
+
 			//--- エイリアス
 			using MapString = std::map<std::string, int>;
 			using MapStringPair = std::pair<std::string, int>;
@@ -111,7 +113,7 @@ namespace MySpace
 			ImGuiManager();
 			~ImGuiManager() = default;
 
-			void Init(HWND hWnd, ID3D11Device* device, ID3D11DeviceContext* context);
+			HRESULT Init(HWND hWnd, ID3D11Device* device, ID3D11DeviceContext* context);
 			void Update();
 			void Render();
 			void Uninit();

@@ -108,6 +108,8 @@ namespace MySpace
 			virtual void Awake() {};
 			void Update();
 
+			void OnCollisionEnter(CGameObject * obj);
+
 			//--- ゲッター・セッター
 			_NODISCARD inline Vector3 GetVel() { return m_vVel; };
 			_NODISCARD inline Vector3 GetAccel() { return m_vAccel; };

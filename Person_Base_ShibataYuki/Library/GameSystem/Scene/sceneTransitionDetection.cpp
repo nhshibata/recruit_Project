@@ -36,6 +36,9 @@ CSceneTransitionDetection::~CSceneTransitionDetection()
 //==========================================================
 void CSceneTransitionDetection::Call(CScene* prev, CScene* next)
 {
+	if (m_pChangeFunc.size() == 0)
+		return;
+
 	auto list = m_pChangeFunc;
 	m_pChangeFunc.clear();
 
@@ -50,10 +53,11 @@ void CSceneTransitionDetection::Call(CScene* prev, CScene* next)
 //==========================================================
 void CSceneTransitionDetection::Call(CScene* scene, int mode)
 {
+	if (m_pLoadFunc.size() == 0)
+		return;
+
 	auto list = m_pLoadFunc;
 	m_pLoadFunc.clear();
-	if (list.size() == 0)
-		return;
 
 	for (auto it = list.begin(); it != list.end(); ++it)
 	{
@@ -66,6 +70,9 @@ void CSceneTransitionDetection::Call(CScene* scene, int mode)
 //==========================================================
 void CSceneTransitionDetection::Call(CScene* scene)
 {
+	if (m_pUnloadFunc.size() == 0)
+		return;
+
 	auto list = m_pUnloadFunc;
 	m_pUnloadFunc.clear();
 

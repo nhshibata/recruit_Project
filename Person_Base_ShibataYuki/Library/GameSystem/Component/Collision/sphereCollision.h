@@ -59,7 +59,7 @@ namespace MySpace
 			bool Sphere(Vector3 Apos, float Ar, Vector3 Bpos, float Br);
 			bool CollisionSphere(Vector3 pos, float radius);
 
-			Vector3 PosAdjustment(Vector3 pos, Vector3 size) {};
+			Vector3 PosAdjustment(Vector3 pos, Vector3 size) { return Vector3(); };
 			Vector3 PosAdjustment(Vector3 pos, float size);
 
 			// *@コリジョンｸﾗｽを引き数にとって、当たり判定を行う

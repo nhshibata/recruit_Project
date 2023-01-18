@@ -10,6 +10,7 @@
 #include <GameSystem/Component/Transform/transform.h>
 
 using namespace MySpace::Game;
+using namespace AI;
 
 //==========================================================
 // コンストラクタ

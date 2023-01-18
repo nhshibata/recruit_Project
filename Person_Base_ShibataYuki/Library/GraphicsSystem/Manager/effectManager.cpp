@@ -47,7 +47,7 @@ CEffekseer::~CEffekseer()
 //==========================================================
 // シーン毎に一度だけ呼び出す
 //==========================================================
-void CEffekseer::Init(ID3D11Device* device, ID3D11DeviceContext* context)
+HRESULT CEffekseer::Init(ID3D11Device* device, ID3D11DeviceContext* context)
 {
 	HRESULT hr = S_OK;
 
@@ -155,6 +155,8 @@ void CEffekseer::Init(ID3D11Device* device, ID3D11DeviceContext* context)
 	Load(KARI_FILE);
 
 	m_nTimer = 0;
+
+	return hr;
 }
 
 //==========================================================

@@ -38,7 +38,11 @@ bool CComponentFactory::ObjSetComponent(CGameObject& obj, std::string name)
 {
 	if (auto type = CTypeSaveManager::Get()->GetTypeSave(name); type)
 	{
-		type->Set(&obj);
+		std::string setName = type->Set(&obj);
+		if (setName != name)
+		{
+			return false;
+		}
 		return true;
 	}
 	return false;

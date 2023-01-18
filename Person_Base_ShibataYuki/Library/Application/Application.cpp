@@ -43,13 +43,31 @@ namespace
 //==========================================================
 // 初期化
 //==========================================================
+Application::Application()
+	:m_hInst(0),m_hWnd(0),m_pDevice(nullptr),m_pDeviceContext(nullptr)
+{
+}
+
+//==========================================================
+// 初期化
+//==========================================================
+Application::~Application()
+{
+
+}
+
+//==========================================================
+// 初期化
+//==========================================================
 bool Application::Init(HINSTANCE hInstance)
 {
+	HRESULT hr = S_OK;
 	// 幅と高さ初期化
 	//CScreen::SetSize(1280.0f, 960.0f);
 
 	//--- ウインドウ作成
-	CWindow* window = AddSystem<CWindow>();
+	CWindow* window = new CWindow();
+	AddSystem(window, typeid(CWindow).name());
 	window->RegisterClass(hInstance, WINDOW_CLASS_NAME, CS_CLASSDC);
 	
 	// COM初期化
@@ -74,15 +92,19 @@ bool Application::Init(HINSTANCE hInstance)
 	m_hInst = hInstance;
 
 	// 読み込みが必要なシステムの関数を呼び出す	
-	AddSystem<CFuncManager>();
+	AddSystem(new CFuncManager, typeid(CFuncManager).name());
 
 	//--- デバイスの初期化
-	auto pDX = AddSystem<CDXDevice>();
-	pDX->Init(m_hWnd, (unsigned int)CScreen::GetWidth(), (unsigned int)CScreen::GetHeight());
+	auto pDX = new CDXDevice();
+	AddSystem(pDX, typeid(CDXDevice).name());
+	hr = pDX->Init(m_hWnd, (unsigned int)CScreen::GetWidth(), (unsigned int)CScreen::GetHeight());
+	if(FAILED(hr))
+		MessageBox(NULL, _T("DirectXの初期化に失敗しました。"), _T("error"), MB_OK);
+	// 必要な変数を格納
 	m_pDevice = pDX->GetDevice();
 	m_pDeviceContext = pDX->GetDeviceContext();
 
-	return true;
+	return hr == S_OK;
 }
 
 //==========================================================
@@ -92,12 +114,12 @@ void Application::Destroy()
 {
 	// 書き込みが必要なシステムの関数を呼び出す
 
+	//--- ウィンドウ解放
 	//CWindow::Get()->Close(WINDOW_CLASS_NAME, m_hInst);
 	UnregisterClass(WINDOW_CLASS_NAME, m_hInst);
 	
-	//--- シングルトンの解放
-
-	// 最後尾から解放
+	//--- システム部分解放
+	// 最後尾から順に解放
 	for (auto rit = m_aSystems.rbegin(); rit != m_aSystems.rend();)
 	{
 		delete (*rit).second;
@@ -113,12 +135,12 @@ void Application::Destroy()
 //==========================================================
 unsigned long Application::MainLoop()
 {
-	CWindow* window = GetSystem<CWindow>();
 	
-	// ゲーム変数宣言
+	// 変数宣言
+	CWindow* window = GetSystem<CWindow>();
 	CGameApp* gameApp = new CGameApp();	
 
-	// ゲームの初期化処理
+	//--- ゲームの初期化処理
 	gameApp->Init(this);
 
 	//--- タイム初期化処理

@@ -44,19 +44,6 @@ CSpellPlayer::~CSpellPlayer()
 //========================================================
 void CSpellPlayer::Awake()
 {
-	//--- ｺﾝﾎﾟｰﾈﾝﾄ追加
-
-	// 当たり判定
-	auto box = AddComponent<CBoxCollision>();
-	box->SetTrigger(false);
-	
-	// 描画
-	auto model = AddComponent<CModelRenderer>();
-	//model->SetModel(MODEL_PATH2());
-	
-	// リジッドボディ
-	auto rb = AddComponent<CRigidbody>();
-	rb->SetGravity(true);
 	
 
 }
@@ -66,6 +53,18 @@ void CSpellPlayer::Awake()
 //========================================================
 void CSpellPlayer::Init()
 {
+	//--- ｺﾝﾎﾟｰﾈﾝﾄ追加
+	// 当たり判定
+	auto box = AddComponent<CBoxCollision>();
+	box->SetTrigger(false);
+
+	// 描画
+	auto model = AddComponent<CModelRenderer>();
+	//model->SetModel(MODEL_PATH2());
+
+	// リジッドボディ
+	auto rb = AddComponent<CRigidbody>();
+	rb->SetGravity(true);
 
 }
 

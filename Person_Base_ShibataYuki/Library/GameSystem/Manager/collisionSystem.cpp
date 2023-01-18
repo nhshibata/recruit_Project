@@ -52,7 +52,7 @@ void CCollisionSystem::CollisionCheck()
 	}
 	list.push_back(first_col);
 
-	for (auto it = m_aIntMap.begin(); it != m_aIntMap.end(); ++it)
+	for (it = m_aIntMap.begin(); it != m_aIntMap.end(); ++it)
 	{
 		// 同一のオブジェクトは判定しない
 		if (first_col.lock() == (*it).second.lock())

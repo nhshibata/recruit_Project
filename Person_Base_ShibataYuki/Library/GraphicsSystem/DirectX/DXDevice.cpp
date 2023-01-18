@@ -621,9 +621,7 @@ HRESULT CDXDevice::Init(HWND hWnd, unsigned int Width, unsigned int Height, bool
 									   nullptr, 0, featureLevels, _countof(featureLevels), D3D11_SDK_VERSION, &scd,
 									   &g_pSwapChain, &g_pDevice, nullptr, &g_pDeviceContext);
 	if (FAILED(hr))
-	{
 		return hr;
-	}
 
 	// バックバッファ生成
 		// レンダーターゲットビュー生成
@@ -647,9 +645,7 @@ HRESULT CDXDevice::Init(HWND hWnd, unsigned int Width, unsigned int Height, bool
 	td.BindFlags = D3D11_BIND_DEPTH_STENCIL;
 	hr = g_pDevice->CreateTexture2D(&td, nullptr, &g_pDepthStencilTexture);
 	if (FAILED(hr))
-	{
 		return hr;
-	}
 
 	// Zバッファターゲットビュー生成
 	D3D11_DEPTH_STENCIL_VIEW_DESC dsvd;
@@ -659,9 +655,7 @@ HRESULT CDXDevice::Init(HWND hWnd, unsigned int Width, unsigned int Height, bool
 	hr = g_pDevice->CreateDepthStencilView(g_pDepthStencilTexture.Get(),
 										   &dsvd, g_pDepthStencilView.GetAddressOf());
 	if (FAILED(hr))
-	{
 		return hr;
-	}
 
 	// 各ターゲットビューをレンダーターゲットに設定
 	g_pDeviceContext->OMSetRenderTargets(1, g_pRenderTargetView.GetAddressOf(), g_pDepthStencilView.Get());
@@ -723,12 +717,12 @@ HRESULT CDXDevice::Init(HWND hWnd, unsigned int Width, unsigned int Height, bool
 	g_pDevice->CreateDepthStencilState(&dsd, g_pDSS[0].GetAddressOf());
 	CD3D11_DEPTH_STENCIL_DESC dsd2(def);
 	dsd2.DepthEnable = FALSE;
-	g_pDevice->CreateDepthStencilState(&dsd2, g_pDSS[1].GetAddressOf());
+	hr = g_pDevice->CreateDepthStencilState(&dsd2, g_pDSS[1].GetAddressOf());
 
 
 #endif // 1
 
-	return true;
+	return hr;
 }
 
 //==========================================================

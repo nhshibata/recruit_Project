@@ -69,10 +69,7 @@ namespace MySpace
 			CInspector();
 			~CInspector();
 
-			void Init();
-			void Uninit();
 			void Update(MySpace::Debug::ImGuiManager*);
-			void Draw();
 
 			_NODISCARD inline std::weak_ptr<CGameObject> GetSelectObject() { return  m_spViewObj; }
 			void SetSelectGameObject(std::weak_ptr<CGameObject> obj);

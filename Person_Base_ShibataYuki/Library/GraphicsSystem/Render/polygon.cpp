@@ -55,9 +55,9 @@ XMFLOAT4X4					CPolygon::m_mWorld;					// ワールド変換行列
 XMFLOAT4X4					CPolygon::m_mTex;					// テクスチャ変換行列
 
 //==========================================================
-// 初期化
+// ｼｪｰﾀﾞｰ初期化
 //==========================================================
-HRESULT CPolygon::Init(ID3D11Device* pDevice)
+HRESULT CPolygon::InitShader(ID3D11Device* pDevice)
 {
 	HRESULT hr = S_OK;
 

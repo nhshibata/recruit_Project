@@ -54,6 +54,7 @@ bool CResourceCSV::Load(std::string fileName)
 		if (endIndex != std::string::npos)
 		{
 			// 探索開始位置から見つかった部分までの文字を切り出し
+#pragma warning(suppress: 26451)
 			lines.push_back(text.substr(startIndex, endIndex - startIndex));
 		}
 		// 次の探索位置を更新
@@ -77,7 +78,8 @@ bool CResourceCSV::Load(std::string fileName)
 			if (endIndex != std::string::npos)
 			{
 				// 探索開始位置から見つかった部分までの文字を切り出し
-				column.push_back(lineIt->substr(startIndex, endIndex - startIndex));
+#pragma warning(suppress: 26451)
+				column.push_back(lineIt->substr(startIndex, uint64_t(endIndex - startIndex) ));
 			}
 			else
 			{
@@ -142,6 +144,7 @@ std::vector<std::vector<int>> CResourceCSV::GetintArray(int start, int range)
 {
 	TwoArray aRet;		// int二次元配列
 	int y, x;
+#pragma warning(suppress: 26451)
 	aRet.resize(range + 1);
 	y = 0;
 	x = 0;
@@ -152,6 +155,7 @@ std::vector<std::vector<int>> CResourceCSV::GetintArray(int start, int range)
 		// 横列最大数より低い限り繰り返す
 		while (x < (int)m_grid[y].size())
 		{
+#pragma warning(suppress: 26451)
 			aRet[y].push_back(atoi(m_grid[start + y][x].c_str()));
 			++x;	// 横列移動
 		}

@@ -37,7 +37,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 
 	//--- アプリケーションの開始
 	Application* Appli = &Application::GetMain();
-	Appli->Init(hInstance);
+	Appli->InitShader(hInstance);
 	
 	//--- ウィンドウ表示
 	ShowWindow(Appli->GetHWnd(), nCmdShow);
@@ -84,13 +84,14 @@ HRESULT StartUp(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine, i
 
 	//--- 生成
 	Application* Appli = Application::Get();
-	hr = Appli->Init(hInstance);
+	hr = Appli->Init(hInstance) ? S_OK : S_FALSE;
 
 	//--- ウィンドウ表示
 	ShowWindow(Appli->GetHWnd(), nCmdShow);
 	UpdateWindow(Appli->GetHWnd());
-	return hr;
+	return S_OK;
 }
+
 void ShutDown()
 {
 	Application* Appli = Application::Get();
@@ -110,6 +111,7 @@ void ShutDown()
 #endif //!CONSOLE
 
 }
+
 void MainLoop()
 {
 	Application* Appli = Application::Get();

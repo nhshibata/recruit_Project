@@ -30,14 +30,18 @@ CTitleMove::~CTitleMove()
 
 void CTitleMove::Awake()
 {
-	auto com = GetOwner()->GetComponent<CPolygonRenderer>();
-	m_pPolygon = com.lock().get();
+
 }
 
 void CTitleMove::Init()
 {
 	auto com = GetOwner()->GetComponent<CPolygonRenderer>();
-	m_pPolygon = com.lock().get();
+	if (!com.lock())
+	{
+		m_pPolygon = GetOwner()->AddComponent<CPolygonRenderer>();
+		return;
+	}
+	m_pPolygon = com.lock();
 }
 
 void CTitleMove::Update()
@@ -47,7 +51,7 @@ void CTitleMove::Update()
 	{
 		Vector2 vec1, vec2, endPos;
 		int num = rand() % 200 + 100;
-		auto pos = m_pPolygon->GetRectTransform()->GetPos();
+		auto pos = m_pPolygon.lock()->GetRectTransform()->GetPos();
 		float dir = pos.x;
 		endPos = pos;
 		
@@ -72,7 +76,7 @@ void CTitleMove::Update()
 	else
 	{
 		// æ“ª‚©‚ç‡‚ÉˆÚ“®
-		m_pPolygon->GetRectTransform()->SetPos(m_aCurveList.front());
+		m_pPolygon.lock()->GetRectTransform()->SetPos(m_aCurveList.front());
 		m_aCurveList.erase(m_aCurveList.begin());
 	}
 
@@ -81,5 +85,5 @@ void CTitleMove::Update()
 void CTitleMove::SetStartPos(const Vector2 pos)
 {
 	m_vStartPos = pos; 
-	m_pPolygon->GetRectTransform()->SetPos(pos);
+	m_pPolygon.lock()->GetRectTransform()->SetPos(pos);
 }

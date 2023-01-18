@@ -94,15 +94,24 @@ void CGameObjectManager::Update()
 		}
 	}
 
+	//--- オブジェクトの破棄
+	for (auto & obj : pDestoroyObj)
+	{
+		DestroyObject(obj);
+		obj.reset();
+	}
+	// 配列のリセット
+	pDestoroyObj.clear();
+
 	//--- アクティブだけ
 	// コンポーネントの更新
 	for (auto & obj : pActiveObj)
 	{
-		// component内でシーンが破棄された場合、処理を抜ける
+		//--- component内でシーンが破棄された場合、処理を抜ける
 		if (MySpace::SceneManager::CSceneManager::Get().Escape())
 			return;
-#ifdef _DEBUG
 
+#ifdef _DEBUG
 		[[maybe_unused]]auto name = obj.lock()->GetName();
 #endif // _DEBUG
 
@@ -112,25 +121,18 @@ void CGameObjectManager::Update()
 	// 最後の方に更新したいものを更新
 	for (auto & obj : pActiveObj)
 	{
-		// component内でシーンが破棄された場合、処理を抜ける
+		//--- component内でシーンが破棄された場合、処理を抜ける
 		if (MySpace::SceneManager::CSceneManager::Get().Escape())
 			return;
 		obj.lock()->LateUpdate();
 	}
-
-	// オブジェクトの破棄
-	for (auto & obj : pDestoroyObj)
-	{	// FIXME: 削除されるのか?
-		DestroyObject(obj);
-		obj.reset();
-	}
-
-	// 追加オブジェクトの確認、追加
-	ObjectListUpdate();
-	
 	// 配列のリセット
 	pActiveObj.clear();
-	pDestoroyObj.clear();
+
+	// 追加オブジェクトの確認、追加
+	if (m_aAddObjList.size() != 0)
+		ObjectListUpdate();
+	
 }
 
 //==========================================================
@@ -172,12 +174,12 @@ void CGameObjectManager::UpdateInDebug()
 		obj.reset();
 	}
 
-	// 追加オブジェクトの確認、追加
-	if(m_aAddObjList.size() != 0)
-		ObjectListUpdate();
-	
 	// 配列のリセット
 	pDestoroyObj.clear();
+
+	// 追加オブジェクトの確認、追加
+	if(m_aAddObjList.size() != 0)
+		ObjectListUpdate();	
 }
 
 //==========================================================
@@ -189,11 +191,10 @@ void CGameObjectManager::FixedUpdate()
 	// コンポーネントの更新
 	for (auto & obj : m_aGameObjList)
 	{
-		// component内でシーンが破棄された場合、処理を抜ける
+		//--- component内でシーンが破棄された場合、処理を抜ける
 		if (MySpace::SceneManager::CSceneManager::Get().Escape())
 			return;
 
-		// 状態により分岐
 		if (obj->GetState() == CGameObject::ACTIVE) 
 		{
 			obj->FixedUpdate();
@@ -235,14 +236,15 @@ bool CGameObjectManager::ObjectListUpdate()
 void CGameObjectManager::CreateBasicObject()
 {
 	std::shared_ptr<CGameObject> pObj = CreateGameObject();
-	// 必須
+	
 	// ｶﾒﾗ
-	pObj->AddComponent<CCamera>();
-	pObj->SetName("MainCamera");
+	auto cam = pObj->AddComponent<CCamera>();
+	cam->GetOwner()->SetName("MainCamera");
+
 	// ライト
 	pObj = CreateGameObject();
-	pObj->AddComponent<CDirectionalLight>();
-	pObj->SetName("DirectionalLight");
+	auto light = pObj->AddComponent<CDirectionalLight>();
+	light->GetOwner()->SetName("MainCamera");
 }
 
 //==========================================================
@@ -252,10 +254,11 @@ void CGameObjectManager::SetGameObject(std::shared_ptr<CGameObject> obj)
 {
 	if (!obj)
 		return;
+
 	for(auto & pObj : m_aGameObjList)
 	{
 		if (pObj == obj)
-			break;
+			return;
 	}
 	m_aGameObjList.push_back(obj);
 	TagMove(obj->GetTag(), obj);
@@ -269,19 +272,24 @@ void CGameObjectManager::TagMove(std::string NextTag, std::weak_ptr<CGameObject>
 	// 同一タグ
 	if (obj.lock()->GetTag() == NextTag)
 	{
-		auto list = m_aTagMap[NextTag];
-		auto it = list.FindObj(obj.lock());
-		// 見つからなかったので追加
-		if (it == list.list.end())
+		if (!m_aTagMap.count(NextTag))
+		{
 			m_aTagMap[NextTag].list.push_back(obj);
+		}
+		else
+		{
+			auto list = m_aTagMap[NextTag];
+			auto it = list.FindObj(obj.lock());
+			// 見つからなかったので追加
+			if (it == list.list.end())
+				m_aTagMap[NextTag].list.push_back(obj);
+		}
 		return;
 	}
 
 	//--- 現在のtagから除外
 	const auto tag = obj.lock()->GetTag();
-	//auto it = currentTag.FindObj(obj.lock());
-	auto it = m_aTagMap[tag].list.begin();
-	for (; it != m_aTagMap[tag].list.end();)
+	for (auto it = m_aTagMap[tag].list.begin(); it != m_aTagMap[tag].list.end();)
 	{
 		if (obj.lock() == (*it).lock())
 		{
@@ -344,15 +352,17 @@ bool CGameObjectManager::DestroyObject(std::weak_ptr<CGameObject> pObj)
 	if (it == m_aGameObjList.end())
 		return false;	// 配列に居ない
 
-	// tag管理からも除外
-	auto weakMap = m_aTagMap[pObj.lock()->GetTag()];
-	auto mapIt = weakMap.FindObj(pObj.lock());
-	if (mapIt != weakMap.list.end())
-		weakMap.list.erase(mapIt);
+	{
+		// tag管理からも除外
+		auto weakMap = m_aTagMap[pObj.lock()->GetTag()];
+		auto mapIt = weakMap.FindObj(pObj.lock());
+		if (mapIt != weakMap.list.end())
+			weakMap.list.erase(mapIt);
+	}
 
 	// 非破壊検索
-	if (std::find(m_aDontDestroyList.begin(), m_aDontDestroyList.end(), pObj.lock()) != m_aDontDestroyList.end())
-		m_aDontDestroyList.erase(it);	// FIXME: 正しく消去されるか要確認
+	if (auto itD = std::find(m_aDontDestroyList.begin(), m_aDontDestroyList.end(), pObj.lock()); itD != m_aDontDestroyList.end())
+		m_aDontDestroyList.erase(itD);	// FIXME: 正しく消去されるか要確認
 
 	// 明示的な破棄
 	pObj.lock().reset();
@@ -362,6 +372,7 @@ bool CGameObjectManager::DestroyObject(std::weak_ptr<CGameObject> pObj)
 	
 	// 監視対象が残っている想定しないエラー
 	if (pObj.lock()) 
-		return false; 	
+		return false;
+	
 	return true;
 }

@@ -46,15 +46,22 @@ using namespace Camera;
 // コンストラクタ
 //==========================================================
 CCamera::CCamera()
+	:m_vPos(0, 0, 0), m_vTarget(1, 1, 1), m_vUp(0, 1, 0), m_vAngle(0, 0, 0), m_fFovY(0), 
+	m_fAspectRatio(0), m_fFarZ(0), m_fLengthInterval(0), m_fNearZ(0),
+	m_frus{ XMFLOAT4(0,0,0,0) }, m_frusw{ XMFLOAT4(0,0,0,0) }
 {
+#if _DEBUG
 	auto cam = m_pMainCamera.lock();
+#endif // _DEBUG
 }
 
 //==========================================================
 // 引き数付きコンストラクタ
 //==========================================================
 CCamera::CCamera(std::shared_ptr<CGameObject> owner)
-	:CComponent(owner),m_vPos(0,0,0),m_vTarget(1,1,1),m_vUp(0,1,0),m_vAngle(0,0,0)
+	:CComponent(owner),m_vPos(0,0,0),m_vTarget(1,1,1),m_vUp(0,1,0),m_vAngle(0,0,0),m_fFovY(0),
+	m_fAspectRatio(0), m_fFarZ(0), m_fLengthInterval(0), m_fNearZ(0),
+	m_frus{ XMFLOAT4(0,0,0,0) }, m_frusw{ XMFLOAT4(0,0,0,0) }
 {
 }
 
@@ -124,12 +131,12 @@ void CCamera::Awake()
 //==========================================================
 void CCamera::Init()
 {
-	auto screen = CScreen::GetSize();
 
 	m_vPos = XMFLOAT3(CAM_POS_P_X, CAM_POS_P_Y, CAM_POS_P_Z);	// 視点
 	m_vTarget = XMFLOAT3(CAM_POS_R_X, CAM_POS_R_Y, CAM_POS_R_Z);// 注視点
 	m_vUp = XMFLOAT3(0.0f, 1.0f, 0.0f);							// 上方ベクトル
 
+	auto screen = CScreen::GetSize();
 	m_fAspectRatio = (float)screen.x / (float)screen.y;	// 縦横比
 	m_fFovY = VIEW_ANGLE;								// 視野角(Degree)
 	m_fNearZ = VIEW_NEAR_Z;								// 前方クリップ距離
@@ -321,7 +328,6 @@ CCamera::EFrustumResult CCamera::CollisionViewFrustum(XMFLOAT3* pCenter, float f
 //==========================================================
 Vector3 CCamera::ConvertScreenToWorld(Vector2 pos)
 {
-	
 	D3D11_VIEWPORT& vp = *Application::Get()->GetSystem<CDXDevice>()->GetViewPort();
 	Vector3 ret;
 	XMStoreFloat3(&ret, XMVector3Unproject(

@@ -48,8 +48,8 @@ void CreateComponentType()
 	mgr->SetComponentSave<CTextRenderer>();
 	mgr->SetComponentSave<CEffekseerRenderer>();
 
-	mgr->SetComponentSave<CAISystem>();
-	mgr->SetComponentSave<CAIAgent>();
+	mgr->SetComponentSave<AI::CAISystem>();
+	mgr->SetComponentSave<AI::CAIAgent>();
 
 	mgr->SetComponentSave<CRenderer>();
 	mgr->SetComponentSave<CLight>();

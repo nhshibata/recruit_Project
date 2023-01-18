@@ -397,7 +397,9 @@ float CSoundStream::GetVolume()
 }
 
 // SEクラス コンストラクタ
-CSoundEffect::CSoundEffect() : m_bufferLength(0)
+CSoundEffect::CSoundEffect()
+	: m_bufferLength(0), 
+	m_pSourceVoice{ nullptr }, m_status{SoundStatus::SS_STOP}
 {
 	for (int i = 0; i < MAX_DUP; ++i) {
 		m_pSourceVoice[i] = nullptr;
@@ -456,6 +458,7 @@ HRESULT CSoundEffect::Open(IXAudio2* pXAudio2, LPCWSTR pszPath)
 		if (FAILED(hr)) {
 			return hr;
 		}
+#pragma warning(suppress: 26451)
 		m_buffer.resize(m_bufferLength + sampleBufferLength);
 		memcpy_s(&m_buffer[m_bufferLength], sampleBufferLength, audioData, sampleBufferLength);
 		m_bufferLength += sampleBufferLength;

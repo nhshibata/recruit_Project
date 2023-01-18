@@ -89,7 +89,8 @@ void CPolygonRenderer::Init()
 	//CRenderer::Init();
 	Transform()->Update();
 
-	m_nDrawIdx = SceneManager::CSceneManager::Get().GetDrawSystem()->PolygonRegist(BaseToDerived<CPolygonRenderer>());
+	if(auto sys = SceneManager::CSceneManager::Get().GetDrawSystem(); sys)
+		m_nDrawIdx = sys->PolygonRegist(BaseToDerived<CPolygonRenderer>());
 }
 
 //==========================================================

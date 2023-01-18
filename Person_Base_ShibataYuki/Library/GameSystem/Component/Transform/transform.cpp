@@ -123,7 +123,8 @@ void CTransform::SetLocalQuaternion(const Quaternion &  rotation)
 {
 
 }
-Matrix4x4 CTransform::UpdateChildMatrix(CTransform* child, Matrix4x4 mtx)
+
+void CTransform::UpdateChildMatrix(CTransform* child, Matrix4x4 mtx)
 {
 	// 子のワールドマトリックス更新
 	child->UpdateWorldMatrix();
@@ -148,9 +149,9 @@ Matrix4x4 CTransform::UpdateChildMatrix(CTransform* child, Matrix4x4 mtx)
 			UpdateChildMatrix(childT.lock().get(), childMtx);
 		}
 	}
-	// 確認用、受け取るかはわからない
-	return childMtx;
+	
 }
+
 void CTransform::AddChild(std::weak_ptr<CTransform> child)
 {
 	// ﾎﾟｲﾝﾀ

@@ -14,6 +14,7 @@
 #include <d3d11.h>
 #include <memory>
 #include <wrl/client.h>
+#include <CoreSystem/systemBase.h>
 
 using Microsoft::WRL::ComPtr;
 
@@ -60,7 +61,7 @@ namespace MySpace
 		};
 
 		//--- クラス定義
-		class CDXDevice
+		class CDXDevice : public MySpace::System::CSystemBase
 		{
 		private:
 			//--- メンバ変数
@@ -72,11 +73,11 @@ namespace MySpace
 			ComPtr<ID3D11BlendState>		g_pBlendState[(int)EBlendState::MAX_BLENDSTATE];// ブレンド ステート
 			ComPtr<ID3D11DepthStencilState>	g_pDSS[2];				// Z/ステンシル ステート
 
-			UINT							g_uSyncInterval = 0;	// 垂直同期 (0:無, 1:有)
+			UINT							g_uSyncInterval;		// 垂直同期 (0:無, 1:有)
 			D3D_DRIVER_TYPE					m_DriverType;			// ドライバタイプ
 			D3D_FEATURE_LEVEL				m_FeatureLevel;			// 機能レベル
-			int								m_Width = 0;			// バックバッファＸサイズ
-			int								m_Height = 0;			// バックバッファＹサイズ
+			int								m_Width;				// バックバッファＸサイズ
+			int								m_Height;				// バックバッファＹサイズ
 			std::shared_ptr<D3D11_VIEWPORT> m_viewPort;
 			ComPtr<ID3D11SamplerState>		m_SamplerState;
 			
@@ -92,7 +93,12 @@ namespace MySpace
 
 		public:
 			//--- メンバ関数
-			CDXDevice() = default;
+			CDXDevice()
+				:g_uSyncInterval(0),m_Width(0),m_Height(0), m_DriverType(),
+				m_FeatureLevel()
+			{
+
+			}
 			~CDXDevice() = default;
 			
 			HRESULT Init(HWND hWnd, unsigned int Width, unsigned int Height, bool full = false);

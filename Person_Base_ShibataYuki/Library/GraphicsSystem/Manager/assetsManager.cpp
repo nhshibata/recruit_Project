@@ -20,11 +20,7 @@ using namespace MySpace::Graphics;
 
 CAssetsManager::CAssetsManager()
 {
-	m_pImage = std::make_shared<CImageResourceManager>();
-	m_pFont = std::make_shared<CFontTexture>();
-	m_pModel = std::make_shared<CModelManager>();
-	m_pEffekseer = std::make_shared<CEffekseer>();
-	//m_pShader = std::make_shared<CShaderManager>();
+	
 }
 
 CAssetsManager::~CAssetsManager()
@@ -32,18 +28,31 @@ CAssetsManager::~CAssetsManager()
 	m_pFont->Uninit();
 	m_pEffekseer->Uninit();
 	//m_pShader->Uninit();
-
+	m_pEffekseer.reset();
+	m_pModel.reset();
+	m_pFont.reset();
+	m_pImage.reset();
 }
 
 //==========================================================
 // ‰Šú‰»
 //==========================================================
-void CAssetsManager::Init(Application* app)
+HRESULT CAssetsManager::Init(Application* app)
 {
+	HRESULT hr = S_OK;
+	
+	//--- ƒƒ‚ƒŠŠm•Û
+	m_pImage = std::make_shared<CImageResourceManager>();
+	m_pFont = std::make_shared<CFontTexture>();
+	m_pModel = std::make_shared<CModelManager>();
+	m_pEffekseer = std::make_shared<CEffekseer>();
+	//m_pShader = std::make_shared<CShaderManager>();
+	
 	m_pApp = app;
-	m_pEffekseer->Init(app->GetDevice(), app->GetDeviceContext());
+	hr = m_pEffekseer->Init(app->GetDevice(), app->GetDeviceContext());
 	//m_pShader->Init();
-	m_pFont->Init();
+	hr = m_pFont->Init();
+	return hr;
 }
 
 //==========================================================

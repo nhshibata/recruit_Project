@@ -61,8 +61,12 @@ void CSpriteAnimation::Update()
 //==========================================================
 void CSpriteAnimation::SetImage(std::string name)
 {
+	auto assets = Application::Get()->GetSystem<CAssetsManager>();
+	if (!assets)
+		return;
+
 	// 管理クラスからポインタを受け取る
-	m_pImage = Application::Get()->GetSystem<CAssetsManager>()->GetImageManager()->GetResource(name);
+	m_pImage = assets->GetImageManager()->GetResource(name);
 
 	if(m_pImage)
 	{
@@ -80,8 +84,8 @@ Vector2 CSpriteAnimation::GetUV(int no)
 	//int u = no % m_nSplitX;
 	//int v = no / m_nSplitY;
 	//return Vector2((float)u / (float)m_nSplitX, (float)v / 1.0f / (float)m_nSplitY);
-	int u = no % m_nSplitX;
-	int v = no / m_nSplitX;
+	const int u = no % m_nSplitX;
+	const int v = no / m_nSplitX;
 	return Vector2((float)u / (float)m_nSplitX, (float)v / (float)m_nSplitY);
 }
 

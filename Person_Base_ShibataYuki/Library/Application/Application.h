@@ -22,7 +22,7 @@
 #include <stdio.h>
 #include <map>
 #include <CoreSystem/Singleton.h>
-#include <CoreSystem/property.h>
+#include <CoreSystem/systemBase.h>
 #include <CoreSystem/Util/define.h>
 
 
@@ -36,14 +36,14 @@ private:
 	//--- メンバ変数
 	HWND					m_hWnd;						// Windowハンドル
 	HINSTANCE				m_hInst;					// インスタンスハンドル
-	std::map<std::string, void*>	m_aSystems;
+	std::map<std::string, MySpace::System::CSystemBase*>	m_aSystems;
 	ID3D11Device* m_pDevice;
 	ID3D11DeviceContext* m_pDeviceContext;
 
 private:
 	//--- メンバ関数
-	Application() = default;							// コンストラクタ
-	~Application() = default;							// デストラクタ
+	Application();							// コンストラクタ
+	~Application();							// デストラクタ
 
 public:
 	bool Init(HINSTANCE h_cpInstance);					// システム有効化
@@ -59,19 +59,15 @@ public:
 	ID3D11DeviceContext* GetDeviceContext();
 
 	// *@システムへの生ﾎﾟｲﾝﾀによる追加
-	template <class T>
-	T* AddSystem()
+	MySpace::System::CSystemBase* AddSystem(MySpace::System::CSystemBase* add, std::string name)
 	{
-		std::string name = typeid(T).name();
 		if (m_aSystems.count(name))
 		{
-			T* ret = reinterpret_cast<T*>(m_aSystems[name]);
-			return ret;
+			return m_aSystems[name];
 		}
 
-		//m_aSystems[name] = new T;
-		m_aSystems.insert(std::make_pair(name, new T));
-		return reinterpret_cast<T*>(m_aSystems[name]);
+		m_aSystems.insert(std::make_pair(name, add));
+		return add;
 	}
 
 	// *@型指定によるﾎﾟｲﾝﾀの取得
@@ -81,7 +77,7 @@ public:
 		std::string name = typeid(T).name();
 		if (!m_aSystems.count(name))
 			return nullptr;
-		T* ret = static_cast<T*>(m_aSystems[name]);
+		T* ret = dynamic_cast<T*>(m_aSystems[name]);
 		return ret;
 	}
 };

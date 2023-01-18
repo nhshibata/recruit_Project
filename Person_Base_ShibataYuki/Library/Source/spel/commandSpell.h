@@ -53,12 +53,12 @@ namespace Spell
 		void Set(std::vector<int> value) { command = value; }
 		void Set(std::vector<bool> value) { succes = value; }
 		void SetType(EType type, int n) { nValue = n; eType = type; }
-		void Create(std::string sz, EAttributte eAtt, EType eType, int value, std::vector<int> vec)
+		void Create(std::string sz, EAttributte eAtt, EType type, int value, std::vector<int> vec)
 		{
 			this->spellName = sz;
 			this->eAttribute = eAtt;
 			Set(vec);
-			SetType(eType, value);
+			SetType(type, value);
 		}
 		bool LoadString(std::vector<std::string> file)
 		{

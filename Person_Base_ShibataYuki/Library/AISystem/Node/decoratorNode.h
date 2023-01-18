@@ -14,11 +14,12 @@
 #include <AISystem/Node/aiNode.h>
 
 //--- 定数定義
-#define AID_DEFINITION_IS_ACTION				bool IsExecute(AI::CAISystem* sys)
-#define AID_IMPLEMENTATION_IS_ACTION(type)		bool type##::IsExecute(AI::CAISystem* sys)
+#define AID_DEFINITION_IS_ACTION				bool IsExecute(AI::CAISystem* sys)			// 実行条件定義
+#define AID_IMPLEMENTATION_IS_ACTION(type)		bool type##::IsExecute(AI::CAISystem* sys)	// 実行条件実装
 
 namespace AI
 {
+	// 実行ノードを必ず設定
 	class CDecoratorNode : public CAINode
 	{
 	private:

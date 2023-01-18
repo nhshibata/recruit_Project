@@ -51,6 +51,7 @@ namespace MySpace
 	{
 		//--- エイリアス
 		using MySpace::Graphics::CResourceMap;
+		using namespace MySpace::MyMath;
 
 		//--- 前方参照
 		class CEffekseerParam;	
@@ -94,14 +95,14 @@ namespace MySpace
 			CEffekseer();
 			~CEffekseer();
 
-			void Init(ID3D11Device* device, ID3D11DeviceContext* context);
+			HRESULT Init(ID3D11Device* device, ID3D11DeviceContext* context);
 			void Uninit();
 			void Update();
 			void Draw();
 
 			inline bool Exists(int handle) { return m_manager->Exists(handle);};	// falseは再生していない
 			bool Load(std::u16string fileName);
-			bool Load(std::vector<std::string> EffectName, std::vector<std::u16string> fileName);	// 2バイト文字の取得
+			//bool Load(std::vector<std::string> EffectName, std::vector<std::u16string> fileName);	// 2バイト文字の取得
 			int Play(std::u16string EffectName, XMFLOAT3 pos);
 			int Play(std::u16string EffectName, XMFLOAT3 pos, XMFLOAT3 size, XMFLOAT4 rot = XMFLOAT4(0, 0, 0, 0));
 			int Stop(int handle);
@@ -123,14 +124,15 @@ namespace MySpace
 		private:
 			Effekseer::EffectRef* m_pEffect;	// 描画するエフェクトの種類ポインタ
 			Effekseer::Handle m_handle;			// エフェクトのハンドル(マネジャが認識する変数)
-			XMFLOAT3 m_vPos;					// 
-			XMFLOAT4 m_vRot;					// 
-			XMFLOAT3 m_vScale;					// サイズ
+			MyMath::Vector3 m_vPos;					// 
+			MyMath::Vector4 m_vRot;					// 
+			MyMath::Vector3 m_vScale;					// サイズ
 			int m_nMaxFream;					// 描画最大時間
 			int m_nCurrentFream;				// エフェクト描画カウント
 
 		public:
-			CEffekseerParam() :m_vPos(0, 0, 0), m_vRot(0, 0, 0, 0), m_vScale(1, 1, 1)
+			CEffekseerParam() :m_vPos(0, 0, 0), m_vRot(0, 0, 0, 0), m_vScale(1, 1, 1),
+				m_pEffect(nullptr), m_nCurrentFream(0), m_nMaxFream(0), m_handle(0)
 			{};
 			CEffekseerParam(Effekseer::EffectRef* effect, Effekseer::Handle handle, int time)
 				:m_vPos(0, 0, 0), m_vRot(0, 0, 0, 0), m_vScale(1, 1, 1), m_pEffect(effect), 
@@ -140,9 +142,9 @@ namespace MySpace
 			{};
 
 			inline void SetPos(float x, float y, float z) { m_vPos = XMFLOAT3(x, y, z); };
-			inline void SetPos(XMFLOAT3 pos) { m_vPos = pos; };
-			inline void SetRot(XMFLOAT4 rot) { m_vRot = rot; };
-			inline void SetScale(XMFLOAT3 size) { m_vScale = size; };
+			inline void SetPos(Vector3 pos) { m_vPos = pos; };
+			inline void SetRot(Vector4 rot) { m_vRot = rot; };
+			inline void SetScale(Vector3 size) { m_vScale = size; };
 			inline void SetTime(int time) { m_nMaxFream = time; };
 			inline void SetHandle(Effekseer::Handle handle) { m_handle = handle; };
 			inline XMFLOAT3 GetPos()const { return m_vPos; };

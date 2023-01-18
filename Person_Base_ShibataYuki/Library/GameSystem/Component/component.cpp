@@ -117,7 +117,7 @@ void CComponent::OnLoad()
 // 衝突時呼び出し
 // 接し続けているオブジェクトが渡される
 //==========================================================
-void CComponent::OnCollisionEnter(CGameObject* obj) 
+void CComponent::OnCollisionEnter(CGameObject* obj)
 {
 }
 

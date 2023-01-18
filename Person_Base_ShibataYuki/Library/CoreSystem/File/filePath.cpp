@@ -48,6 +48,7 @@ std::vector<std::string> CFilePath::GetFileName(std::string path, std::string ex
 
 	return retList;
 }
+
 std::vector<std::string> CFilePath::GetAllFileName(std::string path)
 {
 	if (!std::filesystem::exists(path))return std::vector<std::string>();

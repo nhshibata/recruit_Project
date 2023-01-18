@@ -11,6 +11,7 @@
 
 //--- インクルード部
 #include <memory>
+#include <CoreSystem/systemBase.h>
 
 #pragma region ForwardDeclaration
 
@@ -28,7 +29,7 @@ namespace MySpace
 		class CEffekseer;
 		class CShaderManager;
 
-		class CAssetsManager
+		class CAssetsManager : public MySpace::System::CSystemBase
 		{
 		private:
 			//--- メンバ変数
@@ -45,7 +46,7 @@ namespace MySpace
 			CAssetsManager();
 			~CAssetsManager();
 
-			void Init(Application* app);
+			HRESULT Init(Application* app);
 
 			// *@更新
 			void Update();

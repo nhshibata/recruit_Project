@@ -18,7 +18,7 @@ namespace Spell
 	class CTitleMove : public CComponent
 	{
 	private:
-		CPolygonRenderer* m_pPolygon;
+		std::weak_ptr<CPolygonRenderer> m_pPolygon;
 		Vector2 m_vStartPos;
 		std::vector<Vector2> m_aCurveList;
 

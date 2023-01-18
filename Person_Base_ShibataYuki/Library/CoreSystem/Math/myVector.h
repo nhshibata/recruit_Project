@@ -282,10 +282,12 @@ namespace MySpace
 			Vector4() { x = y = z = w = 0; };
 			Vector4(float x1, float y1, float z1, float w1) { x = x1; y = y1; z = z1; w = w1; };
 			Vector4(float x1, float y1, float z1) { x = x1; y = y1; z = z1; w = 1; };
+			Vector4(XMFLOAT4 xm) { x = xm.x; y = xm.y; z = xm.z; w = xm.w; };
 			~Vector4() {};
 
 			XMFLOAT4 operator= (const Vector4 vec) { return XMFLOAT4(x = vec.x, y = vec.y, z = vec.z, w = vec.w); }
 			XMFLOAT4 operator+= (const Vector4 vec) { return XMFLOAT4(x += vec.x, y += vec.y, z += vec.z, w += vec.w); }
+			void operator= (const XMFLOAT4 vec) { x = vec.x; y = vec.y; z = vec.z; w = vec.w; }
 			Vector4 operator+ (const XMFLOAT4 vec) { return Vector4(x += vec.x, y += vec.y, z += vec.z, w += vec.w); }
 			Vector4 operator- (const XMFLOAT4 vec) { return Vector4(x -= vec.x, y -= vec.y, z -= vec.z, w -= vec.w); }
 			Vector4 operator* (const XMFLOAT4 vec) { return Vector4(x *= vec.x, y *= vec.y, z *= vec.z, w *= vec.w); }
@@ -389,12 +391,20 @@ namespace MySpace
 				_41 *= mt._41; _42 *= mt._42; _43 *= mt._43; _44 *= mt._44;
 			}
 
-			Matrix4x4 Identity() {
+			void Identity() {
 				_11 = 1.0f; _12 = 0.0f; _13 = 0.0f; _14 = 0.0f;
 				_21 = 0.0f; _22 = 1.0f; _23 = 0.0f; _24 = 0.0f;
 				_31 = 0.0f; _32 = 0.0f; _33 = 1.0f; _34 = 0.0f;
 				_41 = 0.0f; _42 = 0.0f; _43 = 0.0f; _44 = 1.0f;
-				return *this;
+			};
+			
+			static Matrix4x4 MatrixIdentity() {
+				Matrix4x4 ret;
+				ret._11 = 1.0f; ret._12 = 0.0f; ret._13 = 0.0f; ret._14 = 0.0f;
+				ret._21 = 0.0f; ret._22 = 1.0f; ret._23 = 0.0f; ret._24 = 0.0f;
+				ret._31 = 0.0f; ret._32 = 0.0f; ret._33 = 1.0f; ret._34 = 0.0f;
+				ret._41 = 0.0f; ret._42 = 0.0f; ret._43 = 0.0f; ret._44 = 1.0f;
+				return ret;
 			};
 
 			Matrix4x4 CalcWorld(Vector3 pos, Vector3 center = Vector3(0, 0, 0))
@@ -437,9 +447,13 @@ namespace MySpace
 				archive(CEREAL_NVP(x), CEREAL_NVP(y), CEREAL_NVP(z), CEREAL_NVP(w));
 			}
 		public:
-			Quaternion() {};
-			Quaternion(float x, float y, float z, float w) {};
-			Quaternion(float x, float y, float z) {};
+			Quaternion() 
+				:XMFLOAT4(0,0,0,0)
+			{};
+			Quaternion(float x, float y, float z, float w) 
+				:XMFLOAT4(x,y,z,w)
+			{
+			};
 			~Quaternion() {};
 		};
 

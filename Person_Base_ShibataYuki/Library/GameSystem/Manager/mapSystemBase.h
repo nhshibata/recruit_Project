@@ -33,7 +33,6 @@ namespace MySpace
 		protected:
 			//--- ƒƒ“ƒo•Ï”
 			MAP m_aIntMap;
-			int m_nRegistCnt = 0;
 
 		public:
 			//--- ƒƒ“ƒoŠÖ”
@@ -46,25 +45,29 @@ namespace MySpace
 			{
 				//int ret = static_cast<int>(m_nRegistCnt);
 				//--- intŒ^Å‘å’l
-				int nMax = (std::numeric_limits<int>::max)();
-				if(m_aIntMap.size() >= nMax)
+				int* nMax = new int(0);
+				*nMax = (std::numeric_limits<int>::max)();
+				if(m_aIntMap.size() >= *nMax)
 					return -1;
 				//--- Ši”[æ’Tõ
 				int retIdx = 0;
 				while (1)
 				{
-					retIdx = rand() % nMax;
+					retIdx = rand() % *nMax;
 					if (!m_aIntMap.count(retIdx))
 						break;
 				}
+				delete nMax;
+
 				m_aIntMap[retIdx] = type;
-				++m_nRegistCnt;
 				return retIdx;
 			}
 
 			// *@”jŠü(map‚Ì‚½‚ßA®—ñ‚Í‚³‚¹‚È‚¢)
 			virtual inline T ExecutSystem(int idx)
 			{
+				if (idx != -1)
+					return T();
 				T ret = m_aIntMap[idx];
 				m_aIntMap.erase(idx);
 				return ret;

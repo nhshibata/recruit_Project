@@ -41,8 +41,7 @@ namespace MySpace
 				WeakList list;
 				typename std::list<std::weak_ptr<CGameObject>>::iterator FindObj(std::weak_ptr<CGameObject> obj)
 				{
-					auto it = list.begin();
-					for (; it != list.end(); ++it)
+					for (auto it = list.begin(); it != list.end(); ++it)
 					{
 						if ((*it).lock() == obj.lock())
 						{

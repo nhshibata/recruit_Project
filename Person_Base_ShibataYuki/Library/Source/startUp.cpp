@@ -95,7 +95,6 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 
 #if 1
 
-
 	// *@シーン作成時に呼び出すｸﾗｽ
 	// *@静的なシーン作成の場合、動的な作成はファイル書き込みと読み込みを行う
 	// *@通常の関数でもいいような
@@ -108,19 +107,22 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 		~CMyScene()
 		{
 		}
+#pragma warning(push)
+#pragma warning(disable:4100)
 		void* Load(CScene* scene, int mode)
 		{
 			scene->CreateEmptyScene();
 
-			auto obj = CGameObject::CreateObject().lock();
+			/*auto obj = CGameObject::CreateObject().lock();
 			auto game = obj->AddComponent<Spell::CGameManager>();
-			game->GetOwner()->SetName("GameManager");
+			game->GetOwner()->SetName("GameManager");*/
 			//game->Awake();
 
 			//--- 名前設定
 			scene->SetSceneName("StartScene");
 			return nullptr;
 		}
+#pragma warning(pop)
 	};
 
 	CreateComponentSpell();
@@ -144,9 +146,9 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 		}
 
 		// 初期化
-		void Init(std::weak_ptr<CScene> scene)
+		void InitShader(std::weak_ptr<CScene> scene)
 		{
-			CScene::Init(scene);
+			CScene::InitShader(scene);
 
 			//--- 必要なｺﾝﾎﾟｰﾈﾝﾄ呼び出し
 			scene.lock()->GetObjManager()->CreateBasicObject();
@@ -165,27 +167,28 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 	//--- メモリ確保
 	std::shared_ptr<CStartScene> startScene = std::make_shared<CStartScene>();
 	CSceneManager::Get().SetStartScene(startScene);
+
 #endif // 1
 
+	//HRESULT hr = S_OK;
+
+	////--- 生成
+	//Application* Appli = Application::Get();
+	//hr = Appli->Init(hInstance);
+
+	////--- ウィンドウ表示
+	//ShowWindow(Appli->GetHWnd(), nCmdShow);
+	//UpdateWindow(Appli->GetHWnd());
+	//
+	////--- 更新
+	//Appli->MainLoop();
+
+	////--- 終了
+	//Appli->Destroy();
 
 #if !_DEBUG
-	HRESULT hr = S_OK;
-
-	//--- 生成
-	Application* Appli = Application::Get();
-	hr = Appli->Init(hInstance);
-
-	//--- ウィンドウ表示
-	ShowWindow(Appli->GetHWnd(), nCmdShow);
-	UpdateWindow(Appli->GetHWnd());
-	
-	//--- 更新
-	Appli->MainLoop();
-
-	//--- 終了
-	Appli->Destroy();
-
 #else
+#endif // _DEBUG
 
 	// 開始
 	// ウィンドウの生成などを行う
@@ -198,7 +201,6 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 	// 終了
 	ShutDown();
 
-#endif // _DEBUG
 
 	return 0;
 }

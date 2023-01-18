@@ -9,22 +9,32 @@
 
 using namespace MySpace::Graphics;
 
+//==========================================================
+// コンストラクタ
+//==========================================================
 CImageResourceManager::CImageResourceManager()
 {
 }
 
+//==========================================================
+// デスクトラクタ
+//==========================================================
 CImageResourceManager::~CImageResourceManager()
 {
 	UnloadAll();
 }
+
+//==========================================================
 // データ読み込み
+//==========================================================
 bool CImageResourceManager::Load(std::string name)
 {
-	// 読み込み済みか確認
+	//--- 読み込み済みか確認
 	auto it = m_aResourceMap.find(name);
 	if (it != m_aResourceMap.end())
 		return true;
-	// 作成
+
+	// メモリ確保
 	std::shared_ptr<CImageResource> tex = std::make_shared<CImageResource>();
 
 	// 読み込み
@@ -36,7 +46,10 @@ bool CImageResourceManager::Load(std::string name)
 	m_aResourceMap.insert(IMAGE_PAIR(name, tex));
 	return true;
 }
+
+//==========================================================
 // 指定されたﾃﾞｰﾀの解放
+//==========================================================
 bool CImageResourceManager::Unload(std::string name)
 {
 	auto it = m_aResourceMap.find(name);
@@ -48,7 +61,10 @@ bool CImageResourceManager::Unload(std::string name)
 	}
 	return false;
 }
+
+//==========================================================
 // 全開放
+//==========================================================
 void CImageResourceManager::UnloadAll()
 {
 	for (auto it = m_aResourceMap.begin(); it != m_aResourceMap.end(); ++it)
@@ -57,10 +73,14 @@ void CImageResourceManager::UnloadAll()
 	}
 	m_aResourceMap.clear();
 }
+
+//==========================================================
 // 画像取得
+//==========================================================
 ImageSharedPtr CImageResourceManager::GetResource(std::string name)
 {
 	auto it = m_aResourceMap.find(name);
+	//--- 存在しない
 	if (it == m_aResourceMap.end())
 	{
 		if (!Load(name))
@@ -72,7 +92,10 @@ ImageSharedPtr CImageResourceManager::GetResource(std::string name)
 
 	return m_aResourceMap[name];
 }
+
+//==========================================================
 // シーン解放時確認
+//==========================================================
 int CImageResourceManager::SceneUnload()
 {
 #if _DEBUG	// 確認

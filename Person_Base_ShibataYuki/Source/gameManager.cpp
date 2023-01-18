@@ -48,6 +48,16 @@ void CGameManager::Awake()
 	// 非破壊登録
 	CGameObject::DontDestroy(GetOwner(0));
 
+	// 関数ポインタ設定
+	MySpace::SceneManager::CSceneManager::Get().SceneChanged<Spell::CGameManager>(&CGameManager::SceneResponce, this);
+
+}
+
+//========================================================
+// 初期化
+//========================================================
+void CGameManager::Init()
+{
 	{
 		auto obj = CGameObject::CreateObject().lock();
 		m_pFade = obj->AddComponent<CFadeController>();
@@ -57,23 +67,11 @@ void CGameManager::Awake()
 		CGameObject::DontDestroy(obj);
 	}
 
-	// 関数ポインタ設定
-	MySpace::SceneManager::CSceneManager::Get().SceneChanged<Spell::CGameManager>(&CGameManager::SceneResponce, this);
-
-
 	{
 		auto obj = CGameObject::CreateObject().lock();
 		auto title = obj->AddComponent<Spell::CTitleSceneManager>();
 		title->Create();
 	}
-}
-
-//========================================================
-// 初期化
-//========================================================
-void CGameManager::Init()
-{
-
 }
 
 //========================================================
@@ -90,6 +88,11 @@ void CGameManager::Update()
 void* CGameManager::SceneResponce(MySpace::SceneManager::CScene* prev, MySpace::SceneManager::CScene* next)
 {
 	next->CreateEmptyScene();
+
+	if (prev->GetSceneName() == "")
+	{
+
+	}
 
 	if (next->GetSceneName() == Spell::OBJ_NAME_TITLE)
 	{

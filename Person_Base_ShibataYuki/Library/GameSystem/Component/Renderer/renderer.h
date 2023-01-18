@@ -63,7 +63,10 @@ namespace MySpace
 
 			//--- セッター・ゲッター
 			_NODISCARD inline Color GetColor() { return m_vColor; }
+#pragma warning(push)
+#pragma warning(disable:4100)
 			_NODISCARD inline XMFLOAT4 GetColor(int num) { return XMFLOAT4(m_vColor.r, m_vColor.g, m_vColor.b, m_vColor.a); }
+#pragma warning(pop)   
 			// *@ｲﾝﾃﾞｯｸｽ取得
 			_NODISCARD inline UINT GetIdx() { return m_nDrawIdx; }
 

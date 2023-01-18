@@ -74,7 +74,7 @@ namespace MySpace
 		
 		private:
 			//--- ƒƒ“ƒoŠÖ”
-			Matrix4x4 UpdateChildMatrix(CTransform* ptr, Matrix4x4 mtx);
+			void UpdateChildMatrix(CTransform* ptr, Matrix4x4 mtx);
 
 		public:
 			CTransform();

@@ -125,9 +125,12 @@ namespace MySpace
 			template <class T>
 			inline std::shared_ptr<T> AddComponent() { return m_pOwner.lock()->AddComponent<T>(); }
 
+#pragma warning(push)
+#pragma warning(disable:4100)
 			// *@gameobjectｸﾗｽからのAddComponent呼び出し
 			template <class T>
 			inline T* AddComponent(int n) { return m_pOwner.lock()->AddComponent<T>().get(); }
+#pragma warning(pop)
 
 			// *@持ち主から型指定したコンポーネントを取得する
 			template <class T>
@@ -159,10 +162,13 @@ namespace MySpace
 			// *@引き数ありでweak_ptrを受け取る
 			inline CGameObject* GetOwner() const { return m_pOwner.lock().get(); }
 
+#pragma warning(push)
+#pragma warning(disable:4100)
 			// *@Componentの持ち主GameObject型の取得
 			// *@引き数なしで生ポインタを受け取る
 			// *@引き数ありでweak_ptrを受け取る
 			inline std::weak_ptr<CGameObject> GetOwner(int no)const { return m_pOwner.lock(); };
+#pragma warning(pop)
 
 			// *@ｺﾝﾎﾟｰﾈﾝﾄのｱｸﾃｨﾌﾞ設定
 			inline void SetActive(bool flg) { m_bActive = flg; };

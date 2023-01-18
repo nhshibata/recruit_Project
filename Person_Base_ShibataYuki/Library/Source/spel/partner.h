@@ -11,6 +11,7 @@
 //--- インクルード部
 #include <GameSystem/Component/component.h>
 #include <GameSystem/GameObject/gameObject.h>
+#include <spellPlayer.h>
 
 namespace AI
 {
@@ -19,18 +20,41 @@ namespace AI
 
 namespace Spell
 {
+
+	class CPartnerSupport
+	{
+	private:
+		CGameObject::PtrWeak m_pTarget;
+		int m_aPos[3*3];
+	public:
+		CPartnerSupport();
+		~CPartnerSupport();
+
+		int GetPos(int , Vector3&);
+		const int Bind(int idx);
+		void Release(const int idx);
+		CGameObject::Ptr GetTarget() { return m_pTarget.lock(); }
+	};
+
 	enum class EPreference
 	{
 
 	};
 	
-	// *@状態管理
+	// 状態管理
 	enum class EPartnerState
 	{
 		NONE = 0,
 		ENVY,
 		PASS,
 		PERFECT,
+	};
+
+	// 現在値と最大値管理用
+	struct STSetValue
+	{
+		float fMax;
+		float fValue;
 	};
 
 	// *@最大値
@@ -80,6 +104,18 @@ namespace Spell
 		};
 	};
 
+	struct STPartnerParamB
+	{
+		int nPosIdx;
+		float fMove;
+		float fDistance;
+		STSetValue fStopTime;
+		std::weak_ptr<CPartnerSupport> m_pSuppo;
+
+		void SetSupport(std::shared_ptr<CPartnerSupport> ptr) { m_pSuppo = ptr; }
+		std::shared_ptr<CPartnerSupport> GetSupport() { return m_pSuppo.lock(); }
+	};
+
 	class CPartner : public CComponent
 	{
 	private:
@@ -97,7 +133,8 @@ namespace Spell
 		virtual void Update();
 
 		//--- ゲッター・セッター
-		STPartnerParam* GetParam() { return &m_Param; };
+		STPartnerParam* GetParam() { return &m_Param; }
+
 	};
 }
 
