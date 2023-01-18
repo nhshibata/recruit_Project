@@ -66,7 +66,7 @@ bool Application::Init(HINSTANCE hInstance)
 	//CScreen::SetSize(1280.0f, 960.0f);
 
 	//--- ウインドウ作成
-	CWindow* window = new CWindow();
+	CWindow* window = CSystemBase::Get<CWindow>();
 	AddSystem(window, typeid(CWindow).name());
 	window->RegisterClass(hInstance, WINDOW_CLASS_NAME, CS_CLASSDC);
 	
@@ -92,10 +92,10 @@ bool Application::Init(HINSTANCE hInstance)
 	m_hInst = hInstance;
 
 	// 読み込みが必要なシステムの関数を呼び出す	
-	AddSystem(new CFuncManager, typeid(CFuncManager).name());
+	AddSystem(CSystemBase::Get<CFuncManager>(), typeid(CFuncManager).name());
 
 	//--- デバイスの初期化
-	auto pDX = new CDXDevice();
+	auto pDX = CSystemBase::Get<CDXDevice>();
 	AddSystem(pDX, typeid(CDXDevice).name());
 	hr = pDX->Init(m_hWnd, (unsigned int)CScreen::GetWidth(), (unsigned int)CScreen::GetHeight());
 	if(FAILED(hr))

@@ -91,7 +91,7 @@ HRESULT CGameApp::Init(Application* app)
 	//--- アセット
 	// 素材全般所持ｸﾗｽ
 	{
-		auto pAssets = new CAssetsManager();
+		auto pAssets = CSystemBase::Get<CAssetsManager>();
 		app->AddSystem(pAssets, typeid(CAssetsManager).name());
 		hr = pAssets->Init(app);
 		if (hr != S_OK)
@@ -111,7 +111,7 @@ HRESULT CGameApp::Init(Application* app)
 
 #ifdef BUILD_MODE
 	//--- imGuiの初期化処理
-	auto imgui = new ImGuiManager();
+	auto imgui = CSystemBase::Get<ImGuiManager>();
 	app->AddSystem(imgui, typeid(ImGuiManager).name());
 	hr = imgui->Init(Application::Get()->GetHWnd(), pDevice, pDC);
 	if (hr != S_OK)
