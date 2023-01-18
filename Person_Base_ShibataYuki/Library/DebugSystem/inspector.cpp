@@ -45,14 +45,6 @@ CInspector::~CInspector()
 
 }
 
-void CInspector::Init()
-{
-}
-
-void CInspector::Uninit()
-{
-}
-
 //==========================================================
 // 更新
 //==========================================================
@@ -126,12 +118,6 @@ void CInspector::Update(ImGuiManager* manager)
 	ImGui::PopStyleColor();
 }
 
-
-void CInspector::Draw()
-{
-}
-
-
 //==========================================================
 // delete
 //==========================================================
@@ -184,16 +170,18 @@ void CInspector::DispDebugSelectObject()
 {
 	if (!m_spViewObj.lock()) return;
 
-	int layer;
 	m_isDeleted = false;
 	// 表示オブジェクトのステータス表示
 	m_spViewObj.lock()->ImGuiDebug();
 	m_spViewObj.lock()->GetTransform()->ImGuiDebug();
 
 	//--- レイヤー
-	layer = *m_spViewObj.lock()->GetLayerPtr()->GetLayer();
-	ImGui::InputInt("layer", &layer);
-	m_spViewObj.lock()->GetLayerPtr()->SetLayer(layer);
+	{
+		int layer;
+		layer = *m_spViewObj.lock()->GetLayerPtr()->GetLayer();
+		ImGui::InputInt("layer", &layer);
+		m_spViewObj.lock()->GetLayerPtr()->SetLayer(layer);
+	}
 
 	//--- ｺﾝﾎﾟｰﾈﾝﾄ
 	int cnt = 0;
@@ -221,19 +209,17 @@ void CInspector::DispDebugSelectObject()
 	{
 		if (m_isDrawInfo[cnt])
 		{
-			std::string name = com->GetName();
-			
 			// ｺﾝﾎﾟｰﾈﾝﾄのデバッグ表示
 			com->ImGuiDebug();
 
 			if (ImGui::Button(u8"Delete"))
 			{
-				if(dynamic_cast<CTransform*>(com.get()) != m_spViewObj.lock()->GetTransform())
+				if(!dynamic_cast<CTransform*>(com.get()))
 					m_spViewObj.lock()->RemoveComponent(com);
 			}
 			if (m_isDeleted) break;
 		}
-		cnt++;
+		++cnt;
 	}
 	ImGui::PopStyleColor();
 	ImGui::PopStyleColor();
@@ -245,7 +231,7 @@ void CInspector::DispDebugSelectObject()
 //==========================================================
 void CInspector::DispPopUpMenuObject()
 {
-	std::vector<std::string> menuVec = {
+	static std::vector<std::string> menuVec = {
 		u8"ParentDissolved(親子関係解消)",
 		u8"close",
 	};

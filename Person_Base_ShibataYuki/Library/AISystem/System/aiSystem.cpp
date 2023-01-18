@@ -16,7 +16,7 @@ using namespace MySpace::Game;
 // コンストラクタ
 //==========================================================
 CAISystem::CAISystem(std::shared_ptr<CGameObject> ptr)
-	:m_pOwner(ptr), m_pRoot(NodePtr()), m_pData(nullptr)
+	:CComponent(ptr), m_pRoot(NodePtr()), m_pData(nullptr)
 {
 }
 

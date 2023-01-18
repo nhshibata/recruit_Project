@@ -15,6 +15,7 @@ using namespace MySpace::System;
 void Mouse::Initialize()
 {
 	POINT pos, pos1, pos2;
+	pos = pos1 = pos2 = {0,0};
 	
 	// ウィンドウの左上の位置を取得 ＆ ウィンドウのマウス座標取得
 	if (ScreenToClient(Application::Get()->GetHWnd(), &pos1) &&

@@ -120,6 +120,13 @@ void CRigidbody::SetFreezRot(bool x, bool y, bool z)
 }
 
 
+void CRigidbody::OnCollisionEnter(CGameObject* obj)
+{
+	m_vForce = m_vForce.zero();
+	m_vVel = m_vForce.zero();
+}
+
+
 #ifdef BUILD_MODE
 
 void CRigidbody::ImGuiDebug()

@@ -115,12 +115,6 @@ namespace MySpace
 			virtual void FixedUpdate();				// *@一定時間更新
 
 			virtual void OnLoad();					// *@ﾃﾞｰﾀ読みこみ時呼び出し
-
-			//--- 演算子のオーバーロード(使ってないかも 
-			bool operator<(CGameObject* other) { return other->GetLayer() < this->GetLayer(); }
-			bool operator<(std::shared_ptr<CGameObject> other) { return other->GetLayer() < this->GetLayer(); }
-			bool operator>(CGameObject* other) { return other->GetLayer() > this->GetLayer(); }
-			bool operator>(std::shared_ptr<CGameObject> other) { return other->GetLayer() > this->GetLayer(); }
 			
 			//--- コンポーネント関連
 
@@ -130,6 +124,12 @@ namespace MySpace
 			std::shared_ptr<T> AddComponent()
 			{
 				std::shared_ptr<T> com = std::make_shared<T>(GetPtr().lock());
+#if 0
+				auto reqName = typeid(std::shared_ptr<T>).name();
+				auto creName = typeid(com).name();
+				if (reqName != creName)
+					return std::shared_ptr<T>();
+#endif // 0
 				m_aComponent.push_back(com);	// 配列への追加
 				ComponentAddPreparation(com);	// ｺﾝﾎﾟｰﾈﾝﾄ準備
 				com.get()->Awake();			// 生成時呼び出し
@@ -172,8 +172,13 @@ namespace MySpace
 			// *@ﾄﾗﾝｽﾌｫｰﾑの取得
 			// *@引き数:int(sp取得)
 			inline CTransform* GetTransform() { return m_pTransform.lock().get(); }
+
+#pragma warning(push)
+#pragma warning(disable:4100)
 			// *@ﾄﾗﾝｽﾌｫｰﾑの取得
 			inline virtual std::shared_ptr<CTransform> GetTransform(int n) { return m_pTransform.lock(); };
+#pragma warning(pop)   
+
 			// *@obj状態取得
 			inline E_ObjectState GetState() { return m_eState; };															
 			// *@ﾀｸﾞｸﾗｽの取得

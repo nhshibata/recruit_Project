@@ -49,7 +49,10 @@ void CDebugCamera::Awake()
 	//GetOwner()->GetTagPtr()->CreateTag("DebugCamera");
 	//GetOwner()->SetTag("DebugCamera");
 	//SetMain(BaseToDerived<CCamera>());
+
+#if BUILD_MODE
 	ResumeCamera(true);
+#endif // BUILD_MODE
 }
 
 //==========================================================
@@ -231,6 +234,8 @@ void CDebugCamera::CameraMouseMove(int x, int y)
 	m_oldMousePos.y = y;
 }
 
+#if BUILD_MODE
+
 //==========================================================
 // Debugóp
 // “≤›∂“◊ÇÃêÿë÷
@@ -262,3 +267,5 @@ void CDebugCamera::ResumeCamera(bool bSwitch)
 	}
 
 }
+
+#endif // BUILD_MODE

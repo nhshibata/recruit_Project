@@ -14,18 +14,27 @@
 #include <GraphicsSystem/Render/polygon.h>
 
 using namespace MySpace::Graphics;
-	
+
+//==========================================================
+// コンストラクタ
+//==========================================================
 CFontTexture::CFontTexture()
 	:m_FontName(std::wstring())
 {
 	
 }
 
+//==========================================================
+// デスクトラクタ
+//==========================================================
 CFontTexture::~CFontTexture()
 {
 
 }
 
+//==========================================================
+// 初期化
+//==========================================================
 HRESULT CFontTexture::Init()
 {
 	//ロケールを設定しなければ文字化けする可能性があるらしい
@@ -34,10 +43,6 @@ HRESULT CFontTexture::Init()
 
 #pragma region Convert
 	const size_t WCHARBUF = 100;
-	//const char szSource[] = "HELLO";
-	//wchar_t  wszDest[WCHARBUF];
-	//MultiByteToWideChar(CP_ACP, MB_PRECOMPOSED, szSource, -1, wszDest, WCHARBUF);
-
 	std::string name("aasdfg");
 	std::wstring wname = std::wstring(name.begin(), name.end());
 	MultiByteToWideChar(CP_ACP, MB_PRECOMPOSED, name.data(), -1, wname.data(), WCHARBUF);
@@ -57,10 +62,13 @@ HRESULT CFontTexture::Init()
 	return S_OK;
 }
 
+//==========================================================
+// 解放
+//==========================================================
 void CFontTexture::Uninit()
 {
 	for (auto & font : m_aStringMap)
-	{ // vector
+	{	// vector
 		for (auto & str : font.second)
 		{
 			str.second.pTex->Release();
@@ -79,6 +87,9 @@ void CFontTexture::Uninit()
 	);*/
 }
 
+//==========================================================
+// フォント作成
+//==========================================================
 void CFontTexture::DesignFont(std::string fontPath, std::wstring fontName)
 {
 	// フォントハンドルの生成
@@ -124,6 +135,9 @@ void CFontTexture::DesignFont(std::string fontPath, std::wstring fontName)
 	m_hOldFont = (HFONT)SelectObject(m_hdc, m_hFont);
 }
 
+//==========================================================
+// ﾃｸｽﾁｬ生成
+//==========================================================
 CFontTexture::STCharaData CFontTexture::CreateTex(LPCWSTR character, std::wstring fontName)
 {
 	if (m_FontName != fontName)
@@ -408,6 +422,9 @@ CFontTexture::STCharaData CFontTexture::CreateTex(LPCWSTR character, std::wstrin
 
 }
 
+//==========================================================
+// 文字列情報生成
+//==========================================================
 std::vector<CFontTexture::STCharaData> CFontTexture::GetString(std::wstring text, std::wstring fontName)
 {
 	std::vector<CFontTexture::STCharaData> ret;

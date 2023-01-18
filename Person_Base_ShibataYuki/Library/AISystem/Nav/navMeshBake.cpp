@@ -114,6 +114,7 @@ void CNavMeshBake::Bake(const float startPosY, const float endPosY)
 	}
 	//ƒm[ƒhI—¹
 
+#if 0
 	//--- —×‚è‡‚¤ƒm[ƒh‚ğŒq‚°‚é
 	Point point;
 	int x, y, index;
@@ -146,6 +147,8 @@ void CNavMeshBake::Bake(const float startPosY, const float endPosY)
 			}
 		}
 	}
+#endif // 0
+
 
 }
 
@@ -159,6 +162,9 @@ CNavMeshBake::MapRoute CNavMeshBake::GetRoute(Vector3 start, Vector3 end, AIMapO
 		List* parent;
 		float score;
 		Point point;
+		List() 
+			:parent(nullptr), score(0), point({0,0})
+		{}
 	};
 	List* const pRoot = reinterpret_cast<List*>(-1);
 
@@ -487,7 +493,10 @@ void CNavMeshBake::ImGuiDebug()
 
 	if (ImGui::Button("DebugRoute"))
 	{
+#pragma warning(push)
+#pragma warning(disable:26444)
 		GetRoute(m_vDebugStart, m_vDebugEnd, AIMapRouteScore(m_vDebugStart, m_vDebugEnd));
+#pragma warning(pop)
 	}
 
 }

@@ -18,12 +18,14 @@ using namespace MySpace::System;
 //==========================================================
 CFps::CFps()
 	:m_nSlowFramPerSec(60), m_dwExecLastTime(0), m_eSlow(ESlow::SLOW_NONE), m_bUpdate(true), m_dwCurrentTime(0),
-	m_dwDeltaTime(0), m_dwSlowTime(0), m_fTimeScale(1.0f),m_nHitStopFrame(0), m_dwDebugSlow(0), m_nDebugFPS(FPS)
+	m_dwDeltaTime(0), m_dwSlowTime(0), m_fTimeScale(1.0f),m_nHitStopFrame(0)
 {
 #ifdef BUILD_MODE
 	m_dwFPSLastTime = 0;
 	m_dwFrameCount = 0;
 	m_nCountFPS = 0;
+	m_dwDebugSlow = 0;
+	m_nDebugFPS = FPS;
 #endif // DEBUG
 
 	SetSlow(FPS);
@@ -34,7 +36,7 @@ CFps::CFps()
 //==========================================================
 CFps::~CFps()
 {
-	Uninit();
+	
 }
 
 //==========================================================
@@ -50,7 +52,7 @@ void CFps::Init()
 	m_dwExecLastTime = m_dwFPSLastTime = timeGetTime();
 	m_dwCurrentTime = m_dwFrameCount = 0;
 #endif // BUILD_MODE
-	srand(::GetTickCount());
+	srand(unsigned int(::GetTickCount64()) );
 }
 
 //==========================================================

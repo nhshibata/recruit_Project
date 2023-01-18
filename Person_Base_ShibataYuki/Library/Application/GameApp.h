@@ -32,7 +32,7 @@ namespace MySpace
 			CGameApp();
 			~CGameApp();
 
-			void Init(Application*);
+			HRESULT Init(Application*);
 			void Uninit(Application*)const;
 			void FixedUpdate(Application*)const;
 			void InputUpdate();

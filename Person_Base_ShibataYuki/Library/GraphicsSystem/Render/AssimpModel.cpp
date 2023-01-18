@@ -996,15 +996,16 @@ void CAssimpModel::DrawInstancing(ID3D11DeviceContext* pDC, INSTANCHING_DATA& mt
 		int cnt = 0;
 		if (SUCCEEDED(pDC->Map(m_pConstantBufferI, 0, D3D11_MAP_WRITE_DISCARD, 0, &pData)))
 		{
-			SHADER_INSTANCE si;	// ¼ª°ÀŞ°‚É“n‚·î•ñ
+			SHADER_INSTANCE* si = new SHADER_INSTANCE;	// ¼ª°ÀŞ°‚É“n‚·î•ñ
 			for (; cnt < MAX_WORLD_MATRIX; ++cnt, ++cntNum)
 			{
 				if (cnt >= mtxWorld.size() || cntNum >= mtxWorld.size())
 					break;
-				si.mWorld[cnt] = XMMatrixTranspose(XMLoadFloat4x4(&mtxWorld[cnt]));
+				si->mWorld[cnt] = XMMatrixTranspose(XMLoadFloat4x4(&mtxWorld[cnt]));
 			}
 			memcpy_s(pData.pData, pData.RowPitch, (void*)&si, sizeof(SHADER_INSTANCE));
 			pDC->Unmap(m_pConstantBufferI, 0);
+			delete si;
 		}
 		pDC->VSSetConstantBuffers(3, 1, &m_pConstantBufferI);
 

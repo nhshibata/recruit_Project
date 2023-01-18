@@ -41,8 +41,9 @@ using namespace MySpace::Game;
 // コンストラクタ
 //==========================================================
 CHierachy::CHierachy()
-	:m_bLoadSaveWindow(false), m_savePath(), m_loadPath()
+	:m_bLoadSaveWindow(false)
 {
+	m_savePath.clear();
 	m_loadPath = FORDER_DIR(Data/scene);
 	LoadScenePathList();
 }
@@ -51,21 +52,6 @@ CHierachy::CHierachy()
 // デストラクタ
 //==========================================================
 CHierachy::~CHierachy()
-{
-}
-
-//==========================================================
-// 初期化
-//==========================================================
-void CHierachy::Init()
-{
-	LoadScenePathList();
-}
-
-//==========================================================
-// 終了
-//==========================================================
-void CHierachy::Uninit()
 {
 }
 
@@ -110,19 +96,19 @@ void CHierachy::Update(ImGuiManager* manager)
 		{
 			if (ImGui::MenuItem("Empty"))
 			{
-				auto obj = CSceneManager::Get().GetActiveScene()->GetObjManager()->CreateGameObject();
+				CGameObject::Ptr obj = CSceneManager::Get().GetActiveScene()->GetObjManager()->CreateGameObject();
 				manager->GetInspector()->SetSelectGameObject(obj);
 			}
 			if (ImGui::MenuItem("Model"))
 			{
-				auto obj = CGameObject::CreateObject().lock();
+				CGameObject::Ptr obj = CSceneManager::Get().GetActiveScene()->GetObjManager()->CreateGameObject();
 				obj->AddComponent<CModelRenderer>();
 				// ｺﾝﾎﾟｰﾈﾝﾄの追加後
 				manager->GetInspector()->SetSelectGameObject(obj);
 			}
 			if (ImGui::MenuItem("StaticModel"))
 			{
-				auto obj = CGameObject::CreateObject().lock();
+				CGameObject::Ptr obj = CSceneManager::Get().GetActiveScene()->GetObjManager()->CreateGameObject();
 				auto render = obj->AddComponent<CModelRenderer>();
 				render->SetStatic(CMeshRenderer::EStaticMode::NONE_MOVE);
 				// ｺﾝﾎﾟｰﾈﾝﾄの追加後
@@ -130,35 +116,35 @@ void CHierachy::Update(ImGuiManager* manager)
 			}
 			if (ImGui::MenuItem("Billboard"))
 			{
-				auto obj = CGameObject::CreateObject().lock();
+				CGameObject::Ptr obj = CSceneManager::Get().GetActiveScene()->GetObjManager()->CreateGameObject();
 				obj->AddComponent<Game::CBillboardRenderer>();
 				// ｺﾝﾎﾟｰﾈﾝﾄの追加後
 				manager->GetInspector()->SetSelectGameObject(obj);
 			}
 			if (ImGui::MenuItem("Sphere"))
 			{
-				auto obj = CGameObject::CreateObject().lock();
+				CGameObject::Ptr obj = CSceneManager::Get().GetActiveScene()->GetObjManager()->CreateGameObject();
 				obj->AddComponent<Game::CSphereRenderer>();
 				// ｺﾝﾎﾟｰﾈﾝﾄの追加後
 				manager->GetInspector()->SetSelectGameObject(obj);
 			}
 			if (ImGui::MenuItem("Box"))
 			{
-				auto obj = CGameObject::CreateObject().lock();
+				CGameObject::Ptr obj = CSceneManager::Get().GetActiveScene()->GetObjManager()->CreateGameObject();
 				obj->AddComponent<Game::CBoxRenderer>();
 				// ｺﾝﾎﾟｰﾈﾝﾄの追加後
 				manager->GetInspector()->SetSelectGameObject(obj);
 			}
 			if (ImGui::MenuItem("Polygon"))
 			{
-				auto obj = CGameObject::CreateObject().lock();
+				CGameObject::Ptr obj = CSceneManager::Get().GetActiveScene()->GetObjManager()->CreateGameObject();
 				obj->AddComponent<Game::CPolygonRenderer>();
 				// ｺﾝﾎﾟｰﾈﾝﾄの追加後
 				manager->GetInspector()->SetSelectGameObject(obj);
 			}
 			if (ImGui::MenuItem("Text"))
 			{
-				auto obj = CGameObject::CreateObject().lock();
+				CGameObject::Ptr obj = CSceneManager::Get().GetActiveScene()->GetObjManager()->CreateGameObject();
 				obj->AddComponent<Game::CTextRenderer>();
 				// ｺﾝﾎﾟｰﾈﾝﾄの追加後
 				manager->GetInspector()->SetSelectGameObject(obj);
@@ -183,11 +169,10 @@ void CHierachy::Update(ImGuiManager* manager)
 			if (!DispCheck(object.get()))
 				continue;
 		}
-#if 1
+
 		// 親要素の確認、親が子を表示するので次へ
 		if (object->GetTransform()->GetParent().lock())
 			continue;
-#endif // 0
 		
 		// 選択ボタン、ウィンドウ表示
 		if (ImGui::Button(object->GetName().c_str()))
@@ -242,7 +227,6 @@ void CHierachy::DispSaveLoadMenu()
 
 	ImGui::Begin("Load", &flg, ImGuiWindowFlags_MenuBar);
 
-	//
 	if (ImGui::BeginMenuBar()) {
 		if (ImGui::BeginMenu("sceneList"))
 		{
@@ -279,7 +263,6 @@ void CHierachy::DispSaveLoadMenu()
 	}
 	ImGui::End();
 }
-
 
 #pragma region GAME_OBJECT
 
@@ -327,7 +310,6 @@ void CHierachy::DispChild(ImGuiManager* manager, std::weak_ptr<MySpace::Game::CG
 					child.lock()->GetTransform()->AddChild(selectObj->lock()->GetComponent<CTransform>());
 #pragma endregion
 
-				//ImGui::SameLine();
 				//--- 子要素を更に表示(再帰)
 				//if (auto childObj = child.lock()->GetTransform()->GetChild(0); childObj.lock())
 				DispChild(manager, child.lock());
@@ -352,7 +334,7 @@ void CHierachy::DispChild(ImGuiManager* manager, std::weak_ptr<MySpace::Game::CG
 void CHierachy::DispSearch()
 {
 	// for文変数
-	const int nSearch[static_cast<int>(ESearchTerms::MAX)] =
+	static const int nSearch[static_cast<int>(ESearchTerms::MAX)] =
 	{
 		static_cast<int>(ESearchTerms::OBJ_NAME),
 		static_cast<int>(ESearchTerms::TAG),
@@ -362,7 +344,7 @@ void CHierachy::DispSearch()
 		static_cast<int>(ESearchTerms::STATE_DESTROY),
 	};
 
-	const char* szDisp[static_cast<int>(ESearchTerms::MAX)] =
+	static const char* szDisp[static_cast<int>(ESearchTerms::MAX)] =
 	{
 		"Name","Tag","Component","sActiv","sStop","sDestroy"
 	};
@@ -426,6 +408,7 @@ bool CHierachy::DispCheck(CGameObject* obj)
 	return false;
 }
 #pragma endregion
+
 
 #pragma region LIST_SWAP
 

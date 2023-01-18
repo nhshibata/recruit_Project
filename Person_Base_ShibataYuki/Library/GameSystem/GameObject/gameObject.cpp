@@ -72,6 +72,7 @@ CGameObject::CGameObject(const CGameObject & object)
 	this->m_pTag = std::make_unique<CTag>();
 	this->m_pLayer.get()->SetLayer(*object.m_pLayer.get()->GetLayer());
 	this->m_pTag.get()->SetTag(object.m_pTag.get()->GetTag());
+	//this->m_aComponent = object.m_aComponent;
 
 	// ｺﾝﾎﾟｰﾈﾝﾄの名前から同じｺﾝﾎﾟｰﾈﾝﾄを追加
 	// TODO: 各ｺﾝﾎﾟｰﾈﾝﾄの値のｺﾋﾟｰは行えない
@@ -283,8 +284,7 @@ void CGameObject::OnCollisionEnter(CGameObject* obj)
 //==========================================================
 void CGameObject::OnCollisionStay(CGameObject* obj)
 {
-	Component_List::iterator it = m_aComponent.begin();
-	for (; it != m_aComponent.end(); ++it)
+	for (Component_List::iterator it = m_aComponent.begin(); it != m_aComponent.end(); ++it)
 	{
 		(*it)->OnCollisionStay(obj);
 	}
@@ -295,8 +295,7 @@ void CGameObject::OnCollisionStay(CGameObject* obj)
 //==========================================================
 void CGameObject::OnCollisionExit(CGameObject* obj)
 {
-	Component_List::iterator it = m_aComponent.begin();
-	for (; it != m_aComponent.end(); ++it)
+	for (Component_List::iterator it = m_aComponent.begin(); it != m_aComponent.end(); ++it)
 	{
 		(*it)->OnCollisionExit(obj);
 	}
@@ -307,8 +306,7 @@ void CGameObject::OnCollisionExit(CGameObject* obj)
 //==========================================================
 void CGameObject::OnTriggerEnter(CGameObject* obj)
 {
-	Component_List::iterator it = m_aComponent.begin();
-	for (; it != m_aComponent.end(); ++it)
+	for (Component_List::iterator it = m_aComponent.begin(); it != m_aComponent.end(); ++it)
 	{
 		(*it)->OnTriggerEnter(obj);
 	}
@@ -319,8 +317,7 @@ void CGameObject::OnTriggerEnter(CGameObject* obj)
 //==========================================================
 void CGameObject::OnTriggerStay(CGameObject* obj)
 {
-	Component_List::iterator it = m_aComponent.begin();
-	for (; it != m_aComponent.end(); ++it)
+	for (Component_List::iterator it = m_aComponent.begin(); it != m_aComponent.end(); ++it)
 	{
 		(*it)->OnTriggerStay(obj);
 	}
@@ -331,8 +328,7 @@ void CGameObject::OnTriggerStay(CGameObject* obj)
 //==========================================================
 void CGameObject::OnTriggerExit(CGameObject* obj)
 {
-	Component_List::iterator it = m_aComponent.begin();
-	for (; it != m_aComponent.end(); ++it)
+	for (Component_List::iterator it = m_aComponent.begin(); it != m_aComponent.end(); ++it)
 	{
 		(*it)->OnTriggerExit(obj);
 	}
@@ -345,12 +341,15 @@ void CGameObject::OnTriggerExit(CGameObject* obj)
 //==========================================================
 std::weak_ptr<CGameObject> CGameObject::FindGameObject(std::string name)
 {
-	for (auto & scene : CSceneManager::Get().GetAllScene()) 
+	if (auto all = CSceneManager::Get().GetAllScene(); all.size() != 0)
 	{
-		auto obj = scene->GetObjManager()->FindGameObj(name.c_str());
-		if (obj.lock()) 
+		for (auto & scene : all)
 		{
-			return obj;
+			auto obj = scene->GetObjManager()->FindGameObj(name.c_str());
+			if (obj.lock())
+			{
+				return obj;
+			}
 		}
 	}
 	return std::shared_ptr<CGameObject>();
@@ -361,12 +360,15 @@ std::weak_ptr<CGameObject> CGameObject::FindGameObject(std::string name)
 //==========================================================
 std::weak_ptr<CGameObject> CGameObject::FindGameObjectWithTag(std::string tag)
 {
-	for (auto & scene : CSceneManager::Get().GetAllScene())
+	if (auto all = CSceneManager::Get().GetAllScene(); all.size() != 0)
 	{
-		auto obj = scene->GetObjManager()->FindGameObjWithTag(tag);
-		if (obj.lock())
+		for (auto & scene : all)
 		{
-			return obj;
+			auto obj = scene->GetObjManager()->FindGameObjWithTag(tag);
+			if (obj.lock())
+			{
+				return obj;
+			}
 		}
 	}
 	return std::shared_ptr<CGameObject>();
@@ -378,13 +380,16 @@ std::weak_ptr<CGameObject> CGameObject::FindGameObjectWithTag(std::string tag)
 std::list<std::weak_ptr<CGameObject>> CGameObject::FindGameObjectsWithTag(std::string tag)
 {
 	std::list<std::weak_ptr<CGameObject>> ret;
-	for (auto & scene : CSceneManager::Get().GetAllScene())
+	if (auto all = CSceneManager::Get().GetAllScene(); all.size() != 0)
 	{
-		auto objs = scene->GetObjManager()->FindGameObjctsWithTag(tag);
-		// 格納
-		for (auto & obj : objs)
+		for (auto & scene : all)
 		{
-			ret.push_back(obj);
+			auto objs = scene->GetObjManager()->FindGameObjctsWithTag(tag);
+			// 格納
+			for (auto & obj : objs)
+			{
+				ret.push_back(obj);
+			}
 		}
 	}
 	return ret;
@@ -395,12 +400,15 @@ std::list<std::weak_ptr<CGameObject>> CGameObject::FindGameObjectsWithTag(std::s
 //==========================================================
 std::weak_ptr<CGameObject> CGameObject::FindGameObjectWithTag(CTag tag)
 {
-	for (auto & scene : CSceneManager::Get().GetAllScene())
+	if (auto all = CSceneManager::Get().GetAllScene(); all.size() != 0)
 	{
-		auto obj = scene->GetObjManager()->FindGameObjWithTag(tag);
-		if (obj.lock())
+		for (auto & scene : all)
 		{
-			return obj;
+			auto obj = scene->GetObjManager()->FindGameObjWithTag(tag);
+			if (obj.lock())
+			{
+				return obj;
+			}
 		}
 	}
 	return std::shared_ptr<CGameObject>();
@@ -412,12 +420,15 @@ std::weak_ptr<CGameObject> CGameObject::FindGameObjectWithTag(CTag tag)
 std::list<std::weak_ptr<CGameObject>> CGameObject::FindGameObjectsWithTag(CTag tag)
 {
 	std::list<std::weak_ptr<CGameObject>> retList;
-	for (auto & scene : CSceneManager::Get().GetAllScene())
+	if (auto all = CSceneManager::Get().GetAllScene(); all.size() != 0)
 	{
-		auto obj = scene->GetObjManager()->FindGameObjWithTag(tag);
-		if (obj.lock())
+		for (auto & scene : all)
 		{
-			retList.push_back(obj);
+			auto obj = scene->GetObjManager()->FindGameObjWithTag(tag);
+			if (obj.lock())
+			{
+				retList.push_back(obj);
+			}
 		}
 	}
 	return std::list<std::weak_ptr<CGameObject>>();
@@ -448,11 +459,11 @@ std::weak_ptr<CGameObject> CGameObject::CreateObject(CGameObject* pObj)
 //==========================================================
 std::shared_ptr<CGameObject> CGameObject::CreateDebugObject(std::shared_ptr<CGameObject> pObj)
 {
+	if (!pObj)
+		pObj = std::make_shared<CGameObject>();
 	// 自身のweakPtrを渡す
 	pObj.get()->SetPtr(pObj);
-
-	// 初期名
-	pObj.get()->Awake();	// 実質OnCreateな気がする
+	pObj.get()->Awake();
 	pObj.get()->Init();
 	return pObj;
 }
@@ -480,7 +491,7 @@ void CGameObject::DontDestroy(std::weak_ptr<CGameObject> pObj)
 
 void CGameObject::ImGuiDebug()
 {
-	const char* szState[CGameObject::MAX_OBJECT_STATE] = {
+	static const char* szState[CGameObject::MAX_OBJECT_STATE] = {
 		"ACTIVE",				// 更新状態
 		"WAIT",				// 待機
 		"DESTROY",			// 削除
@@ -510,9 +521,9 @@ void CGameObject::ImGuiDebug()
 		if (ImGui::BeginMenu(u8"tag"))
 		{
 			auto tagList = CTag::GetNameList();
-			for (int state = 0; state < static_cast<int>(tagList.size()); ++state)
+			for (int idx = 0; idx < static_cast<int>(tagList.size()); ++idx)
 			{
-				auto tagName = tagList[state].c_str();
+				auto tagName = tagList[idx].c_str();
 				if (ImGui::MenuItem(tagName)) {
 					GetTagPtr()->SetTag(tagName);
 				}
@@ -523,9 +534,9 @@ void CGameObject::ImGuiDebug()
 	}
 	
 	//--- 名前変更
-	char name[256] = "";
+	char name[56] = "";
 	strcpy_s(name, GetName().c_str());
-	ImGui::InputText(u8"*名前:", name, 256);
+	ImGui::InputText(u8"*名前:", name, 56);
 	SetName(name);
 	ImGui::SameLine();
 	ImGui::Text(u8"*Tag:%s", GetTagPtr()->GetTag().c_str());

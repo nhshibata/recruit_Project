@@ -171,7 +171,8 @@ bool CWindow::RegisterClass(HINSTANCE	 h_Instance,
 	return true;
 }
 
-void CWindow::SetWindow(HINSTANCE		h_Instance,
+void CWindow::SetWindow(
+	HINSTANCE		h_Instance,
 	unsigned long	h_Style,
 	unsigned long	h_ExStyle,
 	HWND				h_Parent,
@@ -220,6 +221,7 @@ void CWindow::SetWindow(HINSTANCE		h_Instance,
 
 	
 	}
+
 	{
 		// ウインドウサイズを再計算（Metricsだけでは、フレームデザインでクライアント領域サイズが変わってしまうので）
 		GetWindowRect(m_hwnd, &rWindow);
@@ -276,8 +278,6 @@ LRESULT ImGui_WndProc(HWND hwnd, 		// ウィンドウハンドル
 	LPARAM lParam)	// 付帯情報２
 {
 	ImGui_ImplWin32_WndProcHandler(hwnd, message, wParam, lParam);
-	/*if (ImGui_ImplWin32_WndProcHandler(hwnd, message, wParam, lParam))
-		return true;*/
 
 	switch (message) 
 	{

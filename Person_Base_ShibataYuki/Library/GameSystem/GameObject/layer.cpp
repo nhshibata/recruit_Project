@@ -13,7 +13,7 @@ namespace MySpace
 {
 	namespace Game
 	{
-
+		//--- Ã“Iƒƒ“ƒo•Ï”
 		std::map<int, std::string> CLayer::m_aNoList = {
 				{ int(E_Layer::SKY),	NAME_TO(E_Layer::SKY) },
 				{ int(E_Layer::BG),		NAME_TO(E_Layer::BG) },

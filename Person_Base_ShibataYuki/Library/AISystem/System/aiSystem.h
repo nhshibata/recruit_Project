@@ -47,7 +47,6 @@ namespace AI
 		//--- メンバ変数
 		NodePtr m_pRoot;			// 先頭ノード
 		NodeMap m_Nodes;			// ノードを一括で管理する
-		std::weak_ptr<CGameObject> m_pOwner;		// 持ち主
 		void* m_pData;				// (解放の責任を持つ)
 
 	public:
@@ -132,7 +131,5 @@ namespace AI
 
 	};
 }
-// TDOD:後で消す
-using namespace AI;
 
 #endif // !__AI_SYSTEM_H__

@@ -15,6 +15,8 @@
 #include <Windows.h>
 
 #include <CoreSystem/Math/myVector.h>
+#include <CoreSystem/systemBase.h>
+
 #include <memory>
 
 namespace MySpace
@@ -24,7 +26,7 @@ namespace MySpace
 		using namespace MySpace::MyMath;
 
 		//--- クラス定義
-		class CWindow
+		class CWindow : public CSystemBase
 		{
 		private:
 			//--- メンバ変数
@@ -39,8 +41,9 @@ namespace MySpace
 		public:
 			//--- メンバ関数
 			CWindow() 
+				:m_fScreenWidth(0),m_fScreenHeight(0), m_fClientWidth(0), m_fClientHeight(0),m_hwnd(0)/*,m_Message()*/
 			{
-				m_fScreenWidth = m_fScreenHeight = m_fClientWidth = m_fClientHeight = 0.0f;
+				
 			};
 			~CWindow() = default;
 

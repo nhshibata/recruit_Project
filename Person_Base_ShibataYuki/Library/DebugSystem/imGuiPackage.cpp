@@ -21,9 +21,9 @@ namespace MySpace
 		//==========================================================
 		std::string InputString(std::string text, std::string desc)
 		{
-			char name[256];
+			char name[56];
 			strcpy_s(name, text.c_str());
-			if (ImGui::InputText(desc.c_str(), name, 256))
+			if (ImGui::InputText(desc.c_str(), name, 56))
 			{
 
 			}
@@ -37,8 +37,10 @@ namespace MySpace
 		//==========================================================
 		std::string DispFileMenuBar(std::string path, std::string desc, std::string ext)
 		{
-			CFilePath file;
-			std::string ret = MySpace::Debug::DispMenuBar(file.GetAllFileName(path, ext), desc);
+			CFilePath* file = new CFilePath;
+			std::string ret = MySpace::Debug::DispMenuBar(file->GetAllFileName(path, ext), desc);
+			delete file;
+
 			return ret;
 		}
 
@@ -77,10 +79,10 @@ namespace MySpace
 		std::u16string DispFileMenuBar16(std::string path, std::string desc, std::string ext)
 		{
 			std::u16string ret = std::u16string();
-			CFilePath filePath;
+			CFilePath* filePath = new CFilePath();
 			//--- パス内のファイルを全取得
-			auto DispList = filePath.GetAllFileName(path, ext);		// 表示用
-			auto NameList = filePath.GetAllFileNameTo16(path, ext);	// 戻り値用
+			auto DispList = filePath->GetAllFileName(path, ext);		// 表示用
+			auto NameList = filePath->GetAllFileNameTo16(path, ext);	// 戻り値用
 			if (ImGui::BeginMenuBar())
 			{
 				if (ImGui::BeginMenu(desc.c_str()))
@@ -97,6 +99,7 @@ namespace MySpace
 				}
 				ImGui::EndMenuBar();
 			}
+			delete filePath;
 			return ret;
 		}
 		
@@ -186,6 +189,7 @@ namespace MySpace
 
 			for (int cnt = 0; cnt < vec.size() - 1; cnt++)
 			{
+#pragma warning(suppress: 26451)
 				if (ImGui::RadioButton(vec[cnt + 1].c_str(), (1 << cnt) == current))
 				{
 					return  (1 << cnt);
@@ -207,6 +211,7 @@ namespace MySpace
 
 			for (int cnt = 0; cnt < vec.size() - 1; cnt++)
 			{
+#pragma warning(suppress: 26451)
 				if (ImGui::Selectable(vec[cnt + 1].c_str(), (1 << cnt) | current, ImGuiSelectableFlags_::ImGuiSelectableFlags_None, size))
 				{
 					// 排他

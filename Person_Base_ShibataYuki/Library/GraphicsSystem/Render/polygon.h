@@ -57,7 +57,7 @@ namespace MySpace
 			static void SetVertex(void);
 
 		public:
-			static HRESULT Init(ID3D11Device* pDevice);
+			static HRESULT InitShader(ID3D11Device* pDevice);
 			static void Fin();
 			static void Draw(ID3D11DeviceContext* pDeviceContext);
 

@@ -70,8 +70,10 @@ bool ImGuiManager::CheckPlayMode()
 //==========================================================
 // 初期化
 //==========================================================
-void ImGuiManager::Init(HWND hWnd, ID3D11Device* device, ID3D11DeviceContext* context)
+HRESULT ImGuiManager::Init(HWND hWnd, ID3D11Device* device, ID3D11DeviceContext* context)
 {
+	HRESULT hr = S_OK;
+
 	IMGUI_CHECKVERSION();
 	ImGui::CreateContext();
 	ImGuiIO& io = ImGui::GetIO(); (void)io;
@@ -85,8 +87,10 @@ void ImGuiManager::Init(HWND hWnd, ID3D11Device* device, ID3D11DeviceContext* co
 		io.DisplaySize.y = CScreen::GetHeight();
 	}
 
-	ImGui_ImplWin32_Init(hWnd);
-	ImGui_ImplDX11_Init(device, context);
+	if (!ImGui_ImplWin32_Init(hWnd))
+		return S_FALSE;
+	if(!ImGui_ImplDX11_Init(device, context))
+		return S_FALSE;
 	ImGui::StyleColorsDark();
 
 	m_pInspector = std::make_shared<CInspector>();
@@ -101,17 +105,18 @@ void ImGuiManager::Init(HWND hWnd, ID3D11Device* device, ID3D11DeviceContext* co
 	{	
 		m_bEditFlg = true;
 		m_pDebugObj = std::make_shared<CGameObject>();
-		CGameObject::CreateDebugObject(m_pDebugObj);
+		m_pDebugObj = CGameObject::CreateDebugObject(m_pDebugObj);
 		m_pDebugCamera = m_pDebugObj->AddComponent<CDebugCamera>();
 		m_pDebugCamera.lock()->Init();
+		m_pDebugCamera.lock()->ResumeCamera(m_bEditFlg);
 		m_pDebugObj->GetTransform()->SetScale({ 10, 10, 10 });
 		m_pDebugObj->GetTransform()->Update();
-		m_pDebugCamera.lock()->ResumeCamera(m_bEditFlg);
 	}
 	else
 	{
 		m_bEditFlg = false;
 	}
+	return hr;
 }
 
 //==========================================================
@@ -119,11 +124,10 @@ void ImGuiManager::Init(HWND hWnd, ID3D11Device* device, ID3D11DeviceContext* co
 //==========================================================
 void ImGuiManager::Uninit()
 {
+	//--- 破棄 or 解放
 	m_pDebugCamera.lock()->GetOwner(0).reset();
 	m_pDebugCamera.reset();
 
-	m_pInspector->Uninit();
-	m_pHierarchy->Uninit();
 	m_pInspector.reset();
 	m_pHierarchy.reset();
 	m_pDS.reset();
@@ -140,19 +144,18 @@ void ImGuiManager::Uninit()
 //==========================================================
 void ImGuiManager::Update() 
 {
-	if (CInput::GetKeyTrigger(VK_P))
-	{
-		m_bSceneRender ^= true;
-	}
-
 	// ON/OFF
 	if (CInput::GetKeyTrigger(VK_I))
 	{
 		m_bEditFlg ^= true;
-		m_pDebugCamera.lock()->ResumeCamera(m_bEditFlg);
+		if(m_pDebugCamera.lock())
+			m_pDebugCamera.lock()->ResumeCamera(m_bEditFlg);
 	}
 	if (!m_bEditFlg)
 		return;
+
+	if (CInput::GetKeyTrigger(VK_P))
+		m_bSceneRender ^= true;
 
 	//--- imGuiの更新処理
 	ImGui_ImplDX11_NewFrame();
@@ -160,9 +163,10 @@ void ImGuiManager::Update()
 	ImGui::NewFrame();
 	ImGuizmo::BeginFrame();
 
+	//--- 初期化
 	m_eHover = EMouseHovered::HOVERED_NONE;
 
-	//--- ポーズ
+	//--- ポーズ処理
 	Pause();
 
 	//--- デバッグ実行

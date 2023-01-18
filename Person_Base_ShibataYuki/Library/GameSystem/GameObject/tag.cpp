@@ -31,7 +31,7 @@ CTag::CTag()
 CTag::CTag(std::string name)
 {
 	CreateTag(name);
-	m_nTagID = GetID(name);
+	m_nTagID = FindIdx(name);
 }
 
 //==========================================================

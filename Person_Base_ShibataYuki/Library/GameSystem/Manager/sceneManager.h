@@ -11,11 +11,12 @@
 #define __SCENE_MANAGER_H__
 
 //--- インクルード部
+#include <winerror.h>
+
 #include <CoreSystem/Util/cerealCommon.h>
 #include <GameSystem/Scene/scene.h>
 #include <GameSystem/Manager/instantResourceManager.h>
 #include <GameSystem/Scene/sceneTransitionDetection.h>
-
 
 #pragma region ForwardDeclaration
 namespace MySpace
@@ -102,7 +103,7 @@ namespace MySpace
 				m_bTransition = true;
 				CSceneManager::Get().SceneUnloaded<CSceneManager>(&CSceneManager::FlagOn, this);
 					//std::bind(&CSceneManager::FlagOn, this, std::placeholders::_1));
-				return nullptr;
+				return scene ? nullptr : nullptr;
 			}
 
 			// *@リストに追加
@@ -117,7 +118,7 @@ namespace MySpace
 			static CSceneManager& Get();
 //#pragma warning(pop)   
 			
-			void Init();
+			HRESULT Init();
 			void Uninit();
 			void UpdateScene();
 			void FixedUpdateScene();

@@ -6,9 +6,9 @@
 // ゲーム実行ｸﾗｽ
 //=========================================================
 
-//--- インクルード部
 #define NOMINMAX
 
+//--- インクルード部
 #include <Application/GameApp.h>
 #include <Application/Application.h>
 #include <Application/screen.h>
@@ -23,8 +23,6 @@
 #include <GraphicsSystem/Render/polygon.h>
 #include <GraphicsSystem/Render/mesh.h>
 #include <GraphicsSystem/Manager/assetsManager.h>
-//#include <GraphicsSystem/Manager/imageResourceManager.h>
-//#include <GraphicsSystem/Manager/FontTexture.h>
 #include <GraphicsSystem/Manager/modelManager.h>
 #include <GraphicsSystem/Manager/effectManager.h>
 //#include <GraphicsSystem/Manager/shaderManager.h>
@@ -35,6 +33,8 @@
 #include <CoreSystem/Input/input.h>
 #include <CoreSystem/Sound/Sound.h>
 #include <CoreSystem/FuncPtr/funcPtrManager.h>
+
+#include <tchar.h>
 
 using namespace MySpace::System;
 using namespace MySpace::Graphics;
@@ -60,50 +60,66 @@ CGameApp::~CGameApp()
 //==========================================================
 // 初期化
 //==========================================================
-void CGameApp::Init(Application* app)
+HRESULT CGameApp::Init(Application* app)
 {
-	HWND hWnd = Application::Get()->GetHWnd();
+	HRESULT hr = S_OK;
 
 	//--- 変数宣言
 	auto pDevice = app->GetDevice();
 	auto pDC = app->GetDeviceContext();
 
 	//--- 入力初期化
-	CInput::Init();
+	hr = CInput::Init();
+	if(hr != S_OK)
+		MessageBox(NULL, _T("CInputの初期化に失敗しました。"), _T("error"), MB_OK);
 	CGamePad::Init();
 	Mouse::Initialize();
-	Keyboad::Update();
+	//Keyboad::();
 
 	//--- メッシュ
-	CMesh::InitShader();
-
-	// モデル
-	CAssimpModel::InitShader(pDevice);
-
+	hr = CMesh::InitShader();
+	if (hr != S_OK)
+		MessageBox(NULL, _T("CMeshの初期化に失敗しました。"), _T("error"), MB_OK);
+	//--- モデル
+	hr = CAssimpModel::InitShader(pDevice) ? S_OK : S_FALSE;
+	if (hr != S_OK)
+		MessageBox(NULL, _T("CAssimpModelの初期化に失敗しました。"), _T("error"), MB_OK);
 	//--- ポリゴン
-	CPolygon::Init(pDevice);
-
+	hr = CPolygon::InitShader(pDevice);
+	if (hr != S_OK)
+		MessageBox(NULL, _T("CPolygonの初期化に失敗しました。"), _T("error"), MB_OK);
 	//--- アセット
 	// 素材全般所持ｸﾗｽ
-	auto pAssets = app->AddSystem<CAssetsManager>();
-	pAssets->Init(app);
+	{
+		auto pAssets = new CAssetsManager();
+		app->AddSystem(pAssets, typeid(CAssetsManager).name());
+		hr = pAssets->Init(app);
+		if (hr != S_OK)
+			MessageBox(NULL, _T("CAssetsManagerの初期化に失敗しました。"), _T("error"), MB_OK);
+	}
 
 	// 音初期化
 	CSound::Init();
 
 	//--- シーンの生成
-	auto sceneMgr = &CSceneManager::Get();
-	sceneMgr->Init();
-	
+	{
+		auto sceneMgr = &CSceneManager::Get();
+		hr = sceneMgr->Init();
+		if (hr != S_OK)
+			MessageBox(NULL, _T("CSceneManagerの初期化に失敗しました。"), _T("error"), MB_OK);
+	}
 
 #ifdef BUILD_MODE
 	//--- imGuiの初期化処理
-	auto imgui = app->AddSystem<ImGuiManager>();
-	imgui->Init(hWnd, pDevice, pDC);
+	auto imgui = new ImGuiManager();
+	app->AddSystem(imgui, typeid(ImGuiManager).name());
+	hr = imgui->Init(Application::Get()->GetHWnd(), pDevice, pDC);
+	if (hr != S_OK)
+		MessageBox(NULL, _T("ImGuiの初期化に失敗しました。"), _T("error"), MB_OK);
 #endif // BUILD_MODE
 
-	app->AddSystem<CTweenManager>();
-
+	//app->AddSystem<CTweenManager>();
+	return hr;
 }
 
 //==========================================================
@@ -160,7 +176,7 @@ void CGameApp::Run(Application* app)
 	CSceneManager::Get().UpdateScene();
 
 	// Tweenの更新(順番検討)
-	app->GetSystem<CTweenManager>()->Update();
+	//app->GetSystem<CTweenManager>()->Update();
 
 	app->GetSystem<CAssetsManager>()->Update();
 }

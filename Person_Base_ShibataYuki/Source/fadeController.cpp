@@ -17,14 +17,14 @@ CFadeController::CFadeController(std::shared_ptr<CGameObject> owner)
 void CFadeController::Awake()
 {
 	m_SceneName.clear();
-
 	GetOwner()->SetName("FadeController");
-	GetOwner()->AddComponent<MySpace::Game::CPolygonRenderer>();
 }
 
 void CFadeController::Init()
 {
 	m_pPolygon = GetOwner()->GetComponent<MySpace::Game::CPolygonRenderer>();
+	if(!m_pPolygon.lock())
+		GetOwner()->AddComponent<MySpace::Game::CPolygonRenderer>();
 	m_pPolygon.lock()->SetColor(Color(0, 0, 0, 0));
 	m_pPolygon.lock()->GetRectTransform()->SetSize(CScreen::GetWidth(), CScreen::GetHeight());
 	m_pPolygon.lock()->SetZ(static_cast<int>(CLayer::E_Layer::FOG));

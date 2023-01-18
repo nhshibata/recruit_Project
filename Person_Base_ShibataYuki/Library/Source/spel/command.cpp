@@ -24,7 +24,7 @@ void CCommandStock::Awake()
 #if _DISP_KEY
 	testText = this->AddComponent<CTextRenderer>();
 	testText.lock()->GetRectTransform()->SetPos({ -CScreen::GetWidth() / 3, CScreen::GetHeight() / 3 });
-#endif // _DEBUG
+#endif // _DISP_KEY
 	
 	m_nInputList.push_back(VK_U);
 	m_nInputList.push_back(VK_I);
@@ -48,7 +48,7 @@ void CCommandStock::Update()
 		text += wText;
 	}
 	testText.lock()->SetTextWString(text);
-#endif // !_DEBUG
+#endif // !BUILD_MODE
 
 	// Œ»İƒtƒŒ[ƒ€‚Ì“ü—Í‚ğæ“¾
 	for (auto &key : m_nInputList)

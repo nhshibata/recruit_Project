@@ -124,7 +124,10 @@ namespace MySpace
 			inline float GetFOV() { return m_fFovY; }
 			inline float GetNearClip() { return m_fNearZ; }
 
+#pragma warning(push)
+#pragma warning(disable:4100)
 			inline DirectX::XMMATRIX GetWorldMatrix(int no) { return DirectX::XMLoadFloat4x4(&m_mtxWorld); }
+#pragma warning(pop)   
 			inline DirectX::XMMATRIX GetLookAtMatrix() { return DirectX::XMLoadFloat4x4(&m_mtxView); };
 			inline DirectX::XMMATRIX GetProjectionMatrix() { return DirectX::XMLoadFloat4x4(&m_mtxProj); };
 			static inline CCamera* GetMain() { if (!m_pMainCamera.lock())return nullptr; return m_pMainCamera.lock().get(); };

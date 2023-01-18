@@ -57,7 +57,11 @@ CModelRenderer::~CModelRenderer()
 //==========================================================
 void CModelRenderer::SetModel(std::string name)
 {
-	auto modelMgr = Application::Get()->GetSystem<CAssetsManager>()->GetModelManager();
+	auto assets = Application::Get()->GetSystem<CAssetsManager>();
+	if (!assets)
+		return;
+
+	auto modelMgr = assets->GetModelManager();
 	
 	// ƒ|ƒCƒ“ƒ^‚ðŽó‚¯Žæ‚é
 	if (m_pModel = modelMgr->GetModel(name); m_pModel)

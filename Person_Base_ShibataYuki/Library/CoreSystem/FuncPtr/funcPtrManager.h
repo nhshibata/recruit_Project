@@ -15,13 +15,15 @@
 #include <memory>
 #include <CoreSystem/FuncPtr/funcPtr.h>
 #include <CoreSystem/FuncPtr/timeFuncPtr.h>
+#include <CoreSystem/systemBase.h>
+
 
 namespace MySpace
 {
 	namespace System
 	{
 		//--- ƒNƒ‰ƒX’è‹`
-		class CFuncManager
+		class CFuncManager : public CSystemBase
 		{
 		private:
 			using FUNC_VEC = std::vector<std::shared_ptr<CBaseFuncPtr>>;

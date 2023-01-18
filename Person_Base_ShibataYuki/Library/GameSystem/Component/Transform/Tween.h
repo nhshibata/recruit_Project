@@ -215,8 +215,11 @@ namespace MySpace
 			Color m_vDestColor;
 
 		public:
-			CDoColor() {};
-			CDoColor(std::weak_ptr<CTransform> ptr):CTween(ptr) {};
+			CDoColor()
+				:m_pColor(nullptr)
+			{};
+			CDoColor(std::weak_ptr<CTransform> ptr):CTween(ptr) ,m_pColor(nullptr)
+			{};
 			~CDoColor() {};
 
 			bool Update() 

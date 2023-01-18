@@ -39,6 +39,7 @@ namespace Spell
 		~CGameSceneManager();
 
 		void Awake();
+		void Init();
 		void Update();
 
 		void TimeFunc();

@@ -13,7 +13,8 @@
 
 namespace Spell
 {
-	class CIsEntryNode : public CDecoratorNode
+
+	class CIsEntryNode : public AI::CDecoratorNode
 	{
 	public:
 		AID_IMPLEMENTATION_AWAKE
@@ -23,7 +24,7 @@ namespace Spell
 		AID_DEFINITION_IS_ACTION;
 	};
 
-	class CIsTimerNode : public CDecoratorNode
+	class CIsTimerNode : public AI::CDecoratorNode
 	{
 	public:
 		AID_IMPLEMENTATION_AWAKE
@@ -33,17 +34,7 @@ namespace Spell
 		AID_DEFINITION_IS_ACTION;
 	};
 
-	class CIsPreferenceNode : public CDecoratorNode
-	{
-	public:
-		AID_IMPLEMENTATION_AWAKE
-		{
-
-		}
-		AID_DEFINITION_IS_ACTION;
-	};
-	
-	class CIsEnvyNode : public CDecoratorNode
+	class CIsPreferenceNode : public AI::CDecoratorNode
 	{
 	public:
 		AID_IMPLEMENTATION_AWAKE
@@ -53,12 +44,32 @@ namespace Spell
 		AID_DEFINITION_IS_ACTION;
 	};
 	
-	class CIsPassNode : public CDecoratorNode
+	class CIsEnvyNode : public AI::CDecoratorNode
 	{
 	public:
 		AID_IMPLEMENTATION_AWAKE
 		{
 
+		}
+		AID_DEFINITION_IS_ACTION;
+	};
+	
+	class CIsPassNode : public AI::CDecoratorNode
+	{
+	public:
+		AID_IMPLEMENTATION_AWAKE
+		{
+
+		}
+		AID_DEFINITION_IS_ACTION;
+	};
+	
+	class CIsMoveNode : public AI::CDecoratorNode
+	{
+	public:
+		AID_IMPLEMENTATION_AWAKE
+		{
+			this->SetConcreate(sys->MakeNode<CMoveNode>());
 		}
 		AID_DEFINITION_IS_ACTION;
 	};
@@ -82,6 +93,21 @@ namespace Spell
 	public:
 		AID_DEFINITION_ACTION;
 	};
+
+	// ˆÚ“®
+	class CMoveNode : public AI::CActionNode
+	{
+	public:
+		AID_DEFINITION_ACTION;
+	};
+	
+	// ’âŽ~
+	class CStopNode : public AI::CActionNode
+	{
+	public:
+		AID_DEFINITION_ACTION;
+	};
+
 }
 
 #endif // !__PARTNER_NODE_H__

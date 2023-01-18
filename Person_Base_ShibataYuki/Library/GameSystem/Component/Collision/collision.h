@@ -51,13 +51,16 @@ namespace MySpace
 			void ColObjectUpdate();
 		protected:
 			void HitResponse(CCollision* col);
-			Vector3 PosAdjustment(Vector3 pos, Vector3 size) {};
+#pragma warning(push)
+#pragma warning(disable:4100)
+			virtual Vector3 PosAdjustment(Vector3 pos, Vector3 size) { return Vector3(); };
+#pragma warning(pop)
 		public:
 			//--- ﾒﾝﾊﾞ関数
 			CCollision() :m_bIsTrigger(false), m_nSystemIdx(-1)
 			{};
 			CCollision(std::shared_ptr<CGameObject> owner, bool trigger = false);
-			~CCollision();
+			virtual ~CCollision();
 
 			void Awake();
 			void Init();
@@ -78,7 +81,7 @@ namespace MySpace
 			// *@仮想関数
 			// *@当たり判定方法により異なる
 			// *@コリジョンｸﾗｽを引き数にとって、当たり判定を行う
-			virtual bool HitCheckPtr(CCollision* col) { return false; };
+			virtual bool HitCheckPtr(CCollision* col) { if(!col)return false; return false; };
 
 			// *@離れたオブジェクトを持ち主に教える
 			virtual bool ExitTell();

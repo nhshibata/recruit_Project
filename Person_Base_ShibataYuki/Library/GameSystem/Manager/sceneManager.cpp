@@ -49,8 +49,10 @@ CSceneManager::~CSceneManager()
 //========================================================
 // ‰Šú‰»
 //========================================================
-void CSceneManager::Init()
+HRESULT CSceneManager::Init()
 {
+	HRESULT hr = S_OK;
+
 	// ƒpƒXÝ’è
 	m_currentPath = SCENE_PATH + std::string("Title.scene");
 	
@@ -65,6 +67,8 @@ void CSceneManager::Init()
 		m_pCurrentScene.lock()->Init(m_pCurrentScene);
 	else
 		CreateNewScene<CScene>("Title");
+
+	return hr;
 }
 
 //========================================================
@@ -78,6 +82,7 @@ void CSceneManager::Uninit()
 		scene->Uninit();
 		scene.reset();
 	}
+
 	m_sceneDetection.reset();
 	m_pCollisionSystem.reset();
 	m_pDrawSystem.reset();

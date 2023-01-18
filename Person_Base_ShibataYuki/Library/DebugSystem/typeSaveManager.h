@@ -38,7 +38,10 @@ namespace MySpace
 			// 後述CTypeSaveManagerが管理するためのｸﾗｽ
 			CTypeSaveBase() {};
 			virtual ~CTypeSaveBase() {};
-			virtual void Set(CGameObject* obj) {};
+#pragma warning(push)
+#pragma warning(disable:4100)
+			virtual std::string Set(CGameObject* obj) { return  std::string(); };
+#pragma warning(pop)
 		};
 
 		// 派生ｸﾗｽ
@@ -50,7 +53,7 @@ namespace MySpace
 			CTypeSave() {};
 			~CTypeSave() {};
 
-			virtual void Set(CGameObject* obj) {};
+			virtual std::string Set(CGameObject* obj) { return obj->GetName(); };
 
 			// 生ポインタ生成
 			T1* CreateType() { return new T1(); }
@@ -62,9 +65,11 @@ namespace MySpace
 		template <class T1>
 		class CComponentTypeSave : public CTypeSave<T1>
 		{
-			void Set(CGameObject* obj)
+			std::string Set(CGameObject* obj)
 			{
+#pragma warning(suppress: 26444)
 				obj->AddComponent<T1>();
+				return typeid(T1).name();
 			};
 		};
 

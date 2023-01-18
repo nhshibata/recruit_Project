@@ -53,7 +53,6 @@ namespace MySpace
 			
 		private:
 			//--- メンバ関数
-			inline int GetID(std::string name) { return FindIdx(name); }
 
 			// *@インデックス取得
 			_NODISCARD static int FindIdx(std::string name)
@@ -82,9 +81,9 @@ namespace MySpace
 			// *@idからstring取得
 			static std::string IDToTag(int id)
 			{
-				if (m_aTagName.size() <= id)
+				if (id < 0 || m_aTagName.size() <= id)
 				{
-					return "null";
+					return "Unregistered";
 				}
 				return m_aTagName[id];
 			}
@@ -109,16 +108,16 @@ namespace MySpace
 			// *@※注意 
 			// *@事前にCreateTag関数を呼び出す必要あり
 			// *@登録、生成されていなければ-1が入る
-			inline void SetTag(std::string name) { m_nTagID = GetID(name); }
+			inline void SetTag(std::string name) { m_nTagID = FindIdx(name); }
 
 			// TODO: エラーだしたい
 			// *@指定のタグか確認
 			// *@return (完全一致:1, 部分一致:2, 一致なし:0)
 			int Compare(std::string name)
 			{
-				if (auto tag = IDToTag(m_nTagID); name == tag) { return true; }
+				if (auto tag = IDToTag(m_nTagID); name == tag) { return 1; }
 				else if (tag.find(name) != std::string::npos) { return 2; }
-				return false; 
+				return 0; 
 			}
 
 			// *@リスト取得

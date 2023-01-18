@@ -16,9 +16,35 @@
 #include <DebugSystem/imGuiSceneGizmo.h>
 #include <GameSystem/Component/Camera/camera.h>
 
+#if BUILD_MODE
+
+
 using namespace MySpace::Debug;
 using namespace MySpace::MyMath;
 using namespace MySpace::Game;
+
+//==========================================================
+// コンストラクタ
+//==========================================================
+CMyGizmo::CMyGizmo()
+	:m_CurrentGizmoOperation(ImGuizmo::OPERATION::BOUNDS),
+	m_CurrentGizmoMode(ImGuizmo::MODE::LOCAL),
+	m_bUseSnap(false),
+	m_aBounds{ -0.5f,-0.5f,-0.5f,0.5f,0.5f,0.5f },
+	m_aBoundsSnapMove{ 0.1f,0.1f,0.1f },
+	m_bBoundSizing(false),
+	m_bBoundSizingSnap(false)
+{
+	
+}
+
+//==========================================================
+// デスクトラクタ
+//==========================================================
+CMyGizmo::~CMyGizmo()
+{
+
+}
 
 //==========================================================
 // 初期化
@@ -40,7 +66,6 @@ void CMyGizmo::Init()
 //==========================================================
 void CMyGizmo::ViewGizmo(ImGuiManager* manager, const CCamera& camera, CTransform* editTransform)
 {
-	Matrix4x4 matrix = editTransform->GetWorldMatrix();
 	//ImGuizmo::SetDrawlist();
 	
 	//--- 状態変更
@@ -51,23 +76,27 @@ void CMyGizmo::ViewGizmo(ImGuiManager* manager, const CCamera& camera, CTransfor
 	if (GetAsyncKeyState('R')) // r Key
 		m_CurrentGizmoOperation = ImGuizmo::SCALE;
 
-	XMFLOAT4X4 oldMatrix = matrix;
+	XMFLOAT4X4 oldMatrix = editTransform->GetWorldMatrix();
 	XMFLOAT3 matrixTranslation, matrixRotation, matrixScale;
-	// マトリックスから情報を得る
-	ImGuizmo::DecomposeMatrixToComponents((float*)oldMatrix.m, (float*)&matrixTranslation, (float*)&matrixRotation, (float*)&matrixScale);
-	// slider + input
-	/*ImGui::DragFloat3("Tr", (float*)&matrixTranslation);
-	ImGui::DragFloat3("Rt", (float*)&matrixRotation);
-	ImGui::DragFloat3("Sc", (float*)&matrixScale);*/
-	ImGuizmo::RecomposeMatrixFromComponents((float*)&matrixTranslation, (float*)&matrixRotation, (float*)&matrixScale, (float*)oldMatrix.m);
+	{
+		// マトリックスから情報を得る
+		ImGuizmo::DecomposeMatrixToComponents((float*)oldMatrix.m, (float*)&matrixTranslation, (float*)&matrixRotation, (float*)&matrixScale);
+		// slider + input
+		/*ImGui::DragFloat3("Tr", (float*)&matrixTranslation);
+		ImGui::DragFloat3("Rt", (float*)&matrixRotation);
+		ImGui::DragFloat3("Sc", (float*)&matrixScale);*/
+		ImGuizmo::RecomposeMatrixFromComponents((float*)&matrixTranslation, (float*)&matrixRotation, (float*)&matrixScale, (float*)oldMatrix.m);
+	}
 
 	//--- ﾛｰｶﾙ・ﾜｰﾙﾄﾞ
 	if (ImGui::IsKeyPressed(83) || ImGui::IsKeyPressed(ImGuiKey_::ImGuiKey_Enter) || GetAsyncKeyState(VK_LSHIFT))
 		m_bUseSnap = !m_bUseSnap;
 
-	ImGuiIO& io = ImGui::GetIO();
-	//--- ビューポート
-	ImGuizmo::SetRect(0, 0, io.DisplaySize.x, io.DisplaySize.y);
+	{
+		ImGuiIO& io = ImGui::GetIO();
+		//--- ビューポート
+		ImGuizmo::SetRect(0, 0, io.DisplaySize.x, io.DisplaySize.y);
+	}
 
 	//--- ギズモ
 	XMFLOAT4X4 worldMatrix = oldMatrix;
@@ -79,9 +108,11 @@ void CMyGizmo::ViewGizmo(ImGuiManager* manager, const CCamera& camera, CTransfor
 		NULL, m_bUseSnap ? (float*)&m_vSnapMove : NULL,
 		m_bBoundSizing ? m_aBoundsSnapMove : NULL);
 
-	XMFLOAT3 newTrans, newRot, newScal, oldTrans, oldRot, oldScal;
-	ImGuizmo::DecomposeMatrixToComponents((float*)&worldMatrix.m, (float*)&newTrans, (float*)&newRot, (float*)&newScal);
-	ImGuizmo::DecomposeMatrixToComponents((float*)&oldMatrix.m, (float*)&oldTrans, (float*)&oldRot, (float*)&oldScal);
+	{
+		XMFLOAT3 newTrans, newRot, newScal, oldTrans, oldRot, oldScal;
+		ImGuizmo::DecomposeMatrixToComponents((float*)&worldMatrix.m, (float*)&newTrans, (float*)&newRot, (float*)&newScal);
+		ImGuizmo::DecomposeMatrixToComponents((float*)&oldMatrix.m, (float*)&oldTrans, (float*)&oldRot, (float*)&oldScal);
+	}
 
 	XMFLOAT4X4 local = worldMatrix;
 	//--- 親がいる
@@ -96,22 +127,22 @@ void CMyGizmo::ViewGizmo(ImGuiManager* manager, const CCamera& camera, CTransfor
 	XMFLOAT3 localTrans, localRot, localScal;
 	ImGuizmo::DecomposeMatrixToComponents((float*)local.m, (float*)&localTrans, (float*)&localRot, (float*)&localScal);
 
-	
 	//--- 選択状態設定
 	if (ImGuizmo::IsUsing())
 	{
 		manager->UpHover(ImGuiManager::EMouseHovered::HOVERED_GIZMO);
-	// 行列設定
-	editTransform->SetWorldMatrix(localTrans, localRot, localScal);
+		// 行列設定
+		editTransform->SetWorldMatrix(localTrans, localRot, localScal);
 	}
 	else
 		manager->DownHover(ImGuiManager::EMouseHovered::HOVERED_GIZMO);
 
-	auto viewMatrix = CCamera::GetMain()->GetViewMatrix().m;	// ｶﾒﾗの姿勢
 
 	//--- ギズモの表示
 	//if (CScreen::ScreenJudg(Vector3(view._41, view._42, view._43)))
 	{
+		ImGuiIO& io = ImGui::GetIO();
+		auto viewMatrix = CCamera::GetMain()->GetViewMatrix().m;	// ｶﾒﾗの姿勢
 		ImGuizmo::ViewManipulate(&viewMatrix[0][0], 8, ImVec2(io.DisplaySize.x, io.DisplaySize.y), ImVec2(128, 128), 0x10101010);
 	}
 
@@ -178,3 +209,5 @@ void CMyGizmo::ViewGrid(const CCamera& camera)
 	ImGuizmo::DrawGrid(&viewMatrix[0][0], &projMatrix[0][0], &mtx.m[0][0], 1000);
 	//ImGuizmo::DrawCubes(&viewMatrix[0][0], &projMatrix[0][0], &mtx.m[0][0], 1);
 }
+
+#endif // BUILD_MODE

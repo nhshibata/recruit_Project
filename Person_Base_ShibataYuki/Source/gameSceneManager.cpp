@@ -55,6 +55,13 @@ void CGameSceneManager::Awake()
 	m_pFade.lock()->SetTypeFunction<CGameSceneManager>(CFadeController::E_FadeState::FADE_IN, &CGameSceneManager::TimeFunc, this);
 	m_pFade.lock()->SetTypeFunction<CGameSceneManager>(CFadeController::E_FadeState::FADE_OUT, &CGameSceneManager::TimeFunc, this);
 
+}
+
+//========================================================
+// ‰Šú‰»
+//========================================================
+void CGameSceneManager::Init()
+{
 	{
 		auto obj = CGameObject::CreateObject().lock();
 		m_pPlayer = obj->AddComponent<CSpellPlayer>().get();
@@ -63,7 +70,7 @@ void CGameSceneManager::Awake()
 	{
 		auto obj = CGameObject::CreateObject().lock();
 		auto stage = obj->AddComponent<CStageManager>();
-		stage->StartBuild(FORDER_DIR(Data/CSV/stage01.csv));
+		stage->StartBuild(FORDER_DIR(Data / CSV / stage01.csv));
 	}
 
 }
@@ -78,7 +85,6 @@ void CGameSceneManager::Update()
 		CFps::Get().SetTimeScale(0);
 		return;
 	}
-
 
 }
 

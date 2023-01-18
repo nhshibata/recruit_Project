@@ -424,17 +424,18 @@ void CMesh::DrawInstancing(std::vector<CMesh*> aMesh, ID3D11ShaderResourceView* 
 		int cnt = 0;	// Œ»Ý‚Ì“YŽš Œ“ •`‰æÅ‘å”
 		if (SUCCEEDED(pDeviceContext->Map(m_pConstantBufferI, 0, D3D11_MAP_WRITE_DISCARD, 0, &pData)))
 		{
-			SHADER_MESH_INSTANCING si;
+			SHADER_MESH_INSTANCING* si = new SHADER_MESH_INSTANCING;
 			// –{—ˆ‚±‚±‚Å”²‚¯‚é
 			for (; cnt < MAX_MESH_INSTANCING; ++cnt, ++cntNum)
 			{
 				if (cnt >= aMesh.size() || cntNum >= aMesh.size())
 					break;
 
-				si.mWorld[cnt] = XMMatrixTranspose(XMLoadFloat4x4(&aMesh[cnt]->m_mWorld));
+				si->mWorld[cnt] = XMMatrixTranspose(XMLoadFloat4x4(&aMesh[cnt]->m_mWorld));
 			}
 			memcpy_s(pData.pData, pData.RowPitch, (void*)&si, sizeof(SHADER_MESH_INSTANCING));
 			pDeviceContext->Unmap(m_pConstantBufferI, 0);
+			delete si;
 		}
 		pDeviceContext->VSSetConstantBuffers(1, 1, &m_pConstantBufferI);
 
@@ -520,16 +521,17 @@ void CMesh::DrawInstancing(std::vector<XMFLOAT4X4> aWorld)
 		int cnt = 0;
 		if (SUCCEEDED(pDeviceContext->Map(m_pConstantBufferI, 0, D3D11_MAP_WRITE_DISCARD, 0, &pData)))
 		{
-			SHADER_MESH_INSTANCING si;
+			SHADER_MESH_INSTANCING* si = new SHADER_MESH_INSTANCING;
 			
 			for (; cnt < MAX_MESH_INSTANCING; ++cnt, ++cntNum)
 			{
 				if (cnt >= aWorld.size() || cntNum >= aWorld.size())
 					break;
-				si.mWorld[cnt] = XMMatrixTranspose(XMLoadFloat4x4(&aWorld[cntNum]));
+				si->mWorld[cnt] = XMMatrixTranspose(XMLoadFloat4x4(&aWorld[cntNum]));
 			}
 			memcpy_s(pData.pData, pData.RowPitch, (void*)&si, sizeof(SHADER_MESH_INSTANCING));
 			pDeviceContext->Unmap(m_pConstantBufferI, 0);
+			delete si;
 		}
 		pDeviceContext->VSSetConstantBuffers(1, 1, &m_pConstantBufferI);
 

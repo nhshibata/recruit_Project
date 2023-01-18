@@ -20,12 +20,13 @@ using namespace MySpace::Debug;
 
 
 CNavMeshHeight::CNavMeshHeight()
+	:m_fHeight(0)
 {
 
 }
 
 CNavMeshHeight::CNavMeshHeight(Vector3 pos, int grid, float margin, float height)
-	:CNavMeshBake(pos, grid, margin)
+	:CNavMeshBake(pos, grid, margin), m_fHeight(height)
 {
 
 }

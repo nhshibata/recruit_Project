@@ -16,6 +16,10 @@
 #include <ImGuizmo/ImGuizmo.h>
 #include <CoreSystem/Math/myVector.h>
 
+#if BUILD_MODE
+
+
+
 #pragma region ForwardDeclaration
 namespace MySpace
 {
@@ -56,6 +60,9 @@ namespace MySpace
 
 		public:
 			//--- ÉÅÉìÉoä÷êî
+			CMyGizmo();
+			~CMyGizmo();
+
 			void Init();
 			void ViewGizmo(MySpace::Debug::ImGuiManager* manager, const CCamera& camera, CTransform* editObj);
 			void EditTransform(MySpace::Debug::ImGuiManager* manager);
@@ -64,4 +71,7 @@ namespace MySpace
 	}
 }
 
+#endif // BUILD_MODE
+
 #endif // !__IMGUI_SCENE_GIZMO_H__
+

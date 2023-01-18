@@ -80,8 +80,6 @@ namespace MySpace
 			CHierachy();
 			~CHierachy();
 
-			void Init();
-			void Uninit();
 			void Update(MySpace::Debug::ImGuiManager*);
 
 			void SetPath(std::string name) { m_savePath = name; };

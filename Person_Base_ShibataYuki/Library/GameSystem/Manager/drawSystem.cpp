@@ -33,7 +33,7 @@ using namespace MySpace::Game;
 // コンストラクタ
 //==========================================================
 CDrawSystem::CDrawSystem()
-	:m_bIsSortNecessary(true), m_bFrustum(true)
+	:m_bIsSortNecessary(true)
 {
 	m_aPolygonList.clear();
 	m_aInstancingModelMap.clear();
@@ -41,6 +41,7 @@ CDrawSystem::CDrawSystem()
 	
 #if BUILD_MODE
 	m_nSkipCnt = m_nDrawCnt = m_nInstancingCnt = 0;
+	m_bFrustum = true;
 #endif // BUILD_MODE
 
 }
@@ -57,8 +58,8 @@ CDrawSystem::~CDrawSystem()
 //==========================================================
 int CDrawSystem::PolygonRegist(std::weak_ptr<CPolygonRenderer> render)
 {
-	//--- アップキャスト
 	int ret = CMapSystemBase::RegistToSystem(render.lock());
+	// ポリゴン側に格納
 	m_aPolygonList.push_back(render);
 	return ret;
 }
@@ -82,8 +83,7 @@ std::weak_ptr<CRenderer> CDrawSystem::ExecutSystem(int idx)
 			}
 		}
 	}
-	CMapSystemBase::ExecutSystem(idx);
-	return release;
+	return CMapSystemBase::ExecutSystem(idx);
 }
 
 //==========================================================
@@ -91,6 +91,10 @@ std::weak_ptr<CRenderer> CDrawSystem::ExecutSystem(int idx)
 //==========================================================
 void CDrawSystem::Update()
 {
+	//m_aInstancingMeshMap.clear();
+	//m_aInstancingModelMap.clear();
+	//return;
+
 	// CRenderer::Drawはboolを返す
 	// trueであれば描画する
 	// 描画数などの確認をするならばこれを活用する
@@ -139,11 +143,13 @@ void CDrawSystem::Update()
 #ifdef BUILD_MODE
 		++m_nDrawCnt;
 		auto name = render.lock()->GetName();
-#endif // _DEBUG
 
 		//--- Meshｺﾝﾎﾟｰﾈﾝﾄ(および継承)か確認
 		// カリングフラグも確認
 		if (auto mesh = render.lock()->BaseToDerived<CMeshRenderer>().get(); mesh && m_bFrustum)
+#else
+		if (auto mesh = render.lock()->BaseToDerived<CMeshRenderer>().get(); mesh)
+#endif // _DEBUG
 		{	
 			float fRadius = mesh->GetBSRadius();
 			auto mW = mesh->Transform()->GetWorldMatrix();
@@ -228,12 +234,14 @@ void CDrawSystem::InstancingDraw()
 	pDX->SetZWrite(true);			// Z書き込み
 
 	//--- 登録されたモデル名別に描画
-	const int MAX_INSTANCING = 100;
 	//--- 不透明描画
 	for (auto & intancingModel : m_aInstancingModelMap)
 	{
 		//--- 描画するモデルの取得
 		auto model = pAssets->GetModelManager()->GetModel(intancingModel.first);
+		// モデルが解放されていないか確認
+		if (!model)
+			continue;
 		model->DrawInstancing(pDX->GetDeviceContext(), intancingModel.second, EByOpacity::eOpacityOnly);
 		pLight->SetEnable();
 
