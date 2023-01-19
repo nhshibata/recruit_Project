@@ -113,6 +113,8 @@ namespace MySpace
 			ImGuiManager();
 			~ImGuiManager() = default;
 
+			static ImGuiManager* Get();
+
 			HRESULT Init(HWND hWnd, ID3D11Device* device, ID3D11DeviceContext* context);
 			void Update();
 			void Render();

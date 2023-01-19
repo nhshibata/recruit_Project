@@ -46,7 +46,7 @@ void CNavMeshHeight::Bake(const float startPosY, const float endPosY)
 	const int totalGrid = m_nGrid * m_nGrid;
 	// リスト取得
 	// 外見のあるもの=当たり判定のあるものとする
-	auto aRenderList = MySpace::SceneManager::CSceneManager::Get().GetDrawSystem()->GetList();
+	auto aRenderList = MySpace::SceneManager::CSceneManager::Get()->GetDrawSystem()->GetList();
 
 	//--- グリッド位置毎に確認
 	for (int index = 0; index < totalGrid; ++index)

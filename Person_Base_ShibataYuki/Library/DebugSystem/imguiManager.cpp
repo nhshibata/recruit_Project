@@ -174,7 +174,7 @@ void ImGuiManager::Update()
 	m_pHierarchy->Update(this);
 	
 	// 現在シーン取得
-	SceneManager::CScene* scene = CSceneManager::Get().GetActiveScene();
+	SceneManager::CScene* scene = CSceneManager::Get()->GetActiveScene();
 	
 	//--- SceneView表示
 	if (m_bSceneRender)
@@ -203,7 +203,7 @@ void ImGuiManager::Update()
 
 		// シーン名表示
 		ImGui::Text(u8"現在のシーン名 : %s", scene->GetSceneName().c_str());
-		ImGui::Text(u8"オブジェクト数 : %d", CSceneManager::Get().GetActiveScene()->GetObjManager()->GetList().size());
+		ImGui::Text(u8"オブジェクト数 : %d", CSceneManager::Get()->GetActiveScene()->GetObjManager()->GetList().size());
 
 		// フレームレート表示
 		ImGui::Text(u8"現在のFPS : %.1f FPS", ImGui::GetIO().Framerate);
@@ -213,30 +213,30 @@ void ImGuiManager::Update()
 	//--- SceneManager表示
 	if (ImGui::BeginTabItem("SceneManager"))
 	{
-		CSceneManager::Get().ImGuiDebug();
+		CSceneManager::Get()->ImGuiDebug();
 		// 変更されている可能性があるため再取得
-		scene = CSceneManager::Get().GetActiveScene();
+		scene = CSceneManager::Get()->GetActiveScene();
 		ImGui::EndTabItem();	// とじる
 	}
 	
 	//--- FPS情報
 	if (ImGui::BeginTabItem("FPS"))
 	{
-		CFps::Get().ImGuiDebug();
+		CFps::Get()->ImGuiDebug();
 		ImGui::EndTabItem();	// とじる
 	}
 	
 	//--- 描画の確認
 	if (ImGui::BeginTabItem("DrawSystem"))
 	{
-		CSceneManager::Get().GetDrawSystem()->ImGuiDebug();
+		CSceneManager::Get()->GetDrawSystem()->ImGuiDebug();
 		ImGui::EndTabItem();	// とじる
 	}
 	
 	//--- NavMesh
 	if (ImGui::BeginTabItem("NavMesh"))
 	{
-		CSceneManager::Get().GetNavMesh()->ImGuiDebug();		
+		CSceneManager::Get()->GetNavMesh()->ImGuiDebug();		
 		ImGui::EndTabItem();	// とじる
 	}
 
@@ -482,6 +482,13 @@ void ImGuiManager::SceneGizmo()
 	{
 		m_pGizmo->ViewGizmo(this, *CCamera::GetMain(), selectObj->GetTransform());
 	}
+}
+
+
+ImGuiManager* ImGuiManager::Get()
+{
+	static ImGuiManager instance;
+	return &instance;
 }
 
 #endif

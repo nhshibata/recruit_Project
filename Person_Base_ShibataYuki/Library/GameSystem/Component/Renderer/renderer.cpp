@@ -29,7 +29,7 @@ CRenderer::CRenderer(std::shared_ptr<CGameObject> owner)
 //==========================================================
 CRenderer::~CRenderer()
 {
-	if(auto sys = SceneManager::CSceneManager::Get().GetDrawSystem(); sys)
+	if(auto sys = SceneManager::CSceneManager::Get()->GetDrawSystem(); sys)
 #pragma warning(suppress: 26444)
 		sys->ExecutSystem(m_nDrawIdx);
 }
@@ -39,7 +39,7 @@ CRenderer::~CRenderer()
 //==========================================================
 void CRenderer::DrawRequest()
 {
-	if (auto sys = SceneManager::CSceneManager::Get().GetDrawSystem(); sys)
+	if (auto sys = SceneManager::CSceneManager::Get()->GetDrawSystem(); sys)
 		m_nDrawIdx = sys->RegistToSystem(BaseToDerived<CRenderer>());
 }
 

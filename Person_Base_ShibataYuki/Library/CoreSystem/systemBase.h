@@ -19,6 +19,16 @@ namespace MySpace
 		public:
 			CSystemBase() = default;
 			virtual ~CSystemBase() = default;
+
+#if 0
+			template<class T>
+			static T* Get()
+			{
+				static T instance;
+				return &instance;
+			}
+#endif // 1
+
 		};
 
 	}

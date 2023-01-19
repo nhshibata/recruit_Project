@@ -129,7 +129,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 
 	//--- シーン読み込み時呼び出す関数を設定
 	CMyScene my;
-	CSceneManager::Get().SceneLoaded<CMyScene>(&CMyScene::Load, &my);
+	CSceneManager::Get()->SceneLoaded<CMyScene>(&CMyScene::Load, &my);
 	
 #else
 	class CStartScene : public CScene
@@ -166,7 +166,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 
 	//--- メモリ確保
 	std::shared_ptr<CStartScene> startScene = std::make_shared<CStartScene>();
-	CSceneManager::Get().SetStartScene(startScene);
+	CSceneManager::Get()->SetStartScene(startScene);
 
 #endif // 1
 

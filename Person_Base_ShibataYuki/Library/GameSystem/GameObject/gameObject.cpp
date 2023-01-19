@@ -341,7 +341,7 @@ void CGameObject::OnTriggerExit(CGameObject* obj)
 //==========================================================
 std::weak_ptr<CGameObject> CGameObject::FindGameObject(std::string name)
 {
-	if (auto all = CSceneManager::Get().GetAllScene(); all.size() != 0)
+	if (auto all = CSceneManager::Get()->GetAllScene(); all.size() != 0)
 	{
 		for (auto & scene : all)
 		{
@@ -360,7 +360,7 @@ std::weak_ptr<CGameObject> CGameObject::FindGameObject(std::string name)
 //==========================================================
 std::weak_ptr<CGameObject> CGameObject::FindGameObjectWithTag(std::string tag)
 {
-	if (auto all = CSceneManager::Get().GetAllScene(); all.size() != 0)
+	if (auto all = CSceneManager::Get()->GetAllScene(); all.size() != 0)
 	{
 		for (auto & scene : all)
 		{
@@ -380,7 +380,7 @@ std::weak_ptr<CGameObject> CGameObject::FindGameObjectWithTag(std::string tag)
 std::list<std::weak_ptr<CGameObject>> CGameObject::FindGameObjectsWithTag(std::string tag)
 {
 	std::list<std::weak_ptr<CGameObject>> ret;
-	if (auto all = CSceneManager::Get().GetAllScene(); all.size() != 0)
+	if (auto all = CSceneManager::Get()->GetAllScene(); all.size() != 0)
 	{
 		for (auto & scene : all)
 		{
@@ -400,7 +400,7 @@ std::list<std::weak_ptr<CGameObject>> CGameObject::FindGameObjectsWithTag(std::s
 //==========================================================
 std::weak_ptr<CGameObject> CGameObject::FindGameObjectWithTag(CTag tag)
 {
-	if (auto all = CSceneManager::Get().GetAllScene(); all.size() != 0)
+	if (auto all = CSceneManager::Get()->GetAllScene(); all.size() != 0)
 	{
 		for (auto & scene : all)
 		{
@@ -420,7 +420,7 @@ std::weak_ptr<CGameObject> CGameObject::FindGameObjectWithTag(CTag tag)
 std::list<std::weak_ptr<CGameObject>> CGameObject::FindGameObjectsWithTag(CTag tag)
 {
 	std::list<std::weak_ptr<CGameObject>> retList;
-	if (auto all = CSceneManager::Get().GetAllScene(); all.size() != 0)
+	if (auto all = CSceneManager::Get()->GetAllScene(); all.size() != 0)
 	{
 		for (auto & scene : all)
 		{
@@ -441,16 +441,16 @@ std::list<std::weak_ptr<CGameObject>> CGameObject::FindGameObjectsWithTag(CTag t
 std::weak_ptr<CGameObject> CGameObject::CreateObject(CGameObject* pObj)
 {
 #ifdef _DEBUG
-	auto scene = CSceneManager::Get().GetActiveScene();
+	auto scene = CSceneManager::Get()->GetActiveScene();
 #endif // _DEBUG
 	
 	// ºËß°‚Å‚Í‚È‚¢¶¬
 	if (!pObj) 
 	{
-		return CSceneManager::Get().GetActiveScene()->GetObjManager()->CreateGameObject();
+		return CSceneManager::Get()->GetActiveScene()->GetObjManager()->CreateGameObject();
 	}
 
-	return CSceneManager::Get().GetActiveScene()->GetObjManager()->CreateGameObject(pObj);
+	return CSceneManager::Get()->GetActiveScene()->GetObjManager()->CreateGameObject(pObj);
 }
 
 //==========================================================
@@ -483,7 +483,7 @@ void CGameObject::Destroy(std::weak_ptr<CGameObject> pObj)
 //==========================================================
 void CGameObject::DontDestroy(std::weak_ptr<CGameObject> pObj)
 {
-	CSceneManager::Get().GetActiveScene()->GetObjManager()->DontDestroy(pObj);
+	CSceneManager::Get()->GetActiveScene()->GetObjManager()->DontDestroy(pObj);
 }
 
 

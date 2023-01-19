@@ -46,6 +46,8 @@ namespace MySpace
 			CAssetsManager();
 			~CAssetsManager();
 
+			static CAssetsManager* Get();
+
 			HRESULT Init(Application* app);
 
 			// *@XV

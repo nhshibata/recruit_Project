@@ -101,7 +101,7 @@ namespace MySpace
 			void* FlagOn(CScene* scene)
 			{
 				m_bTransition = true;
-				CSceneManager::Get().SceneUnloaded<CSceneManager>(&CSceneManager::FlagOn, this);
+				CSceneManager::Get()->SceneUnloaded<CSceneManager>(&CSceneManager::FlagOn, this);
 					//std::bind(&CSceneManager::FlagOn, this, std::placeholders::_1));
 				return scene ? nullptr : nullptr;
 			}
@@ -115,7 +115,7 @@ namespace MySpace
 //#pragma warning(push)
 //#pragma warning(disable:4789)
 			// *@ƒVƒ“ƒOƒ‹ƒgƒ“‚ÌŽæ“¾
-			static CSceneManager& Get();
+			static CSceneManager* Get();
 //#pragma warning(pop)   
 			
 			HRESULT Init();

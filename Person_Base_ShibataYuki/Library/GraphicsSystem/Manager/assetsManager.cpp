@@ -49,7 +49,7 @@ HRESULT CAssetsManager::Init(Application* app)
 	//m_pShader = std::make_shared<CShaderManager>();
 	
 	m_pApp = app;
-	hr = m_pEffekseer->Init(app->GetDevice(), app->GetDeviceContext());
+	//hr = m_pEffekseer->Init(app->GetDevice(), app->GetDeviceContext());
 	//m_pShader->Init();
 	hr = m_pFont->Init();
 	return hr;
@@ -71,5 +71,10 @@ void CAssetsManager::SceneReset()
 	m_pImage->SceneUnload();
 	m_pModel->SceneUnload();
 	m_pEffekseer->SceneUnload();
+}
 
+CAssetsManager* CAssetsManager::Get()
+{
+	static CAssetsManager instance;
+	return &instance;
 }

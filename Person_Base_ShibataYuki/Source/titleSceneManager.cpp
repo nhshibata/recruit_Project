@@ -44,13 +44,13 @@ public:
 		Color color = m_pPolygon->GetColor();
 		if (m_bDir)
 		{
-			color.a += CFps::Get().DeltaTime();
+			color.a += CFps::Get()->DeltaTime();
 			if (color.a >= 1.0f)
 				m_bDir = false;
 		}
 		else
 		{
-			color.a -= CFps::Get().DeltaTime();
+			color.a -= CFps::Get()->DeltaTime();
 			if (color.a <= 0.0f)
 				m_bDir = true;
 		}
@@ -94,10 +94,10 @@ public:
 	void Update()
 	{
 		Vector2 pos = m_pRect->GetPos();
-		m_vForce.y += m_fGravity * CFps::Get().DeltaTime();
+		m_vForce.y += m_fGravity * CFps::Get()->DeltaTime();
 		Vector2 vec = m_vForce / m_fMass;
-		m_vVel += vec * CFps::Get().DeltaTime();
-		pos += m_vVel * CFps::Get().DeltaTime();
+		m_vVel += vec * CFps::Get()->DeltaTime();
+		pos += m_vVel * CFps::Get()->DeltaTime();
 		
 		if (pos.y >= CScreen::GetHalfHeight() || pos.y <= -CScreen::GetHalfHeight() ||
 			pos.x >= CScreen::GetHalfWidth() || pos.x <= -CScreen::GetHalfWidth())

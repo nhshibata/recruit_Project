@@ -64,7 +64,7 @@ namespace MySpace
 //#pragma warning(push)
 //#pragma warning(disable:4789)
 			// *@ƒVƒ“ƒOƒ‹ƒgƒ“‚ÌŽæ“¾
-			static CFps& Get();
+			static CFps* Get();
 //#pragma warning(pop)   
 
 			void Init();

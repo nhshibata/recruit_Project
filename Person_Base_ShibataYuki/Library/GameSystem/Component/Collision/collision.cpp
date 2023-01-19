@@ -30,7 +30,7 @@ CCollision::~CCollision()
 {
 	if(m_nSystemIdx != -1)
 #pragma warning(suppress: 26444)
-		CSceneManager::Get().GetCollisionSystem()->ExecutSystem(m_nSystemIdx);
+		CSceneManager::Get()->GetCollisionSystem()->ExecutSystem(m_nSystemIdx);
 
 	m_pOldStayList.clear();
 	m_pHitList.clear();
@@ -78,7 +78,7 @@ void CCollision::Update()
 //==========================================================
 void CCollision::RequestCollision()
 {
-	m_nSystemIdx = CSceneManager::Get().GetCollisionSystem()->RegistToSystem(BaseToDerived<CCollision>());
+	m_nSystemIdx = CSceneManager::Get()->GetCollisionSystem()->RegistToSystem(BaseToDerived<CCollision>());
 }
 
 //==========================================================

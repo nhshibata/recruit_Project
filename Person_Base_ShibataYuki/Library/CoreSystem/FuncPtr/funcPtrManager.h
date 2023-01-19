@@ -39,7 +39,9 @@ namespace MySpace
 				:m_bDebug(false)
 			{ };
 			~CFuncManager() = default;
-		
+
+			static CFuncManager* Get();
+
 			void Update();
 			void Uninit();
 

@@ -38,7 +38,7 @@ void CGameSpellRhythm::Awake()
 
 	CGameObject::DontDestroy(GetOwner(0));
 
-	CSceneManager::Get().GetActiveScene()->SetSceneName("Title");
+	CSceneManager::Get()->GetActiveScene()->SetSceneName("Title");
 	auto obj = CGameObject::CreateObject().lock();
 	m_pFade = obj->AddComponent<CFadeController>();
 	
@@ -62,7 +62,7 @@ void CGameSpellRhythm::Awake()
 void CGameSpellRhythm::Init()  
 {
 	// 関数のセット
-	CSceneManager::Get().SceneChanged<CGameSpellRhythm>(&CGameSpellRhythm::CreateManager, this);
+	CSceneManager::Get()->SceneChanged<CGameSpellRhythm>(&CGameSpellRhythm::CreateManager, this);
 	CSound::Play(eBGM::BGM_TITLE);
 }
 void CGameSpellRhythm::Update()
@@ -118,7 +118,7 @@ void CGameSpellRhythm::Pause()
 	if (m_bPause)
 		state = CGameObject::E_ObjectState::WAIT;
 
-	ObjStateSwitch(state, CSceneManager::Get().GetActiveScene());
+	ObjStateSwitch(state, CSceneManager::Get()->GetActiveScene());
 }
 void CGameSpellRhythm::FadeFuncPtr()
 {
@@ -127,7 +127,7 @@ void CGameSpellRhythm::FadeFuncPtr()
 	if (m_pFade.lock()->GetFadeState() == CFadeController::E_FadeState::FADE_IN)
 		state = CGameObject::E_ObjectState::ACTIVE;
 
-	ObjStateSwitch(state, MySpace::SceneManager::CSceneManager::Get().GetActiveScene());
+	ObjStateSwitch(state, MySpace::SceneManager::CSceneManager::Get()->GetActiveScene());
 }
 // 停止/行動状態に変更
 void CGameSpellRhythm::ObjStateSwitch(CGameObject::E_ObjectState state, CScene* scene)
@@ -244,7 +244,7 @@ void* CGameSpellRhythm::CreateManager(CScene* prev, CScene* next)
 	m_pFade.lock()->StartFadeIn();
 
 	// 再帰
-	CSceneManager::Get().SceneChanged<CGameSpellRhythm>(&CGameSpellRhythm::CreateManager, this);
+	CSceneManager::Get()->SceneChanged<CGameSpellRhythm>(&CGameSpellRhythm::CreateManager, this);
 	return nullptr;
 }
 //=====================================================
@@ -267,8 +267,9 @@ void CSceneManagerComponent::FuncPtr()
 }
 void CSceneManagerComponent::SetScene(std::string next)
 {
-	CSceneManager::Get().SceneTransition(next);
+	CSceneManager::Get()->SceneTransition(next);
 }
+
 //=====================================================
 void CTitleSceneManager::Awake()
 {

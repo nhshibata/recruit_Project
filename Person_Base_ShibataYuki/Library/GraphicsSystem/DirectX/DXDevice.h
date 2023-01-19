@@ -93,14 +93,11 @@ namespace MySpace
 
 		public:
 			//--- メンバ関数
-			CDXDevice()
-				:g_uSyncInterval(0),m_Width(0),m_Height(0), m_DriverType(),
-				m_FeatureLevel()
-			{
-
-			}
+			CDXDevice();
 			~CDXDevice() = default;
 			
+			static CDXDevice* Get();
+
 			HRESULT Init(HWND hWnd, unsigned int Width, unsigned int Height, bool full = false);
 			void Uninit();
 
@@ -123,8 +120,6 @@ namespace MySpace
 			ID3D11RenderTargetView* GetRenderTargetView();
 			ID3D11DepthStencilView* GetDepthStencilView();
 #endif // RT_DS_TEST
-
-			
 
 			// *@深度
 			inline ID3D11DepthStencilState* GetDepthStencilState(int no) { return g_pDSS[no].Get(); }
@@ -154,7 +149,7 @@ namespace MySpace
 			}
 
 			// *@ブレンド ステート設定
-			inline void SetBlendState(int nBlendState)
+			void SetBlendState(int nBlendState)
 			{
 				if (nBlendState >= 0 && nBlendState < (int)EBlendState::MAX_BLENDSTATE) 
 				{
@@ -164,7 +159,7 @@ namespace MySpace
 			}
 
 			// *@カリング設定
-			inline void SetCullMode(int nCullMode)
+			void SetCullMode(int nCullMode)
 			{
 				if (nCullMode >= 0 && nCullMode < (int)ECullMode::MAX_CULLMODE) 
 				{

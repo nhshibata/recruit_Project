@@ -89,7 +89,7 @@ void CPolygonRenderer::Init()
 	//CRenderer::Init();
 	Transform()->Update();
 
-	if(auto sys = SceneManager::CSceneManager::Get().GetDrawSystem(); sys)
+	if(auto sys = SceneManager::CSceneManager::Get()->GetDrawSystem(); sys)
 		m_nDrawIdx = sys->PolygonRegist(BaseToDerived<CPolygonRenderer>());
 }
 
@@ -152,7 +152,7 @@ bool CPolygonRenderer::Draw()
 void CPolygonRenderer::SetZ(const int z)
 {
 	m_nZValue = z;
-	SceneManager::CSceneManager::Get().GetDrawSystem()->SortOn();
+	SceneManager::CSceneManager::Get()->GetDrawSystem()->SortOn();
 }
 
 //==========================================================
@@ -161,7 +161,7 @@ void CPolygonRenderer::SetZ(const int z)
 void CPolygonRenderer::SetZ(const EZValue z)
 {
 	m_nZValue = static_cast<int>(z);
-	SceneManager::CSceneManager::Get().GetDrawSystem()->SortOn();
+	SceneManager::CSceneManager::Get()->GetDrawSystem()->SortOn();
 }
 
 #ifdef BUILD_MODE

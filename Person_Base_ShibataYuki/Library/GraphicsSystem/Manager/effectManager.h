@@ -67,6 +67,12 @@ namespace MySpace
 				DirectX::XMFLOAT4X4 world;
 				DirectX::XMFLOAT4X4 view;
 				DirectX::XMFLOAT4X4 proj;
+				Matrix()
+				{
+					DirectX::XMStoreFloat4x4(&this->world, DirectX::XMMatrixIdentity());
+					DirectX::XMStoreFloat4x4(&this->view, DirectX::XMMatrixIdentity());
+					DirectX::XMStoreFloat4x4(&this->proj, DirectX::XMMatrixIdentity());
+				};
 			};
 		private:
 			// --- エイリアス ---

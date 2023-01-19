@@ -303,3 +303,9 @@ LRESULT ImGui_WndProc(HWND hwnd, 		// ウィンドウハンドル
 
 	return 0;
 }
+
+CWindow* CWindow::Get()
+{
+	static CWindow instance;
+	return &instance;
+}

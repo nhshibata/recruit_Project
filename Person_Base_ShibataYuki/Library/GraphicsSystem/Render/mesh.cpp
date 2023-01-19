@@ -433,7 +433,7 @@ void CMesh::DrawInstancing(std::vector<CMesh*> aMesh, ID3D11ShaderResourceView* 
 
 				si->mWorld[cnt] = XMMatrixTranspose(XMLoadFloat4x4(&aMesh[cnt]->m_mWorld));
 			}
-			memcpy_s(pData.pData, pData.RowPitch, (void*)&si, sizeof(SHADER_MESH_INSTANCING));
+			memcpy_s(pData.pData, pData.RowPitch, (void*)si, sizeof(SHADER_MESH_INSTANCING));
 			pDeviceContext->Unmap(m_pConstantBufferI, 0);
 			delete si;
 		}
@@ -529,7 +529,7 @@ void CMesh::DrawInstancing(std::vector<XMFLOAT4X4> aWorld)
 					break;
 				si->mWorld[cnt] = XMMatrixTranspose(XMLoadFloat4x4(&aWorld[cntNum]));
 			}
-			memcpy_s(pData.pData, pData.RowPitch, (void*)&si, sizeof(SHADER_MESH_INSTANCING));
+			memcpy_s(pData.pData, pData.RowPitch, (void*)si, sizeof(SHADER_MESH_INSTANCING));
 			pDeviceContext->Unmap(m_pConstantBufferI, 0);
 			delete si;
 		}

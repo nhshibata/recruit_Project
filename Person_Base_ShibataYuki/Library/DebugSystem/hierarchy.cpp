@@ -68,7 +68,7 @@ void CHierachy::Update(ImGuiManager* manager)
 	ImGui::Begin(u8"Hierarchy", &flg, ImGuiWindowFlags_MenuBar);
 
 	// シーンが存在していなければ処理しない
-	if (!CSceneManager::Get().GetActiveScene())
+	if (!CSceneManager::Get()->GetActiveScene())
 		return;
 
 	manager->HoverStateSet();
@@ -81,7 +81,7 @@ void CHierachy::Update(ImGuiManager* manager)
 		{
 			if (ImGui::MenuItem("New Scene"))
 			{
-				CSceneManager::Get().CreateNewScene<CScene>();
+				CSceneManager::Get()->CreateNewScene<CScene>();
 			}
 			ImGui::Separator();
 			if (ImGui::MenuItem("Load/Save"))
@@ -96,19 +96,19 @@ void CHierachy::Update(ImGuiManager* manager)
 		{
 			if (ImGui::MenuItem("Empty"))
 			{
-				CGameObject::Ptr obj = CSceneManager::Get().GetActiveScene()->GetObjManager()->CreateGameObject();
+				CGameObject::Ptr obj = CSceneManager::Get()->GetActiveScene()->GetObjManager()->CreateGameObject();
 				manager->GetInspector()->SetSelectGameObject(obj);
 			}
 			if (ImGui::MenuItem("Model"))
 			{
-				CGameObject::Ptr obj = CSceneManager::Get().GetActiveScene()->GetObjManager()->CreateGameObject();
+				CGameObject::Ptr obj = CSceneManager::Get()->GetActiveScene()->GetObjManager()->CreateGameObject();
 				obj->AddComponent<CModelRenderer>();
 				// ｺﾝﾎﾟｰﾈﾝﾄの追加後
 				manager->GetInspector()->SetSelectGameObject(obj);
 			}
 			if (ImGui::MenuItem("StaticModel"))
 			{
-				CGameObject::Ptr obj = CSceneManager::Get().GetActiveScene()->GetObjManager()->CreateGameObject();
+				CGameObject::Ptr obj = CSceneManager::Get()->GetActiveScene()->GetObjManager()->CreateGameObject();
 				auto render = obj->AddComponent<CModelRenderer>();
 				render->SetStatic(CMeshRenderer::EStaticMode::NONE_MOVE);
 				// ｺﾝﾎﾟｰﾈﾝﾄの追加後
@@ -116,35 +116,35 @@ void CHierachy::Update(ImGuiManager* manager)
 			}
 			if (ImGui::MenuItem("Billboard"))
 			{
-				CGameObject::Ptr obj = CSceneManager::Get().GetActiveScene()->GetObjManager()->CreateGameObject();
+				CGameObject::Ptr obj = CSceneManager::Get()->GetActiveScene()->GetObjManager()->CreateGameObject();
 				obj->AddComponent<Game::CBillboardRenderer>();
 				// ｺﾝﾎﾟｰﾈﾝﾄの追加後
 				manager->GetInspector()->SetSelectGameObject(obj);
 			}
 			if (ImGui::MenuItem("Sphere"))
 			{
-				CGameObject::Ptr obj = CSceneManager::Get().GetActiveScene()->GetObjManager()->CreateGameObject();
+				CGameObject::Ptr obj = CSceneManager::Get()->GetActiveScene()->GetObjManager()->CreateGameObject();
 				obj->AddComponent<Game::CSphereRenderer>();
 				// ｺﾝﾎﾟｰﾈﾝﾄの追加後
 				manager->GetInspector()->SetSelectGameObject(obj);
 			}
 			if (ImGui::MenuItem("Box"))
 			{
-				CGameObject::Ptr obj = CSceneManager::Get().GetActiveScene()->GetObjManager()->CreateGameObject();
+				CGameObject::Ptr obj = CSceneManager::Get()->GetActiveScene()->GetObjManager()->CreateGameObject();
 				obj->AddComponent<Game::CBoxRenderer>();
 				// ｺﾝﾎﾟｰﾈﾝﾄの追加後
 				manager->GetInspector()->SetSelectGameObject(obj);
 			}
 			if (ImGui::MenuItem("Polygon"))
 			{
-				CGameObject::Ptr obj = CSceneManager::Get().GetActiveScene()->GetObjManager()->CreateGameObject();
+				CGameObject::Ptr obj = CSceneManager::Get()->GetActiveScene()->GetObjManager()->CreateGameObject();
 				obj->AddComponent<Game::CPolygonRenderer>();
 				// ｺﾝﾎﾟｰﾈﾝﾄの追加後
 				manager->GetInspector()->SetSelectGameObject(obj);
 			}
 			if (ImGui::MenuItem("Text"))
 			{
-				CGameObject::Ptr obj = CSceneManager::Get().GetActiveScene()->GetObjManager()->CreateGameObject();
+				CGameObject::Ptr obj = CSceneManager::Get()->GetActiveScene()->GetObjManager()->CreateGameObject();
 				obj->AddComponent<Game::CTextRenderer>();
 				// ｺﾝﾎﾟｰﾈﾝﾄの追加後
 				manager->GetInspector()->SetSelectGameObject(obj);
@@ -158,7 +158,7 @@ void CHierachy::Update(ImGuiManager* manager)
 	DispSearch();
 
 	//--- GameObject表示
-	auto objList = CSceneManager::Get().GetActiveScene()->GetObjManager()->GetList();
+	auto objList = CSceneManager::Get()->GetActiveScene()->GetObjManager()->GetList();
 
 	// ゲームオブジェクト名の表示と子要素の表示
 	for (const auto & object : objList)
@@ -249,7 +249,7 @@ void CHierachy::DispSaveLoadMenu()
 
 	if (ImGui::Button("Load"))
 	{
-		CSceneManager::Get().LoadScene(m_loadPath);
+		CSceneManager::Get()->LoadScene(m_loadPath);
 	}
 	ImGui::Separator();
 
@@ -259,7 +259,7 @@ void CHierachy::DispSaveLoadMenu()
 	m_savePath = InputString(m_savePath, u8"saveFile");
 	if (ImGui::Button(u8"Save"))
 	{
-		CSceneManager::Get().SaveScene(m_savePath);
+		CSceneManager::Get()->SaveScene(m_savePath);
 	}
 	ImGui::End();
 }

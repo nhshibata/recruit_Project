@@ -184,10 +184,10 @@ void CFps::SetSlow(const int nSlowfps, const int nTime)
 //==========================================================
 // シングルトン取得
 //==========================================================
-CFps& CFps::Get()
+CFps* CFps::Get()
 {
 	static CFps pInstance;
-	return pInstance;
+	return &pInstance;
 }
 
 
@@ -198,10 +198,10 @@ void CFps::ImGuiDebug()
 	//--- 情報表示
 	ImGui::Checkbox(u8"更新フレーム", &m_bUpdate);
 	
-	ImGui::Text(u8"現在のDeltaTime : %.5f", CFps::Get().DeltaTime());
-	ImGui::Text(u8"現在のUnScaleDeltaTime : %.5f", CFps::Get().UnScaleDeltaTime());
-	ImGui::Text(u8"現在のTimeScale : %.5f", CFps::Get().GetTimeScale());
-	ImGui::Text(u8"現在のCount : %d", CFps::Get().GetFPSCount());
+	ImGui::Text(u8"現在のDeltaTime : %.5f", CFps::Get()->DeltaTime());
+	ImGui::Text(u8"現在のUnScaleDeltaTime : %.5f", CFps::Get()->UnScaleDeltaTime());
+	ImGui::Text(u8"現在のTimeScale : %.5f", CFps::Get()->GetTimeScale());
+	ImGui::Text(u8"現在のCount : %d", CFps::Get()->GetFPSCount());
 
 	//--- 設定
 	if (ImGui::Button(u8"FPS Set"))
