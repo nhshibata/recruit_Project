@@ -53,17 +53,17 @@ HRESULT CSceneManager::Init()
 {
 	HRESULT hr = S_OK;
 
+	// NavMesh
+	m_pNavMesh->Init();
+
 	// パス設定
 	m_currentPath = SCENE_PATH + std::string("Title.scene");
 	
 	// 関数設定
 	SceneUnloaded<CSceneManager>(&CSceneManager::FlagOn, this);
 	
-	// NavMesh
-	m_pNavMesh->Init();
-
 	//--- Scene開始
-	if(m_pCurrentScene.lock())
+	if (m_pCurrentScene.lock())
 		m_pCurrentScene.lock()->Init(m_pCurrentScene);
 	else
 		CreateNewScene<CScene>("Title");
@@ -335,10 +335,10 @@ bool CSceneManager::LoadScene(std::string path)
 // シングルトンの取得
 // 静的変数
 //========================================================
-CSceneManager& CSceneManager::Get()
+CSceneManager* CSceneManager::Get()
 {
 	static CSceneManager pInstance;
-	return pInstance;
+	return &pInstance;
 }
 
 #ifdef BUILD_MODE

@@ -88,30 +88,34 @@ HRESULT CGameApp::Init(Application* app)
 	hr = CPolygon::InitShader(pDevice);
 	if (hr != S_OK)
 		MessageBox(NULL, _T("CPolygonの初期化に失敗しました。"), _T("error"), MB_OK);
+
 	//--- アセット
 	// 素材全般所持ｸﾗｽ
-	{
-		auto pAssets = CSystemBase::Get<CAssetsManager>();
-		app->AddSystem(pAssets, typeid(CAssetsManager).name());
-		hr = pAssets->Init(app);
-		if (hr != S_OK)
-			MessageBox(NULL, _T("CAssetsManagerの初期化に失敗しました。"), _T("error"), MB_OK);
-	}
+	auto pAssets = CAssetsManager::Get();
+	app->AddSystem(pAssets, typeid(CAssetsManager).name());
+	hr = pAssets->Init(app);
+	if (hr != S_OK)
+		MessageBox(NULL, _T("CAssetsManagerの初期化に失敗しました。"), _T("error"), MB_OK);
 
 	// 音初期化
 	CSound::Init();
 
 	//--- シーンの生成
 	{
-		auto sceneMgr = &CSceneManager::Get();
+		auto sceneMgr = CSceneManager::Get();
 		hr = sceneMgr->Init();
 		if (hr != S_OK)
 			MessageBox(NULL, _T("CSceneManagerの初期化に失敗しました。"), _T("error"), MB_OK);
 	}
 
+	//--- Effekseer
+	hr = pAssets->GetEffekseer()->Init(pDevice, pDC);
+	if (hr != S_OK)
+		MessageBox(NULL, _T("CEffekseerの初期化に失敗しました。"), _T("error"), MB_OK);
+
 #ifdef BUILD_MODE
 	//--- imGuiの初期化処理
-	auto imgui = CSystemBase::Get<ImGuiManager>();
+	auto imgui = ImGuiManager::Get();
 	app->AddSystem(imgui, typeid(ImGuiManager).name());
 	hr = imgui->Init(Application::Get()->GetHWnd(), pDevice, pDC);
 	if (hr != S_OK)
@@ -163,7 +167,7 @@ void CGameApp::Run(Application* app)
 	// デバッグ中の更新(GameObjectのdeleteとTransformの更新はないと不便)
 	if (imgui->GetPause())
 	{
-		auto all = CSceneManager::Get().GetAllScene();
+		auto all = CSceneManager::Get()->GetAllScene();
 		for (auto & scene : all)
 		{
 			scene->GetObjManager()->UpdateInDebug();
@@ -173,7 +177,7 @@ void CGameApp::Run(Application* app)
 #endif // DEBUG
 
 	//--- シーン更新
-	CSceneManager::Get().UpdateScene();
+	CSceneManager::Get()->UpdateScene();
 
 	// Tweenの更新(順番検討)
 	//app->GetSystem<CTweenManager>()->Update();
@@ -186,7 +190,7 @@ void CGameApp::Run(Application* app)
 //==========================================================
 void CGameApp::FixedUpdate(Application* app)const
 {
-	CSceneManager::Get().FixedUpdateScene();
+	CSceneManager::Get()->FixedUpdateScene();
 }
 
 //==========================================================
@@ -231,7 +235,7 @@ void CGameApp::Draw(Application* app)
 		CCamera::GetMain()->DrawSkyDome();
 		
 		// シーンの描画
-		CSceneManager::Get().DrawScene();
+		CSceneManager::Get()->DrawScene();
 
 		// effect
 		app->GetSystem<CAssetsManager>()->GetEffekseer()->Draw();
@@ -256,7 +260,7 @@ void CGameApp::Draw(Application* app)
 		CCamera::GetMain()->DrawSkyDome();
 		
 		// シーンの描画
-		CSceneManager::Get().DrawScene();
+		CSceneManager::Get()->DrawScene();
 
 		// effect
 		app->GetSystem<CAssetsManager>()->GetEffekseer()->Draw();
@@ -279,10 +283,10 @@ void CGameApp::BeginRender(Application* app)
 	pDC->ClearRenderTargetView(pDX->GetRenderTargetView(), ClearColor);
 	pDC->ClearDepthStencilView(pDX->GetDepthStencilView(), D3D11_CLEAR_DEPTH | D3D11_CLEAR_STENCIL, 1.0f, 0);
 
-	ID3D11RenderTargetView* pViews[] = {
+	/*ID3D11RenderTargetView* pViews[] = {
 		pDX->GetRenderTargetView()
 	};
-	pDC->OMSetRenderTargets(1, pViews, pDX->GetDepthStencilView());
+	pDC->OMSetRenderTargets(1, pViews, pDX->GetDepthStencilView());*/
 }
 
 //==========================================================

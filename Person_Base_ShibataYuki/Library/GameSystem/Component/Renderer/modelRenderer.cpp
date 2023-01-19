@@ -132,7 +132,7 @@ bool CModelRenderer::Draw()
 	if (pModelMgr->GetModelCnt(m_modelName) > 2)
 	{
 		// システム側に依頼を出し、まとめて描画してもらう
-		SceneManager::CSceneManager::Get().GetDrawSystem()->SetInstanchingModel(m_modelName, mtx);
+		SceneManager::CSceneManager::Get()->GetDrawSystem()->SetInstanchingModel(m_modelName, mtx);
 		return true;
 	}
 
@@ -160,11 +160,11 @@ bool CModelRenderer::DrawAlpha()
 
 	//--- 半透明部分描画
 	pDX->SetBlendState(static_cast<int>(EBlendState::BS_ALPHABLEND));
-	pDX->SetZBuffer(false);
+	pDX->SetZWrite(false);
 
 	m_pModel->Draw(pDX->GetDeviceContext(), mtx, EByOpacity::eTransparentOnly);
 
-	pDX->SetZBuffer(true);
+	pDX->SetZWrite(true);
 	pDX->SetBlendState(static_cast<int>(EBlendState::BS_NONE)); // αブレンディング無効
 
 	return true;
@@ -182,20 +182,17 @@ bool CModelRenderer::Draw(int no)
 
 	XMFLOAT4X4 mtx = Transform()->GetWorldMatrix();
 	//--- 不透明描画
-	CLight* pLight = CLight::GetMain();
-	if (!pLight)return false;
-	pLight->SetDisable(GetLightEnable());	// ライティング無効
+	/*CLight* pLight = CLight::GetMain();
+	if (!pLight)return false;*/
 	
-	m_pModel->Draw(pDX->GetDeviceContext(), mtx, EByOpacity::eOpacityOnly);
-
-	pLight->SetEnable();	// ライティング有効
+	m_pModel->Draw(pDX->GetDeviceContext(), mtx, EByOpacity(no));
 
 	//--- 半透明部分描画
-	pDX->SetBlendState(static_cast<int>(EBlendState::BS_ALPHABLEND));
+	//pDX->SetBlendState(static_cast<int>(EBlendState::BS_ALPHABLEND));
 
-	m_pModel->Draw(pDX->GetDeviceContext(), mtx, EByOpacity::eTransparentOnly);
+	//m_pModel->Draw(pDX->GetDeviceContext(), mtx, EByOpacity::eTransparentOnly);
 
-	pDX->SetBlendState(static_cast<int>(EBlendState::BS_NONE));		// 光源有効
+	//pDX->SetBlendState(static_cast<int>(EBlendState::BS_NONE));		// 光源有効
 
 	return true;
 }

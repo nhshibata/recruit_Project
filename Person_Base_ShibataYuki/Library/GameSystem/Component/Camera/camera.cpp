@@ -50,9 +50,7 @@ CCamera::CCamera()
 	m_fAspectRatio(0), m_fFarZ(0), m_fLengthInterval(0), m_fNearZ(0),
 	m_frus{ XMFLOAT4(0,0,0,0) }, m_frusw{ XMFLOAT4(0,0,0,0) }
 {
-#if _DEBUG
-	auto cam = m_pMainCamera.lock();
-#endif // _DEBUG
+
 }
 
 //==========================================================
@@ -82,7 +80,7 @@ CCamera::~CCamera()
 
 	// ”jŠü‚³‚ê‚½‚Æ‚«‚É¶Ò×‚ª‘¶Ý‚µ‚Ä‚¢‚é‚©Šm”F
 	// ‚ ‚ê‚ÎÒ²Ý¶Ò×‚ðˆÚ“®
-	if (!CSceneManager::Get().GetActiveScene())return;
+	if (!CSceneManager::Get()->GetActiveScene())return;
 	if (auto camObj = CGameObject::FindGameObjectWithTag(CDefaultTagChar::CAMERA); camObj.lock())
 	{
 		auto cameraCom = camObj.lock()->GetComponent<CCamera>().lock();
@@ -182,11 +180,17 @@ void CCamera::DrawSkyDome()
 		return;
 
 	auto pDX = Application::Get()->GetSystem<CDXDevice>();
+	auto pLight = CLight::GetMain();
+
+	pLight->SetDisable();
+	pDX->SetBlendState((int)EBlendState::BS_ALPHABLEND);
 	pDX->SetZBuffer(false);
 	m_pSky.lock()->SetVisible(true);
 	m_pSky.lock()->Draw(0);
 	m_pSky.lock()->SetVisible(false);
 	pDX->SetZBuffer(true);
+	pDX->SetBlendState((int)EBlendState::BS_NONE);
+	pLight->SetEnable();
 }
 
 //==========================================================

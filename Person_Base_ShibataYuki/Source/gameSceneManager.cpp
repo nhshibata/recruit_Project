@@ -82,7 +82,7 @@ void CGameSceneManager::Update()
 {
 	if (m_pFade.lock()->IsFadeProcess())
 	{
-		CFps::Get().SetTimeScale(0);
+		CFps::Get()->SetTimeScale(0);
 		return;
 	}
 
@@ -94,5 +94,5 @@ void CGameSceneManager::Update()
 //========================================================
 void CGameSceneManager::TimeFunc()
 {
-	CFps::Get().SetTimeScale(1);
+	CFps::Get()->SetTimeScale(1);
 }

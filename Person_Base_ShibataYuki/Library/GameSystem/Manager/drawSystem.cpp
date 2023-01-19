@@ -91,10 +91,6 @@ std::weak_ptr<CRenderer> CDrawSystem::ExecutSystem(int idx)
 //==========================================================
 void CDrawSystem::Update()
 {
-	//m_aInstancingMeshMap.clear();
-	//m_aInstancingModelMap.clear();
-	//return;
-
 	// CRenderer::Drawはboolを返す
 	// trueであれば描画する
 	// 描画数などの確認をするならばこれを活用する
@@ -231,7 +227,6 @@ void CDrawSystem::InstancingDraw()
 	CLight* pLight = CLight::GetMain();
 	pLight->SetDisable();			// ライティング無効
 	//pDX->SetZBuffer(true);		// Z書き込み
-	pDX->SetZWrite(true);			// Z書き込み
 
 	//--- 登録されたモデル名別に描画
 	//--- 不透明描画
@@ -252,16 +247,16 @@ void CDrawSystem::InstancingDraw()
 	pLight->SetEnable();			// ライティング有効
 
 
-	pDX->SetZWrite(false);			// Z書き込み
 
 	//--- 半透明部分描画
 	pDX->SetBlendState(static_cast<int>(EBlendState::BS_ALPHABLEND));
+	pDX->SetZWrite(false);			// Z書き込み
 	
 	for (auto & intancingModel : m_aInstancingModelMap)
 	{
 		//--- 描画するモデルの取得
 		auto model = pAssets->GetModelManager()->GetModel(intancingModel.first);
-		model->DrawInstancing(pDX->GetDeviceContext(), intancingModel.second, EByOpacity::eOpacityOnly);
+		model->DrawInstancing(pDX->GetDeviceContext(), intancingModel.second, EByOpacity::eTransparentOnly);
 		intancingModel.second.clear();	// 使用終了
 	}
 	

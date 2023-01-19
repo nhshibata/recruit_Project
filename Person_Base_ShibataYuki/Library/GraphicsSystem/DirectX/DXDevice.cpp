@@ -15,6 +15,16 @@
 
 using namespace MySpace::Graphics;
 
+
+//=========================================================
+// コンストラクタ
+//=========================================================
+CDXDevice::CDXDevice()
+	:g_uSyncInterval(0), m_Width(0), m_Height(0), m_DriverType(),
+	m_FeatureLevel()
+{
+}
+
 //==========================================================
 // 初期化
 //==========================================================
@@ -624,7 +634,7 @@ HRESULT CDXDevice::Init(HWND hWnd, unsigned int Width, unsigned int Height, bool
 		return hr;
 
 	// バックバッファ生成
-		// レンダーターゲットビュー生成
+	// レンダーターゲットビュー生成
 	ID3D11Texture2D* pBackBuffer = nullptr;
 	g_pSwapChain->GetBuffer(0, __uuidof(ID3D11Texture2D), (LPVOID*)&pBackBuffer);
 	g_pDevice->CreateRenderTargetView(pBackBuffer, nullptr, &g_pRenderTargetView);
@@ -652,8 +662,7 @@ HRESULT CDXDevice::Init(HWND hWnd, unsigned int Width, unsigned int Height, bool
 	ZeroMemory(&dsvd, sizeof(dsvd));
 	dsvd.Format = td.Format;
 	dsvd.ViewDimension = D3D11_DSV_DIMENSION_TEXTURE2DMS;
-	hr = g_pDevice->CreateDepthStencilView(g_pDepthStencilTexture.Get(),
-										   &dsvd, g_pDepthStencilView.GetAddressOf());
+	hr = g_pDevice->CreateDepthStencilView(g_pDepthStencilTexture.Get(), &dsvd, g_pDepthStencilView.GetAddressOf());
 	if (FAILED(hr))
 		return hr;
 
@@ -805,3 +814,10 @@ void CDXDevice::SwitchRender(ID3D11RenderTargetView* pRTV, ID3D11DepthStencilVie
 }
 
 #endif // RT_DS_TEST
+
+
+CDXDevice* CDXDevice::Get()
+{
+	static CDXDevice instance;
+	return &instance;
+}

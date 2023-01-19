@@ -28,7 +28,7 @@ using namespace MySpace::Graphics;
 
 namespace
 {
-	const char*		WINDOW_TITLE = "SPELL"; //"タイトル";
+	const char*		WINDOW_TITLE = "biscuit"; //"タイトル";
 	const char*		WINDOW_CLASS_NAME = CLASS_NAME;
 
 	const uint32_t	WINDOW_STYLE_WINDOWED = (WS_VISIBLE | WS_CAPTION | WS_SYSMENU);
@@ -66,7 +66,7 @@ bool Application::Init(HINSTANCE hInstance)
 	//CScreen::SetSize(1280.0f, 960.0f);
 
 	//--- ウインドウ作成
-	CWindow* window = CSystemBase::Get<CWindow>();
+	CWindow* window = CWindow::Get();
 	AddSystem(window, typeid(CWindow).name());
 	window->RegisterClass(hInstance, WINDOW_CLASS_NAME, CS_CLASSDC);
 	
@@ -92,10 +92,10 @@ bool Application::Init(HINSTANCE hInstance)
 	m_hInst = hInstance;
 
 	// 読み込みが必要なシステムの関数を呼び出す	
-	AddSystem(CSystemBase::Get<CFuncManager>(), typeid(CFuncManager).name());
+	AddSystem(CFuncManager::Get(), typeid(CFuncManager).name());
 
 	//--- デバイスの初期化
-	auto pDX = CSystemBase::Get<CDXDevice>();
+	auto pDX = CDXDevice::Get();
 	AddSystem(pDX, typeid(CDXDevice).name());
 	hr = pDX->Init(m_hWnd, (unsigned int)CScreen::GetWidth(), (unsigned int)CScreen::GetHeight());
 	if(FAILED(hr))
@@ -120,11 +120,11 @@ void Application::Destroy()
 	
 	//--- システム部分解放
 	// 最後尾から順に解放
-	for (auto rit = m_aSystems.rbegin(); rit != m_aSystems.rend();)
+	/*for (auto rit = m_aSystems.rbegin(); rit != m_aSystems.rend();)
 	{
 		delete (*rit).second;
 		++rit;
-	}
+	}*/
 	m_aSystems.clear();
 
 	return;
@@ -144,20 +144,20 @@ unsigned long Application::MainLoop()
 	gameApp->Init(this);
 
 	//--- タイム初期化処理
-	CFps::Get().Init();
+	CFps::Get()->Init();
 
 	// 無限ループ
 	while (window->ExecMessage()) 
 	{
 		//--- fps更新
-		CFps::Get().Update();
+		CFps::Get()->Update();
 
 		//--- 固定時間更新
-		if (!CFps::Get().IsFixedUpdate())
+		if (!CFps::Get()->IsFixedUpdate())
 			gameApp->FixedUpdate(this);
 
 		//--- 通常更新確認
-		if (!CFps::Get().IsUpdate())
+		if (!CFps::Get()->IsUpdate())
 			continue;
 
 		//--- 入力更新
@@ -176,7 +176,7 @@ unsigned long Application::MainLoop()
 	//--- 終了処理
 
 	// タイム終了処理
-	CFps::Get().Uninit();
+	CFps::Get()->Uninit();
 
 	// ゲーム終了処理
 	gameApp->Uninit(this);

@@ -88,7 +88,7 @@ float CMeshRenderer::GetBSRadius()
 //==========================================================
 void CMeshRenderer::SetInstancing(CMesh* mesh, std::string name)
 {
-	auto sys = SceneManager::CSceneManager::Get().GetDrawSystem();
+	auto sys = SceneManager::CSceneManager::Get()->GetDrawSystem();
 	//--- インスタンシング依頼
 	if (!name.empty())
 	{

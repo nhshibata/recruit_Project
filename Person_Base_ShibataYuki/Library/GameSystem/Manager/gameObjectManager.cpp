@@ -108,7 +108,7 @@ void CGameObjectManager::Update()
 	for (auto & obj : pActiveObj)
 	{
 		//--- component内でシーンが破棄された場合、処理を抜ける
-		if (MySpace::SceneManager::CSceneManager::Get().Escape())
+		if (MySpace::SceneManager::CSceneManager::Get()->Escape())
 			return;
 
 #ifdef _DEBUG
@@ -122,7 +122,7 @@ void CGameObjectManager::Update()
 	for (auto & obj : pActiveObj)
 	{
 		//--- component内でシーンが破棄された場合、処理を抜ける
-		if (MySpace::SceneManager::CSceneManager::Get().Escape())
+		if (MySpace::SceneManager::CSceneManager::Get()->Escape())
 			return;
 		obj.lock()->LateUpdate();
 	}
@@ -192,7 +192,7 @@ void CGameObjectManager::FixedUpdate()
 	for (auto & obj : m_aGameObjList)
 	{
 		//--- component内でシーンが破棄された場合、処理を抜ける
-		if (MySpace::SceneManager::CSceneManager::Get().Escape())
+		if (MySpace::SceneManager::CSceneManager::Get()->Escape())
 			return;
 
 		if (obj->GetState() == CGameObject::ACTIVE) 
@@ -209,7 +209,7 @@ bool CGameObjectManager::ObjectListUpdate()
 {
 	// 追加オブジェクトが空でない時
 	// 途中追加のオブジェがある場合のためwhile
-	while(m_aAddObjList.size() != 0)
+	while (m_aAddObjList.size() != 0)
 	{
 		auto addList = m_aAddObjList;	// 受け取る
 		m_aAddObjList.clear();			// 配列を空に
@@ -217,12 +217,20 @@ bool CGameObjectManager::ObjectListUpdate()
 		// 格納し、処理を呼び出す
 		for (auto & addObj : addList)
 		{
+			if (addObj)
+			{
+				addObj->Awake();
+				SetGameObject(addObj);
+			}
+		}
+
+		for (auto & addObj : addList)
+		{
 
 #ifdef _DEBUG
 			auto name = addObj->GetName();
 #endif // !_DEBUG
 
-			SetGameObject(addObj);
 			addObj->Init();
 		}
 	}
@@ -244,7 +252,7 @@ void CGameObjectManager::CreateBasicObject()
 	// ライト
 	pObj = CreateGameObject();
 	auto light = pObj->AddComponent<CDirectionalLight>();
-	light->GetOwner()->SetName("MainCamera");
+	light->GetOwner()->SetName("DirectionalLight");
 }
 
 //==========================================================

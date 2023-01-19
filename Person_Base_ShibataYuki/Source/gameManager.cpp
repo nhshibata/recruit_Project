@@ -49,7 +49,7 @@ void CGameManager::Awake()
 	CGameObject::DontDestroy(GetOwner(0));
 
 	// 関数ポインタ設定
-	MySpace::SceneManager::CSceneManager::Get().SceneChanged<Spell::CGameManager>(&CGameManager::SceneResponce, this);
+	MySpace::SceneManager::CSceneManager::Get()->SceneChanged<Spell::CGameManager>(&CGameManager::SceneResponce, this);
 
 }
 
@@ -107,7 +107,7 @@ void* CGameManager::SceneResponce(MySpace::SceneManager::CScene* prev, MySpace::
 	}
 
 	// 再度関数ポインタ設定
-	MySpace::SceneManager::CSceneManager::Get().SceneChanged<Spell::CGameManager>(&CGameManager::SceneResponce, this);
+	MySpace::SceneManager::CSceneManager::Get()->SceneChanged<Spell::CGameManager>(&CGameManager::SceneResponce, this);
 
 	return nullptr;
 }

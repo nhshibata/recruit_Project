@@ -68,6 +68,12 @@ bool CFuncManager::StopFunc(void* ptr)
 	return false;
 }
 
+CFuncManager* CFuncManager::Get()
+{
+	static CFuncManager instance;
+	return &instance;
+}
+
 #ifdef BUILD_MODE
 
 void CFuncManager::ImGuiDebug()

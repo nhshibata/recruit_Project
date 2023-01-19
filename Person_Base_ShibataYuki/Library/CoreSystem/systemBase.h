@@ -20,7 +20,7 @@ namespace MySpace
 			CSystemBase() = default;
 			virtual ~CSystemBase() = default;
 
-#if 1
+#if 0
 			template<class T>
 			static T* Get()
 			{

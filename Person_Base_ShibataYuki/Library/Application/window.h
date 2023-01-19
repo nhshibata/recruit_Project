@@ -47,6 +47,8 @@ namespace MySpace
 			};
 			~CWindow() = default;
 
+			static CWindow * Get();
+
 			bool ExecMessage();
 			bool RegisterClass(
 				HINSTANCE	  hInstance,

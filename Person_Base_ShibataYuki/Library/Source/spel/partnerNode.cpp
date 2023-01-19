@@ -48,7 +48,7 @@ namespace Spell
 	AID_IMPLEMENTATION_IS_ACTION(CIsMoveNode)
 	{
 		auto param = sys->GetNode<STPartnerParamB>();
-		param->fStopTime.fValue -= CFps::Get().DeltaTime();
+		param->fStopTime.fValue -= CFps::Get()->DeltaTime();
 		if(param->fStopTime.fValue > 0)
 			return false;
 		return true;
