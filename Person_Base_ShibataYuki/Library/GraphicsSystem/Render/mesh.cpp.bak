@@ -133,10 +133,10 @@ HRESULT CMesh::InitShader()
 	cb_sg->Make(sizeof(SHADER_GLOBAL), 0, CConstantBuffer::EType::Vertex);
 	cb_sg2->Make(sizeof(SHADER_GLOBAL2), 0, CConstantBuffer::EType::Pixel);
 
-	CShaderManager::Get()->SetConstantBuffer("SHADER_GLOBAL", cb_sg);
-	CShaderManager::Get()->SetConstantBuffer("SHADER_GLOBAL2", cb_sg2);
-	CShaderManager::Get()->SetVS("Vertex", vs);
-	CShaderManager::Get()->SetPS("Pixel", ps);
+	CShaderManager::GetMain()->SetConstantBuffer("SHADER_GLOBAL", cb_sg);
+	CShaderManager::GetMain()->SetConstantBuffer("SHADER_GLOBAL2", cb_sg2);
+	CShaderManager::GetMain()->SetVS("Vertex", vs);
+	CShaderManager::GetMain()->SetPS("Pixel", ps);
 
 #endif // 0
 
@@ -424,7 +424,7 @@ void CMesh::DrawInstancing(std::vector<CMesh*> aMesh, ID3D11ShaderResourceView* 
 		int cnt = 0;	// Œ»Ý‚Ì“YŽš Œ“ •`‰æÅ‘å”
 		if (SUCCEEDED(pDeviceContext->Map(m_pConstantBufferI, 0, D3D11_MAP_WRITE_DISCARD, 0, &pData)))
 		{
-			SHADER_MESH_INSTANCING* si = new SHADER_MESH_INSTANCING();
+			SHADER_MESH_INSTANCING* si = new SHADER_MESH_INSTANCING;
 			// –{—ˆ‚±‚±‚Å”²‚¯‚é
 			for (; cnt < MAX_MESH_INSTANCING; ++cnt, ++cntNum)
 			{

@@ -4,27 +4,59 @@
 //---------------------------------------------------------
 //=========================================================
 
+//--- インクルード部
 #include <fadeController.h>
-#include <GameSystem/Component/component.h>
 #include <GameSystem/Manager/sceneManager.h>
+#include <GameSystem/Component/Renderer/polygonRenderer.h>
 
-//
-CFadeController::CFadeController(std::shared_ptr<CGameObject> owner)
-	:CComponent(owner), m_fFadeTime(60), m_eState(E_FadeState::NONE)
+#include <Application/Application.h>
+#include <tchar.h>
+
+using namespace MySpace::Game;
+
+//==========================================================
+// コンストラクタ
+//==========================================================
+CFadeController::CFadeController()
+	:m_fFadeTime(60), m_eState(E_FadeState::NONE)
 {
+	
+}
+
+
+//==========================================================
+// 引き数付きコンストラクタ
+//==========================================================
+CFadeController::CFadeController(std::shared_ptr<CGameObject> owner)
+	:CComponent(owner)
+	,m_fFadeTime(60), m_eState(E_FadeState::NONE)
+{
+	m_SceneName.clear();
+
+}
+
+//==========================================================
+// デスクトラクタ
+//==========================================================
+CFadeController::~CFadeController()
+{
+	
 }
 
 void CFadeController::Awake()
 {
-	m_SceneName.clear();
+	//m_SceneName.clear();
 	GetOwner()->SetName("FadeController");
 }
 
 void CFadeController::Init()
 {
-	m_pPolygon = GetOwner()->GetComponent<MySpace::Game::CPolygonRenderer>();
-	if(!m_pPolygon.lock())
-		GetOwner()->AddComponent<MySpace::Game::CPolygonRenderer>();
+	m_pPolygon = GetOwner()->GetComponent<CPolygonRenderer>();
+
+	// NOTE:ここで呼び出すとバグ発生
+	//if (!m_pPolygon.lock())
+	//	AddComponent<CPolygonRenderer>();
+	
 	m_pPolygon.lock()->SetColor(Color(0, 0, 0, 0));
 	m_pPolygon.lock()->GetRectTransform()->SetSize(CScreen::GetWidth(), CScreen::GetHeight());
 	m_pPolygon.lock()->SetZ(static_cast<int>(CLayer::E_Layer::FOG));
@@ -81,6 +113,7 @@ void CFadeController::Update()
 	default:
 		break;
 	}
+
 }
 
 //========================================================
@@ -112,4 +145,28 @@ void CFadeController::StartFadeIn()
 		return;
 	m_pPolygon.lock()->SetColor({ 0,0,0,1 });
 	m_eState = E_FadeState::FADE_IN_START;
+}
+
+//========================================================
+// 状態による関数ポインタ呼び出し
+//========================================================
+void CFadeController::Call(E_FadeState state)
+{
+	if (m_aLoopFuncMap[state].size() != 0)
+	{// 繰り返し
+		for (auto & func : m_aLoopFuncMap[state])
+		{
+			func();
+		}
+	}
+
+	// 一回
+	if (m_aFuncMap.size() == 0)
+		return;
+
+	for (auto & func : m_aFuncMap[state])
+	{
+		func();
+	}
+	m_aFuncMap[state].clear();
 }

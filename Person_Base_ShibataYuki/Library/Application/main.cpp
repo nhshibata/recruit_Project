@@ -85,6 +85,8 @@ HRESULT StartUp(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine, i
 	//--- 生成
 	Application* Appli = Application::Get();
 	hr = Appli->Init(hInstance) ? S_OK : S_FALSE;
+	if (FAILED(hr))
+		return hr;
 
 	//--- ウィンドウ表示
 	ShowWindow(Appli->GetHWnd(), nCmdShow);

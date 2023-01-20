@@ -172,7 +172,7 @@ void CTextRenderer::ImGuiDebug()
 //==========================================================
 std::wstring CTextRenderer::VKeyToWString(int nKey)
 {
-	static std::map<int, std::wstring> retMap =
+	std::map<int, std::wstring> retMap =
 	{
 		{ 'A', L"A" },
 		{ 'B', L"B" },

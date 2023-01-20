@@ -35,7 +35,7 @@ using namespace MySpace::Graphics;
 //==========================================================
 CPolygonRenderer::CPolygonRenderer(std::shared_ptr<CGameObject> owner)
 	:CRenderer(owner)
-	, m_nZValue(0)
+	, m_nZValue((int)EZValue::DEFAULT)
 {
 	auto rect = GetOwner()->AddComponent<CRectTransform>();
 	m_pRectTransform = rect;
@@ -183,6 +183,14 @@ void CPolygonRenderer::ImGuiDebug()
 	{
 		SetZ(z);
 	}
+	if(ImGui::Button("BG"))
+		SetZ((int)EZValue::BG);
+	ImGui::SameLine();
+	if(ImGui::Button("Default"))
+		SetZ((int)EZValue::DEFAULT);
+	ImGui::SameLine();
+	if(ImGui::Button("FOG"))
+		SetZ((int)EZValue::FOG);
 
 	//--- ÉtÉ@ÉCÉãì‡åüçı
 	if (s_FileList.empty() || ImGui::Button(u8"âÊëú reload"))

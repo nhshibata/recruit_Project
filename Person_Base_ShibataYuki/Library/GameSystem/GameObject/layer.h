@@ -59,12 +59,15 @@ namespace MySpace
 
 		public:
 			//--- メンバ関数
-			CLayer() :m_nLayer(static_cast<int>(E_Layer::DEFAULT)) {};
-			CLayer(E_Layer layer) :m_nLayer((int)layer) {};
-			~CLayer() {};
+			CLayer() :m_nLayer(static_cast<int>(E_Layer::DEFAULT)) 
+			{};
+			CLayer(E_Layer layer) :m_nLayer((int)layer)
+			{};
+			~CLayer() 
+			{};
 
 			//--- ゲッター・セッター
-			inline int* GetLayer() { return &m_nLayer; };
+			inline int GetLayer() { return m_nLayer; }
 			inline void SetLayer(int layer) { m_nLayer = layer; };
 			inline void SetLayer(E_Layer layer) { m_nLayer = static_cast<int>(layer); };
 

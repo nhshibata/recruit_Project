@@ -39,8 +39,8 @@ static inline void CheckObj(CGameObject* obj)
 CGameObject::CGameObject()
 	:m_eState(E_ObjectState::ACTIVE)
 {
-	m_pTag = std::make_unique<CTag>();
-	m_pLayer = std::make_unique<CLayer>();
+	m_pTag = std::make_shared<CTag>();
+	m_pLayer = std::make_shared<CLayer>();
 }
 
 //==========================================================
@@ -50,8 +50,8 @@ CGameObject::CGameObject(std::string name)
 	:m_eState(E_ObjectState::ACTIVE)
 {
 	SetName(name);
-	m_pTag = std::make_unique<CTag>();
-	m_pLayer = std::make_unique<CLayer>();
+	m_pTag = std::make_shared<CTag>();
+	m_pLayer = std::make_shared<CLayer>();
 }
 
 //==========================================================
@@ -68,10 +68,8 @@ CGameObject::CGameObject(const CGameObject & object)
 
 	this->m_pTransform = object.m_pTransform;
 	this->m_eState = object.m_eState;
-	this->m_pLayer = std::make_unique<CLayer>();
-	this->m_pTag = std::make_unique<CTag>();
-	this->m_pLayer.get()->SetLayer(*object.m_pLayer.get()->GetLayer());
-	this->m_pTag.get()->SetTag(object.m_pTag.get()->GetTag());
+	this->m_pLayer = object.m_pLayer;
+	this->m_pTag = object.m_pTag;
 	//this->m_aComponent = object.m_aComponent;
 
 	// ºÝÎß°ÈÝÄ‚Ì–¼‘O‚©‚ç“¯‚¶ºÝÎß°ÈÝÄ‚ð’Ç‰Á
@@ -214,9 +212,9 @@ void CGameObject::ComponentAddPreparation(std::shared_ptr<CComponent> com)
 template <class T>
 bool CGameObject::RemoveComponent(std::string comName)
 {
-	Component_List::iterator it;
-	for (it = m_aComponent.begin(); it != m_aComponent.end(); ++it)
+	for (auto it = m_aComponent.begin(); it != m_aComponent.end(); ++it)
 	{
+		// ”O‚Ì‚½‚ßŠm”F
 		if (typeid(T).name == (*it)->GetName())
 		{
 			m_aComponent.erase(it);
@@ -231,8 +229,7 @@ bool CGameObject::RemoveComponent(std::string comName)
 //==========================================================
 bool CGameObject::RemoveComponent(std::weak_ptr<CComponent> com)
 {
-	Component_List::iterator it;
-	for (it = m_aComponent.begin(); it != m_aComponent.end(); ++it)
+	for (auto it = m_aComponent.begin(); it != m_aComponent.end(); ++it)
 	{
 		if ((*it) == com.lock())
 		{

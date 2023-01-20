@@ -29,12 +29,12 @@ void CreateComponentSpell()
 	CTypeSaveManager* mgr = CTypeSaveManager::Get();
 
 	// ¶¬	
-	mgr->SetComponentSave<Spell::CGameCamera>();
 	mgr->SetComponentSave<Spell::CGameManager>();
 	mgr->SetComponentSave<Spell::CGameSceneManager>();
-	mgr->SetComponentSave<Spell::CSpellPlayer>();
 	mgr->SetComponentSave<Spell::CStageManager>();
+	mgr->SetComponentSave<Spell::CSpellPlayer>();
 	mgr->SetComponentSave<Spell::CTitleMove>();
 	mgr->SetComponentSave<Spell::CTitleSceneManager>();
+	mgr->SetComponentSave<Spell::CGameCamera>();
 
 }

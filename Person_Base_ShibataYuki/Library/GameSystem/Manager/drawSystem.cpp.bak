@@ -168,7 +168,7 @@ void CDrawSystem::Update()
 		}
 	}
 
-	//--- インスタンシング長いので関数化
+	//--- インスタンシング長いので分割
 	InstancingDraw();
 
 	//--- UI部分描画
@@ -225,7 +225,7 @@ void CDrawSystem::InstancingDraw()
 
 	pDX->SetCullMode((int)ECullMode::CULLMODE_CCW);
 	CLight* pLight = CLight::GetMain();
-	//pLight->SetDisable();			// ライティング無効
+	pLight->SetDisable();			// ライティング無効
 	//pDX->SetZBuffer(true);		// Z書き込み
 
 	//--- 登録されたモデル名別に描画
@@ -238,12 +238,14 @@ void CDrawSystem::InstancingDraw()
 		if (!model)
 			continue;
 		model->DrawInstancing(pDX->GetDeviceContext(), intancingModel.second, EByOpacity::eOpacityOnly);
+		pLight->SetEnable();
 
 #if BUILD_MODE
 		++m_nInstancingCnt;
 #endif // _DEBUG
 	}
 	pLight->SetEnable();			// ライティング有効
+
 
 
 	//--- 半透明部分描画

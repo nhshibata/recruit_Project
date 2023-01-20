@@ -225,7 +225,7 @@ void CGameApp::Draw(Application* app)
 	else
 	{
 		auto pDX = app->GetSystem<CDXDevice>();
-		pDX->SwitchRender(nullptr, nullptr);
+		pDX->SwitchRender(pDX->GetRenderTargetView(), pDX->GetDepthStencilView());
 	}
 
 	// オブジェクトが存在しないとき

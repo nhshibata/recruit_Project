@@ -42,10 +42,10 @@ HRESULT CFontTexture::Init()
 	m_aStringMap[L"‚l‚r ‚o–¾’©"];
 
 #pragma region Convert
-	const size_t WCHARBUF = 100;
-	std::string name("aasdfg");
-	std::wstring wname = std::wstring(name.begin(), name.end());
-	MultiByteToWideChar(CP_ACP, MB_PRECOMPOSED, name.data(), -1, wname.data(), WCHARBUF);
+	//const size_t WCHARBUF = 100;
+	//std::string name("aasdfg");
+	//std::wstring wname = std::wstring(name.begin(), name.end());
+	//MultiByteToWideChar(CP_ACP, MB_PRECOMPOSED, name.data(), -1, wname.data(), WCHARBUF);
 
 	// Šm”F
 	// char -> wchar •ÏŠ·•¶Žš‰»‚¯

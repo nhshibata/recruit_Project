@@ -23,10 +23,14 @@ namespace Spell
 		float m_fShakeTime;
 
 	public:
-		CGameCamera():m_fShakeTime(0), m_fOffset(0) {};
-		CGameCamera(std::shared_ptr<CGameObject> owner) :CCamera(owner), m_fShakeTime(0), m_fOffset(0)
+		CGameCamera()
+			:m_fShakeTime(0), m_fOffset(0) 
 		{};
-		~CGameCamera() {};
+		CGameCamera(std::shared_ptr<CGameObject> owner)
+			:CCamera(owner), m_fShakeTime(0), m_fOffset(0)
+		{};
+		~CGameCamera()
+		{};
 
 		void Awake();
 		void Init();
@@ -36,4 +40,5 @@ namespace Spell
 		inline float GetOffset() { return m_fOffset; }
 	};
 }
+
 #endif // !__GAME_CAMERA_COMPONENT_H__
