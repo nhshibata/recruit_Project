@@ -92,8 +92,8 @@ namespace MySpace
 			//--- メンバ変数
 			Component_List m_aComponent;			// 所持コンポーネント
 			E_ObjectState m_eState;					// 状態
-			std::unique_ptr<CTag> m_pTag;			// タグ
-			std::unique_ptr<CLayer> m_pLayer;		// レイヤー
+			std::shared_ptr<CTag> m_pTag;			// タグ
+			std::shared_ptr<CLayer> m_pLayer;		// レイヤー
 			std::weak_ptr<CTransform> m_pTransform;	// パラメータ
 			std::weak_ptr<CScene> m_pScene;			// 所属シーン
 
@@ -121,7 +121,7 @@ namespace MySpace
 			// *@生成することで追加する
 			// *@持ち主設定、自SPの設定などを行い、生成時処理を呼び出す
 			template <class T>
-			std::shared_ptr<T> AddComponent()
+			std::shared_ptr<T> AddComponent() noexcept(false)
 			{
 				std::shared_ptr<T> com = std::make_shared<T>(GetPtr().lock());
 #if 0
@@ -188,7 +188,7 @@ namespace MySpace
 			// *@ﾚｲﾔｸﾗｽの取得
 			inline CLayer* GetLayerPtr() { return m_pLayer.get(); };
 			// *@ﾚｲﾔｰ番号
-			inline int GetLayer() { return *m_pLayer->GetLayer(); };														
+			inline int GetLayer() { return m_pLayer->GetLayer(); };														
 
 			// *@シーンの設定
 			// *@TODO:呼び出せる場所を制限するべき

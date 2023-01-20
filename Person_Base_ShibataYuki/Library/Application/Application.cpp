@@ -98,8 +98,11 @@ bool Application::Init(HINSTANCE hInstance)
 	auto pDX = CDXDevice::Get();
 	AddSystem(pDX, typeid(CDXDevice).name());
 	hr = pDX->Init(m_hWnd, (unsigned int)CScreen::GetWidth(), (unsigned int)CScreen::GetHeight());
-	if(FAILED(hr))
+	if (FAILED(hr))
+	{
 		MessageBox(NULL, _T("DirectX‚Ì‰Šú‰»‚ÉŽ¸”s‚µ‚Ü‚µ‚½B"), _T("error"), MB_OK);
+		return false;
+	}
 	// •K—v‚È•Ï”‚ðŠi”[
 	m_pDevice = pDX->GetDevice();
 	m_pDeviceContext = pDX->GetDeviceContext();

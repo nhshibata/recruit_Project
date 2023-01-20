@@ -123,18 +123,18 @@ namespace MySpace
 			// *@gameobjectｸﾗｽからのAddComponent呼び出し
 			// *@引き数ありで生ポインタ取得
 			template <class T>
-			inline std::shared_ptr<T> AddComponent() { return m_pOwner.lock()->AddComponent<T>(); }
+			std::shared_ptr<T> AddComponent() { return m_pOwner.lock()->AddComponent<T>(); }
 
 #pragma warning(push)
 #pragma warning(disable:4100)
 			// *@gameobjectｸﾗｽからのAddComponent呼び出し
 			template <class T>
-			inline T* AddComponent(int n) { return m_pOwner.lock()->AddComponent<T>().get(); }
+			T* AddComponent(int n) { return m_pOwner.lock()->AddComponent<T>().get(); }
 #pragma warning(pop)
 
 			// *@持ち主から型指定したコンポーネントを取得する
 			template <class T>
-			inline T* GetComponent() { std::weak_ptr<T> com = m_pOwner.lock()->GetComponent<T>(); return com.lock().get(); };
+			T* GetComponent() { std::weak_ptr<T> com = m_pOwner.lock()->GetComponent<T>(); return com.lock().get(); };
 
 			//--- セッター・ゲッター
 			// *@自身のSPを派生クラスへキャスト

@@ -21,7 +21,6 @@ using namespace Spell;
 // コンストラクタ
 //========================================================
 CGameSceneManager::CGameSceneManager()
-	:m_pPlayer(nullptr)
 {
 }
 
@@ -52,8 +51,8 @@ void CGameSceneManager::Awake()
 	//--- フェード
 	auto obj = CGameObject::FindGameObjectWithTag(Spell::TAG_FADE);
 	m_pFade = obj.lock()->GetComponent<CFadeController>();
-	m_pFade.lock()->SetTypeFunction<CGameSceneManager>(CFadeController::E_FadeState::FADE_IN, &CGameSceneManager::TimeFunc, this);
-	m_pFade.lock()->SetTypeFunction<CGameSceneManager>(CFadeController::E_FadeState::FADE_OUT, &CGameSceneManager::TimeFunc, this);
+	//m_pFade.lock()->SetTypeFunction<CGameSceneManager>(CFadeController::E_FadeState::FADE_IN, &CGameSceneManager::TimeFunc, this);
+	//m_pFade.lock()->SetTypeFunction<CGameSceneManager>(CFadeController::E_FadeState::FADE_OUT, &CGameSceneManager::TimeFunc, this);
 
 }
 
@@ -64,13 +63,13 @@ void CGameSceneManager::Init()
 {
 	{
 		auto obj = CGameObject::CreateObject().lock();
-		m_pPlayer = obj->AddComponent<CSpellPlayer>().get();
+		m_pPlayer = obj->AddComponent<CSpellPlayer>();
 	}
 
 	{
 		auto obj = CGameObject::CreateObject().lock();
 		auto stage = obj->AddComponent<CStageManager>();
-		stage->StartBuild(FORDER_DIR(Data / CSV / stage01.csv));
+		stage->StartBuild(FORDER_DIR(Data/CSV/stage01.csv));
 	}
 
 }
@@ -80,7 +79,7 @@ void CGameSceneManager::Init()
 //========================================================
 void CGameSceneManager::Update()
 {
-	if (m_pFade.lock()->IsFadeProcess())
+	//if (m_pFade.lock()->IsFadeProcess())
 	{
 		CFps::Get()->SetTimeScale(0);
 		return;

@@ -42,9 +42,11 @@ float4 main(VS_OUTPUT input) : SV_Target0
 {
 	float3 Diff = g_Diffuse.rgb;
 	float Alpha = g_Diffuse.a;
+    float3 Ambi = g_Ambient.rgb;
 	if (g_Flags.x != 0.0f) {		// テクスチャ有無
 		float4 TexDiff = g_texture.Sample(g_sampler, input.Tex);
 		Diff *= TexDiff.rgb;
+        Ambi *= TexDiff.rgb;
 		Alpha *= TexDiff.a;
 	}
 	if (g_Flags.z != 0.0f) {		// テクスチャ有無

@@ -19,9 +19,8 @@ namespace Spell
 	class CStageManager : public CComponent
 	{
 	public:
-		struct GridPoint
+		struct GridPoint : public DirectX::XMINT2
 		{
-			int x, y;
 			GridPoint() 
 			{
 				x = y = 0;

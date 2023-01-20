@@ -21,7 +21,6 @@ namespace Spell
 		bool m_bMessageOn;
 		std::unordered_map<std::string, int> m_MessageMap;
 
-	
 	public:
 		//--- メンバ関数
 		CEventMessage() 
@@ -30,17 +29,7 @@ namespace Spell
 		~CEventMessage() = default;
 	
 		// 1フレームだけ保持
-		void Update()
-		{ 
-			if (m_bMessageOn)
-			{
-				m_MessageMap.clear();
-			}
-			if (m_MessageMap.size() != 0) 
-			{
-				m_bMessageOn = true;
-			}
-		}
+		void Update();
 
 		std::list<std::string> GetMessage();
 		bool Ask(std::string msg);				// 希望のメッセージがあるか

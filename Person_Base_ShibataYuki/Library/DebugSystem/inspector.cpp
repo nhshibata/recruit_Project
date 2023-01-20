@@ -177,8 +177,8 @@ void CInspector::DispDebugSelectObject()
 
 	//--- ƒŒƒCƒ„[
 	{
-		int layer;
-		layer = *m_spViewObj.lock()->GetLayerPtr()->GetLayer();
+		int layer = 0;
+		layer = m_spViewObj.lock()->GetLayerPtr()->GetLayer();
 		ImGui::InputInt("layer", &layer);
 		m_spViewObj.lock()->GetLayerPtr()->SetLayer(layer);
 	}

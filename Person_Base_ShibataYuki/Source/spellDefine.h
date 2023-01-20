@@ -10,6 +10,7 @@
 #ifndef __SPELL_DEFINE_H__
 #define __SPELL_DEFINE_H__
 
+
 namespace Spell
 {
 

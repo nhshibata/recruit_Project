@@ -30,7 +30,7 @@ namespace Spell
 	class CGameSceneManager : public CComponent
 	{
 	private:
-		CSpellPlayer* m_pPlayer;
+		std::weak_ptr<CSpellPlayer> m_pPlayer;
 		std::weak_ptr<CFadeController> m_pFade;
 
 	public:

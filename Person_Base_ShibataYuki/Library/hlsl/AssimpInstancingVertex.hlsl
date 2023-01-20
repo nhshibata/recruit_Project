@@ -6,7 +6,6 @@
 cbuffer global : register(b0) {
     
     matrix  g_mtxVP;            // ビュー×射影行列
-    
 	matrix	g_mtxWorld;			// ワールド行列
 	matrix	g_mtxTexture;		// テクスチャ行列
 	float4	g_vCameraPos;		// 視点座標(ワールド空間)
@@ -22,8 +21,7 @@ cbuffer global_bones : register(b2) {
 };
 
 // ワールド行列配列
-cbuffer global_instance : register(b3)
-{
+cbuffer global_instance : register(b3){
     matrix g_World[MAX_WORLD_MATRIX];
 };
 
@@ -97,12 +95,10 @@ VS_OUTPUT main(VS_INPUT input)
 {
 	VS_OUTPUT output;
 	SKIN vSkinned = SkinVert(input);
-
     float4x4 mWorld = mul(g_mtxWorld, g_World[input.id]);
     output.Pos = mul(vSkinned.Pos, mul(mWorld, g_mtxVP));
     output.Tex = mul(float4(input.Tex, 0.0f, 1.0f), g_mtxTexture).xy;
     output.Normal = mul(vSkinned.Norm, (float3x3) mWorld);
     output.PosForPS = mul(vSkinned.Pos, mWorld).xyz;
-    
 	return output;
 }

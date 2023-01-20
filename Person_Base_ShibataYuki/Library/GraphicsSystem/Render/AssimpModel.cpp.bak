@@ -676,7 +676,6 @@ void CAssimpMesh::DrawInstanchid(ID3D11DeviceContext* pDC, XMFLOAT4X4& m44World,
 	UINT stride = sizeof(TAssimpVertex);
 	UINT offset = 0;
 	pDC->IASetVertexBuffers(0, 1, &m_pVertexBuffer, &stride, &offset);
-	pDC->IASetIndexBuffer(m_pIndexBuffer, DXGI_FORMAT_R32_UINT, 0);
 
 	// マテリアルの各要素をシェーダに渡す
 	if (SUCCEEDED(pDC->Map(m_pConstantBuffer1, 0, D3D11_MAP_WRITE_DISCARD, 0, &pData))) {
@@ -723,7 +722,6 @@ CAssimpModel::CAssimpModel() : m_pMaterial(nullptr), m_pScene(nullptr), m_pAnima
 	XMStoreFloat4x4(&m_mtxTexture, XMMatrixIdentity());
 	XMStoreFloat4x4(&m_mtxWorld, XMMatrixIdentity());
 	m_dCurrent = m_dLastPlaying = 0.0;
-	//m_pConstantBufferI = (nullptr);
 }
 
 // デストラクタ
@@ -759,10 +757,6 @@ bool CAssimpModel::InitShader(ID3D11Device* pDevice)
 #endif
 		return false;
 	}
-
-	//SAFE_RELEASE(m_pVertexLayout);
-	//SAFE_RELEASE(m_pPixelShader);
-	//hr = MySpace::Graphics::LoadShader("AssimpVertex", "AssimpPixel",&m_pVertexShaderInstancing, &m_pVertexLayout, &m_pPixelShader);
 
 	hr = LoadVertexShader("AssimpInstancingVertex", &m_pVertexShaderInstancing, &m_pVertexLayout);
 	if (FAILED(hr))
@@ -811,9 +805,8 @@ bool CAssimpModel::InitShader(ID3D11Device* pDevice)
 		return false;
 	}
 
-
 #if INSTANCE
-	// インスタンシング用コンスタントバッファ 作成
+	// コンスタントバッファ インスタンシング用 作成
 	D3D11_BUFFER_DESC cb;
 	ZeroMemory(&cb, sizeof(cb));
 	cb.BindFlags = D3D11_BIND_CONSTANT_BUFFER;
@@ -824,7 +817,6 @@ bool CAssimpModel::InitShader(ID3D11Device* pDevice)
 	hr = pDevice->CreateBuffer(&cb, nullptr, &m_pConstantBufferI);
 	if (FAILED(hr))
 	{
-		//Release();
 		return false;
 	}
 #endif // INSTANCE
@@ -836,8 +828,8 @@ bool CAssimpModel::InitShader(ID3D11Device* pDevice)
 void CAssimpModel::UninitShader()
 {
 #if INSTANCE
-	SAFE_RELEASE(m_pVertexShaderInstancing);
 	SAFE_RELEASE(m_pConstantBufferI);
+	SAFE_RELEASE(m_pVertexShaderInstancing);
 #endif // INSTANCE
 	SAFE_RELEASE(m_pSampleLinear);
 	SAFE_RELEASE(m_pPixelShader);
@@ -930,7 +922,7 @@ void CAssimpModel::Draw(ID3D11DeviceContext* pDC, XMFLOAT4X4& mtxWorld, EByOpaci
 #else
 	/*CShaderManager::Get()->BindPS("AssimpPixel");
 	CShaderManager::Get()->BindVS("AssimpVertex");*/
-	CShaderManager::Get()->Render(CShaderManager::EShaderType::Triangle, "", "AssimpVertex", "AssimpPixel");
+	CShaderManager::GetMain()->Render(CShaderManager::EShaderType::Triangle, "", "AssimpVertex", "AssimpPixel");
 	//pDC->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_3_CONTROL_POINT_PATCHLIST);	
 	
 	// CShaderManager::EShaderType::PointToTriangle
@@ -1004,15 +996,16 @@ void CAssimpModel::DrawInstancing(ID3D11DeviceContext* pDC, INSTANCHING_DATA& mt
 		int cnt = 0;
 		if (SUCCEEDED(pDC->Map(m_pConstantBufferI, 0, D3D11_MAP_WRITE_DISCARD, 0, &pData)))
 		{
-			SHADER_INSTANCE si;	// ｼｪｰﾀﾞｰに渡す情報
+			SHADER_INSTANCE* si = new SHADER_INSTANCE;	// ｼｪｰﾀﾞｰに渡す情報
 			for (; cnt < MAX_WORLD_MATRIX; ++cnt, ++cntNum)
 			{
 				if (cnt >= mtxWorld.size() || cntNum >= mtxWorld.size())
 					break;
-				si.mWorld[cnt] = XMMatrixTranspose(XMLoadFloat4x4(&mtxWorld[cnt]));
+				si->mWorld[cnt] = XMMatrixTranspose(XMLoadFloat4x4(&mtxWorld[cnt]));
 			}
 			memcpy_s(pData.pData, pData.RowPitch, (void*)&si, sizeof(SHADER_INSTANCE));
 			pDC->Unmap(m_pConstantBufferI, 0);
+			delete si;
 		}
 		pDC->VSSetConstantBuffers(3, 1, &m_pConstantBufferI);
 
@@ -1140,8 +1133,6 @@ void CAssimpModel::DrawInstanchidNode(ID3D11DeviceContext* pDC, aiNode* piNode, 
 // 解放
 void CAssimpModel::Release()
 {
-	/*if(m_pConstantBufferI)
-		SAFE_RELEASE(m_pConstantBufferI);*/
 	for (int i = 0; i < m_aMesh.size(); ++i) {
 		m_aMesh[i].Release();
 	}

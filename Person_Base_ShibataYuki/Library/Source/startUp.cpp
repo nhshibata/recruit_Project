@@ -48,7 +48,6 @@
 //--- インクルード部
 #include <Windows.h>
 #include <stdlib.h>
-
 #include <stdio.h>
 #include <memory>
 #include <time.h>
@@ -57,8 +56,9 @@
 #include <Application/main.h>
 #include <Application/Application.h>
 #include <GameSystem/Manager/sceneManager.h>
+
 //#include <gameCentipedeMarch.h>
-#include <spellComponents.h>
+//#include <spellComponents.h>
 
 //--- ライブラリ参照
 // プロパティで指定するか、ここで指定するか…悩みどころ
@@ -84,7 +84,9 @@
 
 #pragma endregion
 
-
+//==========================================================
+// エントリーポイント
+//==========================================================
 int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine, int nCmdShow)
 {
 	using namespace MySpace::SceneManager;
@@ -125,7 +127,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 #pragma warning(pop)
 	};
 
-	CreateComponentSpell();
+	//CreateComponentSpell();
 
 	//--- シーン読み込み時呼び出す関数を設定
 	CMyScene my;
@@ -192,7 +194,8 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 
 	// 開始
 	// ウィンドウの生成などを行う
-	StartUp(hInstance, hPrevInstance, lpCmdLine, nCmdShow);
+	if (StartUp(hInstance, hPrevInstance, lpCmdLine, nCmdShow) != S_OK)
+		return 0;
 	//_CrtDumpMemoryLeaks();
 
 	// ゲームループ

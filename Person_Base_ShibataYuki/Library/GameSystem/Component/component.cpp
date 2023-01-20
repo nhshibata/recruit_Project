@@ -14,7 +14,8 @@ using namespace MySpace::Game;
 //==========================================================
 // コンストラクタ
 //==========================================================
-CComponent::CComponent() : m_bActive(true) 
+CComponent::CComponent() 
+	: m_bActive(true)
 {
 };
 
@@ -194,7 +195,7 @@ std::string CComponent::Tag()const
 //==========================================================
 int CComponent::GetLayer() const
 {
-	return *m_pOwner.lock()->GetLayerPtr()->GetLayer(); 
+	return m_pOwner.lock()->GetLayerPtr()->GetLayer(); 
 }
 
 

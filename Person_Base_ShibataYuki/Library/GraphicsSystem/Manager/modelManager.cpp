@@ -12,18 +12,6 @@
 using namespace MySpace::System;
 using namespace MySpace::Graphics;
 
-//--- 定数定義
-
-//--- 静的メンバ変数
-namespace {
-	/*static const char* g_pszModelPath[(int)EModelType::MAX] =
-	{
-		FORDER_DIR(Data/model/hover.fbx),
-		FORDER_DIR(Data/model/SkyDome/sky.fbx),
-		FORDER_DIR(Data/model/land.fbx),
-	};*/
-}
-
 //==========================================================
 // コンストラクタ
 //==========================================================
@@ -44,6 +32,7 @@ CModelManager::~CModelManager()
 //==========================================================
 bool CModelManager::Load(std::string name)
 {
+	// メモリ確保
 	ModelSharedPtr addModel = std::make_shared<CAssimpModel>();
 
 	// モデル読み込み
@@ -125,5 +114,35 @@ int CModelManager::SceneUnload()
 	
 #endif // _DEBUG
 
+	return 0;
+}
+
+//==========================================================
+// モデル取得
+// なければ読み込み
+//==========================================================
+ModelSharedPtr CModelManager::GetModel(std::string name)
+{
+	// 存在するか確認
+	if (auto it = m_aResourceMap.find(name); it == m_aResourceMap.end())
+	{
+		if (!Load(name))
+		{
+			return ModelSharedPtr();
+		}
+	}
+	return m_aResourceMap[name];
+};
+
+//==========================================================
+// モデル使用数取得
+//==========================================================
+int CModelManager::GetModelCnt(std::string name)
+{
+	// 読みこんでいるか
+	if (m_aResourceMap.count(name))
+	{
+		return m_aResourceMap[name].use_count();
+	}
 	return 0;
 }

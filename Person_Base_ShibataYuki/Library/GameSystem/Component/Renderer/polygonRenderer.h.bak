@@ -56,6 +56,7 @@ namespace MySpace
 			int m_nZValue;
 
 		public:
+			//CPolygonRenderer();
 			CPolygonRenderer()
 				:m_nZValue(0)
 			{

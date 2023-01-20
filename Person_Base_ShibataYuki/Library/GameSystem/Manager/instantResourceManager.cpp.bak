@@ -6,12 +6,12 @@
 //=========================================================
 
 //--- インクルード部
-#include <GameSystem/Manager/instantResourceManager.h>
 #include <Application/Application.h>
 #include <GraphicsSystem/Manager/assetsManager.h>
 #include <GraphicsSystem/Manager/imageResourceManager.h>
 #include <GraphicsSystem/Manager/effectManager.h>
 #include <GraphicsSystem/Manager/modelManager.h>
+#include <GameSystem/Manager/instantResourceManager.h>
 
 using namespace MySpace::System;
 using namespace MySpace::Graphics;

@@ -21,7 +21,6 @@ using namespace Spell;
 // コンストラクタ
 //========================================================
 CGameManager::CGameManager()
-	:m_pGameScene(nullptr)
 {
 }
 
@@ -60,6 +59,7 @@ void CGameManager::Init()
 {
 	{
 		auto obj = CGameObject::CreateObject().lock();
+		//obj->AddComponent<CPolygonRenderer>();
 		m_pFade = obj->AddComponent<CFadeController>();
 		obj->SetObjTag(Spell::TAG_FADE);
 
