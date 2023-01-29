@@ -115,7 +115,8 @@ namespace MySpace
 			virtual void FixedUpdate();				// *@一定時間更新
 
 			virtual void OnLoad();					// *@ﾃﾞｰﾀ読みこみ時呼び出し
-			
+			void Uninit();							// *@解放
+
 			//--- コンポーネント関連
 
 			// *@生成することで追加する

@@ -8,7 +8,7 @@
 
 //--- インクルード部
 #include <gameManager.h>
-#include <fadeController.h>
+#include <common/fadeController.h>
 #include <gameSceneManager.h>
 #include <titleSceneManager.h>
 #include <spellDefine.h>
@@ -68,9 +68,9 @@ void CGameManager::Init()
 	}
 
 	{
-		auto obj = CGameObject::CreateObject().lock();
+	/*	auto obj = CGameObject::CreateObject().lock();
 		auto title = obj->AddComponent<Spell::CTitleSceneManager>();
-		title->Create();
+		title->Create();*/
 	}
 }
 

@@ -39,7 +39,23 @@ CLight::CLight(std::shared_ptr<CGameObject> owner)
 //==========================================================
 CLight::~CLight()
 {
-	Set(nullptr);
+	if (m_pMainLight == this)
+	{
+		Set(nullptr);
+	}
+
+}
+
+//==========================================================
+// “Ç‚Ýž‚ÝŒÄ‚Ño‚µ
+//==========================================================
+void CLight::OnLoad()
+{
+	if (!m_pMainLight)
+	{
+		m_pMainLight = this;
+	}
+	
 }
 
 //==========================================================
@@ -59,15 +75,15 @@ void CLight::Awake()
 CLight* CLight::GetMain()
 {
 	using namespace::MySpace::SceneManager;
-	if (!m_pLight)
+	if (!m_pMainLight)
 	{
 		if (auto obj = CGameObject::FindGameObjectWithTag("light"); obj.lock())
 		{
-			if (m_pLight = obj.lock()->GetComponent<CLight>().lock().get(); !m_pLight)
-				m_pLight = obj.lock()->GetComponent<CDirectionalLight>().lock().get();
+			if (m_pMainLight = obj.lock()->GetComponent<CLight>().lock().get(); !m_pMainLight)
+				m_pMainLight = obj.lock()->GetComponent<CDirectionalLight>().lock().get();
 		}
 	}
-	return m_pLight;
+	return m_pMainLight;
 }
 
 //==========================================================
@@ -76,7 +92,7 @@ CLight* CLight::GetMain()
 void CLight::Set(CLight* pLight)
 {
 	//m_pLight = (pLight) ? pLight : &g_Light;
-	m_pLight = (pLight);
+	m_pMainLight = (pLight);
 }
 
 

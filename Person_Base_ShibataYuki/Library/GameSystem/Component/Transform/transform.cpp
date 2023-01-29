@@ -66,6 +66,7 @@ void CTransform::Update()
 	//--- マトリックスの更新
 	UpdateWorldMatrix();
 }
+
 Quaternion CTransform::GetWorldQuaternion()
 {
 	return m_Rot;
@@ -110,6 +111,30 @@ void CTransform::UpdateWorldMatrix()
 		UpdateChildMatrix(child.lock().get(), world);
 	}
 }
+
+Matrix4x4 CTransform::CalcLocalMatrix()
+{
+	XMMATRIX mtx, scl, rot, translate;
+	mtx = XMMatrixIdentity();
+
+	// サイズ反映
+	scl = XMMatrixScaling(m_vScale.x, m_vScale.y, m_vScale.z);
+	mtx = XMMatrixMultiply(mtx, scl);
+
+	// 回転
+	rot = XMMatrixRotationRollPitchYaw(XMConvertToRadians(m_vRot.x), XMConvertToRadians(m_vRot.y),
+		XMConvertToRadians(m_vRot.z));
+	mtx = XMMatrixMultiply(mtx, rot);
+
+	// 位置を反映
+	translate = XMMatrixTranslation(m_vPos.x, m_vPos.y, m_vPos.z);
+	mtx = XMMatrixMultiply(mtx, translate);
+	
+	Matrix4x4 ret;
+	XMStoreFloat4x4(&ret, mtx);
+	return ret;
+}
+
 void CTransform::SetWorldMatrix(Vector3 trans, Vector3 rotate, Vector3 scale)
 {
 	m_vPos = trans;

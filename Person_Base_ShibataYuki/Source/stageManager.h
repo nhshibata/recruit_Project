@@ -15,6 +15,7 @@
 
 namespace Spell
 {
+	using namespace MySpace::Game;
 
 	class CStageManager : public CComponent
 	{

@@ -29,6 +29,7 @@ namespace MySpace
 
 namespace Spell
 {
+	using namespace MySpace::Game;
 
 	class CTitleSceneManager : public CComponent
 	{

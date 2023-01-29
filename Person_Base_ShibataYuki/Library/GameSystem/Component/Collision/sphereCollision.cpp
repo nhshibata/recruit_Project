@@ -112,9 +112,9 @@ bool CSphereCollision::HitCheckPtr(CCollision* other)
 				//Transform()->SetPos(otherBox->PosAdjustment(other->Transform()->GetPos(), size));
 				PushObject(com);
 				// 押し出しを行うと相手は判定されないため、ここで行う
-				HitResponse(this);
+				other->HitResponse(this);
 			}
-			HitResponse(other);
+			this->HitResponse(other);
 
 			return true;
 		}

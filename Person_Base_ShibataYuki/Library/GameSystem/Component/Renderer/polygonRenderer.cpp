@@ -62,6 +62,15 @@ CPolygonRenderer::~CPolygonRenderer()
 }
 
 //==========================================================
+// 読み込み時呼び出し
+//==========================================================
+void CPolygonRenderer::OnLoad()
+{
+	CRenderer::OnLoad();
+	SetImageName(m_pSprite.GetImageName());
+}
+
+//==========================================================
 // 生成時呼び出し
 //==========================================================
 //#pragma optimize("", off)
@@ -173,13 +182,11 @@ void CPolygonRenderer::ImGuiDebug()
 
 	CRenderer::ImGuiDebug();
 	
-	ImGui::Text(u8"PolygonRenderer");
-	ImGui::Text(u8"filaName : %s", m_pSprite.GetImageName().c_str());
-	
+	//ImGui::Text(u8"filaName : %s", m_pSprite.GetImageName().c_str());
 	m_pSprite.ImGuiDebug();
 
 	int z = m_nZValue;
-	if (ImGui::InputInt("Z", &z))
+	if (ImGui::InputInt("ZValue", &z))
 	{
 		SetZ(z);
 	}
@@ -193,14 +200,14 @@ void CPolygonRenderer::ImGuiDebug()
 		SetZ((int)EZValue::FOG);
 
 	//--- ファイル内検索
-	if (s_FileList.empty() || ImGui::Button(u8"画像 reload"))
+	if (s_FileList.empty() || ImGui::Button(u8"Image reload"))
 	{
 		MySpace::System::CFilePath file;
 		s_FileList = file.GetAllFileName(TEXTURE_PATH);
 	}
 
 	// ﾃｸｽﾁｬ
-	if (auto name = DispMenuBar(s_FileList, u8"画像"); !name.empty())
+	if (auto name = DispCombo(s_FileList, u8"Image", m_pSprite.GetImageName()); !name.empty())
 	{
 		m_pSprite.SetImage(name);
 	}

@@ -113,7 +113,10 @@ namespace MySpace
 			static ID3D11VertexShader* m_pVertexShader;	// 頂点シェーダ
 			static ID3D11InputLayout* m_pInputLayout;	// 頂点フォーマット
 			static ID3D11PixelShader* m_pPixelShader;	// ピクセルシェーダ
-			static inline ID3D11VertexShader* m_pInstancingVertexShader;	// 頂点シェーダ
+
+			static inline ID3D11VertexShader* m_pInstancingVS;	// 頂点シェーダ
+			static inline ID3D11PixelShader* m_pShadowPS;		// ピクセルシェーダ
+			static inline ID3D11InputLayout* m_pShadowIL;		// 頂点フォーマット
 			static inline ID3D11Buffer* m_pConstantBufferI;
 
 		public:
@@ -130,18 +133,20 @@ namespace MySpace
 
 			// *@描画
 			virtual void Draw(ID3D11ShaderResourceView* m_pTexture = nullptr, XMFLOAT4X4* mWorld = nullptr);
+			
 			// *@インスタンシング描画
-			static void DrawInstancing(std::vector<CMesh*> aMesh, ID3D11ShaderResourceView* m_pTexture = nullptr, 
-									   XMFLOAT4X4* mWorld = nullptr);
+			// *@第二引数falseでdefaultShader off
+			void DrawInstancing(std::vector<XMFLOAT4X4> aMesh, bool defaultShader = true,
+								ID3D11ShaderResourceView* m_pTexture = nullptr,XMFLOAT4X4* mWorld = nullptr);
+			
 			// *@インスタンシング描画
-			// *@CMesh一つで複数描画したい用
-			void DrawInstancing(std::vector<XMFLOAT4X4> aWorld);
-
-
+			void DrawInstancing(std::vector<XMFLOAT4X4> aWorld, ID3D11Buffer* vertexS, ID3D11Buffer* indexS, 
+								ID3D11ShaderResourceView* m_pTexture = nullptr, XMFLOAT4X4* mWorld = nullptr);
+			
 			//--- ゲッター・セッター
 			inline CMeshMaterial* GetMaterial() { return &m_material; }
 			inline int GetIndexNum()const { return m_nNumIndex; }
-			//inline XMFLOAT4X4 GetWorld() { return m_mWorld; }
+			inline Matrix4x4 GetWorld() { return m_mWorld; }
 
 			inline void SetWorld(XMFLOAT4X4* pWorld) { m_mWorld = *pWorld; }
 			void SetMaterial(const CMeshMaterial* pMaterial);

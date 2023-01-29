@@ -35,9 +35,6 @@ namespace MySpace
 				archive(cereal::make_nvp("baseRender", cereal::base_class<CComponent>(this)),
 					CEREAL_NVP(m_bVisible), CEREAL_NVP(m_vColor)
 				);
-
-				// FIXME: 基底クラスで呼び出せば手間が省ける?
-				Init();
 			}
 
 		private:
@@ -51,11 +48,13 @@ namespace MySpace
 			//--- メンバ関数
 			void DrawRequest();
 		public:
-			CRenderer():m_bVisible(true), m_nDrawIdx(-1)
+			CRenderer()
+				:m_bVisible(true), m_nDrawIdx(-1)
 			{};
 			CRenderer(std::shared_ptr<CGameObject> owner);
 			virtual ~CRenderer();
 
+			virtual void OnLoad();
 			virtual void Awake();
 			virtual void Init();
 			virtual void Update();

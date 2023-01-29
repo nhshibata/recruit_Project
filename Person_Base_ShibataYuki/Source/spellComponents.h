@@ -3,7 +3,7 @@
 #define __SPELL_COMPONENTS_H__
 
 
-#include <fadeController.h>
+#include <common/fadeController.h>
 #include <gameManager.h>
 #include <gameCamera.h>
 #include <gameSceneManager.h>

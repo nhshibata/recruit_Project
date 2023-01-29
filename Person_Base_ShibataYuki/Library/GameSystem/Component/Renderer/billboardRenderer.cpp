@@ -40,6 +40,16 @@ CBillboardRenderer::~CBillboardRenderer()
 }
 
 //==========================================================
+// 読み込み時呼び出し
+//==========================================================
+void CBillboardRenderer::OnLoad()
+{
+	CRenderer::OnLoad();
+	m_pBillboard->Init();
+	m_pSprite->SetImage(m_pSprite->GetImageName());
+}
+
+//==========================================================
 // 生成時呼び出し
 //==========================================================
 void CBillboardRenderer::Awake()
@@ -111,8 +121,9 @@ bool CBillboardRenderer::Draw()
 	{
 		SetInstancing(m_pBillboard.get());
 	}
+
 	//CDXDevice::Get()->SetZBuffer(true);			
-	CLight::GetMain()->SetEnable();// 光源有効
+	CLight::GetMain()->SetEnable();		// 光源有効
 	pDX->SetBlendState(static_cast<int>(EBlendState::BS_NONE));		// αブレンディング無効
 	
 	return true;
@@ -129,21 +140,21 @@ void CBillboardRenderer::ImGuiDebug()
 	// polygonとほぼ同じ…
 	Color color = GetColor();
 	ImGui::Text(u8"PolygonRenderer");
-	ImGui::Text(u8"filaName : %s", m_pSprite->GetImageName().c_str());
-	ImGui::InputFloat4(u8"色", (float*)&color);
+	//ImGui::Text(u8"filaName : %s", m_pSprite->GetImageName().c_str());
+	ImGui::InputFloat4(u8"color", (float*)&color);
 	SetColor(color);
 
 	m_pSprite->ImGuiDebug();
 
 	//--- 画像のリロード
-	if (s_FileList.empty() || ImGui::Button(u8"画像 reload"))
+	if (s_FileList.empty() || ImGui::Button(u8"Image reload"))
 	{
 		MySpace::System::CFilePath file;
 		s_FileList = file.GetAllFileName(TEXTURE_PATH);
 	}
 
 	//--- メニューからﾃｸｽﾁｬ選択
-	if (auto name = DispMenuBar(s_FileList, u8"画像"); !name.empty())
+	if (auto name = DispCombo(s_FileList, u8"Image", m_pSprite->GetImageName()); !name.empty())
 	{
 		m_pSprite->SetImage(name);
 	}

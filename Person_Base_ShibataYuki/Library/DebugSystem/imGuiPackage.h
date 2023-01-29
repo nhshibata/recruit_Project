@@ -22,6 +22,10 @@ namespace MySpace
 		// *@文字列入力
 		_NODISCARD std::string InputString(std::string text, std::string desc = std::string());
 
+		// *@コンボ表示
+		// *@引き数: 表示リスト vector<string>, メニュー名 string
+		std::string DispCombo(std::vector<std::string> list, std::string desc, std::string preview = std::string());
+
 		// *@メニューバー表示
 		std::string DispFileMenuBar(std::string path, std::string desc = std::string(), std::string ext = std::string());
 		

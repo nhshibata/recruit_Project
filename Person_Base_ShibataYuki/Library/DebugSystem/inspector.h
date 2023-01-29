@@ -37,6 +37,7 @@ namespace MySpace
 }
 #pragma endregion
 
+
 namespace MySpace
 {
 	namespace Debug
@@ -48,7 +49,7 @@ namespace MySpace
 		private:
 			std::weak_ptr<CGameObject> m_spViewObj;
 			std::vector<bool> m_isDrawInfo;
-			bool m_isComponent;
+			bool m_bIsAddComponent;
 			bool m_isDeleted;
 			bool m_bOpen;
 			//bool m_bDispObj;
@@ -61,10 +62,8 @@ namespace MySpace
 			void DeleteObject();				// *@削除
 			void CopyGameObject();				// *@オブジェクトのｺﾋﾟｰ
 			void DispPopUpMenuObject();
-			//void MoveObject();
-			//void Value(float* value, MySpace::MyMath::Vector3* vec);
-			//void Value(float* value, MySpace::MyMath::Vector2* vec);
-			//void Value(float* value, float vec);
+			void DispOptionBar();
+
 		public:
 			CInspector();
 			~CInspector();

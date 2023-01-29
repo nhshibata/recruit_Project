@@ -38,6 +38,15 @@ CTextRenderer::~CTextRenderer()
 }
 
 //==========================================================
+// 読み込み時呼び出し
+//==========================================================
+void CTextRenderer::OnLoad()
+{
+	CRenderer::OnLoad();
+	m_aTexList = Application::Get()->GetSystem<CAssetsManager>()->GetFont()->GetString(m_Text, m_Font);
+}
+
+//==========================================================
 // 生成時呼び出し
 //==========================================================
 void CTextRenderer::Awake()
@@ -84,10 +93,11 @@ void CTextRenderer::Init()
 void CTextRenderer::Update()
 {
 	// サイズ比較
-	//if (m_uOldTextSize != m_Text.size())
-	//{
-	//	m_aTexList = CFontTexture::Get()->GetString(m_Text, m_Font);
-	//}
+	if (m_uOldTextSize != m_Text.size())
+	{
+		m_aTexList = Application::Get()->GetSystem<CAssetsManager>()->GetFont()->GetString(m_Text, m_Font);
+		m_uOldTextSize = m_Text.size();
+	}
 }
 
 //==========================================================
@@ -157,12 +167,11 @@ void CTextRenderer::SetTextWString(std::wstring text)
 
 void CTextRenderer::ImGuiDebug()
 {
-	ImGui::Text(u8"textRenderer");
 	std::string text;
-	text = MySpace::Debug::InputString(text, u8"String");
+	text = MySpace::Debug::InputString(text, "String");
 	m_Text = StringToWString(text);
 	
-	ImGui::InputFloat(u8"オフセット", &m_fOffset);
+	ImGui::InputFloat("offset", &m_fOffset);
 	ImGui::Checkbox(u8"縦", &m_bVerticalWrit);
 }
 

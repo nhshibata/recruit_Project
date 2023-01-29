@@ -106,7 +106,7 @@ namespace MySpace
 			
 			// *@¶¬ŒÄ‚Ño‚µ
 			virtual void Awake() {};
-			void Update();
+			void FixedUpdate();
 
 			void OnCollisionEnter(CGameObject * obj);
 

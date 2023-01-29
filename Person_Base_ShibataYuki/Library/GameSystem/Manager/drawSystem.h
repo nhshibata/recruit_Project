@@ -1,12 +1,11 @@
-//==========================================================
+//=========================================================
 // [drawSystem.h]
 // 派生クラス
-//---------------------------
+//---------------------------------------------------------
 // 作成:2022/06/07 ｸﾗｽ名変更するかも
 // 更新:2022/11/09 クラス名変更(DrawManager) -> (drawSystem)
-// TODO: 2D用のコンポーネントを受け取る仕様の追加
-// TODO: レイヤー分け。通常のモデルとの関係。背景とUI、前景、を分けて描画
-//==========================================================
+//---------------------------------------------------------
+//=========================================================
 
 //--- インクルードガード
 #ifndef __DRAW_SYSTEM_H__
@@ -14,6 +13,8 @@
 
 //--- インクルード部
 #include <GameSystem/Manager/mapSystemBase.h>
+#include <GameSystem/Shader/depthShadow.h>
+
 #include <DirectXMath.h>
 
 namespace MySpace
@@ -42,10 +43,16 @@ namespace MySpace
 			friend class CRenderer;
 			friend class CPolygonRenderer;
 		private:
+			struct STMeshData
+			{
+				CMesh* pMesh;
+				std::vector<DirectX::XMFLOAT4X4> aMtx;
+			};
+
 			//--- エイリアス
 			using PolygonRenderWeakList = std::vector<std::weak_ptr<CPolygonRenderer>>;
 			using InstancingMap = std::map<std::string, std::vector<DirectX::XMFLOAT4X4>>;
-			using InstancingMeshMap = std::map<std::string, std::vector<CMesh*>>;
+			using InstancingMeshMap = std::map<std::string, STMeshData>;
 			
 		private:
 			//--- メンバ変数
@@ -53,6 +60,7 @@ namespace MySpace
 			PolygonRenderWeakList m_aPolygonList;		// 管理しているmapをソートした結果を入れる
 			InstancingMap m_aInstancingModelMap;		// インスタンシング描画格納用
 			InstancingMeshMap m_aInstancingMeshMap;		// インスタンシング描画格納用
+			std::unique_ptr<Game::CDepthShadow> m_pDepthShadow;	// 深度書き込み用
 
 #if BUILD_MODE
 			// 確認用変数
@@ -64,14 +72,20 @@ namespace MySpace
 
 		private:
 			//--- メンバ関数
+			// *@ポリゴン整列
 			void Sort();
-			void SortOn() { m_bIsSortNecessary = true; };
-			void InstancingDraw();
+			// *@整列ﾌﾗｸﾞ
+			inline void SortOn() { m_bIsSortNecessary = true; }
+			// *@3Dインスタンシング影描画
+			void Draw3DShadow();
+			// *@3Dインスタンシング描画
+			void Draw3D();
 			
 		public:
 			CDrawSystem();
 			~CDrawSystem();
 
+			void Init();
 			void Update();
 
 			//--- 描画するコンポーネント
@@ -95,10 +109,7 @@ namespace MySpace
 			}
 			
 			// *@インスタンシング描画のために情報を格納する
-			inline void SetInstanchingMesh(std::string name, CMesh* mesh)
-			{
-				m_aInstancingMeshMap[name].push_back(mesh);
-			}
+			void SetInstanchingMesh(std::string name, DirectX::XMFLOAT4X4 mtx, CMesh* mesh);
 
 			// *@所持リスト
 			_NODISCARD inline std::vector<std::weak_ptr<CRenderer>> GetList()

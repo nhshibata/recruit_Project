@@ -41,7 +41,7 @@ namespace MySpace
 					CEREAL_NVP(m_vTarget), CEREAL_NVP(m_vUp), CEREAL_NVP(m_vAngle), CEREAL_NVP(m_fLengthInterval),
 					CEREAL_NVP(m_fAspectRatio), CEREAL_NVP(m_fFovY), CEREAL_NVP(m_fNearZ), CEREAL_NVP(m_fFarZ),
 					CEREAL_NVP(m_mtxWorld), CEREAL_NVP(m_mtxView), CEREAL_NVP(m_mtxProj), 
-					CEREAL_NVP(m_pSky)/* CEREAL_NVP(m_pCamera)*/
+					CEREAL_NVP(m_pSky)
 				);
 			}
 			template<class Archive>
@@ -51,7 +51,7 @@ namespace MySpace
 					CEREAL_NVP(m_vTarget), CEREAL_NVP(m_vUp), CEREAL_NVP(m_vAngle), CEREAL_NVP(m_fLengthInterval),
 					CEREAL_NVP(m_fAspectRatio), CEREAL_NVP(m_fFovY), CEREAL_NVP(m_fNearZ), CEREAL_NVP(m_fFarZ),
 					CEREAL_NVP(m_mtxWorld), CEREAL_NVP(m_mtxView), CEREAL_NVP(m_mtxProj), 
-					CEREAL_NVP(m_pSky)/*CEREAL_NVP(m_pCamera)*/
+					CEREAL_NVP(m_pSky)
 				);
 			}
 #pragma endregion
@@ -67,7 +67,7 @@ namespace MySpace
 			static const int MAX_FRUS = 6;	// 視覚錘
 
 		protected:
-			DirectX::XMFLOAT3 m_vPos;	// 視点
+			//DirectX::XMFLOAT3 m_vPos;	// 視点
 			Vector3 m_vTarget;			// 注視点
 			Vector3 m_vUp;				// 上方ベクトル
 			Vector3 m_vAngle;			// カメラの角度
@@ -109,15 +109,16 @@ namespace MySpace
 
 			void DrawSkyDome();
 			void UpdateMatrix();
-			DirectX::XMFLOAT4X4& CalcWorldMatrix();
+			Matrix4x4& CalcWorldMatrix();
+			static Matrix4x4 CalcProjMatrix(float fov, float aspect, float nearZ, float farZ);
 
 			//--- ゲッター・セッター
-			inline DirectX::XMFLOAT3& GetPos() { return m_vPos; }
+			inline Vector3 GetPos() { return Transform()->GetPos(); }
 			inline DirectX::XMFLOAT3 GetUpVector() { return m_vUp; }
 			inline DirectX::XMFLOAT3 GetTarget() { return m_vTarget; }
-			inline DirectX::XMFLOAT4X4& GetWorldMatrix() { return m_mtxWorld; }
-			inline DirectX::XMFLOAT4X4& GetViewMatrix() { return m_mtxView; }
-			inline DirectX::XMFLOAT4X4& GetProjMatrix() { return m_mtxProj; }
+			inline Matrix4x4& GetWorldMatrix() { return m_mtxWorld; }
+			inline Matrix4x4& GetViewMatrix() { return m_mtxView; }
+			inline Matrix4x4& GetProjMatrix() { return m_mtxProj; }
 			inline DirectX::XMFLOAT3& GetAngle() { return m_vAngle; }
 			inline float GetAspect() { return m_fAspectRatio; }
 			inline float GetFarZ() { return m_fFarZ; }

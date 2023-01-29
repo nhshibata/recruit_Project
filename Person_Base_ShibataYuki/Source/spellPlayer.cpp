@@ -56,16 +56,16 @@ void CSpellPlayer::Init()
 {
 	//--- ｺﾝﾎﾟｰﾈﾝﾄ追加
 	// 当たり判定
-	//auto box = AddComponent<CBoxCollision>();
-	//box->SetTrigger(false);
+	auto box = AddComponent<CBoxCollision>();
+	box->SetTrigger(false);
 
-	//// 描画
-	//auto model = AddComponent<CModelRenderer>();
-	////model->SetModel(MODEL_PATH2());
+	// 描画
+	auto model = AddComponent<CModelRenderer>();
+	//model->SetModel(MODEL_PATH2());
 
-	//// リジッドボディ
-	//auto rb = AddComponent<CRigidbody>();
-	//rb->SetGravity(true);
+	// リジッドボディ
+	auto rb = AddComponent<CRigidbody>();
+	rb->SetGravity(true);
 
 }
 
@@ -74,44 +74,44 @@ void CSpellPlayer::Init()
 //========================================================
 void CSpellPlayer::Update()
 {
-	//auto pos = Transform()->GetPos();
-	//Vector3 move;
+	auto pos = Transform()->GetPos();
+	Vector3 move;
 
-	//if (CInput::GetKeyPress(VK_W))
-	//{
-	//	move = Transform()->forward() * m_fSpeed;
-	//	pos.x += move.x;
-	//	pos.z += move.z;
-	//}
-	//if (CInput::GetKeyPress(VK_S))
-	//{
-	//	move = -Transform()->forward() * m_fSpeed;
-	//	pos.x += move.x;
-	//	pos.z += move.z;
-	//}
-	//if (CInput::GetKeyPress(VK_A))
-	//{
-	//	move = -Transform()->right() * m_fSpeed;
-	//	pos.x += move.x;
-	//	pos.z += move.z;
-	//}
-	//if (CInput::GetKeyPress(VK_D))
-	//{
-	//	move = Transform()->right() * m_fSpeed;
-	//	pos.x += move.x;
-	//	pos.z += move.z;
-	//}
-	//
-	//if (m_bLand)
-	//{
-	//	if (CInput::GetKeyTrigger(VK_SPACE))
-	//	{
-	//		auto rb = GetComponent<CRigidbody>();
-	//		rb->AddForce(Vector3(0, m_fJump, 0));
-	//	}
-	//}
+	if (CInput::GetKeyPress(VK_W))
+	{
+		move = Transform()->forward() * m_fSpeed;
+		pos.x += move.x;
+		pos.z += move.z;
+	}
+	if (CInput::GetKeyPress(VK_S))
+	{
+		move = -Transform()->forward() * m_fSpeed;
+		pos.x += move.x;
+		pos.z += move.z;
+	}
+	if (CInput::GetKeyPress(VK_A))
+	{
+		move = -Transform()->right() * m_fSpeed;
+		pos.x += move.x;
+		pos.z += move.z;
+	}
+	if (CInput::GetKeyPress(VK_D))
+	{
+		move = Transform()->right() * m_fSpeed;
+		pos.x += move.x;
+		pos.z += move.z;
+	}
+	
+	if (m_bLand)
+	{
+		if (CInput::GetKeyTrigger(VK_SPACE))
+		{
+			auto rb = GetComponent<CRigidbody>();
+			rb->AddForce(Vector3(0, m_fJump, 0));
+		}
+	}
 
-	//Transform()->SetPos(pos);
+	Transform()->SetPos(pos);
 }
 
 //========================================================
@@ -119,10 +119,10 @@ void CSpellPlayer::Update()
 //========================================================
 void CSpellPlayer::OnCollisionEnter(CGameObject* obj)
 {
-	/*if (obj->GetTagPtr()->Compare(Spell::TAG_LAND))
+	if (obj->GetTagPtr()->Compare(Spell::TAG_LAND))
 	{
 		m_bLand = true;
-	}*/
+	}
 }
 
 //========================================================
@@ -130,8 +130,8 @@ void CSpellPlayer::OnCollisionEnter(CGameObject* obj)
 //========================================================
 void CSpellPlayer::OnCollisionStay(CGameObject* obj)
 {
-	/*if (obj->GetTagPtr()->Compare(Spell::TAG_LAND))
+	if (obj->GetTagPtr()->Compare(Spell::TAG_LAND))
 	{
 		m_bLand = false;
-	}*/
+	}
 }

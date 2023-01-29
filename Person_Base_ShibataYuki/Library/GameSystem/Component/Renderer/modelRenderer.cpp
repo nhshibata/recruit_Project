@@ -55,17 +55,22 @@ CModelRenderer::~CModelRenderer()
 //==========================================================
 // モデル設定
 //==========================================================
-void CModelRenderer::SetModel(std::string name)
+bool CModelRenderer::SetModel(std::string name)
 {
+#if _DEBUG
 	auto assets = Application::Get()->GetSystem<CAssetsManager>();
 	if (!assets)
-		return;
-
+		return false;
 	auto modelMgr = assets->GetModelManager();
-	
-	// ポインタを受け取る
-	if (m_pModel = modelMgr->GetModel(name); m_pModel)
+#else
+	auto modelMgr = Application::Get()->GetSystem<CAssetsManager>()->GetModelManager();
+#endif // _DEBUG
+
+	// モデル取得,ポインタを受け取る
+	if (auto pModel = modelMgr->GetModel(name); pModel)
 	{
+		m_pModel = pModel;
+		modelMgr->FinishUse(name);
 		m_modelName = name;
 
 		// モデル半径の設定
@@ -79,14 +84,22 @@ void CModelRenderer::SetModel(std::string name)
 		}*/
 		//SetBSRadius(m_pModel->GetRadius() * scale);
 		SetBSRadius(m_pModel->GetRadius());
-
-		// 自身と管理ｸﾗｽ以外に所有者が居た時
-		//if (int num = modelMgr->GetModelCnt(name); num > 2)
 		
+		// 頂点配列、インデックス配列を取得しておく
+		InitVertexArray();
+		
+		return true;
 	}
+	return false;
+}
 
-	// 頂点配列、インデックス配列を取得しておく
-	InitVertexArray();
+//==========================================================
+// 読み込み時呼び出し
+//==========================================================
+void CModelRenderer::OnLoad()
+{
+	CRenderer::OnLoad();
+	SetModel(m_modelName);
 }
 
 //==========================================================
@@ -126,9 +139,17 @@ bool CModelRenderer::Draw()
 	auto pModelMgr = Application::Get()->GetSystem<CAssetsManager>()->GetModelManager();
 	auto pDX = Application::Get()->GetSystem<CDXDevice>();
 	XMFLOAT4X4 mtx = Transform()->GetWorldMatrix();
-	
+
 	//--- インスタンシング描画
-	// 自身と管理以外が所持しているか確認
+
+#if 1
+	// システム側に依頼を出し、まとめて描画してもらう
+	SceneManager::CSceneManager::Get()->GetDrawSystem()->SetInstanchingModel(m_modelName, mtx);
+	return true;
+
+#else
+	//--- インスタンシング描画
+	// 自身と管理クラス以外が所持しているか確認
 	if (pModelMgr->GetModelCnt(m_modelName) > 2)
 	{
 		// システム側に依頼を出し、まとめて描画してもらう
@@ -147,6 +168,8 @@ bool CModelRenderer::Draw()
 	pLight->SetEnable();	// ライティング有効
 
 	return true;
+#endif // 1
+
 }
 
 //==========================================================
@@ -166,7 +189,7 @@ bool CModelRenderer::DrawAlpha()
 
 	pDX->SetZWrite(true);
 	pDX->SetBlendState(static_cast<int>(EBlendState::BS_NONE)); // αブレンディング無効
-
+	
 	return true;
 }
 
@@ -174,18 +197,19 @@ bool CModelRenderer::DrawAlpha()
 // 描画
 // インスタンシング非対応
 //==========================================================
-bool CModelRenderer::Draw(int no)
+bool CModelRenderer::Draw(int mode)
 {
 	if (!m_pModel)return false;
 	
 	auto pDX = Application::Get()->GetSystem<CDXDevice>();
 
 	XMFLOAT4X4 mtx = Transform()->GetWorldMatrix();
+	
 	//--- 不透明描画
 	/*CLight* pLight = CLight::GetMain();
 	if (!pLight)return false;*/
 	
-	m_pModel->Draw(pDX->GetDeviceContext(), mtx, EByOpacity(no));
+	m_pModel->Draw(pDX->GetDeviceContext(), mtx, EByOpacity(mode));
 
 	//--- 半透明部分描画
 	//pDX->SetBlendState(static_cast<int>(EBlendState::BS_ALPHABLEND));
@@ -500,10 +524,9 @@ void CModelRenderer::ImGuiDebug()
 {
 	using namespace MySpace::Debug;
 
-	CMeshRenderer::ImGuiDebug();
-
 	//--- フォルダからファイル名取得
-	if (m_aXModelList.empty() && m_aObjModelList.empty() && m_aFbxModelList.empty() || ImGui::Button("モデル reload"))
+	if (m_aXModelList.empty() && m_aObjModelList.empty() && m_aFbxModelList.empty() || 
+		ImGui::Button(u8"model reload"))
 	{
 		MySpace::System::CFilePath file;
 		m_aXModelList = file.GetAllFileName(MODEL_PATH, ".x");
@@ -511,35 +534,63 @@ void CModelRenderer::ImGuiDebug()
 		m_aFbxModelList = file.GetAllFileName(MODEL_PATH, ".fbx");
 	}
 
-	// 名前入力
-	m_modelName = InputString(m_modelName, u8"設定モデル");
-
 	//--- モデル選択読み込み
 
 	// xファイル
-	if (auto name = DispMenuBar(m_aXModelList, "xFile"); !name.empty())
+	if (auto name = DispCombo(m_aXModelList, "x File", m_modelName); !name.empty())
 	{
-		m_modelName = name;
 		// ポインタを受け取る
 		SetModel(name);
 	}
 	
 	// objファイル
-	if (auto name = DispMenuBar(m_aObjModelList, "objFile"); !name.empty())
+	if (auto name = DispCombo(m_aObjModelList, "obj File", m_modelName); !name.empty())
 	{
-		m_modelName = name;
 		// ポインタを受け取る
 		SetModel(name);
 	}
 	
 	// fbxファイル
-	if (auto name = DispMenuBar(m_aFbxModelList, "fbxFile"); !name.empty())
+	if (auto name = DispCombo(m_aFbxModelList, "fbx File", m_modelName); !name.empty())
 	{
-		m_modelName = name;
 		// ポインタを受け取る
 		SetModel(name);
 	}
 
+
+	// 名前入力
+	m_modelName = InputString(m_modelName, u8"設定モデル");
+	if (ImGui::Button("Load"))
+		SetModel(m_modelName);
+	ImGui::Text("BSphere Radius :%f", GetBSRadius());
+	ImGui::Checkbox("Static", (bool*)&m_nStaticMode);
+	ImGui::SameLine();
+	ImGui::Checkbox("Shadow", (bool*)&m_bShadow);
+
+	//--- マテリアル
+	ImGui::BeginTabBar("Material");
+	if (ImGui::BeginTabItem("Diffuse"))
+	{
+		ImGui::ColorPicker4("Diffuse", (float*)&m_AssimpMaterial.Kd);
+		ImGui::EndTabItem();
+	}
+	if (ImGui::BeginTabItem("Ambient"))
+	{
+		ImGui::ColorPicker4("Ambient", (float*)&m_AssimpMaterial.Ka);
+		ImGui::EndTabItem();
+	}
+	if (ImGui::BeginTabItem("Specular"))
+	{
+		ImGui::ColorPicker4("Specular", (float*)&m_AssimpMaterial.Ks);
+		ImGui::EndTabItem();
+	}
+	if (ImGui::BeginTabItem("Emissive"))
+	{
+		ImGui::ColorPicker4("Emissive", (float*)&m_AssimpMaterial.Ke);
+		ImGui::EndTabItem();
+	}
+	
+	ImGui::EndTabBar();
 }
 
 #endif // BUILD_MODE

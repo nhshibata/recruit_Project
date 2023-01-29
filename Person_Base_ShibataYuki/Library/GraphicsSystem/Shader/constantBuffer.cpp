@@ -37,17 +37,24 @@ void CConstantBuffer::Bind(UINT slot)
 {
 	ID3D11DeviceContext* pDC = Application::Get()->GetDeviceContext();
 
+	UINT uSlot = slot;
+	// デフォルト引数でなければ
+	if (m_uSlot != 0)
+	{
+		uSlot = m_uSlot;
+	}
+
 	switch (m_eType)
 	{
 	case CConstantBuffer::EType::Vertex:
-		pDC->VSSetConstantBuffers(m_uSlot, 1, &m_pBuffer);
+		pDC->VSSetConstantBuffers(uSlot, 1, &m_pBuffer);
 		break;
 	case CConstantBuffer::EType::Pixel:
-		pDC->PSSetConstantBuffers(m_uSlot, 1, &m_pBuffer);
+		pDC->PSSetConstantBuffers(uSlot, 1, &m_pBuffer);
 		break;
 	case CConstantBuffer::EType::All:
-		pDC->PSSetConstantBuffers(m_uSlot, 1, &m_pBuffer);
-		pDC->VSSetConstantBuffers(m_uSlot, 1, &m_pBuffer);
+		pDC->PSSetConstantBuffers(uSlot, 1, &m_pBuffer);
+		pDC->VSSetConstantBuffers(uSlot, 1, &m_pBuffer);
 		break;
 	case CConstantBuffer::EType::MAX:
 		break;

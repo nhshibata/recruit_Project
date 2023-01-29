@@ -3,6 +3,7 @@
 // 作成: 2022/06/27
 // 更新: 2022/08/20 描画時に描画するか判定を行うため、バウンディングを追加
 // 更新: 2022/12/07 NavMesh用にStaticを追加
+// 更新: 2023/01/23 授業でやったShadowを追加
 //---------------------------------------------------------
 // 3D描画
 //=========================================================
@@ -30,14 +31,16 @@ namespace MySpace
 			void save(Archive& archive) const
 			{
 				archive(cereal::make_nvp("meshRender", cereal::base_class<CRenderer>(this)),
-					CEREAL_NVP(m_vCenter), CEREAL_NVP(m_bLightEnable), CEREAL_NVP(m_fBSRadius),CEREAL_NVP(m_nStaticMode)
+					CEREAL_NVP(m_vCenter), CEREAL_NVP(m_bLightEnable), CEREAL_NVP(m_fBSRadius),CEREAL_NVP(m_nStaticMode),
+					CEREAL_NVP(m_bShadow)
 				);
 			}
 			template<class Archive>
 			void load(Archive& archive)
 			{
 				archive(cereal::make_nvp("meshRender", cereal::base_class<CRenderer>(this)),
-					CEREAL_NVP(m_vCenter), CEREAL_NVP(m_bLightEnable), CEREAL_NVP(m_fBSRadius), CEREAL_NVP(m_nStaticMode)
+					CEREAL_NVP(m_vCenter), CEREAL_NVP(m_bLightEnable), CEREAL_NVP(m_fBSRadius), CEREAL_NVP(m_nStaticMode),
+					CEREAL_NVP(m_bShadow)
 				);
 			}
 		public:
@@ -45,18 +48,21 @@ namespace MySpace
 			enum class EStaticMode : int // bit管理するなら追加
 			{
 				NONE = 0,
-				NONE_MOVE = 1 << 0,
-				DYNAMIC,
+				STATIC = 1 << 0,
+				DYNAMIC = 1 << 1,
+				//SHADOW = 1 << 2,
 				MAX
 			};
 
 		private:
 			//--- メンバ変数
-			Vector3 m_vCenter;				// *@中心座標
-			bool m_bLightEnable;			// *@ライト有効フラグ
-			float m_fBSRadius;			// *@バウンディングスフィア
-			int m_nStaticMode;				// *@static状態
 			CMeshMaterial m_MeshMaterial;
+			Vector3 m_vCenter;				// 中心座標
+			bool m_bLightEnable;			// ライト有効フラグ
+			float m_fBSRadius;				// バウンディングスフィア
+		protected:
+			int m_nStaticMode;				// static状態
+			bool m_bShadow;					// シャドーマップフラグ
 
 		protected:
 			void SetInstancing(CMesh* mesh, std::string name = std::string());
@@ -78,11 +84,13 @@ namespace MySpace
 			float GetBSRadius();
 			inline CMeshMaterial* GetMaterial() { return &m_MeshMaterial; }
 			inline int GetStatic() { return m_nStaticMode; }
+			inline bool IsShadow() { return m_bShadow; }
 
 			inline void SetLightEnable(bool flg) { m_bLightEnable = flg; };
 			inline void SetCenter(Vector3 value) { m_vCenter = value; }
 			inline void SetBSRadius(const float value) { m_fBSRadius = value; };
 			inline void SetStatic(EStaticMode value) { m_nStaticMode = static_cast<int>(value); }
+			inline void SetShadow(const bool flg) { m_bShadow = flg; }
 
 #if BUILD_MODE
 

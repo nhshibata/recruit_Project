@@ -9,15 +9,22 @@ struct InstancingData
 
 // グローバル
 cbuffer global : register(b0) {
-	matrix g_mVP;          // ワールド×ビュー×射影行列
+	matrix g_mVP;           // ワールド×ビュー×射影行列
 	matrix g_mWorld;        // ワールド行列
     matrix g_mTexture; 
 };
 
-cbuffer InstancingGlobal : register(b1)
+cbuffer InstancingGlobal : register(b3)
 {
     InstancingData g_Instancing[MAX_DATA];
 }
+
+// 太陽の位置にあるｶﾒﾗに表示するための行列
+cbuffer SunCamera : register(b4)
+{
+    float4x4 sunView;
+    float4x4 sunProj;
+};
 
 // パラメータ
 struct VS_INPUT {
@@ -34,6 +41,7 @@ struct VS_OUTPUT {
 	float3	Normal		: TEXCOORD1;
 	float2	TexCoord	: TEXCOORD2;
 	float4	Diffuse		: COLOR0;
+    float4  SunPos      : TEXCOORD3; // 太陽から見た位置
 };
 
 VS_OUTPUT main(VS_INPUT input)
@@ -51,5 +59,11 @@ VS_OUTPUT main(VS_INPUT input)
 	output.TexCoord = mul(float4(input.TexCoord, 0.0f, 1.0f), g_mTexture).xy;
 	output.Diffuse = input.Diffuse;
 
+     // 太陽用頂点計算
+    float4 sunPos = mul(float4(input.Position.xyz, 1.0f), g_mWorld);
+    sunPos = mul(sunPos, sunView);
+    sunPos = mul(sunPos, sunProj);
+    output.SunPos = sunPos;
+    
 	return output;
 }

@@ -49,6 +49,7 @@ namespace MySpace
 			CBillboardRenderer(std::shared_ptr<CGameObject> owner);
 			~CBillboardRenderer();
 
+			void OnLoad();
 			virtual void Awake();
 			virtual void Init();
 			virtual void Update();

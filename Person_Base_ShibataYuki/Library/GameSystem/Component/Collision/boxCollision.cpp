@@ -199,6 +199,7 @@ bool CBoxCollision::HitCheckPtr(CCollision* other)
 	if (!IsTrigger())
 	{
 		Transform()->SetPos(PosAdjustment(owner->GetTransform()->GetPos(), size));
+		other->HitResponse(this);
 	}
 	HitResponse(other);
 

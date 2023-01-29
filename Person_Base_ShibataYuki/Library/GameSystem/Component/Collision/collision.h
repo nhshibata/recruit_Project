@@ -50,7 +50,8 @@ namespace MySpace
 			//--- ﾒﾝﾊﾞ関数
 			void ColObjectUpdate();
 		protected:
-			void HitResponse(CCollision* col);
+			void RequestCollision();
+			
 #pragma warning(push)
 #pragma warning(disable:4100)
 			virtual Vector3 PosAdjustment(Vector3 pos, Vector3 size) { return Vector3(); };
@@ -62,10 +63,10 @@ namespace MySpace
 			CCollision(std::shared_ptr<CGameObject> owner, bool trigger = false);
 			virtual ~CCollision();
 
+			void OnLoad();
 			void Awake();
 			void Init();
 			void Update();
-			void RequestCollision();
 
 			//--- セッター・ゲッター
 			// *@ 判定を行う際のすりぬけ確認
@@ -85,6 +86,8 @@ namespace MySpace
 
 			// *@離れたオブジェクトを持ち主に教える
 			virtual bool ExitTell();
+
+			void HitResponse(CCollision* col);
 
 #ifdef BUILD_MODE
 		private:

@@ -59,6 +59,7 @@
     <ClInclude Include="..\Library\GameSystem\propertyCereal.h" />
     <ClInclude Include="..\Library\GameSystem\Scene\scene.h" />
     <ClInclude Include="..\Library\GameSystem\Scene\sceneTransitionDetection.h" />
+    <ClInclude Include="..\Library\GameSystem\Shader\depthShadow.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\Library\GameSystem\components.cpp" />
@@ -100,6 +101,7 @@
     <ClCompile Include="..\Library\GameSystem\Manager\sceneManager.cpp" />
     <ClCompile Include="..\Library\GameSystem\Scene\scene.cpp" />
     <ClCompile Include="..\Library\GameSystem\Scene\sceneTransitionDetection.cpp" />
+    <ClCompile Include="..\Library\GameSystem\Shader\depthShadow.cpp" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <VCProjectVersion>15.0</VCProjectVersion>
@@ -156,7 +158,7 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <LinkIncremental>true</LinkIncremental>
     <OutDir>$(SolutionDir)exe\$(Configuration)\</OutDir>
-    <IncludePath>$(SolutionDir)Library\ImGui;$(SolutionDir)Library\Effekseer;$(SolutionDir)Library;$(IncludePath);$(SolutionDir)Source;$(IncludePath)</IncludePath>
+    <IncludePath>$(SolutionDir)Library\ImGui;$(SolutionDir)Library\Effekseer;$(SolutionDir)Library;$(IncludePath)</IncludePath>
     <LibraryPath>$(LibraryPath)</LibraryPath>
     <IntDir>$(SolutionDir)Binary\$(ProjectName)\$(Platform)\$(Configuration)\</IntDir>
   </PropertyGroup>
@@ -169,7 +171,7 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <LinkIncremental>false</LinkIncremental>
     <OutDir>$(SolutionDir)exe\$(Configuration)\</OutDir>
-    <IncludePath>$(SolutionDir)Library\ImGui;$(SolutionDir)Library\Effekseer;$(SolutionDir)Library;$(IncludePath);$(SolutionDir)Source;$(IncludePath)</IncludePath>
+    <IncludePath>$(SolutionDir)Library\ImGui;$(SolutionDir)Library\Effekseer;$(SolutionDir)Library;$(IncludePath)</IncludePath>
     <LibraryPath>$(LibraryPath)</LibraryPath>
     <IntDir>$(SolutionDir)Binary\$(ProjectName)\$(Platform)\$(Configuration)\</IntDir>
   </PropertyGroup>

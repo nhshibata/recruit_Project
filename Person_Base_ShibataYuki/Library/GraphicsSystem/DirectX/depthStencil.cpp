@@ -54,7 +54,7 @@ HRESULT CDepthStencil::Create(CDXDevice* dx, UINT width, UINT height, bool useSt
 {
 	HRESULT hr = S_OK;
 	Application* pApp = Application::Get();
-	ID3D11Device* pDX = dx ? dx->GetDevice() : pApp->GetDevice();
+	ID3D11Device* pDX = dx == nullptr? pApp->GetDevice() : dx->GetDevice();
 
 	//--- 情報設定
 	D3D11_TEXTURE2D_DESC desc = {};
@@ -75,6 +75,7 @@ HRESULT CDepthStencil::Create(CDXDevice* dx, UINT width, UINT height, bool useSt
 
 	// リソース生成
 	desc.Format = bUseStencil ? DXGI_FORMAT_R24_UNORM_X8_TYPELESS : DXGI_FORMAT_R32_TYPELESS;
+
 	//--- テクスチャ作成
 	D3D11_SUBRESOURCE_DATA data = {};
 	data.pSysMem = nullptr;

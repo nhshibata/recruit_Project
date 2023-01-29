@@ -68,13 +68,16 @@ HRESULT CGameApp::Init(Application* app)
 	auto pDevice = app->GetDevice();
 	auto pDC = app->GetDeviceContext();
 
+	//--- process order 005
 	//--- 入力初期化
 	hr = CInput::Init();
 	if(hr != S_OK)
 		MessageBox(NULL, _T("CInputの初期化に失敗しました。"), _T("error"), MB_OK);
 	CGamePad::Init();
 	Mouse::Initialize();
-	//Keyboad::();
+
+	//--- process order 006
+	//--- 描画関係
 
 	//--- メッシュ
 	hr = CMesh::InitShader();
@@ -91,15 +94,16 @@ HRESULT CGameApp::Init(Application* app)
 
 	//--- アセット
 	// 素材全般所持ｸﾗｽ
-	auto pAssets = CAssetsManager::Get();
+	auto pAssets = new CAssetsManager();
 	app->AddSystem(pAssets, typeid(CAssetsManager).name());
 	hr = pAssets->Init(app);
 	if (hr != S_OK)
 		MessageBox(NULL, _T("CAssetsManagerの初期化に失敗しました。"), _T("error"), MB_OK);
 
-	// 音初期化
+	//--- 音初期化
 	CSound::Init();
 
+	//--- process order 007
 	//--- シーンの生成
 	{
 		auto sceneMgr = CSceneManager::Get();
@@ -109,18 +113,21 @@ HRESULT CGameApp::Init(Application* app)
 	}
 
 	//--- Effekseer
+	// ｶﾒﾗ生成後
 	hr = pAssets->GetEffekseer()->Init(pDevice, pDC);
 	if (hr != S_OK)
 		MessageBox(NULL, _T("CEffekseerの初期化に失敗しました。"), _T("error"), MB_OK);
 
+
 #ifdef BUILD_MODE
 	//--- imGuiの初期化処理
-	auto imgui = ImGuiManager::Get();
+	auto imgui = new ImGuiManager();
 	app->AddSystem(imgui, typeid(ImGuiManager).name());
 	hr = imgui->Init(Application::Get()->GetHWnd(), pDevice, pDC);
 	if (hr != S_OK)
 		MessageBox(NULL, _T("ImGuiの初期化に失敗しました。"), _T("error"), MB_OK);
 #endif // BUILD_MODE
+
 
 	//app->AddSystem<CTweenManager>();
 	return hr;
@@ -161,6 +168,7 @@ void CGameApp::Run(Application* app)
 	CSound::Update();
 
 #ifdef BUILD_MODE	// ImGui
+
 	auto imgui = app->GetSystem<ImGuiManager>();
 	imgui->Update();
 	
@@ -174,6 +182,7 @@ void CGameApp::Run(Application* app)
 		}
 		return;
 	}
+
 #endif // DEBUG
 
 	//--- シーン更新

@@ -66,7 +66,7 @@ CGameObject::CGameObject(const CGameObject & object)
 	this->m_objName = object.m_objName;
 #endif // BUILD_MODE
 
-	this->m_pTransform = object.m_pTransform;
+	//this->m_pTransform = object.m_pTransform;
 	this->m_eState = object.m_eState;
 	this->m_pLayer = object.m_pLayer;
 	this->m_pTag = object.m_pTag;
@@ -91,9 +91,7 @@ CGameObject::CGameObject(const CGameObject & object)
 //==========================================================
 CGameObject::~CGameObject()
 {
-	for (auto & com : m_aComponent)
-		com.reset();
-	m_aComponent.clear();
+	Uninit();
 }
 
 //==========================================================
@@ -139,6 +137,16 @@ void CGameObject::Init()
 	{
 		(*it)->Init();
 	}
+}
+
+//=========================================================
+// 解放
+//=========================================================
+void CGameObject::Uninit()
+{
+	for (auto & com : m_aComponent)
+		com.reset();
+	m_aComponent.clear();
 }
 
 //==========================================================
@@ -513,6 +521,8 @@ void CGameObject::ImGuiDebug()
 	}
 
 	//--- タグ変更
+	static bool isAddTag = false;
+	static std::string newTagName;
 	if (ImGui::BeginMenuBar()) 
 	{
 		if (ImGui::BeginMenu(u8"tag"))
@@ -521,42 +531,72 @@ void CGameObject::ImGuiDebug()
 			for (int idx = 0; idx < static_cast<int>(tagList.size()); ++idx)
 			{
 				auto tagName = tagList[idx].c_str();
-				if (ImGui::MenuItem(tagName)) {
+				if (ImGui::MenuItem(tagName))
+				{
 					GetTagPtr()->SetTag(tagName);
 				}
+			}
+			ImGui::NewLine();
+			if (ImGui::MenuItem("Add Tag"))
+			{
+				isAddTag = true;
 			}
 			ImGui::EndMenu();
 		}
 		ImGui::EndMenuBar();
 	}
-	
+	if (isAddTag)
+	{
+		ImGui::SetNextWindowPos(ImGui::GetMousePos(), ImGuiCond_::ImGuiCond_Once);
+		ImGui::SetNextWindowSize(ImVec2(CScreen::GetWidth()/8, CScreen::GetHeight()/8), ImGuiCond_::ImGuiCond_Once);
+		if (ImGui::Begin("Create Tag", &isAddTag))
+		{
+			char input[52];
+			strcpy_s(input, newTagName.c_str());
+			ImGui::Text("New Tag >>");
+			ImGui::SameLine();
+			if (ImGui::InputText("input", input, 52))
+			{
+				newTagName = input;
+			}
+
+			if (ImGui::Button("Create"))
+			{
+				CTag::CreateTag(newTagName);
+				newTagName.clear();
+				isAddTag = false;
+			}
+			ImGui::End();
+		}
+	}
+
 	//--- 名前変更
 	char name[56] = "";
 	strcpy_s(name, GetName().c_str());
-	ImGui::InputText(u8"*名前:", name, 56);
-	SetName(name);
+	ImGui::Text("Object Name");
 	ImGui::SameLine();
-	ImGui::Text(u8"*Tag:%s", GetTagPtr()->GetTag().c_str());
+	if(ImGui::InputText(u8"名前", name, 56))
+		SetName(name);
+	ImGui::Text(u8"State:%s", szState[m_eState]);
 	ImGui::SameLine();
-	if (ImGui::BeginCombo(u8"*Layer:%d", "1"))
-	{
-		// TODO: 途中
-		for (int cnt = 0; cnt < 5; cnt++)
-		{
-			auto label = std::to_string(cnt).c_str(); 
-			
-			if (bool bg = ImGui::Selectable(label, &bg) ; bg)
-			{
-				GetLayerPtr()->SetLayer(cnt);
-			}
-		}
-		
-		ImGui::EndCombo();
-	}
-	ImGui::Text(u8"*ｺﾝﾎﾟｰﾈﾝﾄ数:%d", GetComponentList().size());
-	ImGui::SameLine();
-	ImGui::Text(u8"*state:%s", szState[m_eState]);
-	
+	ImGui::Text(u8"Tag:%s", GetTagPtr()->GetTag().c_str());
+	//if (ImGui::BeginCombo(u8"Layer:%d", "1"))
+	//{
+	//	// TODO: 途中
+	//	for (int cnt = 0; cnt < 5; cnt++)
+	//	{
+	//		auto label = std::to_string(cnt).c_str(); 
+	//		
+	//		if (bool bg = ImGui::Selectable(label, &bg) ; bg)
+	//		{
+	//			GetLayerPtr()->SetLayer(cnt);
+	//		}
+	//	}
+	//	
+	//	ImGui::EndCombo();
+	//}
+	ImGui::Text(u8"ｺﾝﾎﾟｰﾈﾝﾄ数:%d", GetComponentList().size());
+
 }
 
 #endif // BUILD_MODE

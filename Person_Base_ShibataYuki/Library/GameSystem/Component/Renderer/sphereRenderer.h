@@ -29,7 +29,7 @@ namespace MySpace
 			void save(Archive& archive) const
 			{
 				archive(cereal::make_nvp("meshRender", cereal::base_class<CMeshRenderer>(this)),
-					CEREAL_NVP(m_fRadius)
+					CEREAL_NVP(m_fRadius)/*, CEREAL_NVP(m_pBSphere)*/
 				);
 			}
 			template<class Archive>
@@ -43,12 +43,16 @@ namespace MySpace
 			//--- ƒƒ“ƒo•Ï”
 			std::shared_ptr<CSphere> m_pBSphere;
 			float m_fRadius;
+
 		public:
 			//--- ƒƒ“ƒoŠÖ”
-			CSphereRenderer() :m_fRadius(100) {};
+			CSphereRenderer()
+				:m_fRadius(100) 
+			{};
 			CSphereRenderer(std::shared_ptr<CGameObject> ptr);
 			virtual ~CSphereRenderer();
 
+			void OnLoad();
 			virtual void Awake();
 			virtual void Init();
 			virtual void Update();

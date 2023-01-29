@@ -35,6 +35,27 @@ namespace MySpace
 		//==========================================================
 		// 指定パスのフォルダ内のファイル名を表示する
 		//==========================================================
+		std::string DispCombo(std::vector<std::string> list, std::string desc, std::string preview)
+		{
+			std::string ret = std::string();
+			if (ImGui::BeginCombo(desc.c_str(), preview.c_str()))
+			{
+				for (int cnt = 0; cnt < list.size(); cnt++)
+				{
+					if (bool bg = ImGui::Selectable(list[cnt].c_str(), &bg); bg)
+					{
+						ret = list[cnt];
+						break;
+					}
+				}
+				ImGui::EndCombo();
+			}
+			return ret;
+		}
+
+		//==========================================================
+		// 指定パスのフォルダ内のファイル名を表示する
+		//==========================================================
 		std::string DispFileMenuBar(std::string path, std::string desc, std::string ext)
 		{
 			CFilePath* file = new CFilePath;

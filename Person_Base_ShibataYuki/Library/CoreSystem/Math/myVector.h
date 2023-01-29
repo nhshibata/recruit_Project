@@ -429,6 +429,24 @@ namespace MySpace
 				XMStoreFloat4x4(&ret, newMtx);
 				return ret;
 			}
+
+			Matrix4x4 Transpose()
+			{
+				DirectX::XMFLOAT4X4 ret = *this;
+				XMMATRIX mtx = DirectX::XMMatrixTranspose(XMLoadFloat4x4(&ret));
+				DirectX::XMStoreFloat4x4(&ret, mtx);
+				return Matrix4x4(ret);
+			}
+
+			Matrix4x4 Inverse()
+			{
+				DirectX::XMFLOAT4X4 ret = *this;
+				DirectX::XMMATRIX mtx = DirectX::XMLoadFloat4x4(&ret);
+				mtx = DirectX::XMMatrixInverse(nullptr, mtx);
+				DirectX::XMStoreFloat4x4(&ret, mtx);
+				return Matrix4x4(ret);
+			}
+
 		};
 
 		class Quaternion : public XMFLOAT4

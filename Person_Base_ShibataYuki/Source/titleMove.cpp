@@ -46,44 +46,44 @@ void CTitleMove::Init()
 
 void CTitleMove::Update()
 {
-	//// “¹‚ªŒˆ‚Ü‚Á‚Ä‚¢‚È‚¢
-	//if (m_aCurveList.size() == 0)
-	//{
-	//	Vector2 vec1, vec2, endPos;
-	//	int num = rand() % 200 + 100;
-	//	auto pos = m_pPolygon.lock()->GetRectTransform()->GetPos();
-	//	float dir = pos.x;
-	//	endPos = pos;
-	//	
-	//	// ‰E
-	//	if (dir < 0)
-	//	{
-	//		vec1 = Vector2(1, 1);
-	//		vec2 = Vector2(1, -1);
-	//		endPos.x = CScreen::GetHalfWidth();
-	//	}
-	//	// ¶
-	//	else 
-	//	{
-	//		vec1 = Vector2(1, -1);
-	//		vec2 = Vector2(1, 1);
-	//		endPos.x = -CScreen::GetHalfWidth();
-	//	}
+	// “¹‚ªŒˆ‚Ü‚Á‚Ä‚¢‚È‚¢
+	if (m_aCurveList.size() == 0)
+	{
+		Vector2 vec1, vec2, endPos;
+		int num = rand() % 200 + 100;
+		auto pos = m_pPolygon.lock()->GetRectTransform()->GetPos();
+		float dir = pos.x;
+		endPos = pos;
+		
+		// ‰E
+		if (dir < 0)
+		{
+			vec1 = Vector2(1, 1);
+			vec2 = Vector2(1, -1);
+			endPos.x = CScreen::GetHalfWidth();
+		}
+		// ¶
+		else 
+		{
+			vec1 = Vector2(1, -1);
+			vec2 = Vector2(1, 1);
+			endPos.x = -CScreen::GetHalfWidth();
+		}
 
-	//	m_aCurveList = ST_MyMath::MakeHermiteCurve(pos, vec1, endPos, vec2, num);
-	//	return;
-	//}
-	//else
-	//{
-	//	// æ“ª‚©‚ç‡‚ÉˆÚ“®
-	//	m_pPolygon.lock()->GetRectTransform()->SetPos(m_aCurveList.front());
-	//	m_aCurveList.erase(m_aCurveList.begin());
-	//}
+		m_aCurveList = ST_MyMath::MakeHermiteCurve(pos, vec1, endPos, vec2, num);
+		return;
+	}
+	else
+	{
+		// æ“ª‚©‚ç‡‚ÉˆÚ“®
+		m_pPolygon.lock()->GetRectTransform()->SetPos(m_aCurveList.front());
+		m_aCurveList.erase(m_aCurveList.begin());
+	}
 
 }
 
 void CTitleMove::SetStartPos(const Vector2 pos)
 {
-	//m_vStartPos = pos; 
-	//m_pPolygon.lock()->GetRectTransform()->SetPos(pos);
+	m_vStartPos = pos; 
+	m_pPolygon.lock()->GetRectTransform()->SetPos(pos);
 }

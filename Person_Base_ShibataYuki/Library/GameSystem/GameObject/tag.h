@@ -94,11 +94,10 @@ namespace MySpace
 			~CTag();
 
 			// *@“o˜^Š®—¹ / •K—v‚È‚µ
-			// *@‚È‚¯‚ê‚Î¶¬B‚Ç‚¿‚ç‚É‚¹‚æ“o˜^‚³‚ê‚é
-			bool CreateTag(std::string name) 
+			// *@‚È‚¯‚ê‚Î¶¬
+			static bool CreateTag(std::string name) 
 			{ 
 				bool ret = CreateRegist(name);
-				SetTag(name);
 				return ret;
 			}
 

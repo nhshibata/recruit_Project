@@ -36,7 +36,7 @@ namespace MySpace
 			using GameObjList = std::list< std::shared_ptr<CGameObject> >;
 			using WeakList = std::list< std::weak_ptr<CGameObject> >;
 			
-			struct gameObjWeakList 
+			struct STGameObjWeakList 
 			{
 				WeakList list;
 				typename std::list<std::weak_ptr<CGameObject>>::iterator FindObj(std::weak_ptr<CGameObject> obj)
@@ -53,7 +53,7 @@ namespace MySpace
 			};
 			//--- エイリアス
 			// *@tag検索用
-			using TagObjMap = std::unordered_map<std::string, gameObjWeakList>;
+			using TagObjMap = std::unordered_map<std::string, STGameObjWeakList>;
 
 		private:
 			GameObjList m_aGameObjList;					// 実際の所持
@@ -117,7 +117,7 @@ namespace MySpace
 				return m_aGameObjList; 
 			}
 			// *@所持リスト(weak用)
-			inline WeakList GetList(int)
+			WeakList GetList(int)
 			{ 
 				WeakList ret;
 				for (auto & obj : m_aGameObjList)
@@ -126,56 +126,19 @@ namespace MySpace
 			}
 
 			// *@オブジェクト上書き
-			inline void SetObjList(std::list<std::shared_ptr<CGameObject>> list)
-			{
-				m_aGameObjList = list;
-			}
+			void SetObjList(std::list<std::shared_ptr<CGameObject>> list, bool addDrive = false);
 
 			// *@オブジェクト検索(名前)
-			_NODISCARD std::weak_ptr<CGameObject> FindGameObj(std::string name)
-			{
-				for (GameObjList::iterator it = m_aGameObjList.begin(); it != m_aGameObjList.end(); ++it) 
-				{
-					if ((*it).get()->GetName() == name)
-					{
-						return (*it);
-					}
-				}
-				return std::shared_ptr<CGameObject>();
-			}
+			_NODISCARD std::weak_ptr<CGameObject> FindGameObj(std::string name);
+			
 			// *@オブジェクト検索(タグ名)
-			_NODISCARD std::weak_ptr<CGameObject> FindGameObjWithTag(std::string tag)
-			{
-				if (m_aTagMap.count(tag) == 0)
-				{
-					//m_aTagMap[tag] = gameObjWeakList();
-					return std::weak_ptr<CGameObject>();
-				}
-				return m_aTagMap[tag].list.begin()->lock();
-			}
+			_NODISCARD std::weak_ptr<CGameObject> FindGameObjWithTag(std::string tag);
+			
 			// *@オブジェクト検索(ﾀｸﾞｸﾗｽ)
-			_NODISCARD std::weak_ptr<CGameObject> FindGameObjWithTag(CTag tag)
-			{
-				GameObjList::iterator it = m_aGameObjList.begin();
-				for (; it != m_aGameObjList.end(); ++it)
-				{
-					if ((*it).get()->GetTagPtr()->Compare(tag.GetTag()))
-					{
-						return (*it);
-					}
-				}
-				return std::shared_ptr<CGameObject>();
-			}
+			_NODISCARD std::weak_ptr<CGameObject> FindGameObjWithTag(CTag tag);
+			
 			// *@オブジェクト検索(ﾀｸﾞｸﾗｽ)
-			_NODISCARD std::list<std::weak_ptr<CGameObject>> FindGameObjctsWithTag(std::string tag)
-			{
-				if (m_aTagMap.count(tag) == 0)
-				{
-					m_aTagMap[tag] = gameObjWeakList();
-					return std::list<std::weak_ptr<CGameObject>>();
-				}
-				return m_aTagMap[tag].list;
-			}
+			_NODISCARD std::list<std::weak_ptr<CGameObject>> FindGameObjctsWithTag(std::string tag);
 
 			// *@非破壊登録
 			inline void DontDestroy(std::weak_ptr<CGameObject> ptr)

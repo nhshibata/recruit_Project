@@ -56,6 +56,8 @@ HRESULT CSceneManager::Init()
 	// NavMesh
 	m_pNavMesh->Init();
 
+	m_pDrawSystem->Init();
+
 	// パス設定
 	m_currentPath = SCENE_PATH + std::string("Title.scene");
 	
@@ -305,13 +307,15 @@ bool CSceneManager::LoadScene(std::string path)
 		CCerealize<std::shared_ptr<CSceneData>> sirial;
 		sceneData = sirial.InputFile(path);
 	}
-	if (!sceneData)return false;
+	if (!sceneData)
+		return false;
 
 	// 開いたパスを保存
 	m_currentPath = path;
 
-	// 新しいシーンを作成
+	// 新しいSceneを作成
 	std::shared_ptr<CScene> newScene = std::make_shared<CScene>(sceneData->m_SceneName);
+	// Scene切替
 	RemoveScene(m_pCurrentScene.lock(), newScene);
 	if (newScene != m_pCurrentScene.lock()) { 
 	
@@ -319,6 +323,7 @@ bool CSceneManager::LoadScene(std::string path)
 
 	// 読み込みと代入
 	sceneData->m_resource.Load();											// ロードしたResourceを読み込み
+	newScene->Init(newScene);
 	newScene->SetSceneName(sceneData->m_SceneName);							// 名前設定
 	newScene->GetObjManager()->SetObjList(sceneData->m_aGameObjectManager);	// オブジェクト設定
 

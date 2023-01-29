@@ -112,15 +112,19 @@ namespace MySpace
 			void Load();
 
 			// *@PSバインド
-			inline void BindPS(std::string name, UINT slot = 0) 
+			void BindPS(std::string name, UINT slot = 0) 
 			{ 
-				if(!Find<PixelShaderSharedPtr>(name, m_PixelMap)){return;} m_PixelMap[name]->Bind(slot); 
+				if(!Find<PixelShaderSharedPtr>(name, m_PixelMap))
+					return;
+				m_PixelMap[name]->Bind(slot); 
 			}
 
 			// *@VSバインド
-			inline void BindVS(std::string name, UINT slot = 0) 
+			void BindVS(std::string name, UINT slot = 0) 
 			{
-				if (!Find<VertexShaderSharedPtr>(name, m_VtxMap)) { return; } m_VtxMap[name]->Bind(slot);
+				if (!Find<VertexShaderSharedPtr>(name, m_VtxMap))
+					return; 
+				m_VtxMap[name]->Bind(slot);
 			}
 
 			// *@CBバインド
@@ -176,6 +180,23 @@ namespace MySpace
 			{
 				m_fTessellationAmount = value; if (m_fTessellationAmount < 1)m_fTessellationAmount = 1;
 			}
+
+			inline ConstantBufferSharedPtr GetCB(std::string name)
+			{
+				return m_ConstantMap[name];
+			}
+			
+			inline PixelShaderSharedPtr GetPS(std::string name)
+			{
+				return m_PixelMap[name];
+			}
+
+			inline VertexShaderSharedPtr GetVS(std::string name)
+			{
+				return m_VtxMap[name];
+			}
+
+
 		};
 	}
 }

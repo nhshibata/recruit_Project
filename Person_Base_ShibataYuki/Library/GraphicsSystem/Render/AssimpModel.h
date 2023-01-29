@@ -210,8 +210,8 @@ public:
 	virtual ~CAssimpMesh();
 
 	void Draw(ID3D11DeviceContext* pDC, DirectX::XMFLOAT4X4& mtxWorld, EByOpacity byOpacity = eNoAffect);
-	void DrawInstanchid(ID3D11DeviceContext* pDC, DirectX::XMFLOAT4X4& mtxWorld, 
-						INSTANCHING_DATA& aMtxWorld, EByOpacity byOpacity = eNoAffect);
+	void DrawInstancing(ID3D11DeviceContext* pDC, DirectX::XMFLOAT4X4& mtxWorld, 
+						UINT instanceNum, EByOpacity byOpacity = eNoAffect);
 	void Release();
 
 	void SetBoneMatrix(ID3D11DeviceContext* pDC, XMFLOAT4X4 mtxBone[]);
@@ -254,7 +254,9 @@ private:
 
 #define INSTANCE 1
 #if INSTANCE
-	static inline ID3D11VertexShader* m_pVertexShaderInstancing;
+	static inline ID3D11VertexShader* m_pInstancingVS;
+	static inline ID3D11PixelShader* m_pShadowPS;
+	static inline ID3D11InputLayout* m_pShadowVL;
 	static inline ID3D11Buffer* m_pConstantBufferI;
 #endif // INSTANCE
 
@@ -270,10 +272,11 @@ public:
 	void SetTextureMatrix(DirectX::XMFLOAT4X4& mtxTexture);
 	bool Load(ID3D11Device* pDevice, ID3D11DeviceContext* pDC, std::string filename);
 	void Draw(ID3D11DeviceContext* pDC, DirectX::XMFLOAT4X4& mtxWorld, EByOpacity byOpacity = eNoAffect);
-	void DrawInstancing(ID3D11DeviceContext* pDC, INSTANCHING_DATA& mtxWorld, EByOpacity byOpacity = eNoAffect);
+	void DrawInstancing(ID3D11DeviceContext* pDC, INSTANCHING_DATA& mtxWorld, 
+						EByOpacity byOpacity = eNoAffect, bool defaultShader = true);
 	void DrawNode(ID3D11DeviceContext* pDC, aiNode* piNode, const aiMatrix4x4& piMatrix, EByOpacity byOpacity);
-	void DrawInstanchidNode(ID3D11DeviceContext* pDC, aiNode* piNode, const aiMatrix4x4& piMatrix, 
-							EByOpacity byOpacity, INSTANCHING_DATA& mtxWorld);
+	void DrawInstancingNode(ID3D11DeviceContext* pDC, aiNode* piNode, const aiMatrix4x4& piMatrix, 
+							EByOpacity byOpacity, UINT instanceNum);
 	DirectX::XMFLOAT4X4& GetWorldMatrix() { return m_mtxWorld; }
 	void SetMaterial(TAssimpMaterial* pMaterial = nullptr) { m_pMaterial = pMaterial; }
 	TAssimpMaterial* GetMaterial() { return m_pMaterial; }
