@@ -18,8 +18,9 @@ using namespace MySpace::Graphics;
 //==========================================================
 // コンストラクタ
 //==========================================================
-CMeshRenderer::CMeshRenderer() 
-	:m_vCenter(0, 0, 0), m_bLightEnable(false), m_fBSRadius(1),m_nStaticMode(static_cast<int>(EStaticMode::NONE))
+CMeshRenderer::CMeshRenderer()
+	:m_vCenter(0, 0, 0), m_bLightEnable(false), m_fBSRadius(1)
+	, m_nStaticMode(static_cast<int>(EStaticMode::NONE)), m_bShadow(false)
 {
 	m_MeshMaterial = CMeshMaterial(
 		Vector4(0.0f, 1.0f, 0.0f, 0.3f),
@@ -33,7 +34,8 @@ CMeshRenderer::CMeshRenderer()
 // 引き数付きコンストラクタ
 //==========================================================
 CMeshRenderer::CMeshRenderer(std::shared_ptr<CGameObject> owner)
-	: CRenderer(owner), m_vCenter(0,0,0), m_bLightEnable(true), m_fBSRadius(1), m_nStaticMode(static_cast<int>(EStaticMode::NONE))
+	: CRenderer(owner), m_vCenter(0, 0, 0), m_bLightEnable(true), m_fBSRadius(1)
+	, m_nStaticMode(static_cast<int>(EStaticMode::NONE)), m_bShadow(false)
 {
 	m_MeshMaterial = CMeshMaterial(
 		Vector4(0.0f, 1.0f, 0.0f, 0.3f),
@@ -92,12 +94,13 @@ void CMeshRenderer::SetInstancing(CMesh* mesh, std::string name)
 	//--- インスタンシング依頼
 	if (!name.empty())
 	{
-		sys->SetInstanchingMesh(name, mesh);
+		sys->SetInstanchingMesh(name, Transform()->GetWorldMatrix(), mesh);
 	}
 	else
 	{
 		sys->SetInstanchingMesh(
 			std::string(std::to_string(mesh->GetIndexNum()) + std::to_string(mesh->GetMaterial()->GetFloat())),
+			Transform()->GetWorldMatrix(),
 			mesh
 		);
 	}
@@ -110,6 +113,8 @@ void CMeshRenderer::ImGuiDebug()
 {
 	ImGui::Text("BSphere:%f", GetBSRadius());
 	ImGui::Checkbox("Static", (bool*)&m_nStaticMode);
+	ImGui::SameLine();
+	ImGui::Checkbox("Shadow", (bool*)&m_bShadow);
 	
 	ImGui::BeginTabBar("Material");
 	if (ImGui::BeginTabItem("Diffuse"))

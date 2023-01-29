@@ -14,6 +14,7 @@
 
 namespace Spell
 {
+	using namespace MySpace::Game;
 
 	class CTitleMove : public CComponent
 	{

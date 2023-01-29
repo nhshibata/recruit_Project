@@ -25,7 +25,7 @@ namespace MySpace
 		class CModelRenderer : public CMeshRenderer
 		{
 		private:
-			// シリアライズ
+			//--- シリアライズ
 			friend class cereal::access;
 			template<class Archive>
 			void save(Archive& archive) const
@@ -53,20 +53,24 @@ namespace MySpace
 			TAssimpVertex* m_pVertex;	// 頂点配列
 			UINT m_nIndex;				// インデックス数
 			UINT* m_pIndex;				// インデックス配列
+			TAssimpMaterial m_AssimpMaterial;
 
 		private:
 			//--- メンバ関数
 			void InitVertexArray();
 			void FinVertexArray();
+			CMeshMaterial* GetMaterial() = delete;
 
 		public:
 			CModelRenderer();	
 			CModelRenderer(std::shared_ptr<CGameObject> owner);
 			~CModelRenderer();
 
+			virtual void OnLoad();
 			virtual void Awake();
 			virtual void Init();
 			virtual void Update();
+
 			virtual bool Draw();
 			virtual bool DrawAlpha();
 			bool Draw(int);
@@ -80,10 +84,11 @@ namespace MySpace
 
 			//--- ゲッター・セッター
 			inline void SetModel(ModelSharedPtr model) { m_pModel = model; /*m_modelName = model.lock()->GetFileName();*/ }
-			void SetModel(std::string name);
+			bool SetModel(std::string name);
 			
 			inline ModelWeakPtr GetModel() { return m_pModel; }
 			inline std::string GetModelName() { return m_modelName; }
+			inline TAssimpMaterial* GetAssimoMaterial() { return &m_AssimpMaterial; }
 
 #ifdef BUILD_MODE
 

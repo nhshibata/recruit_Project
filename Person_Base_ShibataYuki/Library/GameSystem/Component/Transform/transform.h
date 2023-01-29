@@ -99,8 +99,9 @@ namespace MySpace
 			
 			Quaternion GetWorldQuaternion();
 			Quaternion GetLocalQuaternion();
-			_NODISCARD inline XMFLOAT4X4 GetWorldMatrix() { return m_mWorldMtx; }
-			_NODISCARD inline XMFLOAT4X4 GetLocalMatrix() { return m_mLocalMtx; }
+			_NODISCARD inline Matrix4x4 GetWorldMatrix() { return m_mWorldMtx; }
+			_NODISCARD inline Matrix4x4 GetLocalMatrix() { return m_mLocalMtx; }
+			_NODISCARD Matrix4x4 CalcLocalMatrix();
 
 			inline void SetPos(Vector3 value)					{ m_vPos = value; };
 			inline void SetRot(Vector3 value)					{ m_vRot = value; };
@@ -150,7 +151,7 @@ namespace MySpace
 
 			//--- オブジェクト向き取得
 			// *@前方
-			inline Vector3 forward()
+			Vector3 forward()
 			{
 				DirectX::XMFLOAT4X4 mtx;
 				DirectX::XMStoreFloat4x4(&mtx,
@@ -163,7 +164,7 @@ namespace MySpace
 				return Vector3(mtx._31, mtx._32, mtx._33).Normalize();
 			}
 			// *@右方
-			inline Vector3 right()
+			Vector3 right()
 			{
 				DirectX::XMFLOAT4X4 mtx;
 				DirectX::XMStoreFloat4x4(&mtx,
@@ -176,7 +177,7 @@ namespace MySpace
 				return Vector3(mtx._31, mtx._32, mtx._33).Normalize();
 			}
 			// *@ 上方
-			inline Vector3 up()
+			Vector3 up()
 			{
 				return Vector3::Normalize(Vector3::Cross(forward(), right()));
 			}

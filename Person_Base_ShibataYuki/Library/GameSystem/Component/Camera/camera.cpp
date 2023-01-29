@@ -1,5 +1,6 @@
 //=========================================================
 // [light.cpp]
+//---------------------------------------------------------
 // 作成:2022/06/27
 // 更新:2022/11/10 視錘台修正 : 渡すワールドマトリックス間違い
 // 
@@ -31,10 +32,10 @@ namespace Camera
 {
 	const float CAM_POS_P_X = 0.0f;					// カメラの視点初期位置(X座標)
 	const float CAM_POS_P_Y = 30.0f;				// カメラの視点初期位置(Y座標)
-	const float CAM_POS_P_Z = -150.0f;				// カメラの視点初期位置(Z座標)
+	const float CAM_POS_P_Z = -100.0f;				// カメラの視点初期位置(Z座標)
 	const float CAM_POS_R_X = 0.0f;					// カメラの注視点初期位置(X座標)
 	const float CAM_POS_R_Y = 0.0f;					// カメラの注視点初期位置(Y座標)
-	const float CAM_POS_R_Z = -1.0f;					// カメラの注視点初期位置(Z座標)
+	const float CAM_POS_R_Z = -1.0f;				// カメラの注視点初期位置(Z座標)
 	const float VIEW_ANGLE = 45.0f;					// 視野角
 //	const float VIEW_ASPECT = (float)SCREEN_WIDTH / (float)SCREEN_HEIGHT;	// アスペクト比
 	const float VIEW_NEAR_Z = 1.0f;					// NearZ値
@@ -46,7 +47,7 @@ using namespace Camera;
 // コンストラクタ
 //==========================================================
 CCamera::CCamera()
-	:m_vPos(0, 0, 0), m_vTarget(1, 1, 1), m_vUp(0, 1, 0), m_vAngle(0, 0, 0), m_fFovY(0), 
+	:m_vTarget(1, 1, 1), m_vUp(0, 1, 0), m_vAngle(0, 0, 0), m_fFovY(0), 
 	m_fAspectRatio(0), m_fFarZ(0), m_fLengthInterval(0), m_fNearZ(0),
 	m_frus{ XMFLOAT4(0,0,0,0) }, m_frusw{ XMFLOAT4(0,0,0,0) }
 {
@@ -57,7 +58,7 @@ CCamera::CCamera()
 // 引き数付きコンストラクタ
 //==========================================================
 CCamera::CCamera(std::shared_ptr<CGameObject> owner)
-	:CComponent(owner),m_vPos(0,0,0),m_vTarget(1,1,1),m_vUp(0,1,0),m_vAngle(0,0,0),m_fFovY(0),
+	:CComponent(owner),m_vTarget(1,1,1),m_vUp(0,1,0),m_vAngle(0,0,0),m_fFovY(0),
 	m_fAspectRatio(0), m_fFarZ(0), m_fLengthInterval(0), m_fNearZ(0),
 	m_frus{ XMFLOAT4(0,0,0,0) }, m_frusw{ XMFLOAT4(0,0,0,0) }
 {
@@ -95,8 +96,8 @@ void CCamera::OnLoad()
 {
 	if (!m_pMainCamera.lock())
 		m_pMainCamera = BaseToDerived<CCamera>();
-
-	m_pSky = GetOwner()->GetComponent<CModelRenderer>();
+	if(!m_pSky.lock())
+		m_pSky = GetOwner()->GetComponent<CModelRenderer>();
 }
 
 //==========================================================
@@ -130,9 +131,9 @@ void CCamera::Awake()
 void CCamera::Init()
 {
 
-	m_vPos = XMFLOAT3(CAM_POS_P_X, CAM_POS_P_Y, CAM_POS_P_Z);	// 視点
-	m_vTarget = XMFLOAT3(CAM_POS_R_X, CAM_POS_R_Y, CAM_POS_R_Z);// 注視点
-	m_vUp = XMFLOAT3(0.0f, 1.0f, 0.0f);							// 上方ベクトル
+	Transform()->SetPos(XMFLOAT3(CAM_POS_P_X, CAM_POS_P_Y, CAM_POS_P_Z));	// 視点
+	m_vTarget = XMFLOAT3(CAM_POS_R_X, CAM_POS_R_Y, CAM_POS_R_Z);			// 注視点
+	m_vUp = XMFLOAT3(0.0f, 1.0f, 0.0f);										// 上方ベクトル
 
 	auto screen = CScreen::GetSize();
 	m_fAspectRatio = (float)screen.x / (float)screen.y;	// 縦横比
@@ -142,9 +143,10 @@ void CCamera::Init()
 
 	m_vAngle = XMFLOAT3(0.0f, 0.0f, 0.0f);
 
+	auto vPos = Transform()->GetPos();
 	float fVecX, fVecZ;
-	fVecX = m_vPos.x - m_vTarget.x;
-	fVecZ = m_vPos.z - m_vTarget.z;
+	fVecX = vPos.x - m_vTarget.x;
+	fVecZ = vPos.z - m_vTarget.z;
 	m_fLengthInterval = sqrtf(fVecX * fVecX + fVecZ * fVecZ);
 
 	// ワールドマトリックス
@@ -159,9 +161,7 @@ void CCamera::Init()
 //==========================================================
 void CCamera::Update()
 {
-	m_vPos.x = Transform()->GetPos().x;
-	m_vPos.y = Transform()->GetPos().y;
-	m_vPos.z = Transform()->GetPos().z;
+	Transform()->SetRot(m_vAngle);
 
 	// マトリックス更新
 	UpdateMatrix();
@@ -185,9 +185,11 @@ void CCamera::DrawSkyDome()
 	pLight->SetDisable();
 	pDX->SetBlendState((int)EBlendState::BS_ALPHABLEND);
 	pDX->SetZBuffer(false);
+	
 	m_pSky.lock()->SetVisible(true);
-	m_pSky.lock()->Draw(0);
+	m_pSky.lock()->Draw(EByOpacity::eOpacityOnly);
 	m_pSky.lock()->SetVisible(false);
+
 	pDX->SetZBuffer(true);
 	pDX->SetBlendState((int)EBlendState::BS_NONE);
 	pLight->SetEnable();
@@ -199,7 +201,7 @@ void CCamera::DrawSkyDome()
 void CCamera::SetWorldMatrix(DirectX::XMFLOAT4X4& mtxWorld)
 {
 	m_mtxWorld = mtxWorld;
-	m_vPos = XMFLOAT3(mtxWorld._41, mtxWorld._42, mtxWorld._43);
+	Transform()->SetPos(XMFLOAT3(mtxWorld._41, mtxWorld._42, mtxWorld._43));
 	m_vTarget = XMFLOAT3(mtxWorld._41 + mtxWorld._31, mtxWorld._42 + mtxWorld._32, mtxWorld._43 + mtxWorld._33);
 	m_vUp = XMFLOAT3(mtxWorld._21, mtxWorld._22, mtxWorld._23);
 }
@@ -207,9 +209,10 @@ void CCamera::SetWorldMatrix(DirectX::XMFLOAT4X4& mtxWorld)
 //==========================================================
 // ｶﾒﾗの姿勢からマトリックス計算
 //==========================================================
-DirectX::XMFLOAT4X4& CCamera::CalcWorldMatrix()
+Matrix4x4& CCamera::CalcWorldMatrix()
 {
-	XMVECTOR vecZ = XMVectorSet(m_vTarget.x - m_vPos.x, m_vTarget.y - m_vPos.y, m_vTarget.z - m_vPos.z, 0.0f);
+	auto vPos = Transform()->GetPos();
+	XMVECTOR vecZ = XMVectorSet(m_vTarget.x - vPos.x, m_vTarget.y - vPos.y, m_vTarget.z - vPos.z, 0.0f);
 	XMFLOAT3 vZ;
 	XMStoreFloat3(&vZ, XMVector3Normalize(vecZ));
 	XMVECTOR vecY = XMLoadFloat3(&m_vUp);
@@ -232,12 +235,23 @@ DirectX::XMFLOAT4X4& CCamera::CalcWorldMatrix()
 	m_mtxWorld._32 = vZ.y;
 	m_mtxWorld._33 = vZ.z;
 	m_mtxWorld._34 = 0.0f;
-	m_mtxWorld._41 = m_vPos.x;
-	m_mtxWorld._42 = m_vPos.y;
-	m_mtxWorld._43 = m_vPos.z;
+	m_mtxWorld._41 = vPos.x;
+	m_mtxWorld._42 = vPos.y;
+	m_mtxWorld._43 = vPos.z;
 	m_mtxWorld._44 = 1.0f;
 
 	return m_mtxWorld;
+}
+
+//=========================================================
+// ビューマトリックス
+// 静的メンバ関数
+//=========================================================
+Matrix4x4 CCamera::CalcProjMatrix(float fov, float aspect, float nearZ, float farZ)
+{
+	XMFLOAT4X4 ret;
+	XMStoreFloat4x4(&ret, XMMatrixPerspectiveFovLH(XMConvertToRadians(fov), aspect, nearZ, farZ));
+	return Matrix4x4(ret);
 }
 
 //==========================================================
@@ -245,16 +259,15 @@ DirectX::XMFLOAT4X4& CCamera::CalcWorldMatrix()
 //==========================================================
 void CCamera::UpdateMatrix()
 {
-	XMStoreFloat4x4(&m_mtxView, XMMatrixLookAtLH(
-		XMLoadFloat3(&m_vPos),
-		XMLoadFloat3(&m_vTarget),
-		XMLoadFloat3(&m_vUp)
-		));
+	auto vPos = Transform()->GetPos();
+	XMStoreFloat4x4(&m_mtxView, 
+					XMMatrixLookAtLH(XMLoadFloat3(&vPos),XMLoadFloat3(&m_vTarget),XMLoadFloat3(&m_vUp))
+	);
 
-	XMStoreFloat4x4(&m_mtxProj, XMMatrixPerspectiveFovLH(
-		XMConvertToRadians(m_fFovY), 
-		m_fAspectRatio, m_fNearZ, m_fFarZ
-	));
+	/*XMStoreFloat4x4(&m_mtxProj, 
+					XMMatrixPerspectiveFovLH(XMConvertToRadians(m_fFovY), m_fAspectRatio, m_fNearZ, m_fFarZ)	
+	);*/
+	m_mtxProj = CalcProjMatrix(m_fFovY, m_fAspectRatio, m_fNearZ, m_fFarZ);
 }
 
 //==========================================================
@@ -279,10 +292,6 @@ void CCamera::InitFrustum()
 		XMStoreFloat4(&m_frus[cnt], XMPlaneNormalize(XMLoadFloat4(&m_frus[cnt])));
 	}
 
-	if (Transform())
-	{
-		Transform()->SetPos(m_vPos);
-	}
 }
 
 //==========================================================

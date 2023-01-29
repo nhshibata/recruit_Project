@@ -15,6 +15,7 @@
 
 namespace Spell
 {
+
 	enum class EStageNo
 	{
 		NONE = -1,

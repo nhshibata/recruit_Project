@@ -40,55 +40,55 @@ CStageBuild::~CStageBuild()
 //========================================================
 bool CStageBuild::Build(CResourceCSV* csv)
 {
-	//auto aData = csv->GetintArray();
-	//CGameObject::PtrWeak obj;
-	//const char* aModelName[] = {
-	//	MODEL_PATH2(ToyStage/WorkBlock.fbx),
-	//	MODEL_PATH2(ToyStage/WorkOctagon.fbx),
-	//	MODEL_PATH2(ToyStage/MovingBlock.fbx),
-	//};
-	//int data = 0;
+	auto aData = csv->GetintArray();
+	CGameObject::PtrWeak obj;
+	const char* aModelName[] = {
+		MODEL_PATH2(ToyStage/WorkBlock.fbx),
+		MODEL_PATH2(ToyStage/WorkOctagon.fbx),
+		MODEL_PATH2(ToyStage/MovingBlock.fbx),
+	};
+	int data = 0;
 
-	//// 縦
-	//for (int column = 0; column < aData.size(); ++column)
-	//{
-	//	// 横
-	//	for (int row = 0; row < aData[column].size(); ++row)
-	//	{
-	//		//--- ステージ番号取得
-	//		data = aData[column][row];
-	//		// 設置対象確認
-	//		if (data == static_cast<int>(EStageNo::NONE))
-	//			continue;
+	// 縦
+	for (int column = 0; column < aData.size(); ++column)
+	{
+		// 横
+		for (int row = 0; row < aData[column].size(); ++row)
+		{
+			//--- ステージ番号取得
+			data = aData[column][row];
+			// 設置対象確認
+			if (data == static_cast<int>(EStageNo::NONE))
+				continue;
 
-	//		//--- オブジェクト生成
-	//		obj = CGameObject::CreateObject();
+			//--- オブジェクト生成
+			obj = CGameObject::CreateObject();
 
-	//		// 仮の名前設定
-	//		obj.lock()->SetName("Cell_" + std::to_string(column) + std::to_string(row));
+			// 仮の名前設定
+			obj.lock()->SetName("Cell_" + std::to_string(column) + std::to_string(row));
 
-	//		// tag設定
-	//		obj.lock()->SetObjTag(Spell::TAG_LAND);
+			// tag設定
+			obj.lock()->SetObjTag(Spell::TAG_LAND);
 
-	//		// 位置決定
-	//		Vector3 pos = m_vStartPos;
-	//		pos.x = m_vStartPos.x * row * m_fMarzin;
-	//		pos.z = m_vStartPos.z * column * m_fMarzin;
-	//		obj.lock()->GetTransform()->SetPos(pos);
+			// 位置決定
+			Vector3 pos = m_vStartPos;
+			pos.x = m_vStartPos.x * row * m_fMarzin;
+			pos.z = m_vStartPos.z * column * m_fMarzin;
+			obj.lock()->GetTransform()->SetPos(pos);
 
-	//		//--- モデル設定
-	//		auto model = obj.lock()->AddComponent<CModelRenderer>();
-	//		model->SetModel(aModelName[data]);
-	//		model->SetStatic(CMeshRenderer::EStaticMode::NONE_MOVE);
+			//--- モデル設定
+			auto model = obj.lock()->AddComponent<CModelRenderer>();
+			model->SetModel(aModelName[data]);
+			model->SetStatic(CMeshRenderer::EStaticMode::STATIC);
 
-	//		//--- 当たり判定追加
-	//		auto box = obj.lock()->AddComponent<CBoxCollision>();
-	//		// ﾄﾘｶﾞｰ設定
-	//		box->SetTrigger(false);
+			//--- 当たり判定追加
+			auto box = obj.lock()->AddComponent<CBoxCollision>();
+			// ﾄﾘｶﾞｰ設定
+			box->SetTrigger(false);
 
-	//	}
+		}
 
-	//}
+	}
 
 	return true;
 }

@@ -37,20 +37,21 @@ void CDirectionalLight::Awake()
 {
 	CLight::Init();
 	XMFLOAT3 vDir = LIGHT0_DIRECTION;
-	XMStoreFloat3(&m_direction, XMVector3Normalize(XMLoadFloat3(&vDir)));
-	//this->Transform()->SetRot(m_direction);
+	XMFLOAT3 vDirection = LIGHT0_DIRECTION;
+	XMStoreFloat3(&vDirection, XMVector3Normalize(XMLoadFloat3(&vDir)));
+	this->Transform()->SetRot(vDirection);
 
 	m_diffuse = LIGHT0_DIFFUSE;
 	m_ambient = LIGHT0_AMBIENT;
 	m_specular = LIGHT0_SPECULAR;
 	SetEnable();
 }
-XMFLOAT3& CDirectionalLight::GetDir()
+XMFLOAT3 CDirectionalLight::GetDir()
 {
 	if (IsEnable())
 	{
-		//m_direction = this->Transform()->GetRot();
-		return m_direction;
+		XMFLOAT3 vDirection = this->Transform()->GetRot();
+		return vDirection;
 	}
 	static XMFLOAT3 off(0.0f, 0.0f, 0.0f);
 	return off;
@@ -58,9 +59,9 @@ XMFLOAT3& CDirectionalLight::GetDir()
 
 #ifdef BUILD_MODE
 
-void CDirectionalLight::ImGuiDebug()
-{
-
-}
+//void CDirectionalLight::ImGuiDebug()
+//{
+//
+//}
 
 #endif // BUILD_MODE

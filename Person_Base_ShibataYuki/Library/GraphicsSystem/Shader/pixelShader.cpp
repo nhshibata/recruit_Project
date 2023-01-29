@@ -39,7 +39,8 @@ CPixelShader::~CPixelShader()
 void CPixelShader::Bind(UINT slot)
 {
 	ID3D11DeviceContext* pDC = Application::Get()->GetDeviceContext();
-	pDC->PSSetShader(m_pShader, nullptr, 0);
+	
+	pDC->PSSetShader(m_pShader, nullptr, slot);
 }
 
 //==========================================================

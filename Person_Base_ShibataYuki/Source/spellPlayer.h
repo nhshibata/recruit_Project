@@ -14,6 +14,8 @@
 
 namespace Spell
 {
+	using namespace MySpace::Game;
+
 
 	class CSpellPlayer : public CComponent
 	{
@@ -35,7 +37,6 @@ namespace Spell
 		void OnCollisionStay(CGameObject * obj);
 		
 	};
-
 
 }
 

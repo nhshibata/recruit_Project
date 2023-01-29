@@ -15,33 +15,61 @@
 
 using namespace MySpace::Game;
 
+//=========================================================
+// コンストラクタ
+//=========================================================
 CSphereRenderer::CSphereRenderer(std::shared_ptr<CGameObject> ptr)
 	:CMeshRenderer(ptr), m_fRadius(1),m_pBSphere(nullptr)
 {
 	SetSphere(m_fRadius);
 }
+
+//=========================================================
+// デスクトラクタ
+//=========================================================
 CSphereRenderer::~CSphereRenderer()
 {
 	m_pBSphere->Fin();
 	m_pBSphere.reset();
 }
 
+//=========================================================
+// 読み込み時呼び出し
+//=========================================================
+void CSphereRenderer::OnLoad()
+{	
+	CRenderer::OnLoad();
+	SetSphere(m_fRadius);
+}
+
+//=========================================================
+// 生成時呼び出し
+//=========================================================
 void CSphereRenderer::Awake()
 {	
 	if (!m_pBSphere)
 		SetSphere(m_fRadius);
 }
 
+//=========================================================
+// 初期化
+//=========================================================
 void CSphereRenderer::Init()
 {
 	CMeshRenderer::Init();
 }
 
+//=========================================================
+// 更新
+//=========================================================
 void CSphereRenderer::Update()
 {
 	CMeshRenderer::Update();
 }
 
+//=========================================================
+// 描画
+//=========================================================
 bool CSphereRenderer::Draw()
 {
 	if (!CMeshRenderer::Draw())
@@ -68,6 +96,10 @@ bool CSphereRenderer::Draw()
 	return true;
 }
 
+//=========================================================
+// Mesh構築
+// 半径設定
+//=========================================================
 HRESULT CSphereRenderer::SetSphere(float radius)
 {
 	HRESULT hr = S_OK;
@@ -86,14 +118,15 @@ HRESULT CSphereRenderer::SetSphere(float radius)
 	return hr;
 }
 
+
 #if BUILD_MODE
 
 void CSphereRenderer::ImGuiDebug()
 {
 	//this->SetMaterial(*this->GetMaterial());
 
-	if(ImGui::Button(u8"SphereRenderer"))
-		m_fRadius = Transform()->GetScale().GetLargeValue();
+	//if(ImGui::Button(u8"SphereRenderer"))
+	//m_fRadius = Transform()->GetScale().GetLargeValue();
 	if (ImGui::DragFloat("Radius", &m_fRadius))
 	{
 		SetSphere(m_fRadius);

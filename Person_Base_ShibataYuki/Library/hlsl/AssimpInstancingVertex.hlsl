@@ -1,6 +1,6 @@
 // Assimp用頂点シェーダ (AssimpVertex.hlsl)
 #define MAX_BONE_MATRIX	    64
-#define MAX_WORLD_MATRIX	100
+#define MAX_WORLD_MATRIX	1024
 
 // グローバル
 cbuffer global : register(b0) {
@@ -25,6 +25,13 @@ cbuffer global_instance : register(b3){
     matrix g_World[MAX_WORLD_MATRIX];
 };
 
+// 太陽の位置にあるｶﾒﾗに表示するための行列
+cbuffer SunCamera : register(b4)
+{
+    float4x4 sunView;
+    float4x4 sunProj;
+};
+
 // パラメータ
 struct VS_INPUT {
 	float3	Pos		: POSITION;
@@ -41,6 +48,7 @@ struct VS_OUTPUT {
 	float2	Tex			: TEXCOORD0;
 	float3	Normal		: TEXCOORD1;
 	float3	PosForPS	: TEXCOORD2;
+    float4  SunPos      : TEXCOORD3; // 太陽から見た位置
 };
 
 // スキニング後の頂点・法線
@@ -100,5 +108,13 @@ VS_OUTPUT main(VS_INPUT input)
     output.Tex = mul(float4(input.Tex, 0.0f, 1.0f), g_mtxTexture).xy;
     output.Normal = mul(vSkinned.Norm, (float3x3) mWorld);
     output.PosForPS = mul(vSkinned.Pos, mWorld).xyz;
+    
+    // 太陽用頂点計算
+    //float4 wPos = mul(float4(input.Pos, 1.0f), mWorld);
+    float4 wPos = mul(float4(input.Pos, 1.0f), g_World[input.id]);
+    wPos = mul(wPos, sunView);
+    wPos = mul(wPos, sunProj);
+    output.SunPos = wPos;
+    
 	return output;
 }

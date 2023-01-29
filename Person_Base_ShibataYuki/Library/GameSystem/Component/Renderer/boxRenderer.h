@@ -43,12 +43,16 @@ namespace MySpace
 			//--- ƒƒ“ƒo•Ï”
 			std::shared_ptr<CBox> m_pBBox;
 			Vector3 m_vSize;
+
 		public:
 			//--- ƒƒ“ƒoŠÖ”
-			CBoxRenderer() :m_vSize(1, 1, 1) {};
+			CBoxRenderer()
+				:m_vSize(1, 1, 1) 
+			{};
 			CBoxRenderer(std::shared_ptr<CGameObject> ptr);
 			virtual ~CBoxRenderer();
 
+			void OnLoad();
 			virtual void Awake();
 			virtual void Init();
 			virtual void Update();

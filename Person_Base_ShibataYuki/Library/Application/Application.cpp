@@ -65,8 +65,9 @@ bool Application::Init(HINSTANCE hInstance)
 	// 幅と高さ初期化
 	//CScreen::SetSize(1280.0f, 960.0f);
 
+	//--- process order 002
 	//--- ウインドウ作成
-	CWindow* window = CWindow::Get();
+	CWindow* window = new CWindow();
 	AddSystem(window, typeid(CWindow).name());
 	window->RegisterClass(hInstance, WINDOW_CLASS_NAME, CS_CLASSDC);
 	
@@ -92,10 +93,11 @@ bool Application::Init(HINSTANCE hInstance)
 	m_hInst = hInstance;
 
 	// 読み込みが必要なシステムの関数を呼び出す	
-	AddSystem(CFuncManager::Get(), typeid(CFuncManager).name());
+	AddSystem(new CFuncManager(), typeid(CFuncManager).name());
 
+	//--- process order 003
 	//--- デバイスの初期化
-	auto pDX = CDXDevice::Get();
+	auto pDX = new CDXDevice();
 	AddSystem(pDX, typeid(CDXDevice).name());
 	hr = pDX->Init(m_hWnd, (unsigned int)CScreen::GetWidth(), (unsigned int)CScreen::GetHeight());
 	if (FAILED(hr))
@@ -123,11 +125,11 @@ void Application::Destroy()
 	
 	//--- システム部分解放
 	// 最後尾から順に解放
-	/*for (auto rit = m_aSystems.rbegin(); rit != m_aSystems.rend();)
+	for (auto rit = m_aSystems.rbegin(); rit != m_aSystems.rend();)
 	{
 		delete (*rit).second;
 		++rit;
-	}*/
+	}
 	m_aSystems.clear();
 
 	return;
@@ -138,7 +140,7 @@ void Application::Destroy()
 //==========================================================
 unsigned long Application::MainLoop()
 {
-	
+	//--- process order 004
 	// 変数宣言
 	CWindow* window = GetSystem<CWindow>();
 	CGameApp* gameApp = new CGameApp();	

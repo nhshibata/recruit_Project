@@ -52,9 +52,12 @@ void CGameObjectManager::Uninit()
 	// 全て除外
 	for (auto & obj : m_aGameObjList)
 	{
+		obj->Uninit();
 		obj.reset();
 	}
 	m_aGameObjList.clear();
+	m_aAddObjList.clear();
+	m_aTagMap.clear();
 }
 
 //==========================================================
@@ -310,11 +313,6 @@ void CGameObjectManager::TagMove(std::string NextTag, std::weak_ptr<CGameObject>
 		}
 		++it;
 	}
-
-	/*if (it != currentTag.list.end())
-	{
-		m_aTagMap[tag].list.erase(it);
-	}*/
 	
 	// 変更後のtagへ移動
 	m_aTagMap[NextTag].list.push_back(obj);
@@ -387,4 +385,85 @@ bool CGameObjectManager::DestroyObject(std::weak_ptr<CGameObject> pObj)
 		return false;
 	
 	return true;
+}
+
+//=========================================================
+// オブジェクト上書き
+// 非破壊オブジェクト渡し
+//=========================================================
+void CGameObjectManager::SetObjList(std::list<std::shared_ptr<CGameObject>> list, bool addDvive)
+{
+	if (addDvive)
+	{
+		auto work = m_aDontDestroyList;
+		Uninit();
+		m_aGameObjList = list;
+		for (auto & obj : work)
+		{
+			m_aGameObjList.push_back(obj);
+		}
+	}
+	else
+	{
+		Uninit();
+		m_aGameObjList = list;
+	}
+
+}
+
+//=========================================================
+// オブジェクト検索(名前)
+//=========================================================
+std::weak_ptr<CGameObject> CGameObjectManager::FindGameObj(std::string name)
+{
+	for (GameObjList::iterator it = m_aGameObjList.begin(); it != m_aGameObjList.end(); ++it)
+	{
+		if ((*it).get()->GetName() == name)
+		{
+			return (*it);
+		}
+	}
+	return std::shared_ptr<CGameObject>();
+}
+
+//=========================================================
+// オブジェクト検索(タグ名)
+//=========================================================
+std::weak_ptr<CGameObject> CGameObjectManager::FindGameObjWithTag(std::string tag)
+{
+	if (m_aTagMap.count(tag) == 0)
+	{
+		//m_aTagMap[tag] = gameObjWeakList();
+		return std::weak_ptr<CGameObject>();
+	}
+	return m_aTagMap[tag].list.begin()->lock();
+}
+
+//=========================================================
+// オブジェクト検索(ﾀｸﾞｸﾗｽ)
+//=========================================================
+std::weak_ptr<CGameObject> CGameObjectManager::FindGameObjWithTag(CTag tag)
+{
+	GameObjList::iterator it = m_aGameObjList.begin();
+	for (; it != m_aGameObjList.end(); ++it)
+	{
+		if ((*it).get()->GetTagPtr()->Compare(tag.GetTag()))
+		{
+			return (*it);
+		}
+	}
+	return std::shared_ptr<CGameObject>();
+}
+
+//=========================================================
+// オブジェクト検索(ﾀｸﾞｸﾗｽ)
+//=========================================================
+std::list<std::weak_ptr<CGameObject>> CGameObjectManager::FindGameObjctsWithTag(std::string tag)
+{
+	if (m_aTagMap.count(tag) == 0)
+	{
+		m_aTagMap[tag] = STGameObjWeakList();
+		return std::list<std::weak_ptr<CGameObject>>();
+	}
+	return m_aTagMap[tag].list;
 }

@@ -38,7 +38,7 @@ namespace MySpace
 		private:
 			bool m_bEnable;			// ライティング有効/無効
 
-			static inline CLight* m_pLight = nullptr;
+			static inline CLight* m_pMainLight = nullptr;
 
 		public:
 			//--- ﾒﾝﾊﾞ関数
@@ -46,6 +46,7 @@ namespace MySpace
 			CLight(std::shared_ptr<CGameObject> owner);
 			~CLight();
 
+			void OnLoad();
 			virtual void Awake();			// 初期化 他コンポーネントの取得などを行う
 			//void LateUpdate();			// 遅い更新
 

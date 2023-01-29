@@ -33,7 +33,7 @@ using namespace MySpace::Debug;
 // コンストラクタ
 //==========================================================
 CInspector::CInspector()
-	:m_isComponent(false), m_isDeleted(false), m_bOpen(true)
+	:m_bIsAddComponent(false), m_isDeleted(false), m_bOpen(true)
 {
 }
 
@@ -54,8 +54,8 @@ void CInspector::Update(ImGuiManager* manager)
 		return;
 	ImGui::PushStyleColor(ImGuiCol_TitleBgActive, ImVec4(0.0f, 0.7f, 0.2f, 1.0f));
 	ImGui::PushStyleColor(ImGuiCol_TitleBg, ImVec4(0.0f, 0.3f, 0.1f, 1.0f));
-	ImGui::SetNextWindowPos(ImVec2(800, 20), ImGuiCond_Once);
-	ImGui::SetNextWindowSize(ImVec2(400, 600), ImGuiCond_Once);
+	ImGui::SetNextWindowPos(ImVec2(CScreen::GetWidth() * 0.75f, 20), ImGuiCond_Once);
+	ImGui::SetNextWindowSize(ImVec2(300, 500), ImGuiCond_Once);
 
 	m_bOpen = m_spViewObj.lock() ? true : false;
 
@@ -72,6 +72,9 @@ void CInspector::Update(ImGuiManager* manager)
 		return;
 	}
 
+	//--- メニューバー
+	DispOptionBar();
+
 	// 選択中objデバッグ表示
 	DispDebugSelectObject();
 
@@ -80,37 +83,8 @@ void CInspector::Update(ImGuiManager* manager)
 	
 	manager->HoverStateSet();
 
-	//--- メニューバー
-	if (ImGui::BeginMenuBar())
-	{
-		// オブジェクト生成
-		if (ImGui::BeginMenu("Option"))
-		{
-			if (ImGui::MenuItem("AddComponent"))
-			{
-				m_isComponent = !m_isComponent;
-			}
-
-			// FIXME:ﾎﾟｲﾝﾀｺﾋﾟｰしてるのみ問題あり
-			if (ImGui::MenuItem("Copy"))
-			{
-				CopyGameObject();
-			}
-
-			if (ImGui::MenuItem("Delete"))
-				DeleteObject();
-
-			if (ImGui::MenuItem("Close"))
-				m_spViewObj.reset();
-
-			ImGui::EndMenu();
-		}
-		ImGui::EndMenuBar();
-	}
-
 	//--- コンポーネント追加
-	if (m_isComponent)
-		AddComponentWindow();
+	AddComponentWindow();
 
 	ImGui::End();
 
@@ -164,6 +138,35 @@ void CInspector::CopyGameObject()
 }
 
 //==========================================================
+// オプション表示
+//==========================================================
+void CInspector::DispOptionBar()
+{
+	if (ImGui::BeginMenuBar())
+	{
+		// オブジェクト生成
+		if (ImGui::BeginMenu("Option"))
+		{
+			if (ImGui::MenuItem("AddComponent"))
+				m_bIsAddComponent = !m_bIsAddComponent;
+
+			// FIXME:ﾎﾟｲﾝﾀｺﾋﾟｰしてるのみ問題あり
+			if (ImGui::MenuItem("Copy"))
+				CopyGameObject();
+
+			if (ImGui::MenuItem("Delete"))
+				DeleteObject();
+
+			if (ImGui::MenuItem("Close"))
+				m_spViewObj.reset();
+
+			ImGui::EndMenu();
+		}
+		ImGui::EndMenuBar();
+	}
+}
+
+//==========================================================
 // 選択中オブジェクトの情報表示
 //==========================================================
 void CInspector::DispDebugSelectObject()
@@ -179,7 +182,7 @@ void CInspector::DispDebugSelectObject()
 	{
 		int layer = 0;
 		layer = m_spViewObj.lock()->GetLayerPtr()->GetLayer();
-		ImGui::InputInt("layer", &layer);
+		ImGui::InputInt("Layer", &layer);
 		m_spViewObj.lock()->GetLayerPtr()->SetLayer(layer);
 	}
 
@@ -190,7 +193,7 @@ void CInspector::DispDebugSelectObject()
 	{
 		m_isDrawInfo.resize(components.size());
 	}
-	for (auto com : components)
+	/*for (auto com : components)
 	{
 		std::string name = typeid(*com).name();
 		if (ImGui::Button(name.substr(6).c_str()))
@@ -198,7 +201,7 @@ void CInspector::DispDebugSelectObject()
 			m_isDrawInfo[cnt] = !m_isDrawInfo[cnt];
 		}
 		cnt++;
-	}
+	}*/
 
 	cnt = 0;
 	ImGui::PushStyleColor(ImGuiCol_TitleBgActive, ImVec4(0.0f, 0.7f, 0.2f, 1.0f));
@@ -207,7 +210,7 @@ void CInspector::DispDebugSelectObject()
 	ImGui::SetNextWindowSize(ImVec2(400, 400), ImGuiCond_Once);
 	for (auto com : components)
 	{
-		if (m_isDrawInfo[cnt])
+		if (ImGui::CollapsingHeader(com->GetName().c_str(), m_isDrawInfo[cnt]))
 		{
 			// ｺﾝﾎﾟｰﾈﾝﾄのデバッグ表示
 			com->ImGuiDebug();
@@ -273,31 +276,35 @@ void CInspector::DispPopUpMenuObject()
 //==========================================================
 void CInspector::AddComponentWindow()
 {
-	bool batsu = true;
+	if (!m_bIsAddComponent)return;
+
 	ImGui::SetNextWindowPos(ImVec2(1000, 20), ImGuiCond_Once);
 	ImGui::SetNextWindowSize(ImVec2(400, 300), ImGuiCond_Once);
-	ImGui::Begin(u8"AddComponent", &batsu, ImGuiWindowFlags_::ImGuiWindowFlags_MenuBar);
 	std::vector<std::string> componentName = CComponentFactory::GetNameList();
 	
-	// オブジェクトにコンポーネントを追加
-	for (std::string str : componentName)
+	if (ImGui::Begin("AddComponent", &m_bIsAddComponent, ImGuiWindowFlags_::ImGuiWindowFlags_MenuBar))
 	{
-		if (ImGui::Button(str.c_str()))
+		// オブジェクトにコンポーネントを追加
+		for (std::string str : componentName)
 		{
-			// コンポーネントを保存しているｸﾗｽに追加してもらう
-			CComponentFactory::ObjSetComponent(*m_spViewObj.lock(), str);
-			
-			// 最後尾に追加されているコンポーネントを取得
-			auto com = m_spViewObj.lock()->GetComponentList().back();
-			// 初期化処理を行う。通常、静的であれば必要ないが、メインループ中の追加のため、ここで行わなければならない
-			com->Init();
+			if (ImGui::Button(str.c_str()))
+			{
+				// コンポーネントを保存しているｸﾗｽに追加してもらう
+				CComponentFactory::ObjSetComponent(*m_spViewObj.lock(), str);
 
-			m_isDrawInfo.push_back(false);
-			m_isComponent = false;
-			break;
+				// 最後尾に追加されているコンポーネントを取得
+				auto com = m_spViewObj.lock()->GetComponentList().back();
+				// 初期化処理を行う。通常、静的であれば必要ないが、メインループ中の追加のため、ここで行わなければならない
+				com->Init();
+
+				m_isDrawInfo.push_back(false);
+				m_bIsAddComponent = false;
+				break;
+			}
 		}
+		ImGui::End();
 	}
-	ImGui::End();
+
 }
 
 #endif // !BUILD_MODE

@@ -92,7 +92,8 @@ bool CEffekseerRenderer::Draw()
 	{
 		XMFLOAT3 rot = Transform()->GetRot();
 		m_pEffekseer->Load(m_EffectName);
-		m_nHandle = m_pEffekseer->Play(m_EffectName, Transform()->GetPos(), Transform()->GetScale(), XMFLOAT4(rot.x, rot.y, rot.z, m_fAngle));
+		m_nHandle = m_pEffekseer->Play(
+			m_EffectName, Transform()->GetPos(), Transform()->GetScale(), XMFLOAT4(rot.x, rot.y, rot.z, m_fAngle));
 	}
 
 	return true;

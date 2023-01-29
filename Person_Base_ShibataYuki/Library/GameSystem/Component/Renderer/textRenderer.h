@@ -72,6 +72,7 @@ namespace MySpace
 			CTextRenderer(std::shared_ptr<CGameObject> owner);
 			~CTextRenderer();
 
+			void OnLoad();
 			virtual void Awake();
 			virtual void Init();
 			virtual void Update();

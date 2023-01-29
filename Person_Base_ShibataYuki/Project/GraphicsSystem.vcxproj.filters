@@ -132,6 +132,9 @@
     <ClInclude Include="..\Library\GraphicsSystem\Manager\assetsManager.h">
       <Filter>ヘッダー ファイル\Manager</Filter>
     </ClInclude>
+    <ClInclude Include="..\Library\GraphicsSystem\Shader\depthShadow.h">
+      <Filter>ヘッダー ファイル\Shader</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\Library\GraphicsSystem\Texture\Texture.cpp">
@@ -229,22 +232,10 @@
     <FxCompile Include="..\Library\hlsl\AssimpVertex.hlsl">
       <Filter>リソース ファイル</Filter>
     </FxCompile>
-    <FxCompile Include="..\Library\hlsl\DomainShader.hlsl">
-      <Filter>リソース ファイル</Filter>
-    </FxCompile>
-    <FxCompile Include="..\Library\hlsl\DSPointToTriangle.hlsl">
-      <Filter>リソース ファイル</Filter>
-    </FxCompile>
     <FxCompile Include="..\Library\hlsl\ExpPixel.hlsl">
       <Filter>リソース ファイル</Filter>
     </FxCompile>
     <FxCompile Include="..\Library\hlsl\ExpVertex.hlsl">
-      <Filter>リソース ファイル</Filter>
-    </FxCompile>
-    <FxCompile Include="..\Library\hlsl\HSPointToTriangle.hlsl">
-      <Filter>リソース ファイル</Filter>
-    </FxCompile>
-    <FxCompile Include="..\Library\hlsl\HullShader.hlsl">
       <Filter>リソース ファイル</Filter>
     </FxCompile>
     <FxCompile Include="..\Library\hlsl\Pixel.hlsl">
@@ -254,6 +245,18 @@
       <Filter>リソース ファイル</Filter>
     </FxCompile>
     <FxCompile Include="..\Library\hlsl\InstancingVertex.hlsl">
+      <Filter>リソース ファイル</Filter>
+    </FxCompile>
+    <FxCompile Include="..\Library\hlsl\DepthWriteVS.hlsl">
+      <Filter>リソース ファイル</Filter>
+    </FxCompile>
+    <FxCompile Include="..\Library\hlsl\DepthWritePS.hlsl">
+      <Filter>リソース ファイル</Filter>
+    </FxCompile>
+    <FxCompile Include="..\Library\hlsl\ShadowPixel.hlsl">
+      <Filter>リソース ファイル</Filter>
+    </FxCompile>
+    <FxCompile Include="..\Library\hlsl\AssimpShadowPS.hlsl">
       <Filter>リソース ファイル</Filter>
     </FxCompile>
   </ItemGroup>

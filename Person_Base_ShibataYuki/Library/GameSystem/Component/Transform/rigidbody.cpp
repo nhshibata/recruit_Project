@@ -51,7 +51,7 @@ CRigidbody::~CRigidbody()
 //==========================================================
 // 更新
 //==========================================================
-void CRigidbody::Update()
+void CRigidbody::FixedUpdate()
 {
 	Vector3 pos = GetOwner()->GetTransform()->GetPos();
 	Vector3 oldPos = GetOwner()->GetTransform()->GetOldPos();
@@ -60,7 +60,6 @@ void CRigidbody::Update()
 	// 重力を与える
 	if (m_bGravity)
 	{
-		//m_fResistance = std::clamp(m_fResistance, 0.f, 1.f);
 		//m_vVel *= (1.0f - m_fResistance);
 		//m_vVel.y += m_fGravity * CFps::Get().DeltaTime();
 
@@ -72,7 +71,8 @@ void CRigidbody::Update()
 	m_vVel += vec * CFps::Get()->DeltaTime();
 	pos += m_vVel * CFps::Get()->DeltaTime();
 
-	m_vVel = Vector3(0, 0, 0);
+	m_fResistance = std::clamp(m_fResistance, 0.0f, 1.0f);
+	m_vForce *= (1.0f - m_fResistance);
 
 	// 位置固定
 	m_pFreezPos.Fix(pos);

@@ -82,19 +82,19 @@ void CDebugCamera::Update()
 		m_eMode = ECameraMode::CAM_MODE_DOLLY;
 
 		auto pos = Transform()->GetPos();
-		if (GetAsyncKeyState(0x8000 & 'A'))
+		if (GetAsyncKeyState('A'))
 		{
 			pos -= Transform()->right() * MOVE_SPEED;
 		}
-		if (GetAsyncKeyState(0x8000 & 'D'))
+		if (GetAsyncKeyState('D'))
 		{
 			pos += Transform()->right() * MOVE_SPEED;
 		}
-		if (GetAsyncKeyState(0x8000 & 'W'))
+		if (GetAsyncKeyState('W'))
 		{
 			pos += Transform()->forward() * MOVE_SPEED;
 		}
-		if (GetAsyncKeyState(0x8000 & 'S'))
+		if (GetAsyncKeyState('S'))
 		{
 			pos -= Transform()->forward() * MOVE_SPEED;
 		}
@@ -227,7 +227,6 @@ void CDebugCamera::CameraMouseMove(int x, int y)
 	}
 
 	Transform()->SetPos(pos);
-	m_vPos = pos;
 
 	// マウスの座標更新
 	m_oldMousePos.x = x;

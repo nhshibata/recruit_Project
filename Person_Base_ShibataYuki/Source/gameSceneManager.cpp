@@ -8,7 +8,7 @@
 
 //--- インクルード部
 #include <spellPlayer.h>
-#include <fadeController.h>
+#include <common/fadeController.h>
 #include <stageManager.h>
 #include <gameSceneManager.h>
 #include <spellDefine.h>
@@ -61,7 +61,7 @@ void CGameSceneManager::Awake()
 //========================================================
 void CGameSceneManager::Init()
 {
-	{
+	/*{
 		auto obj = CGameObject::CreateObject().lock();
 		m_pPlayer = obj->AddComponent<CSpellPlayer>();
 	}
@@ -71,7 +71,7 @@ void CGameSceneManager::Init()
 		auto stage = obj->AddComponent<CStageManager>();
 		stage->StartBuild(FORDER_DIR(Data/CSV/stage01.csv));
 	}
-
+*/
 }
 
 //========================================================

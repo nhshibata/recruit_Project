@@ -8,7 +8,7 @@
 
 //--- インクルード部
 #include <titleSceneManager.h>
-#include <fadeController.h>
+#include <common/fadeController.h>
 #include <spellDefine.h>
 #include <titleMove.h>
 
@@ -112,7 +112,7 @@ using namespace Spell;
 //
 //	void SetPos(const Vector2 pos) { m_vStartPos = pos;}
 //};
-
+//
 //class CColorMove : public CComponent
 //{
 //private:
@@ -211,12 +211,12 @@ CTitleSceneManager::~CTitleSceneManager()
 void CTitleSceneManager::Create()
 {
 	// 名前設定
-	//GetOwner()->SetName(Spell::OBJ_NAME_TITLE);
+	GetOwner()->SetName(Spell::OBJ_NAME_TITLE);
 
-	////--- 音再生
-	//CSound::Play(eBGM::BGM_TITLE);
-	//
-	////--- オブジェクト作成
+	//--- 音再生
+	CSound::Play(eBGM::BGM_TITLE);
+	
+	//--- オブジェクト作成
 	//{
 	//	//--- ロゴ
 	//	CGameObject::Ptr obj = CGameObject::CreateObject().lock();
@@ -313,8 +313,8 @@ void CTitleSceneManager::Create()
 void CTitleSceneManager::Init()
 {
 	// ﾎﾟｲﾝﾀの取得
-	//auto obj = CGameObject::FindGameObjectWithTag(Spell::TAG_FADE);
-	//m_pFade = obj.lock()->GetComponent<CFadeController>();
+	auto obj = CGameObject::FindGameObjectWithTag(Spell::TAG_FADE);
+	m_pFade = obj.lock()->GetComponent<CFadeController>();
 
 
 }
@@ -326,13 +326,13 @@ void CTitleSceneManager::Init()
 void CTitleSceneManager::Update()
 {
 	// フェード中は処理しない
-	//if (m_pFade.lock()->IsFadeProcess())
-	//	return;
+	if (m_pFade.lock()->IsFadeProcess())
+		return;
 
-	//if (CInput::GetKeyTrigger(VK_RETURN))
-	//{
-	//	m_pFade.lock()->SetScene(Spell::OBJ_NAME_GAME);
-	//}
+	if (CInput::GetKeyTrigger(VK_RETURN))
+	{
+		m_pFade.lock()->SetScene(Spell::OBJ_NAME_GAME);
+	}
 
 }
 

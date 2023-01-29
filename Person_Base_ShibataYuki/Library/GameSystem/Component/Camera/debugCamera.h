@@ -47,7 +47,7 @@ namespace MySpace
 			};
 		private:
 			//--- ƒƒ“ƒo•Ï”
-			const float MOVE_SPEED = 1.0f / 60.0f;
+			const float MOVE_SPEED = 20.0f / 60.0f;
 			ECameraMode m_eMode;		// ƒJƒƒ‰‹“_
 			bool m_bMouse;
 			POINT m_oldMousePos;

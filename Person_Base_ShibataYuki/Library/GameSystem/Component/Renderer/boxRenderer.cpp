@@ -36,6 +36,15 @@ CBoxRenderer::~CBoxRenderer()
 }
 
 //==========================================================
+// “Ç‚Ýž‚ÝŽžŒÄ‚Ño‚µ
+//==========================================================
+void CBoxRenderer::OnLoad()
+{
+	CRenderer::OnLoad();
+	SetBox(m_vSize);
+}
+
+//==========================================================
 // ¶¬ŽžŒÄ‚Ño‚µ
 //==========================================================
 void CBoxRenderer::Awake()
@@ -125,11 +134,13 @@ HRESULT CBoxRenderer::SetBox(Vector3 vBBox)
 
 void CBoxRenderer::ImGuiDebug()
 {
-	if (ImGui::Button(u8"SphereRenderer"))
-		m_vSize = Transform()->GetScale();
+	//ImGui::Button(u8"SphereRenderer")
+
+	m_vSize = Transform()->GetScale();
 	if (ImGui::DragFloat3("Box", (float*)&m_vSize))
 	{
 		SetBox(m_vSize);
+		Transform()->SetScale(m_vSize);
 	}
 	CMeshRenderer::ImGuiDebug();
 

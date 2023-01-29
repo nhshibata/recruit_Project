@@ -64,6 +64,7 @@ namespace MySpace
 			CPolygonRenderer(const CPolygonRenderer&);
 			virtual ~CPolygonRenderer();
 
+			virtual void OnLoad();
 			virtual void Awake();
 			virtual void Init();
 			virtual void Update();

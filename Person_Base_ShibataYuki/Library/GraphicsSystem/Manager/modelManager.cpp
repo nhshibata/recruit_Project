@@ -146,3 +146,22 @@ int CModelManager::GetModelCnt(std::string name)
 	}
 	return 0;
 }
+
+//==========================================================
+// 使用終了後呼び出し
+//==========================================================
+void CModelManager::FinishUse(std::string name)
+{
+	// そもそも読みこんでいるか
+	if (m_aResourceMap.count(name))
+	{
+		// 管理ｸﾗｽしか所持者が居ないか
+		if (m_aResourceMap[name].use_count() == 1)
+		{
+			auto it = m_aResourceMap.find(name);
+			(*it).second->Release();
+			(*it).second.reset();
+			it = m_aResourceMap.erase(it);
+		}
+	}
+}

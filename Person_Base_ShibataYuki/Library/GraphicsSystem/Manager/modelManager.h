@@ -48,6 +48,9 @@ namespace MySpace
 			// *@モデルの使用数取得
 			int GetModelCnt(std::string name);
 
+			// *@使用終了後呼び出し
+			void FinishUse(std::string name);
+
 		};
 
 	}

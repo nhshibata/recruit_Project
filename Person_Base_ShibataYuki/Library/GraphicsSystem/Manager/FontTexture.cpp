@@ -72,6 +72,7 @@ void CFontTexture::Uninit()
 		for (auto & str : font.second)
 		{
 			str.second.pTex->Release();
+			str.second.pTex = nullptr;
 		}
 	}
 	m_aStringMap.clear();

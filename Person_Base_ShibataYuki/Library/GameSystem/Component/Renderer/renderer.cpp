@@ -19,7 +19,7 @@ using namespace MySpace::Game;
 // コンストラクタ
 //==========================================================
 CRenderer::CRenderer(std::shared_ptr<CGameObject> owner)
-	:CComponent(owner),m_bVisible(true), m_vColor(1,1,1,1)
+	:CComponent(owner), m_bVisible(true), m_vColor(1,1,1,1)
 {
 
 }
@@ -30,7 +30,6 @@ CRenderer::CRenderer(std::shared_ptr<CGameObject> owner)
 CRenderer::~CRenderer()
 {
 	if(auto sys = SceneManager::CSceneManager::Get()->GetDrawSystem(); sys)
-#pragma warning(suppress: 26444)
 		sys->ExecutSystem(m_nDrawIdx);
 }
 
@@ -41,6 +40,14 @@ void CRenderer::DrawRequest()
 {
 	if (auto sys = SceneManager::CSceneManager::Get()->GetDrawSystem(); sys)
 		m_nDrawIdx = sys->RegistToSystem(BaseToDerived<CRenderer>());
+}
+
+//==========================================================
+// 読み込み時呼び出し
+//==========================================================
+void CRenderer::OnLoad()
+{
+	Init();
 }
 
 //==========================================================

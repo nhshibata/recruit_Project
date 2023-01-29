@@ -6,8 +6,8 @@
 //
 //========================================================
 
-#ifndef __GAME_MANAGER_H__
-#define __GAME_MANAGER_H__
+#ifndef __SPELL_GAME_MANAGER_H__
+#define __SPELL_GAME_MANAGER_H__
 
 //--- インクルード部
 #include <GameSystem/Component/component.h>
@@ -34,6 +34,7 @@ namespace Spell
 
 namespace Spell
 {
+	using namespace MySpace::Game;
 
 	class CGameManager : public CComponent
 	{
@@ -56,4 +57,4 @@ namespace Spell
 
 }
 
-#endif // !__GAME_MANAGER_H__
+#endif // !__SPELL_GAME_MANAGER_H__

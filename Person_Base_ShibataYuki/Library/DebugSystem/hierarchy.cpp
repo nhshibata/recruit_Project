@@ -63,7 +63,7 @@ void CHierachy::Update(ImGuiManager* manager)
 	ImGui::PushStyleColor(ImGuiCol_TitleBgActive, ImVec4(0.0f, 0.7f, 0.2f, 1.0f));
 	ImGui::PushStyleColor(ImGuiCol_TitleBg, ImVec4(0.0f, 0.3f, 0.1f, 1.0f));
 	ImGui::SetNextWindowPos(ImVec2(20, 20), ImGuiCond_Once);
-	ImGui::SetNextWindowSize(ImVec2(200, 400), ImGuiCond_Once);
+	ImGui::SetNextWindowSize(ImVec2(250, 400), ImGuiCond_Once);
 	bool flg = true;
 	ImGui::Begin(u8"Hierarchy", &flg, ImGuiWindowFlags_MenuBar);
 
@@ -77,7 +77,7 @@ void CHierachy::Update(ImGuiManager* manager)
 	if (ImGui::BeginMenuBar())
 	{
 		//--- シーン
-		if (ImGui::BeginMenu("File"))
+		if (ImGui::BeginMenu("Scene File"))
 		{
 			if (ImGui::MenuItem("New Scene"))
 			{
@@ -92,7 +92,7 @@ void CHierachy::Update(ImGuiManager* manager)
 		}
 
 		//--- オブジェクト生成
-		if (ImGui::BeginMenu("GameObject"))
+		if (ImGui::BeginMenu("New GameObject"))
 		{
 			if (ImGui::MenuItem("Empty"))
 			{
@@ -110,7 +110,7 @@ void CHierachy::Update(ImGuiManager* manager)
 			{
 				CGameObject::Ptr obj = CSceneManager::Get()->GetActiveScene()->GetObjManager()->CreateGameObject();
 				auto render = obj->AddComponent<CModelRenderer>();
-				render->SetStatic(CMeshRenderer::EStaticMode::NONE_MOVE);
+				render->SetStatic(CMeshRenderer::EStaticMode::STATIC);
 				// ｺﾝﾎﾟｰﾈﾝﾄの追加後
 				manager->GetInspector()->SetSelectGameObject(obj);
 			}
@@ -197,11 +197,9 @@ void CHierachy::Update(ImGuiManager* manager)
 	
 	ImGui::End();
 
-	// セーブロード
-	if (m_bLoadSaveWindow)
-	{
-		DispSaveLoadMenu();
-	}
+	//--- セーブロード
+	DispSaveLoadMenu();
+	
 
 	ImGui::PopStyleColor();
 	ImGui::PopStyleColor();
@@ -221,47 +219,59 @@ void CHierachy::LoadScenePathList()
 //==========================================================
 void CHierachy::DispSaveLoadMenu()
 {
-	bool flg = true;
 	ImGui::SetNextWindowPos(ImVec2(20, 20), ImGuiCond_Once);
 	ImGui::SetNextWindowSize(ImVec2(200, 300), ImGuiCond_Once);
 
-	ImGui::Begin("Load", &flg, ImGuiWindowFlags_MenuBar);
-
-	if (ImGui::BeginMenuBar()) {
-		if (ImGui::BeginMenu("sceneList"))
+	if (ImGui::Begin("Load", &m_bLoadSaveWindow, ImGuiWindowFlags_MenuBar))
+	{
+		if (ImGui::BeginMenuBar())
 		{
-			for (auto it = m_scenePathList.begin(); it < m_scenePathList.end(); ++it)
+			if (ImGui::BeginMenu("SceneList"))
 			{
-				auto name = (*it).c_str();
-				if (ImGui::MenuItem(name)) {
-					m_loadPath = name;
+				for (auto it = m_scenePathList.begin(); it < m_scenePathList.end(); ++it)
+				{
+					auto name = (*it).c_str();
+					if (ImGui::MenuItem(name))
+					{
+						m_loadPath = name;
+					}
 				}
+				ImGui::EndMenu();
 			}
-			ImGui::EndMenu();
+			ImGui::EndMenuBar();
 		}
-		ImGui::EndMenuBar();
-	}
-	if (ImGui::Button("pathReload")) {
-		LoadScenePathList();
-	}
+		if (ImGui::Button("Scene Path Reload"))
+		{
+			LoadScenePathList();
+		}
 
-	m_loadPath = InputString(m_loadPath, u8"loadFile");
+		m_loadPath = InputString(m_loadPath, "LoadFile");
 
-	if (ImGui::Button("Load"))
-	{
-		CSceneManager::Get()->LoadScene(m_loadPath);
+		if (ImGui::Button("Load"))
+		{
+			if (CSceneManager::Get()->LoadScene(m_loadPath))
+				m_bLoadSaveWindow = false;
+		}
+		ImGui::Separator();
+
+
+		ImGui::SetNextWindowPos(ImVec2(20, 20), ImGuiCond_Once);
+		ImGui::SetNextWindowSize(ImVec2(200, 300), ImGuiCond_Once);
+
+		m_savePath = InputString(m_savePath, "SaveFile");
+		if (ImGui::Button("Save"))
+		{
+			CSceneManager::Get()->SaveScene(m_savePath);
+		}
+		ImGui::SameLine();
+		if (ImGui::Button("OverWrite"))
+		{
+			if (CSceneManager::Get()->LoadScene(m_savePath))
+				m_bLoadSaveWindow = false;
+		}
+
+		ImGui::End();
 	}
-	ImGui::Separator();
-
-	ImGui::SetNextWindowPos(ImVec2(20, 20), ImGuiCond_Once);
-	ImGui::SetNextWindowSize(ImVec2(200, 300), ImGuiCond_Once);
-
-	m_savePath = InputString(m_savePath, u8"saveFile");
-	if (ImGui::Button(u8"Save"))
-	{
-		CSceneManager::Get()->SaveScene(m_savePath);
-	}
-	ImGui::End();
 }
 
 #pragma region GAME_OBJECT
@@ -280,7 +290,7 @@ void CHierachy::DispChild(ImGuiManager* manager, std::weak_ptr<MySpace::Game::CG
 	{
 		if (object.lock()->GetTransform()->GetChildCount() == 0)
 		{
-			ImGui::Text(u8"なし");
+			ImGui::Text("none");
 			ImGui::TreePop();
 			return;
 		}
@@ -346,7 +356,7 @@ void CHierachy::DispSearch()
 
 	static const char* szDisp[static_cast<int>(ESearchTerms::MAX)] =
 	{
-		"Name","Tag","Component","sActiv","sStop","sDestroy"
+		"Name","Tag","Component","sActive","sStop","sDestroy"
 	};
 
 	ImGui::Text((m_Search .bSearchCriteria? u8"Search:ON" : u8"Search:OFF"));

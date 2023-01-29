@@ -19,6 +19,7 @@
 #include <GameSystem/Component/Renderer/meshRenderer.h>
 
 #include <GraphicsSystem/Render/billboard.h>
+#include <GraphicsSystem/Shader/constantBuffer.h>
 #include <GraphicsSystem/Manager/assetsManager.h>
 #include <GraphicsSystem/Manager/imageResourceManager.h>
 #include <GraphicsSystem/Manager/effectManager.h>
@@ -28,6 +29,7 @@
 #include <ImGui/imgui.h>
 
 using namespace MySpace::Game;
+using namespace MySpace::Graphics;
 
 //==========================================================
 // コンストラクタ
@@ -38,6 +40,7 @@ CDrawSystem::CDrawSystem()
 	m_aPolygonList.clear();
 	m_aInstancingModelMap.clear();
 	m_aInstancingMeshMap.clear();
+	m_pDepthShadow = std::make_unique<CDepthShadow>();
 	
 #if BUILD_MODE
 	m_nSkipCnt = m_nDrawCnt = m_nInstancingCnt = 0;
@@ -51,6 +54,15 @@ CDrawSystem::CDrawSystem()
 //==========================================================
 CDrawSystem::~CDrawSystem()
 {
+	m_pDepthShadow.reset();
+}
+
+//==========================================================
+// 初期化
+//==========================================================
+void CDrawSystem::Init()
+{
+	m_pDepthShadow->InitShader();
 }
 
 //==========================================================
@@ -64,8 +76,16 @@ int CDrawSystem::PolygonRegist(std::weak_ptr<CPolygonRenderer> render)
 	return ret;
 }
 
+void CDrawSystem::SetInstanchingMesh(std::string name, DirectX::XMFLOAT4X4 mtx, CMesh* mesh)
+{
+	if (!m_aInstancingMeshMap.count(name))
+		m_aInstancingMeshMap[name].pMesh = mesh;
+
+	m_aInstancingMeshMap[name].aMtx.push_back(mtx);
+}
+
 //==========================================================
-// 登録
+// 除外
 //==========================================================
 std::weak_ptr<CRenderer> CDrawSystem::ExecutSystem(int idx)
 {
@@ -123,7 +143,7 @@ void CDrawSystem::Update()
 	}
 
 
-	//--- 通常描画
+	//--- 3D描画(Mesh,Model)
 	for (auto & it : m_aIntMap)
 	{
 		auto render = it.second;
@@ -139,14 +159,13 @@ void CDrawSystem::Update()
 #ifdef BUILD_MODE
 		++m_nDrawCnt;
 		auto name = render.lock()->GetName();
+#endif // _DEBUG
 
 		//--- Meshｺﾝﾎﾟｰﾈﾝﾄ(および継承)か確認
 		// カリングフラグも確認
-		if (auto mesh = render.lock()->BaseToDerived<CMeshRenderer>().get(); mesh && m_bFrustum)
-#else
 		if (auto mesh = render.lock()->BaseToDerived<CMeshRenderer>().get(); mesh)
-#endif // _DEBUG
 		{	
+			
 			float fRadius = mesh->GetBSRadius();
 			auto mW = mesh->Transform()->GetWorldMatrix();
 			fRadius = (mW._11 > fRadius) ? mW._11 : fRadius;
@@ -154,22 +173,28 @@ void CDrawSystem::Update()
 			fRadius = (mW._33 > fRadius) ? mW._33 : fRadius;
 			
 			//--- ｶﾒﾗに映るか判定
-			//if (CCamera::GetMain()->CollisionViewFrustum(&mesh->GetCenter(0), mesh->GetBSRadius()) == CCamera::EFrustumResult::OUTSIDE)
+			//if (CCamera::GetMain()->CollisionViewFrustum(&mesh->GetCenter(0), mesh->GetBSRadius())==CCamera::EFrustumResult::OUTSIDE)
 			if (CCamera::GetMain()->CollisionViewFrustum(&Vector3(mW._41, mW._42 ,mW._43), fRadius) == CCamera::EFrustumResult::OUTSIDE)
 			{
 #ifdef BUILD_MODE
 				++m_nSkipCnt;
-#endif // _DEBUG
+				if (m_bFrustum)
+					continue;
+#else
 				continue;
+#endif // _DEBUG
 			}
 
-			//--- ここまできたら描画
-			render.lock()->Draw();
 		}
+
+		//--- ここまできたら描画
+		render.lock()->Draw();
 	}
 
-	//--- インスタンシング長いので関数化
-	InstancingDraw();
+	//--- 3D描画
+	// インスタンシング長いので関数化
+	Draw3DShadow();	// 影描画
+	Draw3D();		// 3D実描画
 
 	//--- UI部分描画
 	for (int cnt = UIIdx; cnt < m_aPolygonList.size(); ++cnt)
@@ -193,17 +218,7 @@ void CDrawSystem::Update()
 //==========================================================
 void CDrawSystem::Sort()
 {
-	//--- 解放確認(ここで処理eraceされるのはおかしい)
-	/*for (auto it = m_aPolygonList.begin(); it != m_aPolygonList.end();)
-	{
-		if (!(*it).lock())
-		{
-			it = m_aPolygonList.erase(it);
-			continue;
-		}
-		++it;
-	}*/
-
+	//--- 整列必要確認
 	if (m_aPolygonList.size() <= 1)
 		return;
 	
@@ -212,13 +227,61 @@ void CDrawSystem::Sort()
 	{
 		return s1.lock()->GetZ() < s2.lock()->GetZ();
 	});
-	
 }
 
 //==========================================================
-// インスタンシング描画
+// 3Dインスタンシング影描画
+// TODO:影描画フラグで影を描画するか決める仕組みがない
 //==========================================================
-void CDrawSystem::InstancingDraw()
+void CDrawSystem::Draw3DShadow()
+{
+	auto pAssets = Application::Get()->GetSystem<CAssetsManager>();
+	auto pDX = Application::Get()->GetSystem<CDXDevice>();
+
+	//--- 深度値書き込み準備
+	m_pDepthShadow->Begin();
+	
+	//--- 登録されたモデル名別に描画
+	for (auto & intancingModel : m_aInstancingModelMap)
+	{
+		//--- 描画するモデルの取得
+		auto model = pAssets->GetModelManager()->GetModel(intancingModel.first);
+		// モデルが解放されていないか一応確認
+		if (!model)
+			continue;
+
+		model->DrawInstancing(pDX->GetDeviceContext(), intancingModel.second, EByOpacity::eOpacityOnly, false);
+	}
+
+	//--- Mesh
+	for (auto & mesh : m_aInstancingMeshMap)
+	{
+		if (mesh.second.aMtx.size() == 0)// 一応確認
+			continue;
+
+		// ビルボードか確認
+		if (CBillboard* bill = dynamic_cast<CBillboard*>(mesh.second.pMesh); bill != nullptr)
+		{
+			// ﾃｸｽﾁｬ設定
+			auto image = pAssets->GetImageManager()->GetResource(mesh.first);
+			auto tex = image ? image->GetSRV() : NULL;
+			mesh.second.pMesh->DrawInstancing(mesh.second.aMtx, false, tex, &bill->GetTextureMatrix());
+		}
+		else
+		{
+			mesh.second.pMesh->DrawInstancing(mesh.second.aMtx, false);
+		}
+	}
+
+	//--- 深度値書き込み終了
+	m_pDepthShadow->End();
+
+}
+
+//==========================================================
+// 3Dインスタンシング描画
+//==========================================================
+void CDrawSystem::Draw3D()
 {
 	auto pAssets = Application::Get()->GetSystem<CAssetsManager>();
 	auto pDX = Application::Get()->GetSystem<CDXDevice>();
@@ -228,13 +291,17 @@ void CDrawSystem::InstancingDraw()
 	//pLight->SetDisable();			// ライティング無効
 	//pDX->SetZBuffer(true);		// Z書き込み
 
+	//--- 深度値ﾃｸｽﾁｬ設定
+	// modelはt4
+	m_pDepthShadow->SetUpTexture(4);
+
 	//--- 登録されたモデル名別に描画
 	//--- 不透明描画
 	for (auto & intancingModel : m_aInstancingModelMap)
 	{
 		//--- 描画するモデルの取得
 		auto model = pAssets->GetModelManager()->GetModel(intancingModel.first);
-		// モデルが解放されていないか確認
+		// モデルが解放されていないか一応確認
 		if (!model)
 			continue;
 		model->DrawInstancing(pDX->GetDeviceContext(), intancingModel.second, EByOpacity::eOpacityOnly);
@@ -255,7 +322,6 @@ void CDrawSystem::InstancingDraw()
 		//--- 描画するモデルの取得
 		auto model = pAssets->GetModelManager()->GetModel(intancingModel.first);
 		model->DrawInstancing(pDX->GetDeviceContext(), intancingModel.second, EByOpacity::eTransparentOnly);
-		intancingModel.second.clear();	// 使用終了
 	}
 	
 	pDX->SetZWrite(true);			// Z書き込み
@@ -263,28 +329,34 @@ void CDrawSystem::InstancingDraw()
 	// クリア
 	m_aInstancingModelMap.clear();
 
+
+	//--- 深度値ﾃｸｽﾁｬ設定
+	// meshはt1
+	m_pDepthShadow->SetUpTexture(1);
+
 	//--- メッシュインスタンシング描画
 	for (auto & mesh : m_aInstancingMeshMap)
 	{
-		if (mesh.second.size() == 0)// 一応確認
+		if (mesh.second.aMtx.size() == 0)// 一応確認
 			continue;
 
 		// ビルボードか確認
-		CBillboard* bill = dynamic_cast<CBillboard*>(mesh.second[0]);
-		if (bill)
-		{
+		if (CBillboard* bill = dynamic_cast<CBillboard*>(mesh.second.pMesh); bill != nullptr)
+		{	
+			// ﾃｸｽﾁｬ設定
 			auto image = pAssets->GetImageManager()->GetResource(mesh.first);
 			auto tex = image ? image->GetSRV() : NULL;
-			CMesh::DrawInstancing(mesh.second, tex, &bill->GetTextureMatrix());
+			mesh.second.pMesh->DrawInstancing(mesh.second.aMtx, true, tex, &bill->GetTextureMatrix());
 		}
 		else
 		{
-			CMesh::DrawInstancing(mesh.second);
+			mesh.second.pMesh->DrawInstancing(mesh.second.aMtx);
 		}
 #if BUILD_MODE
 		++m_nInstancingCnt;
 #endif // _DEBUG
 	}
+
 	// クリア
 	m_aInstancingMeshMap.clear();
 
@@ -292,20 +364,27 @@ void CDrawSystem::InstancingDraw()
 	pLight->SetEnable();		// ライティング有効
 	//pDX->SetZBuffer(true);
 	//CDXDevice::Get()->SetBlendState(static_cast<int>(EBlendState::BS_NONE));		// αブレンディング無効
+
 }
+
 
 #ifdef BUILD_MODE
 
 void CDrawSystem::ImGuiDebug()
 {
-	ImGui::Text(u8"描画リスト数 : %d", m_aPolygonList.size());
-	ImGui::Text(u8"描画OK数 : %d", m_nDrawCnt);
+	ImGui::Text("Renderer MAX : %d", m_aPolygonList.size());
+	ImGui::Text(u8"Draw OK : %d", m_nDrawCnt);
 	ImGui::SameLine();
-	ImGui::Text(u8"描画スキップ数 : %d", m_nSkipCnt);
+	ImGui::Text(u8"Draw NO : %d", m_nSkipCnt);
 	ImGui::SameLine();
 	ImGui::Checkbox("Culling ON/OFF", (bool*)&m_bFrustum);
-	ImGui::Text(u8"インスタンシング数 : %d", m_nInstancingCnt);
-	ImGui::Checkbox(u8"描画ソートON", &m_bIsSortNecessary);
+	ImGui::Text("Instancing Num : %d", m_nInstancingCnt);
+	ImGui::Checkbox(u8"Renderer Sort", &m_bIsSortNecessary);
+
+	ImGui::SetNextWindowPos(ImVec2(CScreen::GetWidth()*0.3f, CScreen::GetHeight()*0.7f));
+	ImGui::Begin("Shadow Depth");
+	ImGui::Image(m_pDepthShadow->GetResource(), ImVec2(CScreen::GetWidth()*0.25f,CScreen::GetHeight()*0.25f));
+	ImGui::End();
 
 	//ImGui::Text("Resource/Model:%d", CModelManager::Get()->GetNameList().size());
 	//ImGui::Text("Resource/Image:%d", CImageResourceManager::Get()->GetNameList().size());

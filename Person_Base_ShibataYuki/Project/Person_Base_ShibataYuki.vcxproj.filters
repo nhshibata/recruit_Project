@@ -16,43 +16,31 @@
     <Filter Include="common">
       <UniqueIdentifier>{502c8b23-2a39-4670-9e91-ac9586946f19}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Spel">
+    <Filter Include="Spell">
       <UniqueIdentifier>{114c805e-2d37-48d4-aa1d-fe787bd54dbf}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="..\Library\Source\startUp.cpp">
-      <Filter>ソース ファイル</Filter>
-    </ClCompile>
-    <ClCompile Include="..\Library\Source\gameCamera.cpp">
-      <Filter>ソース ファイル</Filter>
-    </ClCompile>
-    <ClCompile Include="..\Library\Source\spel\gameSpellRhythm.cpp">
-      <Filter>Spel</Filter>
-    </ClCompile>
-    <ClCompile Include="..\Library\Source\spel\mage.cpp">
-      <Filter>Spel</Filter>
-    </ClCompile>
-    <ClCompile Include="..\Library\Source\spel\mageSociety.cpp">
-      <Filter>Spel</Filter>
-    </ClCompile>
-    <ClCompile Include="..\Library\Source\spel\battleStatus.cpp">
-      <Filter>Spel</Filter>
-    </ClCompile>
-    <ClCompile Include="..\Library\Source\spel\command.cpp">
-      <Filter>Spel</Filter>
-    </ClCompile>
-    <ClCompile Include="..\Library\Source\spel\commandSpell.cpp">
-      <Filter>Spel</Filter>
-    </ClCompile>
-    <ClCompile Include="..\Library\Source\common\eventMessage.cpp">
+    <ClCompile Include="..\Source\common\eventMessage.cpp">
       <Filter>common</Filter>
     </ClCompile>
-    <ClCompile Include="..\Library\Source\spel\partner.cpp">
-      <Filter>Spel</Filter>
+    <ClCompile Include="..\Source\common\fadeController.cpp">
+      <Filter>common</Filter>
     </ClCompile>
-    <ClCompile Include="..\Library\Source\spel\partnerNode.cpp">
-      <Filter>Spel</Filter>
+    <ClCompile Include="..\Source\gameCamera.cpp">
+      <Filter>ソース ファイル</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Source\gameManager.cpp">
+      <Filter>ソース ファイル</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Source\gameSceneManager.cpp">
+      <Filter>ソース ファイル</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Source\spellComponents.cpp">
+      <Filter>ソース ファイル</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Source\spellPlayer.cpp">
+      <Filter>ソース ファイル</Filter>
     </ClCompile>
     <ClCompile Include="..\Source\stageBuild.cpp">
       <Filter>ソース ファイル</Filter>
@@ -60,58 +48,40 @@
     <ClCompile Include="..\Source\stageManager.cpp">
       <Filter>ソース ファイル</Filter>
     </ClCompile>
-    <ClCompile Include="..\Source\spellPlayer.cpp">
-      <Filter>ソース ファイル</Filter>
-    </ClCompile>
-    <ClCompile Include="..\Source\gameManager.cpp">
-      <Filter>ソース ファイル</Filter>
-    </ClCompile>
-    <ClCompile Include="..\Source\fadeController.cpp">
-      <Filter>ソース ファイル</Filter>
-    </ClCompile>
-    <ClCompile Include="..\Source\titleSceneManager.cpp">
-      <Filter>ソース ファイル</Filter>
-    </ClCompile>
-    <ClCompile Include="..\Source\gameSceneManager.cpp">
+    <ClCompile Include="..\Source\startUp.cpp">
       <Filter>ソース ファイル</Filter>
     </ClCompile>
     <ClCompile Include="..\Source\titleMove.cpp">
       <Filter>ソース ファイル</Filter>
     </ClCompile>
-    <ClCompile Include="..\Source\spellComponents.cpp">
+    <ClCompile Include="..\Source\titleSceneManager.cpp">
       <Filter>ソース ファイル</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="..\Library\Source\gameCamera.h">
-      <Filter>ヘッダー ファイル</Filter>
-    </ClInclude>
-    <ClInclude Include="..\Library\Source\spel\commandSpell.h">
-      <Filter>Spel</Filter>
-    </ClInclude>
-    <ClInclude Include="..\Library\Source\spel\gameSpellRhythm.h">
-      <Filter>Spel</Filter>
-    </ClInclude>
-    <ClInclude Include="..\Library\Source\spel\mage.h">
-      <Filter>Spel</Filter>
-    </ClInclude>
-    <ClInclude Include="..\Library\Source\spel\mageSociety.h">
-      <Filter>Spel</Filter>
-    </ClInclude>
-    <ClInclude Include="..\Library\Source\spel\battleStatus.h">
-      <Filter>Spel</Filter>
-    </ClInclude>
-    <ClInclude Include="..\Library\Source\spel\command.h">
-      <Filter>Spel</Filter>
-    </ClInclude>
-    <ClInclude Include="..\Library\Source\common\eventMessage.h">
+    <ClInclude Include="..\Source\common\fadeController.h">
       <Filter>common</Filter>
     </ClInclude>
-    <ClInclude Include="..\Library\Source\spel\partner.h">
-      <Filter>Spel</Filter>
+    <ClInclude Include="..\Source\common\eventMessage.h">
+      <Filter>common</Filter>
     </ClInclude>
-    <ClInclude Include="..\Library\Source\spel\partnerNode.h">
-      <Filter>Spel</Filter>
+    <ClInclude Include="..\Source\gameCamera.h">
+      <Filter>ヘッダー ファイル</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Source\gameManager.h">
+      <Filter>ヘッダー ファイル</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Source\gameSceneManager.h">
+      <Filter>ヘッダー ファイル</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Source\spellComponents.h">
+      <Filter>ヘッダー ファイル</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Source\spellDefine.h">
+      <Filter>ヘッダー ファイル</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Source\spellPlayer.h">
+      <Filter>ヘッダー ファイル</Filter>
     </ClInclude>
     <ClInclude Include="..\Source\stageBuild.h">
       <Filter>ヘッダー ファイル</Filter>
@@ -119,32 +89,30 @@
     <ClInclude Include="..\Source\stageManager.h">
       <Filter>ヘッダー ファイル</Filter>
     </ClInclude>
-    <ClInclude Include="..\Source\spellPlayer.h">
-      <Filter>ヘッダー ファイル</Filter>
-    </ClInclude>
-    <ClInclude Include="..\Source\spellDefine.h">
-      <Filter>ヘッダー ファイル</Filter>
-    </ClInclude>
-    <ClInclude Include="..\Source\gameManager.h">
-      <Filter>ヘッダー ファイル</Filter>
-    </ClInclude>
-    <ClInclude Include="..\Source\fadeController.h">
+    <ClInclude Include="..\Source\titleMove.h">
       <Filter>ヘッダー ファイル</Filter>
     </ClInclude>
     <ClInclude Include="..\Source\titleSceneManager.h">
       <Filter>ヘッダー ファイル</Filter>
     </ClInclude>
-    <ClInclude Include="..\Source\gameSceneManager.h">
+    <ClInclude Include="resource.h">
       <Filter>ヘッダー ファイル</Filter>
     </ClInclude>
-    <ClInclude Include="..\Source\titleMove.h">
-      <Filter>ヘッダー ファイル</Filter>
-    </ClInclude>
-    <ClInclude Include="..\Source\spellComponents.h">
+    <ClInclude Include="resource1.h">
       <Filter>ヘッダー ファイル</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="cpp.hint" />
+  </ItemGroup>
+  <ItemGroup>
+    <ResourceCompile Include="Person_Base_ShibataYuki.rc">
+      <Filter>リソース ファイル</Filter>
+    </ResourceCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <Image Include="..\Data\ico\sweets_biscuit.ico">
+      <Filter>リソース ファイル</Filter>
+    </Image>
   </ItemGroup>
 </Project>
