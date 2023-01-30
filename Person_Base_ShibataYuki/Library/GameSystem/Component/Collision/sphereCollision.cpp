@@ -9,8 +9,15 @@
 #include <GameSystem/GameObject/gameObject.h>
 #include <GameSystem/Manager/sceneManager.h>
 
+#ifdef BUILD_MODE
+
 #include <ImGui/imgui.h>
 #include <GraphicsSystem/Render/Sphere.h>
+#include <GameSystem/Manager/drawSystem.h>
+#include <GameSystem/Component/Renderer/modelRenderer.h>
+#include <GameSystem/Component/Renderer/sphereRenderer.h>
+
+#endif // BUILD_MODE
 
 using namespace MySpace::Game;
 
@@ -23,6 +30,7 @@ CSphereCollision::CSphereCollision(std::shared_ptr<CGameObject> owner, float rad
 #if BUILD_MODE
 	m_pDebugSphere = std::make_shared<CSphere>();
 	m_pDebugSphere->Init(16, 8, radius);
+	m_pDebugSphere->SetDiffuse(Vector4(0, 1, 0, 0.5f));
 #endif //
 }
 
@@ -32,6 +40,7 @@ CSphereCollision::CSphereCollision(std::shared_ptr<CGameObject> owner, float rad
 CSphereCollision::~CSphereCollision()
 {
 #if BUILD_MODE
+	m_pDebugSphere->Fin();
 	m_pDebugSphere.reset();
 #endif // BUILD_MODE
 }
@@ -90,8 +99,7 @@ bool CSphereCollision::HitCheckPtr(CCollision* other)
 			if (!trigger)
 			{
 				// TODO: 確認
-				//Transform()->SetPos(PosAdjustment(other->Transform()->GetPos(), com->GetRadius()));
-				PushObject(com);
+				PushObject(com, com->GetRadius());
 				// 押し出しを行うと相手は判定されないため、ここで行う
 				HitResponse(this);
 			}
@@ -109,8 +117,7 @@ bool CSphereCollision::HitCheckPtr(CCollision* other)
 			if (!trigger)
 			{
 				// TODO: 確認
-				//Transform()->SetPos(otherBox->PosAdjustment(other->Transform()->GetPos(), size));
-				PushObject(com);
+				PushObject(other, otherBox->GetSize().GetLargeValue());
 				// 押し出しを行うと相手は判定されないため、ここで行う
 				other->HitResponse(this);
 			}
@@ -126,59 +133,17 @@ bool CSphereCollision::HitCheckPtr(CCollision* other)
 //==========================================================
 // 押し出し
 //==========================================================
-void CSphereCollision::PushObject(CSphereCollision* other)
+void CSphereCollision::PushObject(CCollision* other, float radius)
 {
 	//---  押し出し
 	// 二点間と２半径の差
 	Vector3 distance = Transform()->GetPos() - other->Transform()->GetPos();
-	float len = (GetRadius() + other->GetRadius()) - distance.Length();
+	float len = (GetRadius() + radius) - distance.Length();
 	// 押し出す方向
-	Vector3 vec = Vector3::Normalize(distance) * len;
+	distance = distance.Normalize();
+	Vector3 vec = distance * len;
 	// 押し出し
 	Transform()->SetPos(Transform()->GetPos() + vec);
-}
-
-//==========================================================
-// 押し出し修正
-//==========================================================
-Vector3 CSphereCollision::PosAdjustment(Vector3 otherPos, float size)
-{
-	Vector3 checkPos = Transform()->GetPos();
-	Vector3 oldPos = Transform()->GetOldPos();
-	Vector3 dist = Vector3::check(checkPos, oldPos);
-
-	// 差がない
-	if (dist == dist.zero())
-		return checkPos;
-	
-	// 動いている
-	if (dist.x == 1)
-	{
-		// xの確認
-		checkPos.x = oldPos.x + dist.x;
-		if (!Sphere(checkPos, m_fRadius, otherPos, size))
-		{
-			return checkPos;
-		}
-	}
-	if (dist.y == 1)
-	{
-		checkPos.y = oldPos.y + dist.y;
-		if (!Sphere(checkPos, m_fRadius, otherPos, size))
-		{
-			return checkPos;
-		}
-	}
-	if (dist.z == 1)
-	{
-		checkPos.z = oldPos.z - dist.z;
-		// ここまできて当たってるなら過去座標を渡す
-		if (Sphere(checkPos, m_fRadius, otherPos, size))
-		{
-			return oldPos;
-		}
-	}
-	return checkPos;
 }
 
 
@@ -190,12 +155,26 @@ void CSphereCollision::ImGuiDebug()
 	if (!m_pDebugSphere)
 		return;
 
-	// 3次元座標
-	//ImGui::Checkbox(u8"状態", &IsActive());
-	if (ImGui::DragFloat3(u8"サイズ", &m_fRadius))
+	if (ImGui::DragFloat("radius", &m_fRadius))
 	{
 		m_pDebugSphere->Init(16, 8, m_fRadius);
 	}
+
+	if (ImGui::Button("sphere resize"))
+	{
+		if (auto model = GetComponent<CModelRenderer>(); model)
+			m_fRadius = model->GetModel().lock()->GetRadius();
+		else
+			m_fRadius = Transform()->GetScale().GetLargeValue();
+	}
+
+}
+
+// 仮実装
+void CSphereCollision::Update()
+{
+	if (!this->IsActive())
+		return;
 
 	// debug表示
 	XMVECTOR vCenter = XMLoadFloat3(&GetCenter());
@@ -206,8 +185,13 @@ void CSphereCollision::ImGuiDebug()
 	XMFLOAT4X4 mW;
 	XMStoreFloat4x4(&mW, mWorld);
 	m_pDebugSphere->SetWorld(&mW);
-	m_pDebugSphere->Draw();
 
+	auto sys = SceneManager::CSceneManager::Get()->GetDrawSystem();
+	sys->SetInstanchingMesh(
+		std::string(std::to_string(m_pDebugSphere->GetIndexNum()) + std::to_string(m_pDebugSphere->GetMaterial()->GetFloat())),
+		mW,
+		m_pDebugSphere.get()
+	);
 }
 
 #endif // BUILD_MODE

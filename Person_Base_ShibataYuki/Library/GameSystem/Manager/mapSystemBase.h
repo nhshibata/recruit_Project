@@ -67,7 +67,7 @@ namespace MySpace
 			// *@”jŠü(map‚Ì‚½‚ßA®—ñ‚Í‚³‚¹‚È‚¢)
 			virtual inline T ExecutSystem(int idx)
 			{
-				if (idx != -1)
+				if (idx == -1)
 					return T();
 				T ret = m_aIntMap[idx];
 				m_aIntMap.erase(idx);

@@ -90,8 +90,8 @@ void CFps::Update()
 	// 現在時間と前回の更新時間の差を取る 1fの時間を求める
 	m_dwDeltaTime = (m_dwCurrentTime - m_dwExecLastTime);
 	// 外部からの介入があった際のため、上限を決める
-	if (m_dwDeltaTime > 100) 
-		m_dwDeltaTime = 100;
+	if (m_dwDeltaTime > 50) 
+		m_dwDeltaTime = 50;
 
 	//--- 固定時間
 	m_FixedData.m_bUpdate = false;

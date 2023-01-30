@@ -159,7 +159,7 @@
     <LinkIncremental>true</LinkIncremental>
     <OutDir>$(SolutionDir)exe\$(Configuration)\</OutDir>
     <IncludePath>$(SolutionDir)Library\ImGui;$(SolutionDir)Library\Effekseer;$(SolutionDir)Library;$(IncludePath)</IncludePath>
-    <LibraryPath>$(LibraryPath)</LibraryPath>
+    <LibraryPath>$(SolutionDir)exe\$(Configuration)\;$(SolutionDir)..\..\DirectXTex\x64\$(Configuration);$(SolutionDir)Library\Assimp\lib\x64;$(SolutionDir)Library\DirectXTex;$(SolutionDir)Library\Effekseer;$(DXSDK_DIR)lib¥x64;$(LibraryPath)</LibraryPath>
     <IntDir>$(SolutionDir)Binary\$(ProjectName)\$(Platform)\$(Configuration)\</IntDir>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
@@ -172,7 +172,7 @@
     <LinkIncremental>false</LinkIncremental>
     <OutDir>$(SolutionDir)exe\$(Configuration)\</OutDir>
     <IncludePath>$(SolutionDir)Library\ImGui;$(SolutionDir)Library\Effekseer;$(SolutionDir)Library;$(IncludePath)</IncludePath>
-    <LibraryPath>$(LibraryPath)</LibraryPath>
+    <LibraryPath>$(SolutionDir)exe\$(Configuration)\;$(SolutionDir)..\..\DirectXTex\x64\$(Configuration);$(SolutionDir)Library\Assimp\lib\x64;$(SolutionDir)Library\DirectXTex;$(SolutionDir)Library\Effekseer;$(DXSDK_DIR)lib¥x64;$(LibraryPath)</LibraryPath>
     <IntDir>$(SolutionDir)Binary\$(ProjectName)\$(Platform)\$(Configuration)\</IntDir>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">

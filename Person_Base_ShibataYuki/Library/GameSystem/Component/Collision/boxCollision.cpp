@@ -9,10 +9,15 @@
 #include <GameSystem/Component/Collision/sphereCollision.h>
 #include <GameSystem/GameObject/gameObject.h>
 #include <GameSystem/Manager/sceneManager.h>
-#include <ImGui/imgui.h>
 
 #if BUILD_MODE
+
+#include <ImGui/imgui.h>
 #include <GraphicsSystem/Render/box.h>
+#include <GameSystem/Manager/drawSystem.h>
+#include <GameSystem/Component/Renderer/modelRenderer.h>
+#include <GameSystem/Component/Renderer/sphereRenderer.h>
+
 #endif // BUILD_MODE
 
 using namespace MySpace::Game;
@@ -24,8 +29,11 @@ CBoxCollision::CBoxCollision(std::shared_ptr<CGameObject> owner, Vector3 size)
 	: CCollision(owner),m_vSize(size), m_bOBBMode(true)
 {
 #if BUILD_MODE
+
 	m_pDebugBox = std::make_shared<CBox>();
 	m_pDebugBox->Init(size);
+	m_pDebugBox->SetDiffuse(Vector4(0, 1, 0, 0.5f));
+
 #endif // BUILD_MODE
 }
 
@@ -35,6 +43,7 @@ CBoxCollision::CBoxCollision(std::shared_ptr<CGameObject> owner, Vector3 size)
 CBoxCollision::~CBoxCollision()
 {
 #if BUILD_MODE
+	m_pDebugBox->Fin();
 	m_pDebugBox.reset();
 #endif // BUILD_MODE
 }
@@ -213,40 +222,18 @@ Vector3 CBoxCollision::PosAdjustment(Vector3 pos, Vector3 size)
 {
 	Vector3 checkPos = Transform()->GetPos();
 	Vector3 oldPos = Transform()->GetOldPos();
-	Vector3 dist = Vector3::check(checkPos, oldPos);
 	
-	// 差がない
-	if (dist == dist.zero())
-		return checkPos;
-
-	// 動いている
-	if (dist.x == 1) 
-	{
-		// xの確認
-		checkPos.x = oldPos.x + dist.x;
-		if (!Box(checkPos, m_vSize, pos, size))
-		{
-			return checkPos;
-		}
-	}
-	if (dist.y == 1)
-	{
-		checkPos.y = oldPos.y + dist.y;
-		if (!Box(checkPos, m_vSize, pos, size))
-		{
-			return checkPos;
-		}
-	}
-	if (dist.z == 1)
-	{
-		checkPos.z = oldPos.z - dist.z;
-		// ここまできて当たってるなら過去座標を渡す
-		if (Box(checkPos, m_vSize, pos, size))
-		{
-			return oldPos;
-		}
-	}
-	return checkPos;
+	//---  押し出し
+	// 二点間と２半径の差
+	Vector3 distance = Transform()->GetPos() - pos;
+	float len = (GetSize().GetLargeValue() + size.GetLargeValue()) - distance.Length();
+	// 押し出す方向
+	distance = distance.Normalize();
+	Vector3 vec = distance * len;
+	// 押し出し
+	//Transform()->SetPos(Transform()->GetPos() + vec);
+	
+	return Transform()->GetPos() - vec;
 }
 
 
@@ -257,13 +244,30 @@ void CBoxCollision::ImGuiDebug()
 	CCollision::ImGuiDebug();
 
 	// 3次元座標
-	if (ImGui::DragFloat3(u8"サイズ", (float*)&m_vSize))
+	if (ImGui::DragFloat3("box size", (float*)&m_vSize))
 	{
 		m_pDebugBox->Init(m_vSize);
 	}
 	ImGui::Checkbox(u8"OBB", (bool*)&m_bOBBMode);
 
+	if (ImGui::Button("box resize"))
+	{
+		if (auto model = GetComponent<CModelRenderer>(); model)
+			m_vSize = model->GetModel().lock()->GetBBox();
+		else
+			m_vSize = Transform()->GetScale();
+	}
+
+}
+
+// とりあえずここに仮実装
+void CBoxCollision::Update()
+{
+	if (!this->IsActive())
+		return;
+
 	//--- デバッグ表示
+	XMFLOAT4X4 mW;
 	if (m_bOBBMode)
 	{
 		// 平行移動マトリックス生成
@@ -273,10 +277,8 @@ void CBoxCollision::ImGuiDebug()
 		XMMATRIX mWorld = XMLoadFloat4x4(&Transform()->GetWorldMatrix());
 		mWorld = XMMatrixMultiply(mMove, mWorld);
 		// 境界ボックス表示
-		XMFLOAT4X4 mW;
 		XMStoreFloat4x4(&mW, mWorld);
 		m_pDebugBox->SetWorld(&mW);
-		m_pDebugBox->Draw();
 	}
 	else
 	{
@@ -285,12 +287,18 @@ void CBoxCollision::ImGuiDebug()
 
 		vCenter = XMVector3TransformCoord(vCenter, mWorld);
 		mWorld = XMMatrixTranslationFromVector(vCenter);
-		XMFLOAT4X4 mW;
 		XMStoreFloat4x4(&mW, mWorld);
 
 		m_pDebugBox->SetWorld(&mW);
-		m_pDebugBox->Draw();
 	}
 
+	auto sys = SceneManager::CSceneManager::Get()->GetDrawSystem();
+	sys->SetInstanchingMesh(
+		std::string(std::to_string(m_pDebugBox->GetIndexNum()) + std::to_string(m_pDebugBox->GetMaterial()->GetFloat())),
+		mW,
+		m_pDebugBox.get()
+	);
+
 }
+
 #endif // BUILD_MODE

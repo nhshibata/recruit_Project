@@ -151,11 +151,14 @@ namespace MySpace
 			operator float* () const { return (float *)&x; }
 			operator const float* () const { return (const float *)&x; }
 
-			Vector3 zero() { return Vector3(0, 0, 0); }
-			Vector3 one() { return Vector3(1, 1, 1); }
-			Vector3 forward() { return Vector3(0, 0, 1); }
-			Vector3 left() { return Vector3(1, 0, 0); }
-			Vector3 right() { return Vector3(-1, 0, 0); }
+			static Vector3 zero() { return Vector3(0, 0, 0); }
+			static Vector3 one() { return Vector3(1, 1, 1); }
+			static Vector3 forward() { return Vector3(0, 0, 1); }
+			static Vector3 left() { return Vector3(1, 0, 0); }
+			static Vector3 right() { return Vector3(-1, 0, 0); }
+
+			// èâä˙âª
+			void Zero() { *this = Vector3(0, 0, 0); }
 
 			bool check(Vector3 v1)
 			{

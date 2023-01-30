@@ -71,16 +71,16 @@
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <LinkIncremental>true</LinkIncremental>
-    <IncludePath>$(SolutionDir)Source;$(SolutionDir)Library\Effekseer;$(SolutionDir)Library;$(IncludePath)</IncludePath>
-    <LibraryPath>$(SolutionDir)exe\$(Configuration)\;$(SolutionDir)..\..\DirectXTex\x64\$(Configuration);$(SolutionDir)Library\Assimp\lib\x64;$(SolutionDir)Library\DirectXTex;$(SolutionDir)Library\Effekseer;$(DXSDK_DIR)lib¥x64;$(LibraryPath)</LibraryPath>
+    <IncludePath>$(SolutionDir)Source;$(SolutionDir)Library\Effekseer;$(SolutionDir)Library\Source\common;$(SolutionDir)Library\Source\spel;$(SolutionDir)Library\Source;$(SolutionDir)Library;$(IncludePath)</IncludePath>
+    <LibraryPath>$(SolutionDir)exe\$(Configuration)\;$(SolutionDir)..\..\DirectXTex;$(SolutionDir)..\..\Assimp\lib\x64;$(SolutionDir)..\..\Assimp;$(SolutionDir)..\..\DirectXTex\x64\$(Configuration);$(SolutionDir)Library\Effekseer;$(DXSDK_DIR)lib¥x64;$(LibraryPath)</LibraryPath>
     <OutDir>$(SolutionDir)exe\$(Configuration)\</OutDir>
     <IntDir>$(SolutionDir)Binary\$(ProjectName)\$(Platform)\$(Configuration)\</IntDir>
     <TargetName>$(ProjectName)D</TargetName>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <LinkIncremental>false</LinkIncremental>
-    <IncludePath>$(SolutionDir)Source;$(SolutionDir)Library\Effekseer;$(SolutionDir)Library;$(IncludePath)</IncludePath>
-    <LibraryPath>$(SolutionDir)exe\$(Configuration)\;$(SolutionDir)..\..\DirectXTex\x64\$(Configuration);$(SolutionDir)Library\Assimp\lib\x64;$(SolutionDir)Library\DirectXTex;$(SolutionDir)Library\Effekseer;$(DXSDK_DIR)lib¥x64;$(LibraryPath)</LibraryPath>
+    <IncludePath>$(SolutionDir)Source;$(SolutionDir)Library\Effekseer;$(SolutionDir)Library\Source\common;$(SolutionDir)Library\Source\spel;$(SolutionDir)Library\Source;$(SolutionDir)Library;$(IncludePath)</IncludePath>
+    <LibraryPath>$(SolutionDir)exe\$(Configuration)\;$(SolutionDir)..\..\DirectXTex;$(SolutionDir)..\..\Assimp\lib\x64;$(SolutionDir)..\..\Assimp;$(SolutionDir)..\..\DirectXTex\x64\$(Configuration);$(SolutionDir)Library\Effekseer;$(DXSDK_DIR)lib¥x64;$(LibraryPath)</LibraryPath>
     <OutDir>$(SolutionDir)exe\$(Configuration)\</OutDir>
     <IntDir>$(SolutionDir)Binary\$(ProjectName)\$(Platform)\$(Configuration)\</IntDir>
   </PropertyGroup>
@@ -121,7 +121,7 @@
       <AdditionalLibraryDirectories>%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <AdditionalDependencies>d3dcompiler.lib;d3d11.lib;Effekseer.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <OutputFile>$(OutDir)$(TargetName)D$(TargetExt)</OutputFile>
+      <OutputFile>$(OutDir)$(ProjectName)D$(TargetExt)</OutputFile>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">

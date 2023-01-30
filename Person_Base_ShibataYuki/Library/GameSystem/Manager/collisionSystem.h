@@ -45,7 +45,7 @@ namespace MySpace
 			// *@”jŠü(map‚Ì‚½‚ßA®—ñ‚Í‚³‚¹‚È‚¢)
 			inline std::weak_ptr<CCollision> ExecutSystem(int idx)
 			{
-				return ExecutSystem(idx);
+				return CMapSystemBase::ExecutSystem(idx);
 			}
 		};
 
