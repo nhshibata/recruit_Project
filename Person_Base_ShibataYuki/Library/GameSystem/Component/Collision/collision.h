@@ -66,7 +66,7 @@ namespace MySpace
 			void OnLoad();
 			void Awake();
 			void Init();
-			void Update();
+			virtual void Update();
 
 			//--- セッター・ゲッター
 			// *@ 判定を行う際のすりぬけ確認

@@ -198,7 +198,8 @@ void CHierachy::Update(ImGuiManager* manager)
 	ImGui::End();
 
 	//--- セーブロード
-	DispSaveLoadMenu();
+	if(m_bLoadSaveWindow)
+		DispSaveLoadMenu();
 	
 
 	ImGui::PopStyleColor();

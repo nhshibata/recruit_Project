@@ -50,7 +50,7 @@ namespace MySpace
 		public:
 			CBoxCollision():m_bOBBMode(true)
 			{};
-			CBoxCollision(std::shared_ptr<CGameObject> owner, Vector3 size = Vector3(10, 10, 10));
+			CBoxCollision(std::shared_ptr<CGameObject> owner, Vector3 size = Vector3(1, 1, 1));
 			~CBoxCollision();
 
 			bool Box(Vector3 Apos, Vector3 Asize, Vector3 Bpos, Vector3 Bsize);
@@ -71,6 +71,7 @@ namespace MySpace
 			std::shared_ptr<CBox> m_pDebugBox;
 		public:
 			virtual void ImGuiDebug();
+			void Update();
 #endif // BUILD_MODE
 
 		};

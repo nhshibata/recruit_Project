@@ -59,14 +59,11 @@ namespace MySpace
 			bool Sphere(Vector3 Apos, float Ar, Vector3 Bpos, float Br);
 			bool CollisionSphere(Vector3 pos, float radius);
 
-			Vector3 PosAdjustment(Vector3 pos, Vector3 size) { return Vector3(); };
-			Vector3 PosAdjustment(Vector3 pos, float size);
-
 			// *@コリジョンｸﾗｽを引き数にとって、当たり判定を行う
 			bool HitCheckPtr(CCollision* col);
 			
 			// *@押し出し
-			void PushObject(CSphereCollision* other);
+			void PushObject(CCollision* other, float radius);
 
 			//--- ゲッター・セッター
 			inline float GetRadius() { return m_fRadius; };
@@ -77,6 +74,7 @@ namespace MySpace
 			std::shared_ptr<CSphere> m_pDebugSphere;
 		public:
 			virtual void ImGuiDebug();
+			virtual void Update();
 #endif
 
 		};

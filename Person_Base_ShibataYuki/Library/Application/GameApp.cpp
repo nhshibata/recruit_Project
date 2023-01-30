@@ -199,6 +199,10 @@ void CGameApp::Run(Application* app)
 //==========================================================
 void CGameApp::FixedUpdate(Application* app)const
 {
+	auto imgui = app->GetSystem<ImGuiManager>();
+	if (imgui->GetPause())
+		return;
+
 	CSceneManager::Get()->FixedUpdateScene();
 }
 

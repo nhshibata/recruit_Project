@@ -5,6 +5,8 @@
 //---------------------------------------------------------
 //=========================================================
 
+#define _CRT_SECURE_NO_WARNINGS
+
 //--- インクルード部
 #include <DebugSystem/inspector.h>
 
@@ -279,14 +281,28 @@ void CInspector::AddComponentWindow()
 	if (!m_bIsAddComponent)return;
 
 	ImGui::SetNextWindowPos(ImVec2(1000, 20), ImGuiCond_Once);
-	ImGui::SetNextWindowSize(ImVec2(400, 300), ImGuiCond_Once);
+	ImGui::SetNextWindowSize(ImVec2(350, 300), ImGuiCond_Once);
 	std::vector<std::string> componentName = CComponentFactory::GetNameList();
+	static std::string serchWord;
 	
 	if (ImGui::Begin("AddComponent", &m_bIsAddComponent, ImGuiWindowFlags_::ImGuiWindowFlags_MenuBar))
 	{
+		//--- 検索入力
+		char input[56] = "\0";
+		strcpy(input, serchWord.c_str());
+		if (ImGui::InputText("Serch Com", input, 56))
+			serchWord = input;
+
 		// オブジェクトにコンポーネントを追加
 		for (std::string str : componentName)
 		{
+			if (!serchWord.empty())
+			{
+				// 検索対象ではない
+				if (str.find(serchWord) == std::string::npos)
+					continue;
+			}
+
 			if (ImGui::Button(str.c_str()))
 			{
 				// コンポーネントを保存しているｸﾗｽに追加してもらう

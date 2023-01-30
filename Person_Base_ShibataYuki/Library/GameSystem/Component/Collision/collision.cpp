@@ -30,7 +30,6 @@ CCollision::~CCollision()
 {
 	//--- “o˜^‰ðœ
 	if(m_nSystemIdx != -1)
-#pragma warning(suppress: 26444)
 		CSceneManager::Get()->GetCollisionSystem()->ExecutSystem(m_nSystemIdx);
 
 	m_pOldStayList.clear();

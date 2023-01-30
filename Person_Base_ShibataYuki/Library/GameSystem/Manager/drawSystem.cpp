@@ -76,6 +76,9 @@ int CDrawSystem::PolygonRegist(std::weak_ptr<CPolygonRenderer> render)
 	return ret;
 }
 
+//==========================================================
+// “o˜^
+//==========================================================
 void CDrawSystem::SetInstanchingMesh(std::string name, DirectX::XMFLOAT4X4 mtx, CMesh* mesh)
 {
 	if (!m_aInstancingMeshMap.count(name))
@@ -365,6 +368,14 @@ void CDrawSystem::Draw3D()
 	//pDX->SetZBuffer(true);
 	//CDXDevice::Get()->SetBlendState(static_cast<int>(EBlendState::BS_NONE));		// ƒ¿ƒuƒŒƒ“ƒfƒBƒ“ƒO–³Œø
 
+#ifdef BUILD_MODE
+	for (auto & mesh : m_aDebugMeshMap)
+	{
+		mesh.second.pMesh->DrawInstancing(mesh.second.aMtx);
+	}
+	m_aDebugMeshMap.clear();
+#endif // BUILD_MODE
+
 }
 
 
@@ -394,6 +405,14 @@ void CDrawSystem::ImGuiDebug()
 	m_nDrawCnt = 0;
 	m_nSkipCnt = 0;
 	m_nInstancingCnt = 0;
+}
+
+void CDrawSystem::SetDebugMesh(std::string name, DirectX::XMFLOAT4X4 mtx, CMesh* mesh)
+{
+	if (!m_aDebugMeshMap.count(name))
+		m_aDebugMeshMap[name].pMesh = mesh;
+
+	m_aDebugMeshMap[name].aMtx.push_back(mtx);
 }
 
 #endif

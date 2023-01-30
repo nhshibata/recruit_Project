@@ -17,14 +17,14 @@ using namespace MySpace::Game;
 //--- 定数定義
 namespace 
 {
-	const float GRAVITY = 0.98f;		// 重力 座標系によって向きが違う
+	const float GRAVITY = -0.098f;		// 重力 座標系によって向きが違う
 }
 
 //==========================================================
 // コンストラクタ
 //==========================================================
 CRigidbody::CRigidbody()
-	:m_bGravity(true), m_bIsSleep(false), m_fGravity(-GRAVITY), m_fResistance(1), m_fMass(1),
+	:m_bGravity(true), m_bIsSleep(false), m_fGravity(GRAVITY), m_fResistance(0.5f), m_fMass(1),
 	m_vAccel(0, 0, 0), m_vTargetPos(1, 1, 1), m_vVel(0, 0, 0), m_vForce(0, 0, 0)
 {
 }
@@ -34,7 +34,7 @@ CRigidbody::CRigidbody()
 //==========================================================
 CRigidbody::CRigidbody(std::shared_ptr<CGameObject> owner)
 	:CComponent(owner)
-	,m_bGravity(true), m_bIsSleep(false), m_fGravity(-GRAVITY), m_fResistance(1), m_fMass(1),
+	,m_bGravity(true), m_bIsSleep(false), m_fGravity(GRAVITY), m_fResistance(0.5f), m_fMass(1),
 	m_vAccel(0,0,0),m_vTargetPos(0,0,0),m_vVel(0,0,0),m_vForce(0,0,0)
 {
 
@@ -57,20 +57,27 @@ void CRigidbody::FixedUpdate()
 	Vector3 oldPos = GetOwner()->GetTransform()->GetOldPos();
 	Vector3 rot = GetOwner()->GetTransform()->GetRot();
 
+	// TODO:要変更
 	// 重力を与える
+	//if (m_bGravity)
+	//{
+	//	m_vForce.y += m_fGravity * CFps::Get()->DeltaTime();
+	//}
+	//Vector3 vec = m_vForce / (m_fMass == 0.0f ? 1.0f : m_fMass);
+	//m_vVel += vec * CFps::Get()->DeltaTime();
+	//pos += m_vVel * CFps::Get()->DeltaTime();
+	//// 抵抗
+	//m_fResistance = std::clamp(m_fResistance, 0.0f, 1.0f);
+	//m_vForce *= (1.0f - m_fResistance);
+	
 	if (m_bGravity)
 	{
-		//m_vVel *= (1.0f - m_fResistance);
-		//m_vVel.y += m_fGravity * CFps::Get().DeltaTime();
-
-		m_vForce.y += m_fGravity * CFps::Get()->DeltaTime();
+		m_vForce.y += m_fGravity;
 	}
-
-	// TODO:要変更
-	Vector3 vec = m_vForce / m_fMass;
-	m_vVel += vec * CFps::Get()->DeltaTime();
-	pos += m_vVel * CFps::Get()->DeltaTime();
-
+	Vector3 vec = m_vForce / (m_fMass == 0.0f ? 1.0f : m_fMass);
+	m_vVel += vec;
+	pos += m_vVel;
+	// 抵抗
 	m_fResistance = std::clamp(m_fResistance, 0.0f, 1.0f);
 	m_vForce *= (1.0f - m_fResistance);
 
@@ -122,8 +129,8 @@ void CRigidbody::SetFreezRot(bool x, bool y, bool z)
 
 void CRigidbody::OnCollisionEnter(CGameObject* obj)
 {
-	m_vForce = m_vForce.zero();
-	m_vVel = m_vForce.zero();
+	m_vForce = Vector3::zero();
+	m_vVel = { 0,0,0 };
 }
 
 

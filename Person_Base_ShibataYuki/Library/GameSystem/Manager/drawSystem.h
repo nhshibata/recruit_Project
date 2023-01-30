@@ -68,6 +68,7 @@ namespace MySpace
 			int m_nDrawCnt;
 			int m_nInstancingCnt;
 			bool m_bFrustum;
+			InstancingMeshMap m_aDebugMeshMap;		// インスタンシング描画格納用
 #endif // _DEBUG
 
 		private:
@@ -125,7 +126,8 @@ namespace MySpace
 #if BUILD_MODE
 
 			void ImGuiDebug();
-
+			// *@インスタンシング描画のために情報を格納する
+			void SetDebugMesh(std::string name, DirectX::XMFLOAT4X4 mtx, CMesh* mesh);
 #endif // BUILD_MODE
 
 		};
