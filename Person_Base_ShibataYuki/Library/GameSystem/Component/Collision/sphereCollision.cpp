@@ -98,12 +98,11 @@ bool CSphereCollision::HitCheckPtr(CCollision* other)
 			// 押し出し
 			if (!trigger)
 			{
-				// TODO: 確認
 				PushObject(com, com->GetRadius());
 				// 押し出しを行うと相手は判定されないため、ここで行う
-				HitResponse(this);
+				other->HitResponse(this);
 			}
-			HitResponse(other);
+			this->HitResponse(other);
 			
 			return true;
 		}
@@ -115,8 +114,7 @@ bool CSphereCollision::HitCheckPtr(CCollision* other)
 		{
 			// 押し出し
 			if (!trigger)
-			{
-				// TODO: 確認
+			{				
 				PushObject(other, otherBox->GetSize().GetLargeValue());
 				// 押し出しを行うと相手は判定されないため、ここで行う
 				other->HitResponse(this);

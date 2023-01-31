@@ -63,7 +63,7 @@ namespace MySpace
 			inline bool IsOBB() { return m_bOBBMode; }
 			inline void SetOBB(bool flg) { m_bOBBMode = flg; }
 
-			Vector3 PosAdjustment(Vector3 pos, Vector3 size);
+			void PosAdjustment(Vector3 pos, Vector3 size);
 			bool HitCheckPtr(CCollision* col);		// コリジョンｸﾗｽを引き数にとって、当たり判定を行う
 
 #ifdef BUILD_MODE

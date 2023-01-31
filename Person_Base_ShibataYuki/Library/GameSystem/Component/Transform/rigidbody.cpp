@@ -2,6 +2,8 @@
 // [rigidbody.cpp]
 //---------------------------------------------------------
 // 作成:2022/05/24
+// 更新:2023/01/31 異常な更新が起きていたため、調査
+//				FixedUpdateの呼び出し条件の修正ミス
 //---------------------------------------------------------
 // 物理
 //=========================================================
@@ -17,7 +19,7 @@ using namespace MySpace::Game;
 //--- 定数定義
 namespace 
 {
-	const float GRAVITY = -0.098f;		// 重力 座標系によって向きが違う
+	const float GRAVITY = -9.8f;		// 重力 座標系によって向きが違う
 }
 
 //==========================================================
@@ -53,36 +55,28 @@ CRigidbody::~CRigidbody()
 //==========================================================
 void CRigidbody::FixedUpdate()
 {
+	
 	Vector3 pos = GetOwner()->GetTransform()->GetPos();
+
+	// 重力を与える
+	{
+		if (m_bGravity)
+		{
+			m_vForce.y += float(m_fGravity * CFps::Get()->DeltaTime());
+		}
+		Vector3 vec = m_vForce / (m_fMass == 0.0f ? 1.0f : m_fMass);
+		m_vVel += vec * CFps::Get()->DeltaTime();
+		pos += m_vVel * CFps::Get()->DeltaTime();
+		// 抵抗
+		m_fResistance = std::clamp(m_fResistance, 0.0f, 1.0f);
+		m_vForce *= (1.0f - m_fResistance);
+
+		// 位置固定
+		m_pFreezPos.Fix(pos);
+	}
+
 	Vector3 oldPos = GetOwner()->GetTransform()->GetOldPos();
 	Vector3 rot = GetOwner()->GetTransform()->GetRot();
-
-	// TODO:要変更
-	// 重力を与える
-	//if (m_bGravity)
-	//{
-	//	m_vForce.y += m_fGravity * CFps::Get()->DeltaTime();
-	//}
-	//Vector3 vec = m_vForce / (m_fMass == 0.0f ? 1.0f : m_fMass);
-	//m_vVel += vec * CFps::Get()->DeltaTime();
-	//pos += m_vVel * CFps::Get()->DeltaTime();
-	//// 抵抗
-	//m_fResistance = std::clamp(m_fResistance, 0.0f, 1.0f);
-	//m_vForce *= (1.0f - m_fResistance);
-	
-	if (m_bGravity)
-	{
-		m_vForce.y += m_fGravity;
-	}
-	Vector3 vec = m_vForce / (m_fMass == 0.0f ? 1.0f : m_fMass);
-	m_vVel += vec;
-	pos += m_vVel;
-	// 抵抗
-	m_fResistance = std::clamp(m_fResistance, 0.0f, 1.0f);
-	m_vForce *= (1.0f - m_fResistance);
-
-	// 位置固定
-	m_pFreezPos.Fix(pos);
 
 	// 角度固定
 	m_pFreezRot.Fix(rot);
@@ -138,11 +132,11 @@ void CRigidbody::OnCollisionEnter(CGameObject* obj)
 
 void CRigidbody::ImGuiDebug()
 {
-	ImGui::InputFloat(u8"重力", &m_fGravity);
-	ImGui::InputFloat(u8"抵抗", &m_fResistance);
-	ImGui::InputFloat3(u8"速度", (float*)m_vVel);
-	ImGui::InputFloat3(u8"加速度", (float*)m_vAccel);
-	ImGui::InputFloat3(u8"目標座標", (float*)m_vTargetPos);
+	ImGui::InputFloat(u8"rigidbody重力", &m_fGravity);
+	ImGui::InputFloat(u8"rigidbody抵抗", &m_fResistance);
+	ImGui::InputFloat3(u8"rigidbody速度", (float*)m_vVel);
+	ImGui::InputFloat3(u8"rigidbody加速度", (float*)m_vAccel);
+	ImGui::InputFloat3(u8"rigidbody目標座標", (float*)m_vTargetPos);
 	ImGui::Checkbox(u8"動", &m_bIsSleep);
 
 	ImGui::Text(u8"pos固定");
