@@ -247,14 +247,16 @@ namespace MySpace
 					vec1.z * vec2.x - vec1.x * vec2.z, vec1.x * vec2.y - vec1.y * vec2.x);
 			}*/
 
-			// *@ˆê”Ô‘å‚«‚¢ƒƒ“ƒoŠÖ”‚ğ•Ô‚·
+			// *@ˆê”Ô‘å‚«‚¢ƒƒ“ƒo•Ï”‚ğ•Ô‚·
 			float GetLargeValue()
 			{
+				// y‚ªˆê”Ô‘å‚«‚¢
 				if (x < y && z < y)
-						return y;
+					return y;
+				// x‚ªˆê”Ô‘å‚«‚¢
 				if (y < x && z < x)
-						return x;
-				//if (x < z && y < z)
+					return x;
+				// z‚ªˆê”Ô‘å‚«‚¢
 				return z;
 			}
 

@@ -164,12 +164,13 @@ bool CBoxCollision::CollisionOBB(CTransform* trans, Vector3 center, Vector3 size
 //==========================================================
 bool CBoxCollision::HitCheckPtr(CCollision* other)
 {
-	// 持ち主の取得
-	CGameObject* owner = other->GetOwner();
 	// null確認
 	if (!other)
 		return false;
+	// 持ち主の取得
+	CGameObject* otherOwner = other->GetOwner();
 
+	// size調整
 	if (m_vOldScale != Transform()->GetScale())
 	{
 		auto scl = Transform()->GetScale() / m_vOldScale;
@@ -177,6 +178,7 @@ bool CBoxCollision::HitCheckPtr(CCollision* other)
 		m_vOldScale = Transform()->GetScale();
 	}
 
+	// size取得
 	Vector3 size;
 	// 派生クラスへのキャスト
 	if (CBoxCollision* com = dynamic_cast<CBoxCollision*>(other); com)
@@ -200,40 +202,39 @@ bool CBoxCollision::HitCheckPtr(CCollision* other)
 	}
 	else
 	{
-		if (!CollisionAABB(owner->GetTransform()->GetPos(), size))
+		if (!CollisionAABB(other->Transform()->GetPos(), size))
 			return false;
 	}
 
-	// トリガーがOFFなら位置を調整
+	// トリガーがOFFなら押し出し
 	if (!IsTrigger())
 	{
-		Transform()->SetPos(PosAdjustment(owner->GetTransform()->GetPos(), size));
+		PosAdjustment(other->Transform()->GetPos(), size));
 		other->HitResponse(this);
 	}
-	HitResponse(other);
+	this->HitResponse(other);
 
 	return true;
 }
 
 //==========================================================
 // 押し出し
+// TODO:完全ではない。当たった方向、適切なsizeによる押し出しではない
 //==========================================================
-Vector3 CBoxCollision::PosAdjustment(Vector3 pos, Vector3 size)
+void CBoxCollision::PosAdjustment(Vector3 pos, Vector3 size)
 {
 	Vector3 checkPos = Transform()->GetPos();
 	Vector3 oldPos = Transform()->GetOldPos();
 	
 	//---  押し出し
-	// 二点間と２半径の差
+	// 2点間と２半径の差
 	Vector3 distance = Transform()->GetPos() - pos;
-	float len = (GetSize().GetLargeValue() + size.GetLargeValue()) - distance.Length();
+	float len = (GetSize().GetLargeValue()*2 + size.GetLargeValue()*2) - distance.Length();
 	// 押し出す方向
 	distance = distance.Normalize();
 	Vector3 vec = distance * len;
 	// 押し出し
-	//Transform()->SetPos(Transform()->GetPos() + vec);
-	
-	return Transform()->GetPos() - vec;
+	Transform()->SetPos(Transform()->GetPos() + vec);
 }
 
 
