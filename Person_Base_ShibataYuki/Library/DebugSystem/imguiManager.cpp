@@ -257,24 +257,26 @@ void ImGuiManager::Update()
 	if (ImGui::IsDragDropPayloadBeingAccepted())
 		UpHover(EMouseHovered::HOVERED_DRAG);
 
-	if (ImGui::IsAnyItemHovered())
-	{
-		UpHover(EMouseHovered::HOVERED_ITEM);
-	}
-	else
-		DownHover(EMouseHovered::HOVERED_ITEM);
+	//if (ImGui::IsAnyItemHovered())
+	//{
+	//	UpHover(EMouseHovered::HOVERED_ITEM);
+	//}
+	//else
+	//	DownHover(EMouseHovered::HOVERED_ITEM);
 
 	//--- ｶﾒﾗ操作
+	// いずれかが操作中か確認
 	const int e = EMouseHovered::HOVERED_WINDOW | EMouseHovered::HOVERED_GIZMO | EMouseHovered::HOVERED_ITEM | EMouseHovered::HOVERED_DRAG;
 	if (!this->IsHover(EMouseHovered(e)))
 	{
 		if (m_pDebugCamera.lock())
 			m_pDebugCamera.lock()->Update();
 	}
-
+	
+	//--- ImGui機能表示
 	if (ImGui::BeginTabItem("ImGui"))
 	{
-		ImGui::Checkbox("ImguiOFF", &m_bPause);
+		ImGui::Checkbox("ImGui OFF", &m_bPause);
 
 		int res = 0;
 		for (int cnt = 1; cnt < sizeof(EMouseHovered); cnt++)
@@ -336,15 +338,15 @@ void ImGuiManager::Pause()
 	//--- 画面位置を外部から取得できるようにする
 	ImGui::SetNextWindowPos(ImVec2((float)CScreen::GetWidth()*0.75f, (float)CScreen::GetHeight()*0.85f));
 	ImGui::SetNextWindowSize(ImVec2(320, 120), ImGuiCond_Once);
-	ImGui::Begin(u8"Pause", &m_bPause);
+	ImGui::Begin(u8"Pause & OneFrame Step", &m_bPause);
 
-	ImGui::Text(u8"stop[L]");
+	ImGui::Text("stop[L]");
 	ImGui::SameLine();
-	ImGui::Text(u8"step[O]");
+	ImGui::Text("step[O]");
 	ImGui::SameLine();
 
 	// デバッグポーズ処理
-	if (ImGui::Button(u8"STOP") || CInput::GetKeyTrigger(VK_L) && CInput::GetKeyTrigger(VK_LMENU))
+	if (ImGui::Button("STOP") || CInput::GetKeyTrigger(VK_L) && CInput::GetKeyTrigger(VK_LMENU))
 	{
 		m_bPause ^= true;
 	}
@@ -353,7 +355,7 @@ void ImGuiManager::Pause()
 	if (m_bPause)
 	{
 		ImGui::SameLine();
-		if (ImGui::Button(u8"STEP") || CInput::GetKeyTrigger(VK_O) && CInput::GetKeyTrigger(VK_LMENU))
+		if (ImGui::Button("STEP") || CInput::GetKeyTrigger(VK_O) && CInput::GetKeyTrigger(VK_LMENU))
 		{
 			if (!m_bOneFlame)
 			{
@@ -381,10 +383,8 @@ void ImGuiManager::Pause()
 //==========================================================
 void ImGuiManager::DispLog()
 {
-	//ImGui::SetNextWindowPos(ImVec2(120, 60), ImGuiCond_::ImGuiCond_Once);
-	//ImGui::SetNextWindowSize(ImVec2(500, 400), ImGuiCond_::ImGuiCond_Once);
-	//ImGui::Begin(u8"Log");
-	ImGui::Text(u8"Log");
+	ImGui::Separator();
+	ImGui::Text("Log");
 	
 	auto it = m_aDebugMap.begin();
 	for (int cnt = 0; it != m_aDebugMap.end(); ++it, ++cnt)
@@ -392,7 +392,7 @@ void ImGuiManager::DispLog()
 		auto str = (*it).first;
 		auto cstr = (*it).first.c_str();
 		
-		ImGui::Text(u8"%d", (*it).second);
+		ImGui::Text("%d■", (*it).second);
 		ImGui::SameLine();
 		ImGui::Text(u8"%s", cstr);
 	}
@@ -433,6 +433,11 @@ void ImGuiManager::HoverStateSet()
 	if (ImGui::IsItemClicked())
 	{
 		DebugLog("Item Click");
+	}
+
+	if (ImGui::IsItemEdited())
+	{
+		DebugLog("Item Edit");
 	}
 }
 
