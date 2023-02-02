@@ -50,6 +50,17 @@ bool CTypeSaveManager::IsType(std::string name) {
 }
 
 //==========================================================
+// Ši”[‚³‚ê‚Ä‚¢‚éŒ^‚Ì–¼‘O‚©‚çÎß²ÝÀŽæ“¾
+//==========================================================
+CTypeSaveBase* CTypeSaveManager::GetTypeSave(std::string name)
+{ 
+	if (!m_aStockType.count(name))
+		return nullptr;
+
+	return m_aStockType[name]; 
+}
+
+//==========================================================
 // Ši”[‚³‚ê‚Ä‚¢‚éŒ^‚Ì–¼‘OŽæ“¾
 //==========================================================
 std::vector<std::string> CTypeSaveManager::GetTypeNameList()

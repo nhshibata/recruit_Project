@@ -1,7 +1,9 @@
 //=========================================================
+// [boxCollision.h]
+//---------------------------------------------------------
 //作成:2022/05/02
+//---------------------------------------------------------
 // コリジョンｸﾗｽ(当たり判定 ) : 派生ｸﾗｽ
-//
 //=========================================================
 
 //--- インクルード部
@@ -209,7 +211,7 @@ bool CBoxCollision::HitCheckPtr(CCollision* other)
 	// トリガーがOFFなら押し出し
 	if (!IsTrigger())
 	{
-		PosAdjustment(other->Transform()->GetPos(), size));
+		PosAdjustment(other->Transform()->GetPos(), size);
 		other->HitResponse(this);
 	}
 	this->HitResponse(other);

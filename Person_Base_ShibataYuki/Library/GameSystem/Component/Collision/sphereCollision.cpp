@@ -166,12 +166,29 @@ void CSphereCollision::ImGuiDebug()
 			m_fRadius = Transform()->GetScale().GetLargeValue();
 	}
 
+	// debug•\Ž¦
+	XMVECTOR vCenter = XMLoadFloat3(&GetCenter());
+	XMMATRIX mWorld = XMLoadFloat4x4(&Transform()->GetWorldMatrix());
+
+	vCenter = XMVector3TransformCoord(vCenter, mWorld);
+	mWorld = XMMatrixTranslationFromVector(vCenter);
+	XMFLOAT4X4 mW;
+	XMStoreFloat4x4(&mW, mWorld);
+	m_pDebugSphere->SetWorld(&mW);
+
+	auto sys = SceneManager::CSceneManager::Get()->GetDrawSystem();
+	sys->SetInstanchingMesh(
+		std::string(std::to_string(m_pDebugSphere->GetIndexNum()) + std::to_string(m_pDebugSphere->GetMaterial()->GetFloat())),
+		mW,
+		m_pDebugSphere.get()
+	);
+
 }
 
 // ‰¼ŽÀ‘•
 void CSphereCollision::Update()
 {
-	if (!this->IsActive())
+	//if (!this->IsActive())
 		return;
 
 	// debug•\Ž¦

@@ -1,7 +1,11 @@
 //=========================================================
+// [boxCollision.h]
+//---------------------------------------------------------
 //作成:2022/05/02
+//---------------------------------------------------------
 // コリジョンｸﾗｽ(当たり判定 ) : 派生ｸﾗｽ
 //=========================================================
+
 //--- インクルードガード
 #ifndef __BOX_COLLISION_COMPONENT_H__
 #define __BOX_COLLISION_COMPONENT_H__
@@ -45,10 +49,11 @@ namespace MySpace
 			}
 		private:
 			Vector3 m_vSize;	// 当たり判定サイズ
-			bool m_bOBBMode;
+			bool m_bOBBMode;	// OBB判定を取るか
 
 		public:
-			CBoxCollision():m_bOBBMode(true)
+			CBoxCollision()
+				:m_bOBBMode(true)
 			{};
 			CBoxCollision(std::shared_ptr<CGameObject> owner, Vector3 size = Vector3(1, 1, 1));
 			~CBoxCollision();

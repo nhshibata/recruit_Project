@@ -52,10 +52,6 @@ namespace MySpace
 		protected:
 			void RequestCollision();
 			
-#pragma warning(push)
-#pragma warning(disable:4100)
-			virtual Vector3 PosAdjustment(Vector3 pos, Vector3 size) { return Vector3(); };
-#pragma warning(pop)
 		public:
 			//--- ﾒﾝﾊﾞ関数
 			CCollision() :m_bIsTrigger(false), m_nSystemIdx(-1)

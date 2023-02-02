@@ -36,6 +36,20 @@ std::vector<std::string> CComponentFactory::GetNameList()
 //==========================================================
 bool CComponentFactory::ObjSetComponent(CGameObject& obj, std::string name)
 {
+	CreateComponentType();
+
+#if 0
+	auto list = CTypeSaveManager::Get()->GetTypeNameList();
+	for (auto & com : list)
+	{
+		if (name == com)
+		{
+			name = com;
+			break;
+		}
+	}
+#endif // 1
+
 	if (auto type = CTypeSaveManager::Get()->GetTypeSave(name); type)
 	{
 		std::string setName = type->Set(&obj);
