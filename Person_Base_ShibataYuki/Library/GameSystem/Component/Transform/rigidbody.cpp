@@ -26,7 +26,7 @@ namespace
 // コンストラクタ
 //==========================================================
 CRigidbody::CRigidbody()
-	:m_bGravity(true), m_bIsSleep(false), m_fGravity(GRAVITY), m_fResistance(0.5f), m_fMass(1),
+	:m_bGravity(true), m_bIsSleep(false), m_fGravity(GRAVITY), m_fResistance(1.0f), m_fMass(1.0f),
 	m_vAccel(0, 0, 0), m_vTargetPos(1, 1, 1), m_vVel(0, 0, 0), m_vForce(0, 0, 0)
 {
 }
@@ -36,8 +36,8 @@ CRigidbody::CRigidbody()
 //==========================================================
 CRigidbody::CRigidbody(std::shared_ptr<CGameObject> owner)
 	:CComponent(owner)
-	,m_bGravity(true), m_bIsSleep(false), m_fGravity(GRAVITY), m_fResistance(0.5f), m_fMass(1),
-	m_vAccel(0,0,0),m_vTargetPos(0,0,0),m_vVel(0,0,0),m_vForce(0,0,0)
+	, m_bGravity(true), m_bIsSleep(false), m_fGravity(GRAVITY), m_fResistance(1.0f), m_fMass(1.0f),
+	m_vAccel(0, 0, 0), m_vTargetPos(1, 1, 1), m_vVel(0, 0, 0), m_vForce(0, 0, 0)
 {
 
 }

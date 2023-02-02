@@ -19,7 +19,7 @@
 using namespace MySpace::SceneManager;
 using namespace MySpace::Game;
 
-#define SCENE_PATH	FORDER_DIR(data/scene/)
+#define SCENE_PATH	FORDER_DIR(Data/scene/)
 
 //========================================================
 // コンストラクタ
@@ -265,11 +265,14 @@ void CSceneManager::SaveScene(const std::string filename)
 	else
 	{
 		name = filename.c_str();
-		name += ".scene";
+		if(name.find(".scene") == std::string::npos)
+			name += ".scene";
 	}
 	
-	//std::string filePathName = "data/" + filePathName + "/" + name;
 	std::string filePathName = SCENE_PATH + name;
+	// パス指定されているか
+	if(name.find("Data/scene") != std::string::npos)
+		filePathName = name;
 	{
 		CCerealize<std::shared_ptr<CSceneData>> sirial;
 
@@ -353,7 +356,7 @@ void CSceneManager::ImGuiDebug()
 	//--- 情報表示
 	if (ImGui::BeginMenuBar()) 
 	{
-		if (ImGui::BeginMenu(u8"Scene"))
+		if (ImGui::BeginMenu("Scene"))
 		{
 			for (SceneList::iterator it = m_aScenes.begin(); it != m_aScenes.end(); ++it)
 			{
@@ -372,12 +375,12 @@ void CSceneManager::ImGuiDebug()
 		newScene->CreateEmptyScene();
 	}
 
-	ImGui::InputText(u8"シーン遷移名", m_cDebugSceneName, 256);
-	ImGui::SameLine();
 	if (ImGui::Button("change scene"))
 	{
 		auto i = SceneTransition(m_cDebugSceneName).lock().get();
 	}
+	ImGui::SameLine();
+	ImGui::InputText("Change Scene", m_cDebugSceneName, 256);
 
 	//if (ImGui::Button("add scene"))
 	//{

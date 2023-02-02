@@ -264,11 +264,14 @@ void CHierachy::DispSaveLoadMenu()
 		{
 			CSceneManager::Get()->SaveScene(m_savePath);
 		}
-		ImGui::SameLine();
-		if (ImGui::Button("OverWrite"))
+		ImGui::Separator();
+		if (ImGui::Button("SaveScene OverWrite"))
 		{
-			if (CSceneManager::Get()->LoadScene(m_savePath))
-				m_bLoadSaveWindow = false;
+			CSceneManager::Get()->SaveScene(m_savePath);
+		}
+		if (ImGui::Button("LoadScene OverWrite"))
+		{
+			CSceneManager::Get()->SaveScene(m_loadPath);
 		}
 
 		ImGui::End();

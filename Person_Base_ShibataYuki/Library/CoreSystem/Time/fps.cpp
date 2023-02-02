@@ -1,15 +1,14 @@
 //=========================================================
 // [fps.h]
-// fps、時間制御
-//----------------------------
+//---------------------------------------------------------
 // 作成:2022/04/21
+//---------------------------------------------------------
+// fps、時間制御
 //=========================================================
 
 // --- インクルード部 ---
 #include <CoreSystem/Time/fps.h>
 #include <ImGui/imgui.h>
-
-//#pragma comment(lib, "winmm.lib")	// winmm.libを使用する
 
 using namespace MySpace::System;
 
@@ -20,6 +19,10 @@ CFps::CFps()
 	:m_nSlowFramPerSec(60), m_dwExecLastTime(0), m_eSlow(ESlow::SLOW_NONE), m_bUpdate(true), m_dwCurrentTime(0),
 	m_dwDeltaTime(0), m_dwSlowTime(0), m_fTimeScale(1.0f),m_nHitStopFrame(0)
 {
+	m_FixedData.m_bUpdate = true;
+	m_FixedData.m_dwFixedExecLastTime = 0;
+	m_FixedData.m_dwFixedTime = 20;
+
 #ifdef BUILD_MODE
 	m_dwFPSLastTime = 0;
 	m_dwFrameCount = 0;
@@ -74,7 +77,6 @@ void CFps::Update()
 	// 現在時刻の取得
 	m_dwCurrentTime = timeGetTime();
 
-#pragma region FPS
 #if BUILD_MODE
 	if ((m_dwCurrentTime - m_dwFPSLastTime) >= 500)
 	{	// 0.5秒ごとに実行
@@ -84,7 +86,6 @@ void CFps::Update()
 	}
 	++m_dwFrameCount;
 #endif // BUILD_MODE
-#pragma endregion
 
 	//--- deltaTime
 	// 現在時間と前回の更新時間の差を取る 1fの時間を求める
@@ -95,7 +96,8 @@ void CFps::Update()
 
 	//--- 固定時間
 	m_FixedData.m_bUpdate = false;
-	if ((m_dwCurrentTime - m_FixedData.m_dwFixedExecLastTime) * m_fTimeScale >= m_FixedData.m_dwFixedTime)
+	if (auto diffTime = float(m_dwCurrentTime - m_FixedData.m_dwFixedExecLastTime) * m_fTimeScale;  
+		(DWORD)diffTime >= m_FixedData.m_dwFixedTime)
 	{
 		m_FixedData.m_dwFixedExecLastTime = m_dwCurrentTime;
 		m_FixedData.m_bUpdate = true;
@@ -204,7 +206,7 @@ void CFps::ImGuiDebug()
 	ImGui::Text(u8"現在のCount : %d", CFps::Get()->GetFPSCount());
 
 	//--- 設定
-	if (ImGui::Button(u8"FPS Set"))
+	if (ImGui::Button("FPS Set"))
 		SetSlow(m_nDebugFPS);
 	ImGui::SameLine();
 	ImGui::DragInt(u8"FPS 分割数", &m_nDebugFPS, 1, 1, 60);
@@ -212,24 +214,28 @@ void CFps::ImGuiDebug()
 	if(ImGui::InputFloat(u8"TimeScale", &m_fTimeScale))
 		SetTimeScale(m_fTimeScale);
 
-	ImGui::DragInt(u8"HitStop", &m_nHitStopFrame);
+	ImGui::DragInt("HitStop Num", &m_nHitStopFrame);
+	ImGui::DragInt("Slow Time", (int*)&m_dwDebugSlow);
 	
-	ImGui::DragInt(u8"スロー時間", (int*)&m_dwDebugSlow);
-	
-	ImGui::SameLine();
-	if (ImGui::Button(u8"SlowOK?"))
+	if (ImGui::Button("Slow OK?"))
 	{
 		m_dwSlowTime = m_dwDebugSlow;
 	}
-	if (ImGui::Button(u8"Slow ON/OFF"))
+	ImGui::SameLine();
+	if (ImGui::Button("Slow ON/OFF"))
 	{
 		m_eSlow = (ESlow)(m_eSlow ^ ESlow::SLOW_ON);
 	}
 
-	ImGui::Checkbox(u8"Fixed Update", &m_FixedData.m_bUpdate);
+	//--- 固定時間
+	ImGui::Checkbox("Fixed Update", &m_FixedData.m_bUpdate);
 	ImGui::SameLine();
-	ImGui::Text(u8"Fixed Time : %d", m_FixedData.m_dwFixedTime);
-
+	int newFixedTime = (int)m_FixedData.m_dwFixedTime;
+	if (ImGui::DragInt("Fixed Time", &newFixedTime))
+	{
+		m_FixedData.m_dwFixedTime = newFixedTime;
+	}
+	
 }
 
 #endif // BUILD_MODE

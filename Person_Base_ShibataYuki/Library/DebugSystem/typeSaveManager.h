@@ -100,7 +100,7 @@ namespace MySpace
 			static CTypeSaveManager* Get() { static CTypeSaveManager pInstance; return &pInstance; }
 
 			// *@格納されたｸﾗｽを名前で取得
-			CTypeSaveBase* GetTypeSave(std::string name) { return m_aStockType[name]; }
+			CTypeSaveBase* GetTypeSave(std::string name);
 
 			// *@所持しているタイプの名前を取得
 			std::vector<std::string> GetTypeNameList();

@@ -45,6 +45,7 @@ CDrawSystem::CDrawSystem()
 #if BUILD_MODE
 	m_nSkipCnt = m_nDrawCnt = m_nInstancingCnt = 0;
 	m_bFrustum = true;
+	m_bShadowView = true;
 #endif // BUILD_MODE
 
 }
@@ -369,11 +370,15 @@ void CDrawSystem::Draw3D()
 	//CDXDevice::Get()->SetBlendState(static_cast<int>(EBlendState::BS_NONE));		// αブレンディング無効
 
 #ifdef BUILD_MODE
+	pDX->SetBlendState(static_cast<int>(EBlendState::BS_ALPHABLEND));
+
 	for (auto & mesh : m_aDebugMeshMap)
 	{
 		mesh.second.pMesh->DrawInstancing(mesh.second.aMtx);
 	}
 	m_aDebugMeshMap.clear();
+	pDX->SetBlendState(static_cast<int>(EBlendState::BS_NONE));
+
 #endif // BUILD_MODE
 
 }
@@ -392,10 +397,13 @@ void CDrawSystem::ImGuiDebug()
 	ImGui::Text("Instancing Num : %d", m_nInstancingCnt);
 	ImGui::Checkbox(u8"Renderer Sort", &m_bIsSortNecessary);
 
-	ImGui::SetNextWindowPos(ImVec2(CScreen::GetWidth()*0.3f, CScreen::GetHeight()*0.7f));
-	ImGui::Begin("Shadow Depth");
-	ImGui::Image(m_pDepthShadow->GetResource(), ImVec2(CScreen::GetWidth()*0.25f,CScreen::GetHeight()*0.25f));
-	ImGui::End();
+	//--- shadow レンダーターゲット表示
+	ImGui::SetNextWindowPos(ImVec2(CScreen::GetWidth()*0.3f, CScreen::GetHeight()*0.7f),ImGuiCond_::ImGuiCond_Once);
+	if (ImGui::Begin("Shadow Depth", (bool*)m_bShadowView))
+	{
+		ImGui::Image(m_pDepthShadow->GetResource(), ImVec2(CScreen::GetWidth()*0.25f, CScreen::GetHeight()*0.25f));
+		ImGui::End();
+	}
 
 	//ImGui::Text("Resource/Model:%d", CModelManager::Get()->GetNameList().size());
 	//ImGui::Text("Resource/Image:%d", CImageResourceManager::Get()->GetNameList().size());

@@ -66,11 +66,12 @@ CGameObject::CGameObject(const CGameObject & object)
 	this->m_objName = object.m_objName;
 #endif // BUILD_MODE
 
-	//this->m_pTransform = object.m_pTransform;
+	this->m_pTransform = object.m_pTransform;
 	this->m_eState = object.m_eState;
 	this->m_pLayer = object.m_pLayer;
 	this->m_pTag = object.m_pTag;
-	//this->m_aComponent = object.m_aComponent;
+	this->m_aComponent = object.m_aComponent;
+	this->m_aComponent.clear();
 
 	// ｺﾝﾎﾟｰﾈﾝﾄの名前から同じｺﾝﾎﾟｰﾈﾝﾄを追加
 	// TODO: 各ｺﾝﾎﾟｰﾈﾝﾄの値のｺﾋﾟｰは行えない
@@ -80,8 +81,12 @@ CGameObject::CGameObject(const CGameObject & object)
 		if (CComponentFactory::ObjSetComponent(*this, component->GetName()))
 		{
 			// 最後尾に追加されているコンポーネントを取得
-			//auto com = this->GetComponentList().back();
+			auto com = this->GetComponentList().back();
+			// Transform確認
+			if (com->GetName() == this->m_pTransform.lock()->GetName())
+				this->m_pTransform = com->BaseToDerived<CTransform>();
 			//com->Init();
+
 		}
 	}
 }

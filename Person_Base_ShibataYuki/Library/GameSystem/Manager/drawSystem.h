@@ -68,6 +68,7 @@ namespace MySpace
 			int m_nDrawCnt;
 			int m_nInstancingCnt;
 			bool m_bFrustum;
+			bool m_bShadowView;
 			InstancingMeshMap m_aDebugMeshMap;		// インスタンシング描画格納用
 #endif // _DEBUG
 

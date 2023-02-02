@@ -25,6 +25,9 @@
 #include <GameSystem/Component/Transform/rectTransform.h>
 #include <GameSystem/Factory/componentFactory.h>
 #include <CoreSystem/Input/input.h>
+#include <CoreSystem/File/cerealize.h>
+
+#define GAME_COPY FORDER_DIR(data/SystemData/copyObject.json)
 
 using namespace MySpace::System;
 using namespace MySpace::Game;
@@ -137,6 +140,18 @@ void CInspector::CopyGameObject()
 		com->SetOwner(m_spViewObj.lock());
 		com->Init();
 	}
+
+	//CCerealize<std::shared_ptr<CGameObject>> sirial;
+	//{
+	//	// ﾃﾞｰﾀを保存
+	//	auto obj = m_spViewObj.lock();
+	//	sirial.OutputFile(m_spViewObj.lock()->GetName(), GAME_COPY, obj);
+	//}
+	//// 新しいオブジェクト生成
+	//// ﾃﾞｰﾀ読み込み
+	//m_spViewObj = CGameObject::CreateObject();
+	//m_spViewObj = sirial.InputFile(GAME_COPY);
+
 }
 
 //==========================================================
@@ -281,7 +296,7 @@ void CInspector::AddComponentWindow()
 	if (!m_bIsAddComponent)return;
 
 	ImGui::SetNextWindowPos(ImVec2(1000, 20), ImGuiCond_Once);
-	ImGui::SetNextWindowSize(ImVec2(350, 300), ImGuiCond_Once);
+	ImGui::SetNextWindowSize(ImVec2(300, 300), ImGuiCond_Once);
 	std::vector<std::string> componentName = CComponentFactory::GetNameList();
 	static std::string serchWord;
 	
@@ -293,7 +308,8 @@ void CInspector::AddComponentWindow()
 		if (ImGui::InputText("Serch Com", input, 56))
 			serchWord = input;
 
-		// オブジェクトにコンポーネントを追加
+		//--- オブジェクトにコンポーネントを追加
+		// 表示
 		for (std::string str : componentName)
 		{
 			if (!serchWord.empty())
@@ -303,6 +319,7 @@ void CInspector::AddComponentWindow()
 					continue;
 			}
 
+			// 入力あり
 			if (ImGui::Button(str.c_str()))
 			{
 				// コンポーネントを保存しているｸﾗｽに追加してもらう
