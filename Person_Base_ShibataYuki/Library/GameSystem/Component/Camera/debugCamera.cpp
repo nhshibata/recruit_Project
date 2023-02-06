@@ -267,4 +267,15 @@ void CDebugCamera::ResumeCamera(bool bSwitch)
 
 }
 
+//==========================================================
+// Debug—p reset
+//==========================================================
+void CDebugCamera::Reset()
+{
+	m_oldMousePos.x = LONG(0);
+	m_oldMousePos.y = LONG(0);
+	CCamera::Init();
+
+}
+
 #endif // BUILD_MODE

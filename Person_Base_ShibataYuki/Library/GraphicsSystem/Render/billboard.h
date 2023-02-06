@@ -57,6 +57,7 @@ namespace MySpace
 		};
 	}
 }
+
 CEREAL_REGISTER_TYPE(MySpace::Graphics::CBillboard)
 
 #endif // !__BILLBOARD_H__

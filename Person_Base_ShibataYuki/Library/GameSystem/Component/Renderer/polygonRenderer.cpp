@@ -7,7 +7,10 @@
 //--- インクルード部
 #include <Application/Application.h>
 #include <GameSystem/Component/Renderer/polygonRenderer.h>
+#include <GameSystem/Component/Transform/rectTransform.h>
+#include <GraphicsSystem/Texture/spriteAnimation.h>
 #include <GameSystem/Component/Transform/transform.h>
+
 #include <GameSystem/Manager/sceneManager.h>
 #include <GameSystem/Manager/drawSystem.h>
 
@@ -24,18 +27,18 @@ using namespace MySpace::Graphics;
 //==========================================================
 // コンストラクタ
 //==========================================================
-//CPolygonRenderer::CPolygonRenderer()
-//	:m_nZValue(0)
-//{
-//	m_pSprite = std::make_shared<CSpriteAnimation>();
-//}
+CPolygonRenderer::CPolygonRenderer()
+	:m_nZValue(0)
+{
+	//m_pSprite = std::make_shared<CSpriteAnimation>();
+}
 
 //==========================================================
 // コンストラクタ
 //==========================================================
 CPolygonRenderer::CPolygonRenderer(std::shared_ptr<CGameObject> owner)
 	:CRenderer(owner)
-	, m_nZValue((int)EZValue::DEFAULT)
+	,m_nZValue((int)EZValue::DEFAULT)
 {
 	auto rect = GetOwner()->AddComponent<CRectTransform>();
 	m_pRectTransform = rect;
@@ -45,13 +48,13 @@ CPolygonRenderer::CPolygonRenderer(std::shared_ptr<CGameObject> owner)
 //==========================================================
 // コピーコンストラクタ
 //==========================================================
-CPolygonRenderer::CPolygonRenderer(const CPolygonRenderer& copy)
-{
-	this->m_pRectTransform = copy.m_pRectTransform;
-	this->m_pSprite = copy.m_pSprite;
-	this->m_nDrawIdx = copy.m_nDrawIdx;
-	this->m_nZValue = copy.m_nZValue;
-}
+//CPolygonRenderer::CPolygonRenderer(const CPolygonRenderer& copy)
+//{
+//	this->m_pRectTransform = copy.m_pRectTransform;
+//	this->m_pSprite = copy.m_pSprite;
+//	this->m_nDrawIdx = copy.m_nDrawIdx;
+//	this->m_nZValue = copy.m_nZValue;
+//}
 
 //==========================================================
 // デストラクタ
@@ -66,8 +69,10 @@ CPolygonRenderer::~CPolygonRenderer()
 //==========================================================
 void CPolygonRenderer::OnLoad()
 {
+	SetImageName(m_pSprite->GetImageName());
+	m_pRectTransform.reset();
+	m_pRectTransform = GetOwner()->GetComponent<CRectTransform>();
 	CRenderer::OnLoad();
-	SetImageName(m_pSprite.GetImageName());
 }
 
 //==========================================================
@@ -76,6 +81,8 @@ void CPolygonRenderer::OnLoad()
 //#pragma optimize("", off)
 void CPolygonRenderer::Awake()
 {
+	m_pSprite = std::make_shared<CSpriteAnimation>();
+
 	// コンポーネントの取得
 	m_pRectTransform = GetOwner()->GetComponent<CRectTransform>();
 
@@ -94,6 +101,9 @@ void CPolygonRenderer::Awake()
 //==========================================================
 void CPolygonRenderer::Init()
 {
+	if(!m_pSprite)
+		m_pSprite = std::make_shared<CSpriteAnimation>();
+
 	// 描画依頼
 	//CRenderer::Init();
 	Transform()->Update();
@@ -108,7 +118,7 @@ void CPolygonRenderer::Init()
 void CPolygonRenderer::Update()
 {
 	// ｱﾆﾒｰｼｮﾝ更新
-	m_pSprite.Update();
+	m_pSprite->Update();
 	//std::shared_ptr<CPolygonRenderer> ptr = std::make_shared<CPolygonRenderer>(GetPtr().lock().get());
 }
 
@@ -130,11 +140,11 @@ bool CPolygonRenderer::Draw()
 	CPolygon::SetAngle(m_pRectTransform.lock()->GetAngle());
 	CPolygon::SetSize(m_pRectTransform.lock()->GetSize());
 	CPolygon::SetPos(m_pRectTransform.lock()->GetPos());
-	CPolygon::SetUV((XMFLOAT2)m_pSprite.GetUV());
-	CPolygon::SetFrameSize((XMFLOAT2)m_pSprite.GetFrameSize());
+	CPolygon::SetUV((XMFLOAT2)m_pSprite->GetUV());
+	CPolygon::SetFrameSize((XMFLOAT2)m_pSprite->GetFrameSize());
 	//--- ﾃｸｽﾁｬ設定
-	if(m_pSprite.GetImage().lock())
-		CPolygon::SetTexture(m_pSprite.GetImage().lock()->GetSRV());
+	if(m_pSprite->GetImage().lock())
+		CPolygon::SetTexture(m_pSprite->GetImage().lock()->GetSRV());
 	else
 		CPolygon::SetTexture(NULL);
 	//--- 描画
@@ -153,6 +163,26 @@ bool CPolygonRenderer::Draw()
 	pDX->SetBlendState(static_cast<int>(EBlendState::BS_NONE));
 
 	return true;
+}
+
+CSpriteAnimation* CPolygonRenderer::GetSprite() 
+{
+	return m_pSprite.get(); 
+}
+
+std::shared_ptr<CRectTransform> CPolygonRenderer::GetRectTransform() 
+{
+	return m_pRectTransform.lock(); 
+}
+
+std::string CPolygonRenderer::GetImageName()
+{
+	return m_pSprite->GetImageName(); 
+}
+
+void CPolygonRenderer::SetImageName(std::string name)
+{
+	m_pSprite->SetImage(name);
 }
 
 //==========================================================
@@ -183,7 +213,6 @@ void CPolygonRenderer::ImGuiDebug()
 	CRenderer::ImGuiDebug();
 	
 	//ImGui::Text(u8"filaName : %s", m_pSprite.GetImageName().c_str());
-	m_pSprite.ImGuiDebug();
 
 	int z = m_nZValue;
 	if (ImGui::InputInt("ZValue", &z))
@@ -198,19 +227,21 @@ void CPolygonRenderer::ImGuiDebug()
 	ImGui::SameLine();
 	if(ImGui::Button("FOG"))
 		SetZ((int)EZValue::FOG);
-
+	
 	//--- ファイル内検索
-	if (s_FileList.empty() || ImGui::Button(u8"Image reload"))
+	if (s_FileList.empty() || ImGui::Button("2D Image reload"))
 	{
 		MySpace::System::CFilePath file;
 		s_FileList = file.GetAllFileName(TEXTURE_PATH);
 	}
 
 	// ﾃｸｽﾁｬ
-	if (auto name = DispCombo(s_FileList, u8"Image", m_pSprite.GetImageName()); !name.empty())
+	if (auto name = DispCombo(s_FileList, "2D Image", m_pSprite->GetImageName()); !name.empty())
 	{
-		m_pSprite.SetImage(name);
+		m_pSprite->SetImage(name);
 	}
+
+	m_pSprite->ImGuiDebug();
 
 }
 

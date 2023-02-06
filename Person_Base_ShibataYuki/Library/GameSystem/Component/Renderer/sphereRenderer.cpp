@@ -127,7 +127,7 @@ void CSphereRenderer::ImGuiDebug()
 
 	//if(ImGui::Button(u8"SphereRenderer"))
 	//m_fRadius = Transform()->GetScale().GetLargeValue();
-	if (ImGui::DragFloat("Radius", &m_fRadius))
+	if (ImGui::DragFloat("SphereRadius renderer", &m_fRadius))
 	{
 		SetSphere(m_fRadius);
 	}

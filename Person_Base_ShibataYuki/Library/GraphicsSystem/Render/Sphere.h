@@ -21,14 +21,14 @@ namespace MySpace
 			void save(Archive& archive) const
 			{
 				archive(
-					cereal::make_nvp("boxMesh", cereal::base_class<CMesh>(this))
+					cereal::make_nvp("sphereMesh", cereal::base_class<CMesh>(this))
 				);
 			}
 			template<class Archive>
 			void load(Archive& archive)
 			{
 				archive(
-					cereal::make_nvp("boxMesh", cereal::base_class<CMesh>(this))
+					cereal::make_nvp("sphereMesh", cereal::base_class<CMesh>(this))
 				);
 			}
 

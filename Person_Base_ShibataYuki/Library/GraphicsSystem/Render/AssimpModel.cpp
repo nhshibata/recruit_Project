@@ -19,6 +19,7 @@
 #include <GraphicsSystem/Shader/shader.h>
 
 #include <GameSystem/Component/Light/directionalLight.h>
+#include <GameSystem/Component/Camera/camera.h>
 
 //--- 定義確認
 #ifdef _DEBUG
@@ -47,7 +48,6 @@ using namespace MySpace::Game;
 using namespace MySpace::Graphics;
 
 #define MAX_BONE_MATRIX		64
-#define MAX_WORLD_MATRIX	100
 
 // シェーダに渡す値
 struct SHADER_GLOBAL {
@@ -86,16 +86,6 @@ struct SHADER_BONE {
 	}
 };
 
-struct SHADER_INSTANCE {
-	XMMATRIX mWorld[MAX_WORLD_MATRIX];
-	SHADER_INSTANCE()
-	{
-		for (int i = 0; i < MAX_WORLD_MATRIX; i++)
-		{
-			mWorld[i] = XMMatrixIdentity();
-		}
-	}
-};
 
 const aiMatrix4x4 IdentityMatrix;
 
@@ -559,14 +549,6 @@ void CAssimpMesh::Draw(ID3D11DeviceContext* pDC, XMFLOAT4X4& m44World, EByOpacit
 		XMMATRIX mtxTex = XMLoadFloat4x4(&mtxTexture);
 		sg.mTex = XMMatrixTranspose(mtxTex);
 
-//#if INSTANCE
-//		sg.mVP = mtxView * mtxProj;
-//		sg.mVP = XMMatrixTranspose(sg.mVP);
-//#else
-//		sg.mWVP = mtxWorld * mtxView * mtxProj;
-//		sg.mWVP = XMMatrixTranspose(sg.mWVP);
-//#endif // INSTANCE
-
 		sg.mVP = mtxWorld * mtxView * mtxProj;
 		sg.mVP = XMMatrixTranspose(sg.mVP);
 
@@ -697,17 +679,6 @@ void CAssimpMesh::DrawInstancing(ID3D11DeviceContext* pDC, XMFLOAT4X4& m44World,
 	}
 	pDC->PSSetConstantBuffers(1, 1, &m_pConstantBuffer1);
 
-	/*{
-		auto sm = Application::Get()->GetSystem<CAssetsManager>()->GetShaderManager();
-		DirectX::XMFLOAT4X4 mat[3];
-		auto pCam = CCamera::GetMain();
-		mat[0] = m44World;
-		mat[1] = pCam->GetViewMatrix();
-		mat[2] = pCam->GetProjMatrix();
-		sm->ConstantWrite("DepthWriteCB", mat);
-		sm->BindCB("DepthWriteCB", 5);
-	}*/
-
 	// テクスチャをシェーダに渡す
 	if (pMaterial->pTexture) {
 		pDC->PSSetShaderResources(0, 1, &pMaterial->pTexture);
@@ -729,9 +700,9 @@ void CAssimpMesh::DrawInstancing(ID3D11DeviceContext* pDC, XMFLOAT4X4& m44World,
 
 // モデル クラス
 // 静的メンバ変数
-ID3D11InputLayout* CAssimpModel::m_pVertexLayout;
-ID3D11VertexShader* CAssimpModel::m_pVertexShader;
-ID3D11PixelShader* CAssimpModel::m_pPixelShader;
+//ID3D11InputLayout* CAssimpModel::m_pVertexLayout;
+//ID3D11VertexShader* CAssimpModel::m_pVertexShader;
+//ID3D11PixelShader* CAssimpModel::m_pPixelShader;
 ID3D11SamplerState* CAssimpModel::m_pSampleLinear;
 
 // コンストラクタ
@@ -765,35 +736,10 @@ bool CAssimpModel::InitShader(ID3D11Device* pDevice)
 {
 	// シェーダ読み込み
 	HRESULT hr = S_OK;
-
-#define EST1 1
-#if EST1
-	hr = MySpace::Graphics::LoadShader("AssimpVertex", "AssimpPixel",
-		&m_pVertexShader, &m_pVertexLayout, &m_pPixelShader);
-	if (FAILED(hr)) 
-	{
-#ifdef _DEBUG
-		MessageBoxW(0, L"hlsl読み込み失敗", nullptr, MB_OK);
-#endif
-		return false;
-	}
-
-	//SAFE_RELEASE(m_pVertexLayout);
-	//SAFE_RELEASE(m_pPixelShader);
-
-	hr = MySpace::Graphics::LoadShader("AssimpInstancingVertex", "AssimpShadowPS", &m_pInstancingVS, &m_pShadowVL, &m_pShadowPS);
-	if (FAILED(hr))
-	{
-#ifdef _DEBUG
-		MessageBoxW(0, L"hlsl読み込み失敗", nullptr, MB_OK);
-#endif
-		return false;
-	}
-
-#else
-
+	auto sm = Application::Get()->GetSystem<CAssetsManager>()->GetShaderManager();
+	
 	// 頂点フォーマットの定義、生成
-	static const D3D11_INPUT_ELEMENT_DESC layout[] = {
+	const D3D11_INPUT_ELEMENT_DESC layout[] = {
 		{"POSITION",    0, DXGI_FORMAT_R32G32B32_FLOAT,    0, 0,                            D3D11_INPUT_PER_VERTEX_DATA, 0},
 		{"NORMAL",      0, DXGI_FORMAT_R32G32B32_FLOAT,    0, D3D11_APPEND_ALIGNED_ELEMENT, D3D11_INPUT_PER_VERTEX_DATA, 0},
 		{"TEXCOORD",    0, DXGI_FORMAT_R32G32_FLOAT,       0, D3D11_APPEND_ALIGNED_ELEMENT, D3D11_INPUT_PER_VERTEX_DATA, 0},
@@ -801,18 +747,63 @@ bool CAssimpModel::InitShader(ID3D11Device* pDevice)
 		{"BONE_WEIGHT", 0, DXGI_FORMAT_R32G32B32A32_FLOAT, 0, D3D11_APPEND_ALIGNED_ELEMENT, D3D11_INPUT_PER_VERTEX_DATA, 0},
 	};
 
-	PixelShaderSharedPtr ps = std::make_shared<CPixelShader>();
-	VertexShaderSharedPtr vs = std::make_shared<CVertexShader>();
-	//ConstantBufferSharedPtr cb_sg = std::make_shared<CConstantBuffer>();
-	hr = ps->Make(CSO_PATH(AssimpPixel.cso));
-	hr = vs->Make(CSO_PATH(AssimpVertex.cso), layout, _countof(layout));
-	//cb_sg->Make(sizeof(SHADER_GLOBAL_POLYGON), 0, CConstantBuffer::EType::Vertex);
+#if 0
+	hr = MySpace::Graphics::LoadShader("AssimpVertex", "AssimpPixel",
+		&m_pVertexShader, &m_pVertexLayout, &m_pPixelShader);
+	if (FAILED(hr)) 
+	{
+		MessageBoxW(0, L"hlsl読み込み失敗", nullptr, MB_OK);
+		return false;
+	}
+	hr = MySpace::Graphics::LoadShader("VS_Assimp", "PS_Assimp", &m_pInstancingVS, &m_pShadowIL, &m_pShadowPS);
+	if (FAILED(hr))
+	{
+		MessageBoxW(0, L"hlsl読み込み失敗", nullptr, MB_OK);
+		return false;
+	}
+#else
+	//--- PS,VSの生成と登録
+	{
+		PixelShaderSharedPtr ps = std::make_shared<CPixelShader>();
+		hr = ps->Make(FORDER_DIR(Data/shader/AssimpPixel.cso));
+		if (FAILED(hr))
+			return hr;
+		else
+			sm->SetPS(CAssimpModel::SHADER_NAME_MODEL_PSVS, ps);
 
-	//CShaderManager::Get()->SetConstantBuffer("SHADER_GLOBAL_POLYGON", cb_sg);
-	CShaderManager::Get()->SetPS("AssimpPixel", ps);
-	CShaderManager::Get()->SetVS("AssimpVertex", vs);
+		VertexShaderSharedPtr vs = std::make_shared<CVertexShader>();
+		hr = vs->Make(FORDER_DIR(Data/shader/AssimpVertex.cso), layout, _countof(layout));
+		if (FAILED(hr))
+			return hr;
+		else
+			sm->SetVS(CAssimpModel::SHADER_NAME_MODEL_PSVS, vs);
+	}
+
+	{	// インスタンシング
+		PixelShaderSharedPtr ps = std::make_shared<CPixelShader>();
+		hr = ps->Make(FORDER_DIR(Data/shader/PS_Assimp.cso));
+		if (FAILED(hr))
+			return hr;
+		else
+			sm->SetPS(CAssimpModel::SHADER_NAME_INSTANCING_MODEL_PSVS, ps);
+
+		VertexShaderSharedPtr vs = std::make_shared<CVertexShader>();
+		hr = vs->Make(FORDER_DIR(Data/shader/VS_Assimp.cso), layout, _countof(layout));
+		if (FAILED(hr))
+			return hr;
+		else
+			sm->SetVS(CAssimpModel::SHADER_NAME_INSTANCING_MODEL_PSVS, vs);
+	}
 
 #endif // 1
+
+	//--- インスタンシング用コンスタントバッファ 作成
+	ConstantBufferSharedPtr cb_im = std::make_shared<CConstantBuffer>();
+	ConstantBufferSharedPtr cb_imtx = std::make_shared<CConstantBuffer>();
+	cb_im->MakeCPU(sizeof(INSTANCHING_DATA), 6, CConstantBuffer::EType::Pixel);
+	cb_imtx->MakeCPU(sizeof(INSTANCE_MATRIX), 3, CConstantBuffer::EType::Vertex);
+	sm->SetCB(CB_NAME_INSTANCE_MATERIAL, cb_im);
+	sm->SetCB(CB_NAME_INSTANCE_MATRIX, cb_imtx);
 
 	// テクスチャ用サンプラ作成
 	CD3D11_DEFAULT def;
@@ -822,29 +813,9 @@ bool CAssimpModel::InitShader(ID3D11Device* pDevice)
 	sd.AddressW = D3D11_TEXTURE_ADDRESS_WRAP;
 	hr = pDevice->CreateSamplerState(&sd, &m_pSampleLinear);
 	if (FAILED(hr)) {
-#ifdef _DEBUG
 		MessageBoxW(0, L"テクスチャ用サンプラ作成失敗", nullptr, MB_OK);
-#endif
 		return false;
 	}
-
-
-#if INSTANCE
-	// インスタンシング用コンスタントバッファ 作成
-	D3D11_BUFFER_DESC cb;
-	ZeroMemory(&cb, sizeof(cb));
-	cb.BindFlags = D3D11_BIND_CONSTANT_BUFFER;
-	cb.ByteWidth = sizeof(SHADER_INSTANCE);
-	cb.CPUAccessFlags = D3D11_CPU_ACCESS_WRITE;
-	cb.MiscFlags = 0;
-	cb.Usage = D3D11_USAGE_DYNAMIC;
-	hr = pDevice->CreateBuffer(&cb, nullptr, &m_pConstantBufferI);
-	if (FAILED(hr))
-	{
-		//Release();
-		return false;
-	}
-#endif // INSTANCE
 
 	return true;
 }
@@ -852,16 +823,17 @@ bool CAssimpModel::InitShader(ID3D11Device* pDevice)
 // シェーダ終了処理
 void CAssimpModel::UninitShader()
 {
-#if INSTANCE
-	SAFE_RELEASE(m_pInstancingVS);
-	SAFE_RELEASE(m_pShadowPS);
-	SAFE_RELEASE(m_pShadowVL);
-	SAFE_RELEASE(m_pConstantBufferI);
-#endif // INSTANCE
+//#if INSTANCE
+//	SAFE_RELEASE(m_pInstancingVS);
+//	SAFE_RELEASE(m_pShadowPS);
+//	SAFE_RELEASE(m_pShadowIL);
+//	//SAFE_RELEASE(m_pConstantBufferI);
+//#endif // INSTANCE
+//	SAFE_RELEASE(m_pPixelShader);
+//	SAFE_RELEASE(m_pVertexLayout);
+//	SAFE_RELEASE(m_pVertexShader);
+
 	SAFE_RELEASE(m_pSampleLinear);
-	SAFE_RELEASE(m_pPixelShader);
-	SAFE_RELEASE(m_pVertexLayout);
-	SAFE_RELEASE(m_pVertexShader);
 }
 
 // モデル読み込み
@@ -941,21 +913,15 @@ void CAssimpModel::Draw(ID3D11DeviceContext* pDC, XMFLOAT4X4& mtxWorld, EByOpaci
 
 	m_mtxWorld = mtxWorld;
 
-#if EST1
-	pDC->VSSetShader(m_pVertexShader, nullptr, 0);
-	pDC->PSSetShader(m_pPixelShader, nullptr, 0);
-	// 頂点インプットレイアウトをセット
-	pDC->IASetInputLayout(m_pVertexLayout);
-#else
-	// 使用するシェーダーの登録	
-	/*CShaderManager::Get()->BindPS("AssimpPixel");
-	CShaderManager::Get()->BindVS("AssimpVertex");*/
-	CShaderManager::Get()->Render(CShaderManager::EShaderType::Triangle, "", "AssimpVertex", "AssimpPixel");
-	//pDC->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_3_CONTROL_POINT_PATCHLIST);	
-	
-	// CShaderManager::EShaderType::PointToTriangle
-	//pDC->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_1_CONTROL_POINT_PATCHLIST);
-#endif
+	//pDC->VSSetShader(m_pVertexShader, nullptr, 0);
+	//pDC->PSSetShader(m_pPixelShader, nullptr, 0);
+	//// 頂点インプットレイアウトをセット
+	//pDC->IASetInputLayout(m_pVertexLayout);
+
+	//--- シェーダー設定
+	auto sm = Application::Get()->GetSystem<CAssetsManager>()->GetShaderManager();
+	sm->BindPS(CAssimpModel::SHADER_NAME_MODEL_PSVS);
+	sm->BindVS(CAssimpModel::SHADER_NAME_MODEL_PSVS);
 
 	// プリミティブ形状をセット
 	pDC->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
@@ -968,7 +934,7 @@ void CAssimpModel::Draw(ID3D11DeviceContext* pDC, XMFLOAT4X4& mtxWorld, EByOpaci
 	DrawNode(pDC, m_pScene->mRootNode, *piMatrix, byOpacity);
 }
 
-void CAssimpModel::DrawInstancing(ID3D11DeviceContext* pDC, INSTANCHING_DATA& mtxWorld, 
+void CAssimpModel::DrawInstancing(ID3D11DeviceContext* pDC, std::vector<RENDER_DATA>& aData,
 								  EByOpacity byOpacity, bool defaultShader)
 {
 	if (!m_pScene) return;
@@ -981,41 +947,44 @@ void CAssimpModel::DrawInstancing(ID3D11DeviceContext* pDC, INSTANCHING_DATA& mt
 	//}
 
 	// 使用するシェーダーの登録	
-#if EST1
 	if (defaultShader)
 	{
-		pDC->VSSetShader(m_pInstancingVS, nullptr, 0);
-		pDC->PSSetShader(m_pShadowPS, nullptr, 0);
-		// 頂点インプットレイアウトをセット
-		pDC->IASetInputLayout(m_pShadowVL);
+		//--- シェーダー設定
+		auto sm = Application::Get()->GetSystem<CAssetsManager>()->GetShaderManager();
+		sm->BindPS(CAssimpModel::SHADER_NAME_INSTANCING_MODEL_PSVS);
+		sm->BindVS(CAssimpModel::SHADER_NAME_INSTANCING_MODEL_PSVS);
 	}
-#else
-#endif
 
 	// プリミティブ形状をセット
 	pDC->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 	// テクスチャサンプラをセット
 	pDC->PSSetSamplers(0, 1, &m_pSampleLinear);
 
-
-	D3D11_MAPPED_SUBRESOURCE pData;
+	//--- 定数バッファ設定
+	auto sm = Application::Get()->GetSystem<CAssetsManager>()->GetShaderManager();
 	int cntNum = 0;
-	while (cntNum < mtxWorld.size())
+	while (cntNum < aData.size())
 	{
 		int cnt = 0;
-		if (SUCCEEDED(pDC->Map(m_pConstantBufferI, 0, D3D11_MAP_WRITE_DISCARD, 0, &pData)))
+		
 		{
-			SHADER_INSTANCE si;	// ｼｪｰﾀﾞｰに渡す情報
+			// ｼｪｰﾀﾞｰに渡す情報
+			INSTANCHING_DATA* imd = new INSTANCHING_DATA;	
+			INSTANCE_MATRIX* imtx = new INSTANCE_MATRIX;
 			for (; cnt < MAX_WORLD_MATRIX; ++cnt, ++cntNum)
 			{
-				if (cnt >= mtxWorld.size() || cntNum >= mtxWorld.size())
+				if (cnt >= aData.size() || cntNum >= aData.size())
 					break;
-				si.mWorld[cnt] = XMMatrixTranspose(XMLoadFloat4x4(&mtxWorld[cnt]));
+				imtx->mWorld[cnt] = aData[cnt].mWorld;
+				imd->renderData[cnt] = aData[cnt];
 			}
-			memcpy_s(pData.pData, pData.RowPitch, (void*)&si, sizeof(SHADER_INSTANCE));
-			pDC->Unmap(m_pConstantBufferI, 0);
+			sm->CBWrite(CB_NAME_INSTANCE_MATERIAL, imd, sizeof(INSTANCHING_DATA));
+			sm->CBWrite(CB_NAME_INSTANCE_MATRIX, imtx, sizeof(INSTANCE_MATRIX));
+			delete imd;
+			delete imtx;
 		}
-		pDC->VSSetConstantBuffers(3, 1, &m_pConstantBufferI);
+		sm->BindCB(CB_NAME_INSTANCE_MATERIAL);
+		sm->BindCB(CB_NAME_INSTANCE_MATRIX);
 
 		//--- ノード単位で描画
 		XMFLOAT4X4 mWorld;
@@ -1023,14 +992,13 @@ void CAssimpModel::DrawInstancing(ID3D11DeviceContext* pDC, INSTANCHING_DATA& mt
 		aiMatrix4x4* piMatrix = (aiMatrix4x4*)&mWorld;
 		
 		// サイズ確認
-		if (mtxWorld.size() >= MAX_WORLD_MATRIX)
+		if (aData.size() >= MAX_WORLD_MATRIX)
 		{
-			DrawInstancingNode(pDC, m_pScene->mRootNode, *piMatrix, byOpacity, (UINT)cnt);
-			
+			DrawInstancingNode(pDC, m_pScene->mRootNode, *piMatrix, byOpacity, (UINT)cnt);	
 		}
 		else
 		{
-			DrawInstancingNode(pDC, m_pScene->mRootNode, *piMatrix, byOpacity, (UINT)mtxWorld.size());
+			DrawInstancingNode(pDC, m_pScene->mRootNode, *piMatrix, byOpacity, (UINT)aData.size());
 		}
 	}
 

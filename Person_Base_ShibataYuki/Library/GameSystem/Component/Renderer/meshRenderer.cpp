@@ -24,7 +24,7 @@ CMeshRenderer::CMeshRenderer()
 {
 	m_MeshMaterial = CMeshMaterial(
 		Vector4(0.0f, 1.0f, 0.0f, 0.3f),
-		Vector4(0.0f, 1.0f, 0.0f, 0.3f),
+		Vector4(0.0f, 1.0f, 0.0f, 0.0f),
 		Vector4(0.0f, 0.0f, 0.0f, 1.0f),
 		Vector4(0.0f, 0.0f, 0.0f, 1.0f),
 		1.0f);
@@ -39,8 +39,8 @@ CMeshRenderer::CMeshRenderer(std::shared_ptr<CGameObject> owner)
 {
 	m_MeshMaterial = CMeshMaterial(
 		Vector4(0.0f, 1.0f, 0.0f, 0.3f),
-		Vector4(0.0f, 1.0f, 0.0f, 0.3f),
-		Vector4(0.0f, 0.0f, 0.0f, 1.0f),
+		Vector4(0.0f, 1.0f, 0.0f, 0.0f),	// wはﾃｸｽﾁｬ有無に使われている
+		Vector4(0.0f, 0.0f, 0.0f, 1.0f),	// wはpowerに使われている
 		Vector4(0.0f, 0.0f, 0.0f, 1.0f),
 		1.0f);
 }
@@ -88,21 +88,33 @@ float CMeshRenderer::GetBSRadius()
 //==========================================================
 // インスタンシング設定
 //==========================================================
-void CMeshRenderer::SetInstancing(CMesh* mesh, std::string name)
+void CMeshRenderer::SetInstancing(CMesh* mesh, std::string name, DirectX::XMUINT4 vFlag)
 {
 	auto sys = SceneManager::CSceneManager::Get()->GetDrawSystem();
+
+	// wはpowerに使われている
+	Vector4 spec(m_MeshMaterial.m_Specular.x, m_MeshMaterial.m_Specular.y, m_MeshMaterial.m_Specular.z, m_MeshMaterial.m_Power);
+	
 	//--- インスタンシング依頼
 	if (!name.empty())
 	{
-		sys->SetInstanchingMesh(name, Transform()->GetWorldMatrix(), mesh);
+		sys->SetInstanchingMesh(
+			name,
+			RENDER_DATA(Transform()->GetWorldMatrix(),
+						m_MeshMaterial.m_Ambient, m_MeshMaterial.m_Diffuse,
+						spec, m_MeshMaterial.m_Emissive,
+						vFlag),
+			mesh);
 	}
 	else
 	{
 		sys->SetInstanchingMesh(
 			std::string(std::to_string(mesh->GetIndexNum()) + std::to_string(mesh->GetMaterial()->GetFloat())),
-			Transform()->GetWorldMatrix(),
-			mesh
-		);
+			RENDER_DATA(Transform()->GetWorldMatrix(),
+						m_MeshMaterial.m_Ambient, m_MeshMaterial.m_Diffuse,
+						spec, m_MeshMaterial.m_Emissive,
+						vFlag),
+			mesh);
 	}
 }
 
@@ -115,26 +127,26 @@ void CMeshRenderer::ImGuiDebug()
 	ImGui::Checkbox("Static", (bool*)&m_nStaticMode);
 	ImGui::SameLine();
 	ImGui::Checkbox("Shadow", (bool*)&m_bShadow);
-	
+
 	ImGui::BeginTabBar("Material");
 	if (ImGui::BeginTabItem("Diffuse"))
 	{
-		ImGui::ColorPicker4("Diffuse", (float*)&m_MeshMaterial.m_Diffuse);
+		ImGui::ColorPicker4("DiffuseColor", (float*)&m_MeshMaterial.m_Diffuse);
 		ImGui::EndTabItem();
 	}
 	if (ImGui::BeginTabItem("Ambient"))
 	{
-		ImGui::ColorPicker4("Ambient", (float*)&m_MeshMaterial.m_Ambient);
+		ImGui::ColorPicker4("AmbientColor", (float*)&m_MeshMaterial.m_Ambient);
 		ImGui::EndTabItem();
 	}
 	if (ImGui::BeginTabItem("Specular"))
 	{
-		ImGui::ColorPicker4("Specular", (float*)&m_MeshMaterial.m_Specular);
+		ImGui::ColorPicker4("SpecularColor", (float*)&m_MeshMaterial.m_Specular);
 		ImGui::EndTabItem();
 	}
 	if (ImGui::BeginTabItem("Emissive"))
 	{
-		ImGui::ColorPicker4("Emissive", (float*)&m_MeshMaterial.m_Emissive);
+		ImGui::ColorPicker4("EmissiveColor", (float*)&m_MeshMaterial.m_Emissive);
 		ImGui::EndTabItem();
 	}
 	if (ImGui::BeginTabItem("Power"))
@@ -143,8 +155,7 @@ void CMeshRenderer::ImGuiDebug()
 		ImGui::EndTabItem();
 	}
 	ImGui::EndTabBar();
-	//CRenderer::ImGuiDebug();
-
+	
 }
 
 #endif // BUILD_MODE

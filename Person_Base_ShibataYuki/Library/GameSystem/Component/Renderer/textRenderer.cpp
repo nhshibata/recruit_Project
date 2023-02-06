@@ -42,8 +42,8 @@ CTextRenderer::~CTextRenderer()
 //==========================================================
 void CTextRenderer::OnLoad()
 {
-	CRenderer::OnLoad();
 	m_aTexList = Application::Get()->GetSystem<CAssetsManager>()->GetFont()->GetString(m_Text, m_Font);
+	CPolygonRenderer::OnLoad();
 }
 
 //==========================================================
@@ -70,6 +70,7 @@ void CTextRenderer::Awake()
 	{
 		m_pRectTransform = GetOwner()->AddComponent<CRectTransform>();
 	}
+	
 }
 
 //==========================================================
@@ -77,14 +78,21 @@ void CTextRenderer::Awake()
 //==========================================================
 void CTextRenderer::Init()
 {
+	if (m_pRectTransform = GetOwner()->GetComponent<CRectTransform>(); !m_pRectTransform.lock())
+	{
+		m_pRectTransform = GetOwner()->AddComponent<CRectTransform>();
+	}
+
+	m_pRectTransform.lock()->SetSize(1, 1);
+
 	// ÉTÉCÉYéÊìæ
 	m_uOldTextSize = m_Text.size();
 	
 	// ï∂éöóÒÇ©ÇÁ√∏Ω¡¨éÊìæ
 	m_aTexList = Application::Get()->GetSystem<CAssetsManager>()->GetFont()->GetString(m_Text, m_Font);
 
-	// ï`âÊàÀóä
-	CRenderer::Init();
+	// åpè≥å≥Ç©ÇÁÇÃï`âÊàÀóä
+	CPolygonRenderer::Init();
 }
 
 //==========================================================
@@ -105,8 +113,7 @@ void CTextRenderer::Update()
 //==========================================================
 bool CTextRenderer::Draw()
 {
-	if (!CRenderer::Draw())
-		return false;
+	if (!CRenderer::Draw())return false;
 
 	// ëOèÄîı
 	auto pDX = Application::Get()->GetSystem<CDXDevice>();
@@ -167,12 +174,16 @@ void CTextRenderer::SetTextWString(std::wstring text)
 
 void CTextRenderer::ImGuiDebug()
 {
-	std::string text;
-	text = MySpace::Debug::InputString(text, "String");
-	m_Text = StringToWString(text);
+	std::string text = WStringToString(m_Text);
+	auto inputStr = MySpace::Debug::InputString(text, "String");
+	{
+		m_Text = StringToWString(inputStr);
+	}
 	
-	ImGui::InputFloat("offset", &m_fOffset);
-	ImGui::Checkbox(u8"èc", &m_bVerticalWrit);
+	ImGui::InputFloat("text offset", &m_fOffset);
+	ImGui::Checkbox(u8"èc?", &m_bVerticalWrit);
+
+	CRenderer::ImGuiDebug();
 }
 
 //==========================================================

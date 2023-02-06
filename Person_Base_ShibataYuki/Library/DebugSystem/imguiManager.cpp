@@ -206,7 +206,6 @@ void ImGuiManager::Update()
 		ImGui::Text(u8"オブジェクト数 : %d", CSceneManager::Get()->GetActiveScene()->GetObjManager()->GetList().size());
 
 		// フレームレート表示
-		ImGui::Text(u8"現在のFPS : %.1f FPS", ImGui::GetIO().Framerate);
 		ImGui::EndTabItem();	// とじる
 	}
 
@@ -287,8 +286,8 @@ void ImGuiManager::Update()
 		ImGui::Text("Hover->%d", res);
 		ImGui::Checkbox("Grid", &m_bGridDisp);
 
-		//m_pDebugCamera.lock()->Transform()->Update();
-		//m_pDebugCamera.lock()->Transform()->ImGuiDebug();
+		if(ImGui::Button("Camera Reset"))
+			m_pDebugCamera.lock()->Reset();
 		ImGui::EndTabItem();// とじる
 	}
 
@@ -392,7 +391,7 @@ void ImGuiManager::DispLog()
 		auto str = (*it).first;
 		auto cstr = (*it).first.c_str();
 		
-		ImGui::Text("%d■", (*it).second);
+		ImGui::Text("%d", (*it).second);
 		ImGui::SameLine();
 		ImGui::Text(u8"%s", cstr);
 	}

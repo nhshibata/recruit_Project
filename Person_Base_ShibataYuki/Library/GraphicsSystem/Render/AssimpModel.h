@@ -21,8 +21,8 @@
 #include <assimp/Importer.hpp>
 #include <assimp/scene.h>
 #include <assimp/postprocess.h>
-#include <GameSystem/Component/Camera/camera.h>
-#include <GameSystem/Component/Light/directionalLight.h>
+
+#include <GraphicsSystem/Shader/instancingData.h>
 
 // マクロ
 #ifndef SAFE_RELEASE
@@ -42,8 +42,6 @@ enum EByOpacity {
 	eTransparentOnly,	// 透明のみ
 };
 
-// 追加
-using INSTANCHING_DATA = std::vector<DirectX::XMFLOAT4X4>;
 
 // マテリアル
 struct TAssimpMaterial {
@@ -247,19 +245,22 @@ private:
 	double m_dCurrent;
 	double m_dLastPlaying;
 
-	static ID3D11InputLayout* m_pVertexLayout;
+	/*static ID3D11InputLayout* m_pVertexLayout;
 	static ID3D11VertexShader* m_pVertexShader;
-	static ID3D11PixelShader* m_pPixelShader;
+	static ID3D11PixelShader* m_pPixelShader;*/
 	static ID3D11SamplerState* m_pSampleLinear;
 
 #define INSTANCE 1
 #if INSTANCE
-	static inline ID3D11VertexShader* m_pInstancingVS;
+	/*static inline ID3D11VertexShader* m_pInstancingVS;
 	static inline ID3D11PixelShader* m_pShadowPS;
-	static inline ID3D11InputLayout* m_pShadowVL;
-	static inline ID3D11Buffer* m_pConstantBufferI;
+	static inline ID3D11InputLayout* m_pShadowIL;*/
+	//static inline ID3D11Buffer* m_pConstantBufferI;
 #endif // INSTANCE
 
+public:
+	static constexpr const char* SHADER_NAME_INSTANCING_MODEL_PSVS = "InstancingModel";	// シェーダー登録名
+	static constexpr const char* SHADER_NAME_MODEL_PSVS = "Model";						// シェーダー登録名
 
 public:
 	CAssimpModel();
@@ -272,7 +273,7 @@ public:
 	void SetTextureMatrix(DirectX::XMFLOAT4X4& mtxTexture);
 	bool Load(ID3D11Device* pDevice, ID3D11DeviceContext* pDC, std::string filename);
 	void Draw(ID3D11DeviceContext* pDC, DirectX::XMFLOAT4X4& mtxWorld, EByOpacity byOpacity = eNoAffect);
-	void DrawInstancing(ID3D11DeviceContext* pDC, INSTANCHING_DATA& mtxWorld, 
+	void DrawInstancing(ID3D11DeviceContext* pDC, std::vector<MySpace::Graphics::RENDER_DATA>& mtxWorld,
 						EByOpacity byOpacity = eNoAffect, bool defaultShader = true);
 	void DrawNode(ID3D11DeviceContext* pDC, aiNode* piNode, const aiMatrix4x4& piMatrix, EByOpacity byOpacity);
 	void DrawInstancingNode(ID3D11DeviceContext* pDC, aiNode* piNode, const aiMatrix4x4& piMatrix, 

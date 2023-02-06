@@ -142,6 +142,9 @@ namespace MySpace
 			bool RemoveComponent(std::string comName);
 			// *@コンポーネントの破棄(引き数:SP)
 			bool RemoveComponent(std::weak_ptr<CComponent> com);
+			// *@コンポーネント設定
+			// *@同一コンポーネントがあればfalse
+			bool SetComponent(std::shared_ptr<CComponent> com);
 
 			// *@コンポーネントListの取得
 			_NODISCARD inline Component_List GetComponentList() { return m_aComponent; }

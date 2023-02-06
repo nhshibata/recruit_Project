@@ -13,35 +13,47 @@
 
 //--- インクルード部
 #include <GameSystem/Component/Renderer/renderer.h>
-#include <GameSystem/Component/Transform/rectTransform.h>
-#include <GraphicsSystem/Texture/spriteAnimation.h>
+//#include <GameSystem/Component/Transform/rectTransform.h>
+//#include <GraphicsSystem/Texture/spriteAnimation.h>
+#include <CoreSystem/Util/cerealCommon.h>
 
 namespace MySpace
 {
 	namespace Game
 	{
-		using namespace MySpace::Graphics;
+		class CRectTransform;
+	}
+	namespace Graphics
+	{
+		class CSpriteAnimation;
+	}
+}
 
+namespace MySpace
+{
+	namespace Game
+	{
 		//--- クラス定義
 		class CPolygonRenderer : public CRenderer
 		{
 		private:
 			// シリアライズ
-			friend class cereal::access;
+			friend cereal::access;
 			template<class Archive>
 			void save(Archive& archive) const
 			{
-				archive(cereal::make_nvp("polygonRender", cereal::base_class<CRenderer>(this)),
+				archive(cereal::make_nvp("PolygonRender", cereal::base_class<CRenderer>(this)),
 					CEREAL_NVP(m_pSprite), CEREAL_NVP(m_pRectTransform), CEREAL_NVP(m_nZValue)
 				);
 			}
 			template<class Archive>
 			void load(Archive& archive)
 			{
-				archive(cereal::make_nvp("polygonRender", cereal::base_class<CRenderer>(this)),
+				archive(cereal::make_nvp("PolygonRender", cereal::base_class<CRenderer>(this)),
 					CEREAL_NVP(m_pSprite), CEREAL_NVP(m_pRectTransform), CEREAL_NVP(m_nZValue)
 				);
 			}
+		
 		public:
 			enum class EZValue : int
 			{
@@ -51,18 +63,15 @@ namespace MySpace
 			};
 
 		private:
-			CSpriteAnimation m_pSprite;	// 描画テクスチャ
-			RectTransWeakPtr m_pRectTransform;
+			std::shared_ptr<MySpace::Graphics::CSpriteAnimation> m_pSprite;	// 描画テクスチャ
+			std::weak_ptr<CRectTransform> m_pRectTransform;
 			int m_nZValue;
 
 		public:
-			CPolygonRenderer()
-				:m_nZValue(0)
-			{
-			}
+			CPolygonRenderer();
 			CPolygonRenderer(std::shared_ptr<CGameObject> owner);
-			CPolygonRenderer(const CPolygonRenderer&);
-			virtual ~CPolygonRenderer();
+			//CPolygonRenderer(const CPolygonRenderer&);
+			~CPolygonRenderer();
 
 			virtual void OnLoad();
 			virtual void Awake();
@@ -70,16 +79,13 @@ namespace MySpace
 			virtual void Update();
 			virtual bool Draw();
 
-			inline RectTransSharedPtr GetRectTransform() { return m_pRectTransform.lock(); }
-			inline CSpriteAnimation* GetSprite() { return &m_pSprite; }
-			inline std::string GetImageName() { return m_pSprite.GetImageName(); }
+			//--- ゲッター・セッター
+			std::shared_ptr<CRectTransform> GetRectTransform();
+			MySpace::Graphics::CSpriteAnimation* GetSprite();
+			std::string GetImageName();
 			inline const int GetZ() { return m_nZValue; }
 
-			inline void SetRectTransform(RectTransSharedPtr ptr) { m_pRectTransform = ptr; }
-			inline void SetImageName(std::string name)
-			{
-				m_pSprite.SetImage(name);
-			}
+			void SetImageName(std::string name);
 			void SetZ(const int z);
 			void SetZ(const EZValue z);
 
@@ -92,5 +98,6 @@ namespace MySpace
 }
 
 CEREAL_REGISTER_TYPE(MySpace::Game::CPolygonRenderer)
+//CEREAL_REGISTER_POLYMORPHIC_RELATION(MySpace::Game::CRenderer, MySpace::Game::CPolygonRenderer)
 
 #endif // !__POLYGON_RENDERER_COMPONENT_H__

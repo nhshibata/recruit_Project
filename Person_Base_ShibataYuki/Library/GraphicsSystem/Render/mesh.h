@@ -9,11 +9,13 @@
 #define __MESH_H__
 
 //--- インクルード部
-//#include <d3d11.h>
 #include <GraphicsSystem/Render/vertex.h>
+#include <GraphicsSystem/Shader/instancingData.h>
+
 #include <CoreSystem/Util/cerealCommon.h>
 #include <CoreSystem/Util/define.h>
 #include <CoreSystem/Math/MyMath.h>
+
 
 namespace MySpace
 {
@@ -108,16 +110,20 @@ namespace MySpace
 			//XMFLOAT4X4 m_mtxTexture;
 			//ID3D11ShaderResourceView* m_pTexture;		// テクスチャ
 
-			static ID3D11Buffer* m_pConstantBuffer[2];	// 定数バッファ
+			//static ID3D11Buffer* m_pConstantBuffer[2];	// 定数バッファ
 			static ID3D11SamplerState* m_pSamplerState;	// テクスチャ サンプラ
-			static ID3D11VertexShader* m_pVertexShader;	// 頂点シェーダ
-			static ID3D11InputLayout* m_pInputLayout;	// 頂点フォーマット
-			static ID3D11PixelShader* m_pPixelShader;	// ピクセルシェーダ
 
-			static inline ID3D11VertexShader* m_pInstancingVS;	// 頂点シェーダ
-			static inline ID3D11PixelShader* m_pShadowPS;		// ピクセルシェーダ
-			static inline ID3D11InputLayout* m_pShadowIL;		// 頂点フォーマット
-			static inline ID3D11Buffer* m_pConstantBufferI;
+			//static ID3D11VertexShader* m_pVertexShader;	// 頂点シェーダ
+			//static ID3D11InputLayout* m_pInputLayout;	// 頂点フォーマット
+			//static ID3D11PixelShader* m_pPixelShader;	// ピクセルシェーダ
+
+			//static inline ID3D11VertexShader* m_pInstancingVS;	// 頂点シェーダ
+			//static inline ID3D11PixelShader* m_pShadowPS;		// ピクセルシェーダ
+			//static inline ID3D11InputLayout* m_pShadowIL;		// 頂点フォーマット
+			//static inline ID3D11Buffer* m_pConstantBufferI;
+		public:
+			static constexpr const char* SHADER_NAME_MESH_PSVS = "Mesh";						// シェーダー登録名PS,VS共通
+			static constexpr const char* SHADER_NAME_INSTANCING_MESH_PSVS = "InstancingMesh";	// シェーダー登録名PS,VS共通
 
 		public:
 			//--- メンバ関数
@@ -128,7 +134,9 @@ namespace MySpace
 			static HRESULT InitShader();
 			static void FinShader();
 
+			// *@初期化
 			HRESULT Init(const VERTEX_3D vertexWk[], int nVertex, int indexWk[], int nIndex);
+			// *@終了
 			virtual void Fin();
 
 			// *@描画
@@ -136,11 +144,16 @@ namespace MySpace
 			
 			// *@インスタンシング描画
 			// *@第二引数falseでdefaultShader off
-			void DrawInstancing(std::vector<XMFLOAT4X4> aMesh, bool defaultShader = true,
+			void DrawInstancing(std::vector<RENDER_DATA> aMesh, bool defaultShader = true,
 								ID3D11ShaderResourceView* m_pTexture = nullptr,XMFLOAT4X4* mWorld = nullptr);
 			
 			// *@インスタンシング描画
-			void DrawInstancing(std::vector<XMFLOAT4X4> aWorld, ID3D11Buffer* vertexS, ID3D11Buffer* indexS, 
+			// *@第二引数falseでdefaultShader off
+			void DrawInstancing(std::vector<DirectX::XMFLOAT4X4> aMesh, bool defaultShader = true,
+								ID3D11ShaderResourceView* m_pTexture = nullptr,XMFLOAT4X4* mWorld = nullptr);
+			
+			// *@インスタンシング描画
+			void DrawInstancing(std::vector<RENDER_DATA> aData, ID3D11Buffer* vertexS, ID3D11Buffer* indexS,
 								ID3D11ShaderResourceView* m_pTexture = nullptr, XMFLOAT4X4* mWorld = nullptr);
 			
 			//--- ゲッター・セッター

@@ -28,14 +28,14 @@ namespace MySpace
 			template<class Archive>
 			void save(Archive& archive) const
 			{
-				archive(cereal::make_nvp("meshRender", cereal::base_class<CMeshRenderer>(this)),
+				archive(cereal::make_nvp("boxRender", cereal::base_class<CMeshRenderer>(this)),
 					CEREAL_NVP(m_pBBox), CEREAL_NVP(m_vSize)
 				);
 			}
 			template<class Archive>
 			void load(Archive& archive)
 			{
-				archive(cereal::make_nvp("meshRender", cereal::base_class<CMeshRenderer>(this)),
+				archive(cereal::make_nvp("boxRender", cereal::base_class<CMeshRenderer>(this)),
 					CEREAL_NVP(m_pBBox), CEREAL_NVP(m_vSize)
 				);
 			}
@@ -70,6 +70,7 @@ namespace MySpace
 		};
 	}
 }
+
 CEREAL_REGISTER_TYPE(MySpace::Game::CBoxRenderer)
 
 #endif // !__BOX_MESH_H__

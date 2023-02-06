@@ -26,17 +26,21 @@ namespace MySpace
 			template<class Archive>
 			void save(Archive& archive) const
 			{
-				archive(cereal::make_nvp("RigidbodyComponent", cereal::base_class<CBaseComponent>(this))/*,
-					CEREAL_NVP(m_bGravity), CEREAL_NVP(m_bIsSleep), CEREAL_NVP(m_bCollisionDetectionMode),
-					CEREAL_NVP(m_fResistance)*/
+				archive(cereal::make_nvp("RigidbodyComponent", cereal::base_class<CComponent>(this)),
+						CEREAL_NVP(m_bGravity), CEREAL_NVP(m_bIsSleep), CEREAL_NVP(m_fResistance),
+						CEREAL_NVP(m_fGravity), CEREAL_NVP(m_fMass), CEREAL_NVP(m_vTargetPos),
+						CEREAL_NVP(m_vVel), CEREAL_NVP(m_vForce), CEREAL_NVP(m_vForce),
+						CEREAL_NVP(m_pFreezPos), CEREAL_NVP(m_pFreezRot)
 				);
 			}
 			template<class Archive>
 			void load(Archive& archive)
 			{
-				archive(cereal::make_nvp("RigidbodyComponent", cereal::base_class<CBaseComponent>(this))/*,
-					CEREAL_NVP(m_bGravity), CEREAL_NVP(m_bIsSleep), CEREAL_NVP(m_bCollisionDetectionMode),
-					CEREAL_NVP(m_fResistance)*/
+				archive(cereal::make_nvp("RigidbodyComponent", cereal::base_class<CComponent>(this)),
+						CEREAL_NVP(m_bGravity), CEREAL_NVP(m_bIsSleep),CEREAL_NVP(m_fResistance), 
+						CEREAL_NVP(m_fGravity), CEREAL_NVP(m_fMass), CEREAL_NVP(m_vTargetPos),
+						CEREAL_NVP(m_vVel), CEREAL_NVP(m_vForce), CEREAL_NVP(m_vForce),
+						CEREAL_NVP(m_pFreezPos),CEREAL_NVP(m_pFreezRot)
 				);
 			}
 		private:
@@ -136,6 +140,7 @@ namespace MySpace
 		};
 	}
 }
-//CEREAL_REGISTER_TYPE(MySpace::Game::CRigidbody)
+
+CEREAL_REGISTER_TYPE(MySpace::Game::CRigidbody)
 
 #endif // !__RIGIDBODY_H__

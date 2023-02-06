@@ -1,6 +1,8 @@
 //=========================================================
 // [mesh.cpp] 
+//---------------------------------------------------------
 // 作成:2022/06/27
+// 更新:2023/02/06 シェーダーを完全に切替
 //---------------------------------------------------------
 //=========================================================
 
@@ -9,6 +11,7 @@
 #include <GraphicsSystem/Render/mesh.h>
 #include <GraphicsSystem/Shader/shader.h>
 #include <GraphicsSystem/Manager/shaderManager.h>
+#include <GraphicsSystem/Manager/assetsManager.h>
 
 #include <GameSystem/Component/Camera/camera.h>
 #include <GameSystem/Component/Light/directionalLight.h>
@@ -19,12 +22,11 @@ using namespace MySpace::System;
 using namespace MySpace::Graphics;
 
 //--- マクロ定義
-#define M_DIFFUSE				MySpace::MyMath::Vector4(1.0f,1.0f,1.0f,1.0f)
+#define M_DIFFUSE				MySpace::MyMath::Vector4(1.0f,1.0f,1.0f,0.3f)
 #define M_SPECULAR				MySpace::MyMath::Vector4(0.1f,0.1f,0.1f,1.0f)
 #define M_POWER					(0.0f)
 #define M_AMBIENT				MySpace::MyMath::Vector4(1.0f,1.0f,1.0f,1.0f)
 #define M_EMISSIVE				MySpace::MyMath::Vector4(0.0f,0.0f,0.0f,1.0f)
-#define MAX_MESH_INSTANCING		1024
 
 //--- 構造体定義
 // シェーダに渡す値
@@ -63,24 +65,9 @@ struct SHADER_GLOBAL2
 	}
 };
 
-struct SHADER_MESH_INSTANCING
-{
-	DirectX::XMMATRIX mWorld[MAX_MESH_INSTANCING];
-	SHADER_MESH_INSTANCING()
-	{
-		for (int i = 0; i < MAX_MESH_INSTANCING; i++)
-		{
-			this->mWorld[i] = XMMatrixIdentity();
-		}
-	}
-};
 
 //--- 静的メンバ
-ID3D11Buffer* CMesh::m_pConstantBuffer[2];	// 定数バッファ
 ID3D11SamplerState* CMesh::m_pSamplerState;	// テクスチャ サンプラ
-ID3D11VertexShader* CMesh::m_pVertexShader;	// 頂点シェーダ
-ID3D11InputLayout* CMesh::m_pInputLayout;	// 頂点フォーマット
-ID3D11PixelShader* CMesh::m_pPixelShader;	// ピクセルシェーダ
 
 //==========================================================
 // コンストラクタ
@@ -105,54 +92,101 @@ HRESULT CMesh::InitShader()
 {
 	HRESULT hr = S_OK;
 	ID3D11Device* pDevice = Application::Get()->GetDevice();
+	auto sm = Application::Get()->GetSystem<CAssetsManager>()->GetShaderManager();
 
 	// シェーダ初期化
-	static const D3D11_INPUT_ELEMENT_DESC layout[] = {
+	// inputLayout
+	const D3D11_INPUT_ELEMENT_DESC layout[] = {
 		{"POSITION", 0, DXGI_FORMAT_R32G32B32_FLOAT,    0, 0,                            D3D11_INPUT_PER_VERTEX_DATA, 0},
 		{"NORMAL",   0, DXGI_FORMAT_R32G32B32_FLOAT,    0, D3D11_APPEND_ALIGNED_ELEMENT, D3D11_INPUT_PER_VERTEX_DATA, 0},
 		{"COLOR",    0, DXGI_FORMAT_R32G32B32A32_FLOAT, 0, D3D11_APPEND_ALIGNED_ELEMENT, D3D11_INPUT_PER_VERTEX_DATA, 0},
 		{"TEXCOORD", 0, DXGI_FORMAT_R32G32_FLOAT,       0, D3D11_APPEND_ALIGNED_ELEMENT, D3D11_INPUT_PER_VERTEX_DATA, 0},
 	};
-#if 1
+
+#if 0
 	hr = LoadShader("Vertex", "Pixel", &m_pVertexShader, &m_pInputLayout, &m_pPixelShader, layout, _countof(layout));
 	if (FAILED(hr)) {
 		return hr;
 	}
-
-	hr = LoadShader("InstancingVertex", "ShadowPixel", &m_pInstancingVS, &m_pShadowIL, &m_pShadowPS, layout, _countof(layout));
+	hr = LoadShader("VS_Mesh", "PS_Mesh", &m_pInstancingVS, &m_pShadowIL, &m_pShadowPS, layout, _countof(layout));
 	if (FAILED(hr)) {
 		return hr;
 	}
 #else
+	//--- PS、VSの生成と登録
+	{
+		PixelShaderSharedPtr ps = std::make_shared<CPixelShader>();
+		hr = ps->Make(FORDER_DIR(Data/shader/PS_Mesh.cso));
+		if (FAILED(hr))
+			return hr;
+		else
+			sm->SetPS(CMesh::SHADER_NAME_INSTANCING_MESH_PSVS, ps);
 
-	PixelShaderSharedPtr ps = std::make_shared<CPixelShader>();
-	VertexShaderSharedPtr vs = std::make_shared<CVertexShader>();
-	ConstantBufferSharedPtr cb_sg = std::make_shared<CConstantBuffer>();
-	ConstantBufferSharedPtr cb_sg2 = std::make_shared<CConstantBuffer>();
-	ps->Make(FORDER_DIR(Pixel.cso));
-	vs->Make(FORDER_DIR(Vertex.cso), layout, _countof(layout));
-	cb_sg->Make(sizeof(SHADER_GLOBAL), 0, CConstantBuffer::EType::Vertex);
-	cb_sg2->Make(sizeof(SHADER_GLOBAL2), 0, CConstantBuffer::EType::Pixel);
+		VertexShaderSharedPtr vs = std::make_shared<CVertexShader>();
+		hr = vs->Make(FORDER_DIR(Data/shader/VS_Mesh.cso), layout, _countof(layout));
+		if (FAILED(hr))
+			return hr;
+		else
+			sm->SetVS(CMesh::SHADER_NAME_INSTANCING_MESH_PSVS, vs);
+	}
 
-	CShaderManager::Get()->SetConstantBuffer("SHADER_GLOBAL", cb_sg);
-	CShaderManager::Get()->SetConstantBuffer("SHADER_GLOBAL2", cb_sg2);
-	CShaderManager::Get()->SetVS("Vertex", vs);
-	CShaderManager::Get()->SetPS("Pixel", ps);
+	{
+		PixelShaderSharedPtr ps = std::make_shared<CPixelShader>();
+		hr = ps->Make(FORDER_DIR(Data/shader/Pixel.cso));
+		if (FAILED(hr))
+			return hr;
+		else
+			sm->SetPS(CMesh::SHADER_NAME_MESH_PSVS, ps);
 
+		VertexShaderSharedPtr vs = std::make_shared<CVertexShader>();
+		hr = vs->Make(FORDER_DIR(Data/shader/Vertex.cso), layout, _countof(layout));
+		if (FAILED(hr))
+			return hr;
+		else
+			sm->SetVS(CMesh::SHADER_NAME_MESH_PSVS, vs);
+	}
+	
 #endif // 0
 
-	// 定数バッファ生成
-	D3D11_BUFFER_DESC bd;
-	ZeroMemory(&bd, sizeof(bd));
-	bd.Usage = D3D11_USAGE_DEFAULT;
-	bd.ByteWidth = sizeof(SHADER_GLOBAL);
-	bd.BindFlags = D3D11_BIND_CONSTANT_BUFFER;
-	bd.CPUAccessFlags = 0;
-	hr = pDevice->CreateBuffer(&bd, nullptr, &m_pConstantBuffer[0]);
-	if (FAILED(hr)) return hr;
-	bd.ByteWidth = sizeof(SHADER_GLOBAL2);
-	hr = pDevice->CreateBuffer(&bd, nullptr, &m_pConstantBuffer[1]);
-	if (FAILED(hr)) return hr;
+	//--- 定数バッファ生成
+	ConstantBufferSharedPtr cb_sg = std::make_shared<CConstantBuffer>();
+	ConstantBufferSharedPtr cb_sg2 = std::make_shared<CConstantBuffer>();
+	ConstantBufferSharedPtr cb_im = std::make_shared<CConstantBuffer>();
+	ConstantBufferSharedPtr cb_imtx = std::make_shared<CConstantBuffer>();
+	cb_sg->Make(sizeof(SHADER_GLOBAL), 0, CConstantBuffer::EType::Vertex);
+	cb_sg2->Make(sizeof(SHADER_GLOBAL2), 1, CConstantBuffer::EType::Pixel);
+	cb_im->MakeCPU(sizeof(INSTANCHING_DATA), 6, CConstantBuffer::EType::Pixel);
+	cb_imtx->MakeCPU(sizeof(INSTANCE_MATRIX), 3, CConstantBuffer::EType::Vertex);
+	sm->SetCB(typeid(SHADER_GLOBAL).name(), cb_sg);
+	sm->SetCB(typeid(SHADER_GLOBAL2).name(), cb_sg2);
+	sm->SetCB(CB_NAME_INSTANCE_MATERIAL, cb_im);
+	sm->SetCB(CB_NAME_INSTANCE_MATRIX, cb_imtx);
+
+	//D3D11_BUFFER_DESC bd;
+	//ZeroMemory(&bd, sizeof(bd));
+	//bd.Usage = D3D11_USAGE_DEFAULT;
+	//bd.ByteWidth = sizeof(SHADER_GLOBAL);
+	//bd.BindFlags = D3D11_BIND_CONSTANT_BUFFER;
+	//bd.CPUAccessFlags = 0;
+	//hr = pDevice->CreateBuffer(&bd, nullptr, &m_pConstantBuffer[0]);
+	//if (FAILED(hr)) return hr;
+	//
+	//bd.ByteWidth = sizeof(SHADER_GLOBAL2);
+	//hr = pDevice->CreateBuffer(&bd, nullptr, &m_pConstantBuffer[1]);
+	//if (FAILED(hr)) return hr;
+
+
+	//// コンスタントバッファ インスタンシング用 作成
+	//D3D11_BUFFER_DESC cb;
+	//ZeroMemory(&cb, sizeof(cb));
+	//cb.BindFlags = D3D11_BIND_CONSTANT_BUFFER;
+	//cb.ByteWidth = sizeof(INSTANCHING_DATA);
+	//cb.CPUAccessFlags = D3D11_CPU_ACCESS_WRITE;
+	//cb.MiscFlags = 0;
+	//cb.Usage = D3D11_USAGE_DYNAMIC;
+	//hr = pDevice->CreateBuffer(&cb, nullptr, &m_pConstantBufferI);
+	//if (FAILED(hr))
+	//	return false;
 
 	// テクスチャ サンプラ生成
 	D3D11_SAMPLER_DESC sd;
@@ -165,19 +199,7 @@ HRESULT CMesh::InitShader()
 	if (FAILED(hr)) {
 		return hr;
 	}
-
-	// コンスタントバッファ インスタンシング用 作成
-	D3D11_BUFFER_DESC cb;
-	ZeroMemory(&cb, sizeof(cb));
-	cb.BindFlags = D3D11_BIND_CONSTANT_BUFFER;
-	cb.ByteWidth = sizeof(SHADER_MESH_INSTANCING);
-	cb.CPUAccessFlags = D3D11_CPU_ACCESS_WRITE;
-	cb.MiscFlags = 0;
-	cb.Usage = D3D11_USAGE_DYNAMIC;
-	hr = pDevice->CreateBuffer(&cb, nullptr, &m_pConstantBufferI);
-	if (FAILED(hr))
-		return false;
-
+	
 	return hr;
 }
 
@@ -187,20 +209,22 @@ HRESULT CMesh::InitShader()
 void CMesh::FinShader()
 {
 	// 定数バッファの解放
-	for (int i = 0; i < _countof(m_pConstantBuffer); ++i) {
+	/*for (int i = 0; i < _countof(m_pConstantBuffer); ++i) {
 		SAFE_RELEASE(m_pConstantBuffer[i]);
-	}
-	SAFE_RELEASE(m_pConstantBufferI);
+	}*/
+	//SAFE_RELEASE(m_pConstantBufferI);
 	
 	// ピクセルシェーダ解放
-	SAFE_RELEASE(m_pPixelShader);
-	SAFE_RELEASE(m_pShadowPS);
-	// 頂点フォーマット解放
-	SAFE_RELEASE(m_pInputLayout);
-	SAFE_RELEASE(m_pShadowIL);
-	// 頂点シェーダ解放
-	SAFE_RELEASE(m_pVertexShader);
-	SAFE_RELEASE(m_pInstancingVS);
+	//SAFE_RELEASE(m_pPixelShader);
+	//SAFE_RELEASE(m_pShadowPS);
+	//// 頂点フォーマット解放
+	//SAFE_RELEASE(m_pInputLayout);
+	//SAFE_RELEASE(m_pShadowIL);
+	//// 頂点シェーダ解放
+	//SAFE_RELEASE(m_pVertexShader);
+	//SAFE_RELEASE(m_pInstancingVS);
+
+	SAFE_RELEASE(m_pSamplerState);
 	
 }
 
@@ -276,13 +300,12 @@ void CMesh::Fin()
 //==========================================================
 void CMesh::Draw(ID3D11ShaderResourceView* pTexture, XMFLOAT4X4* mWorld)
 {
+	auto sm = Application::Get()->GetSystem<CAssetsManager>()->GetShaderManager();
+
 	// シェーダ設定
 	ID3D11DeviceContext* pDeviceContext = Application::Get()->GetDeviceContext();
-	pDeviceContext->VSSetShader(m_pVertexShader, nullptr, 0);
-	pDeviceContext->PSSetShader(m_pPixelShader, nullptr, 0);
-	pDeviceContext->IASetInputLayout(m_pInputLayout);
-	//CShaderManager::Get()->BindPS("Pixel");
-	//CShaderManager::Get()->BindVS("Vertex");
+	sm->BindPS(CMesh::SHADER_NAME_MESH_PSVS);
+	sm->BindVS(CMesh::SHADER_NAME_MESH_PSVS);
 
 	// 頂点バッファをセット
 	UINT stride = sizeof(VERTEX_3D);
@@ -302,9 +325,6 @@ void CMesh::Draw(ID3D11ShaderResourceView* pTexture, XMFLOAT4X4* mWorld)
 	//cb.mVP = XMMatrixTranspose(mtxWorld * XMLoadFloat4x4(&pCamera->GetViewMatrix()) * XMLoadFloat4x4(&pCamera->GetProjMatrix()));
 	cb.mVP = XMMatrixTranspose(XMLoadFloat4x4(&pCamera->GetViewMatrix()) * XMLoadFloat4x4(&pCamera->GetProjMatrix()));
 	cb.mW = XMMatrixTranspose(mtxWorld);
-	
-	//CShaderManager::Get()->ConstantWrite("SHADER_GLOBAL", &cb);
-	//CShaderManager::Get()->BindCB("SHADER_GLOBAL");
 
 	if (mWorld)
 	{
@@ -316,17 +336,18 @@ void CMesh::Draw(ID3D11ShaderResourceView* pTexture, XMFLOAT4X4* mWorld)
 		DirectX::XMMATRIX mtxTex = XMLoadFloat4x4(&mTex);
 		cb.mTex = XMMatrixTranspose(mtxTex);
 	}
-	pDeviceContext->UpdateSubresource(m_pConstantBuffer[0], 0, nullptr, &cb, 0, 0);
-	pDeviceContext->VSSetConstantBuffers(0, 1, &m_pConstantBuffer[0]);
+	/*pDeviceContext->UpdateSubresource(m_pConstantBuffer[0], 0, nullptr, &cb, 0, 0);
+	pDeviceContext->VSSetConstantBuffers(0, 1, &m_pConstantBuffer[0]);*/
+	sm->CBWrite("SHADER_GLOBAL", &cb);
+	sm->BindCB("SHADER_GLOBAL");
 
 	SHADER_GLOBAL2 cb2;
 	cb2.SetData(pCamera, dynamic_cast<CDirectionalLight*>(CLight::GetMain()), &m_material, pTexture);
-
-	pDeviceContext->UpdateSubresource(m_pConstantBuffer[1], 0, nullptr, &cb2, 0, 0);
-	pDeviceContext->PSSetConstantBuffers(1, 1, &m_pConstantBuffer[1]);
-
-	//CShaderManager::Get()->ConstantWrite("SHADER_GLOBAL2", &cb2);
-	//CShaderManager::Get()->BindCB("SHADER_GLOBAL2");
+	/*pDeviceContext->UpdateSubresource(m_pConstantBuffer[1], 0, nullptr, &cb2, 0, 0);
+	pDeviceContext->PSSetConstantBuffers(1, 1, &m_pConstantBuffer[1]);*/
+	sm->CBWrite("SHADER_GLOBAL2", &cb2);
+	sm->BindCB("SHADER_GLOBAL2");
+	
 
 	// プリミティブ形状をセット
 	static const D3D11_PRIMITIVE_TOPOLOGY pt[] = {
@@ -346,28 +367,60 @@ void CMesh::Draw(ID3D11ShaderResourceView* pTexture, XMFLOAT4X4* mWorld)
 //==========================================================
 // 描画インスタンシング
 //==========================================================
-void CMesh::DrawInstancing(std::vector<XMFLOAT4X4> aWorld, bool defaultShader,
+void CMesh::DrawInstancing(std::vector<RENDER_DATA> aData, bool defaultShader,
 						   ID3D11ShaderResourceView* pTexture, XMFLOAT4X4* mWorld)
 {
 	if (defaultShader)
 	{
 		// シェーダ設定
-		ID3D11DeviceContext* pDeviceContext = Application::Get()->GetDeviceContext();
+		/*ID3D11DeviceContext* pDeviceContext = Application::Get()->GetDeviceContext();
 		pDeviceContext->VSSetShader(m_pInstancingVS, nullptr, 0);
 		pDeviceContext->PSSetShader(m_pShadowPS, nullptr, 0);
-		pDeviceContext->IASetInputLayout(m_pShadowIL);
-		//CShaderManager::Get()->BindPS("Pixel");
-		//CShaderManager::Get()->BindVS("Vertex");
+		pDeviceContext->IASetInputLayout(m_pShadowIL);*/
+
+		auto sm = Application::Get()->GetSystem<CAssetsManager>()->GetShaderManager();
+		sm->BindPS(CMesh::SHADER_NAME_INSTANCING_MESH_PSVS);
+		sm->BindVS(CMesh::SHADER_NAME_INSTANCING_MESH_PSVS);
 	}
 
 	// 頂点バッファをセット
 	// インデックスバッファをセット
-	DrawInstancing(aWorld, m_pVertexBuffer, m_pIndexBuffer, pTexture, mWorld);
+	DrawInstancing(aData, m_pVertexBuffer, m_pIndexBuffer, pTexture, mWorld);
 }
 
-void CMesh::DrawInstancing(std::vector<XMFLOAT4X4> aWorld, ID3D11Buffer* vertexB, ID3D11Buffer* indexB,
+//==========================================================
+// 描画インスタンシング
+// mesh使いまわし
+//==========================================================
+void CMesh::DrawInstancing(std::vector<DirectX::XMFLOAT4X4> aData, bool defaultShader,
 						   ID3D11ShaderResourceView* pTexture, XMFLOAT4X4* mWorld)
 {
+	if (defaultShader)
+	{
+		// シェーダ設定
+		auto sm = Application::Get()->GetSystem<CAssetsManager>()->GetShaderManager();
+		sm->BindPS(CMesh::SHADER_NAME_INSTANCING_MESH_PSVS);
+		sm->BindVS(CMesh::SHADER_NAME_INSTANCING_MESH_PSVS);
+	}
+
+	std::vector<RENDER_DATA> setData;
+	setData.resize(aData.size());
+
+	for (auto cnt = 0; cnt < aData.size() ; ++cnt)
+	{
+		setData[cnt] = RENDER_DATA(aData[cnt], M_AMBIENT, M_DIFFUSE, M_SPECULAR, M_EMISSIVE);
+	}
+
+	// 頂点バッファをセット
+	// インデックスバッファをセット
+	DrawInstancing(setData, m_pVertexBuffer, m_pIndexBuffer, pTexture, mWorld);
+}
+
+void CMesh::DrawInstancing(std::vector<RENDER_DATA> aData, ID3D11Buffer* vertexB, ID3D11Buffer* indexB,
+						   ID3D11ShaderResourceView* pTexture, XMFLOAT4X4* mWorld)
+{
+	auto sm = Application::Get()->GetSystem<CAssetsManager>()->GetShaderManager();
+
 	// シェーダ設定
 	ID3D11DeviceContext* pDeviceContext = Application::Get()->GetDeviceContext();
 
@@ -389,9 +442,6 @@ void CMesh::DrawInstancing(std::vector<XMFLOAT4X4> aWorld, ID3D11Buffer* vertexB
 	cb.mW = XMLoadFloat4x4(&m_mWorld);
 	cb.mVP = XMMatrixTranspose(XMLoadFloat4x4(&pCamera->GetViewMatrix()) * XMLoadFloat4x4(&pCamera->GetProjMatrix()));
 
-	//CShaderManager::Get()->ConstantWrite("SHADER_GLOBAL", &cb);
-	//CShaderManager::Get()->BindCB("SHADER_GLOBAL");
-
 	if (mWorld)
 	{
 		cb.mTex = XMMatrixTranspose(XMLoadFloat4x4(mWorld));
@@ -402,17 +452,13 @@ void CMesh::DrawInstancing(std::vector<XMFLOAT4X4> aWorld, ID3D11Buffer* vertexB
 		DirectX::XMMATRIX mtxTex = XMLoadFloat4x4(&mTex);
 		cb.mTex = XMMatrixTranspose(mtxTex);
 	}
-	
-	pDeviceContext->UpdateSubresource(m_pConstantBuffer[0], 0, nullptr, &cb, 0, 0);
-	pDeviceContext->VSSetConstantBuffers(0, 1, &m_pConstantBuffer[0]);
+	sm->CBWrite(typeid(SHADER_GLOBAL).name(), &cb);
+	sm->BindCB(typeid(SHADER_GLOBAL).name());
+
 	SHADER_GLOBAL2 cb2;
 	cb2.SetData(pCamera, dynamic_cast<CDirectionalLight*>(CLight::GetMain()), &m_material, pTexture);
-
-	pDeviceContext->UpdateSubresource(m_pConstantBuffer[1], 0, nullptr, &cb2, 0, 0);
-	pDeviceContext->PSSetConstantBuffers(1, 1, &m_pConstantBuffer[1]);
-
-	//CShaderManager::Get()->ConstantWrite("SHADER_GLOBAL2", &cb2);
-	//CShaderManager::Get()->BindCB("SHADER_GLOBAL2");
+	sm->CBWrite(typeid(SHADER_GLOBAL2).name(), &cb2);
+	sm->BindCB(typeid(SHADER_GLOBAL2).name());
 
 	// プリミティブ形状をセット
 	const D3D11_PRIMITIVE_TOPOLOGY pt[] = {
@@ -426,34 +472,37 @@ void CMesh::DrawInstancing(std::vector<XMFLOAT4X4> aWorld, ID3D11Buffer* vertexB
 	pDeviceContext->IASetPrimitiveTopology(pt[0]);
 
 	//--- データセット
-	D3D11_MAPPED_SUBRESOURCE pData;
 	int cntNum = 0;
 
 	//--- インスタンシング描画全て終わるまで
-	while (cntNum < aWorld.size())
+	while (cntNum < aData.size())
 	{
 		int cnt = 0;
-		if (SUCCEEDED(pDeviceContext->Map(m_pConstantBufferI, 0, D3D11_MAP_WRITE_DISCARD, 0, &pData)))
+		//--- 情報書き込み
+		
 		{
-			SHADER_MESH_INSTANCING* si = new SHADER_MESH_INSTANCING;
-
-			for (; cnt < MAX_MESH_INSTANCING; ++cnt, ++cntNum)
+			INSTANCHING_DATA* imd = new INSTANCHING_DATA;
+			INSTANCE_MATRIX* imtx = new INSTANCE_MATRIX;
+			for (; cnt < MAX_WORLD_MATRIX; ++cnt, ++cntNum)
 			{
-				if (cnt >= aWorld.size() || cntNum >= aWorld.size())
+				if (cnt >= aData.size() || cntNum >= aData.size())
 					break;
-				si->mWorld[cnt] = XMMatrixTranspose(XMLoadFloat4x4(&aWorld[cntNum]));
+				imtx->mWorld[cnt] = aData[cntNum].mWorld;
+				imd->renderData[cnt] = aData[cntNum];
 			}
-			memcpy_s(pData.pData, pData.RowPitch, (void*)si, sizeof(SHADER_MESH_INSTANCING));
-			pDeviceContext->Unmap(m_pConstantBufferI, 0);
-			delete si;
+			sm->CBWrite(CB_NAME_INSTANCE_MATERIAL, imd, sizeof(INSTANCHING_DATA));
+			sm->CBWrite(CB_NAME_INSTANCE_MATRIX, imtx, sizeof(INSTANCE_MATRIX));
+			delete imd;
+			delete imtx;
 		}
-		pDeviceContext->VSSetConstantBuffers(3, 1, &m_pConstantBufferI);
+		sm->BindCB(CB_NAME_INSTANCE_MATERIAL);
+		sm->BindCB(CB_NAME_INSTANCE_MATRIX);
 
 		// ポリゴンの描画
-		if (aWorld.size() > MAX_MESH_INSTANCING)
+		if (aData.size() > MAX_WORLD_MATRIX)
 			pDeviceContext->DrawIndexedInstanced(static_cast<UINT>(m_nNumIndex), static_cast<UINT>(cnt), 0, 0, 0);
 		else
-			pDeviceContext->DrawIndexedInstanced(static_cast<UINT>(m_nNumIndex), static_cast<UINT>(aWorld.size()), 0, 0, 0);
+			pDeviceContext->DrawIndexedInstanced(static_cast<UINT>(m_nNumIndex), static_cast<UINT>(aData.size()), 0, 0, 0);
 	}
 }
 

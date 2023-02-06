@@ -113,13 +113,15 @@ bool CBillboardRenderer::Draw()
 			uv.x,
 			uv.y, 0.0f));
 		XMStoreFloat4x4(&mtxTexture, mtxTex);
-		//XMStoreFloat4x4(&mtxTexture, XMMatrixIdentity());
 		m_pBillboard->SetTextureMatrix(mtxTexture);
-		SetInstancing(m_pBillboard.get(), m_pSprite->GetImageName());
+
+		m_MeshMaterial.m_Ambient.w = 1.0f;	// ﾃｸｽﾁｬフラグとなっている
+		SetInstancing(m_pBillboard.get(), m_pSprite->GetImageName(), DirectX::XMUINT4(1, 0, 0, 0));
 	}
 	else
 	{
-		SetInstancing(m_pBillboard.get());
+		m_MeshMaterial.m_Ambient.w = 0.0f;	// ﾃｸｽﾁｬフラグとなっている
+		SetInstancing(m_pBillboard.get(), std::string(), DirectX::XMUINT4(1,0,0,0));
 	}
 
 	//CDXDevice::Get()->SetZBuffer(true);			
@@ -137,15 +139,6 @@ void CBillboardRenderer::ImGuiDebug()
 	using namespace MySpace::Debug;
 	static std::vector<std::string> s_FileList;
 
-	// polygonとほぼ同じ…
-	Color color = GetColor();
-	ImGui::Text(u8"PolygonRenderer");
-	//ImGui::Text(u8"filaName : %s", m_pSprite->GetImageName().c_str());
-	ImGui::InputFloat4(u8"color", (float*)&color);
-	SetColor(color);
-
-	m_pSprite->ImGuiDebug();
-
 	//--- 画像のリロード
 	if (s_FileList.empty() || ImGui::Button(u8"Image reload"))
 	{
@@ -159,6 +152,9 @@ void CBillboardRenderer::ImGuiDebug()
 		m_pSprite->SetImage(name);
 	}
 
+	m_pSprite->ImGuiDebug();
+
+	CMeshRenderer::ImGuiDebug();
 }
 
 #endif // BUILD_MODE

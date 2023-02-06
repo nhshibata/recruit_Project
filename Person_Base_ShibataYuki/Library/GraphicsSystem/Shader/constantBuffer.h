@@ -40,8 +40,10 @@ namespace MySpace
 
 			void Bind(UINT slot = 0);
 			void Write(void* data);
+			HRESULT DynamicWrite(void* data, UINT size);
 			
 			HRESULT Make(UINT size, UINT slot, EType type, D3D11_SUBRESOURCE_DATA* init = nullptr);
+			HRESULT MakeCPU(UINT size, UINT slot, EType type, D3D11_SUBRESOURCE_DATA* init = nullptr);
 
 			inline ID3D11Buffer* GetBuffer() { return m_pBuffer; }
 		};

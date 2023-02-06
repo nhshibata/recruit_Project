@@ -8,6 +8,7 @@
 #include <common/fadeController.h>
 #include <GameSystem/Manager/sceneManager.h>
 #include <GameSystem/Component/Renderer/polygonRenderer.h>
+#include <GameSystem/Component/Transform/rectTransform.h>
 
 #include <Application/Application.h>
 #include <tchar.h>

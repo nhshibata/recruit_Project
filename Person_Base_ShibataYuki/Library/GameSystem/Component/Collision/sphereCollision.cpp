@@ -177,7 +177,7 @@ void CSphereCollision::ImGuiDebug()
 	m_pDebugSphere->SetWorld(&mW);
 
 	auto sys = SceneManager::CSceneManager::Get()->GetDrawSystem();
-	sys->SetInstanchingMesh(
+	sys->SetDebugMesh(
 		std::string(std::to_string(m_pDebugSphere->GetIndexNum()) + std::to_string(m_pDebugSphere->GetMaterial()->GetFloat())),
 		mW,
 		m_pDebugSphere.get()
@@ -202,7 +202,7 @@ void CSphereCollision::Update()
 	m_pDebugSphere->SetWorld(&mW);
 
 	auto sys = SceneManager::CSceneManager::Get()->GetDrawSystem();
-	sys->SetInstanchingMesh(
+	sys->SetDebugMesh(
 		std::string(std::to_string(m_pDebugSphere->GetIndexNum()) + std::to_string(m_pDebugSphere->GetMaterial()->GetFloat())),
 		mW,
 		m_pDebugSphere.get()

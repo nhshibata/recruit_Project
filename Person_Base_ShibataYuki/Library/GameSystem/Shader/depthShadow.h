@@ -26,6 +26,7 @@ namespace MySpace
 			std::shared_ptr<MySpace::Graphics::CRenderTarget> m_pRenderTarget;	// ‘‚«‚İæ
 			static inline const LPCSTR m_LightCB = "sunLightCB";
 			static inline const LPCSTR m_DepthWriteCB = "DepthWriteCB";
+			static constexpr const char* SHADER_NAME_PSVS = "DepthWrite";
 
 		public:
 			CDepthShadow();

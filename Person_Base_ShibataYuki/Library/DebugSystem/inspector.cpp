@@ -128,29 +128,62 @@ void CInspector::SetSelectGameObject(std::weak_ptr<CGameObject> obj)
 //==========================================================
 void CInspector::CopyGameObject()
 {
-	if (!m_spViewObj.lock()) 
+	if (!m_spViewObj.lock())
 		return;
 
-	m_spViewObj = CGameObject::CreateObject(m_spViewObj.lock().get());
+	//m_spViewObj = CGameObject::CreateObject(m_spViewObj.lock().get());
 	// ここで持ち主を渡す
-	// TODO: シリアライズ化して名前,ﾎﾟｲﾝﾀなどだけ上書きすればできる?
-	auto comList = m_spViewObj.lock()->GetComponentList();
+	/*auto comList = m_spViewObj.lock()->GetComponentList();
 	for (auto & com : comList)
 	{
 		com->SetOwner(m_spViewObj.lock());
 		com->Init();
+	}*/
+
+	// TODO: シリアライズ化して名前,ﾎﾟｲﾝﾀなどだけ上書きすればできる?
+	// シリアライズクラス作成
+	CCerealize<std::shared_ptr<CGameObject>> sirial;
+	{
+		// ﾃﾞｰﾀを外部保存
+		auto obj = m_spViewObj.lock();
+		sirial.OutputFile(m_spViewObj.lock()->GetName(), GAME_COPY, obj);
 	}
 
-	//CCerealize<std::shared_ptr<CGameObject>> sirial;
-	//{
-	//	// ﾃﾞｰﾀを保存
-	//	auto obj = m_spViewObj.lock();
-	//	sirial.OutputFile(m_spViewObj.lock()->GetName(), GAME_COPY, obj);
-	//}
-	//// 新しいオブジェクト生成
-	//// ﾃﾞｰﾀ読み込み
-	//m_spViewObj = CGameObject::CreateObject();
-	//m_spViewObj = sirial.InputFile(GAME_COPY);
+	// 一時的なオブジェクト生成
+	if (auto work = std::make_shared<CGameObject>(); work)
+	{
+		// ﾃﾞｰﾀ読み込み
+		work = sirial.InputFile(GAME_COPY);
+
+		// 新しいオブジェクト生成
+		m_spViewObj = CGameObject::CreateObject();
+		// 読みこまれたコンポーネントの受け渡し
+		auto comList = work->GetComponentList();
+		for (auto & com : comList)
+		{
+			m_spViewObj.lock()->SetComponent(com);
+			//--- 描画と当たり判定クラスは要請する必要があるため、Initを呼び出す
+			// MEMO: 限定的なもので、正直どうなのか
+			if (com->GetName().find("Renderer") != std::string::npos ||
+				com->GetName().find("Collision") != std::string::npos)
+			{
+				com->Init();
+			}
+		}
+
+		// オブジェクト破棄
+		work.reset();
+	}
+
+#if 1
+	// 持ち主数確認
+	auto comList = m_spViewObj.lock()->GetComponentList();
+	for (auto & com : comList)
+	{
+		int i = com.use_count();
+
+	}
+#endif // 1
 
 }
 

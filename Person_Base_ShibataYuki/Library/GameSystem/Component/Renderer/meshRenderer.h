@@ -56,16 +56,18 @@ namespace MySpace
 
 		private:
 			//--- メンバ変数
-			CMeshMaterial m_MeshMaterial;
 			Vector3 m_vCenter;				// 中心座標
 			bool m_bLightEnable;			// ライト有効フラグ
 			float m_fBSRadius;				// バウンディングスフィア
 		protected:
+			CMeshMaterial m_MeshMaterial;
 			int m_nStaticMode;				// static状態
 			bool m_bShadow;					// シャドーマップフラグ
 
 		protected:
-			void SetInstancing(CMesh* mesh, std::string name = std::string());
+			// *@インスタンシング要請
+			// *@第3引き数はシェーダーフラグ用
+			void SetInstancing(CMesh* mesh, std::string name = std::string(), DirectX::XMUINT4 vFlag = DirectX::XMUINT4(0,0,0,0));
 
 		public:
 			//--- メンバ関数

@@ -137,7 +137,7 @@ void CBoxRenderer::ImGuiDebug()
 	//ImGui::Button(u8"SphereRenderer")
 
 	m_vSize = Transform()->GetScale();
-	if (ImGui::DragFloat3("Box", (float*)&m_vSize))
+	if (ImGui::DragFloat3("BoxSize renderer", (float*)&m_vSize))
 	{
 		SetBox(m_vSize);
 		Transform()->SetScale(m_vSize);

@@ -31,7 +31,7 @@ CDepthShadow::CDepthShadow()
 //=========================================================
 void CDepthShadow::InitShader()
 {
-	// メモリ確保
+	//--- メモリ確保
 	m_pDepthStencil = std::make_shared<CDepthStencil>(
 		(UINT)CScreen::GetWidth(),
 		(UINT)CScreen::GetHeight(),
@@ -41,7 +41,7 @@ void CDepthShadow::InitShader()
 		(UINT)CScreen::GetWidth(),
 		(UINT)CScreen::GetHeight());
 
-	// 定数バッファ
+	//--- 定数バッファ
 	// 太陽
 	auto sm = Application::Get()->GetSystem<CAssetsManager>()->GetShaderManager();
 	ConstantBufferSharedPtr sunCB = std::make_shared<CConstantBuffer>();
@@ -50,25 +50,25 @@ void CDepthShadow::InitShader()
 
 	}
 	else
-		sm->SetConstantBuffer(m_LightCB, sunCB);
+		sm->SetCB(m_LightCB, sunCB);
 	
-	// 深度書き込み
+	// 深度書き込み用
 	ConstantBufferSharedPtr writeCB = std::make_shared<CConstantBuffer>();
 	if (FAILED(writeCB->Make(sizeof(DirectX::XMFLOAT4X4) * 3, 5, CConstantBuffer::EType::Vertex)))
 	{
 
 	}
 	else
-		sm->SetConstantBuffer(m_DepthWriteCB, writeCB);
+		sm->SetCB(m_DepthWriteCB, writeCB);
 
 
 	PixelShaderSharedPtr ps = std::make_shared<CPixelShader>();
-	if (FAILED(ps->Make(FORDER_DIR(Data/shader/DepthWritePS.cso))))
+	if (FAILED(ps->Make(FORDER_DIR(Data/shader/PS_DepthWrite.cso))))
 	{
 
 	}
 	else
-		sm->SetPS("DepthWrite",ps);
+		sm->SetPS(SHADER_NAME_PSVS,ps);
 
 	VertexShaderSharedPtr vs = std::make_shared<CVertexShader>();
 	const D3D11_INPUT_ELEMENT_DESC layout[] =
@@ -77,12 +77,12 @@ void CDepthShadow::InitShader()
 		{"NORMAL",	 0, DXGI_FORMAT_R32G32B32_FLOAT,0, D3D11_APPEND_ALIGNED_ELEMENT,D3D11_INPUT_PER_VERTEX_DATA,0},
 		{"TEXCOORD", 0, DXGI_FORMAT_R32G32_FLOAT,   0, D3D11_APPEND_ALIGNED_ELEMENT,D3D11_INPUT_PER_VERTEX_DATA,0}
 	};
-	if (FAILED(vs->Make(FORDER_DIR(Data/shader/DepthWriteVS.cso), layout, _countof(layout))))
+	if (FAILED(vs->Make(FORDER_DIR(Data/shader/VS_DepthWrite.cso), layout, _countof(layout))))
 	{
 
 	}
 	else
-		sm->SetVS("DepthWrite", vs);
+		sm->SetVS(SHADER_NAME_PSVS, vs);
 }
 
 //=========================================================
@@ -114,8 +114,8 @@ void CDepthShadow::Begin()
 	auto sm = Application::Get()->GetSystem<CAssetsManager>()->GetShaderManager();
 
 	// ps,vs設定
-	sm->BindPS("DepthWrite");
-	sm->BindVS("DepthWrite");
+	sm->BindPS(SHADER_NAME_PSVS);
+	sm->BindVS(SHADER_NAME_PSVS);
 
 	//--- ｶﾒﾗ
 	auto pCam = CCamera::GetMain();
@@ -126,8 +126,6 @@ void CDepthShadow::Begin()
 	//mat[2] = pCam->GetProjMatrix().Transpose();
 	mat[2] = CCamera::CalcProjMatrix(45.0f, CScreen::GetWidth() / CScreen::GetHeight(), 10.2f, 100.0f).Transpose();
 	
-
-
 	//--- ライト
 	CDirectionalLight* light = dynamic_cast<CDirectionalLight*>(CLight::GetMain());
 	auto sunPos = light->Transform()->GetPos();
@@ -149,11 +147,11 @@ void CDepthShadow::Begin()
 	DirectX::XMStoreFloat4x4(&mat[1], DirectX::XMMatrixTranspose(sunView));
 	DirectX::XMStoreFloat4x4(&mat[2], DirectX::XMMatrixTranspose(sunProj));
 
-	sm->ConstantWrite(m_DepthWriteCB, mat);
+	sm->CBWrite(m_DepthWriteCB, mat);
 	sm->BindCB(m_DepthWriteCB, 5);
 
 	// 1,2番目を渡す
-	sm->ConstantWrite(m_LightCB, &mat[1]);
+	sm->CBWrite(m_LightCB, &mat[1]);
 	sm->BindCB(m_LightCB, 4);
 
 }
