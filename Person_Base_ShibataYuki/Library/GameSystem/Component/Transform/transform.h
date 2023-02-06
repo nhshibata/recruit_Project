@@ -191,6 +191,7 @@ namespace MySpace
 		};
 	}
 }
+
 CEREAL_REGISTER_TYPE(MySpace::Game::CTransform)
 //CEREAL_REGISTER_POLYMORPHIC_RELATION(MySpace::CComponent, MySpace::CTransform)
 

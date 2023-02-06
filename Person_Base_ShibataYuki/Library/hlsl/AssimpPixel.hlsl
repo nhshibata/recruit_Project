@@ -1,34 +1,11 @@
 //=========================================================
 // Assimp用ピクセルシェーダ (AssimpPixel.hlsl)
 //---------------------------------------------------------
+// 更新:2023/02/05 定数管理のため、hlsli追加
 //=========================================================
 
-// グローバル
-cbuffer global : register(b0) {
-	matrix	g_mtxWVP;			// ワールド×ビュー×射影行列
-	matrix	g_mtxWorld;			// ワールド行列
-	matrix	g_mtxTexture;		// テクスチャ行列
-	float4	g_vCameraPos;		// 視点座標(ワールド空間)
-	float4	g_vLightDir;		// 光源方向(ワールド空間)
-	float4	g_vLightAmbient;	// 環境光
-	float4	g_vLightDiffuse;	// 拡散光
-	float4	g_vLightSpecular;	// 鏡面反射光
-};
-
-// マテリアル
-cbuffer global2 : register(b1) {
-	float4	g_Ambient;			// 環境色
-	float4	g_Diffuse;			// 拡散色+アルファ
-	float4	g_Specular;			// 鏡面反射色+強度
-	float4	g_Emissive;			// 発光色
-	float4	g_Flags;			// 拡散色テクスチャ有無, 発光色テクスチャ有無, 透過テクスチャ有無
-};
-
-Texture2D    g_texture			: register(t0);	// テクスチャ
-Texture2D    g_texEmissive		: register(t1);	// 発光テクスチャ
-Texture2D    g_texTransparent	: register(t2);	// 透過テクスチャ
-Texture2D    g_texSpecular		: register(t3);	// 鏡面反射テクスチャ
-SamplerState g_sampler			: register(s0);	// サンプラ
+#include "common.hlsli"
+//#include <common.hlsli>
 
 // パラメータ
 struct VS_INPUT {
@@ -36,10 +13,14 @@ struct VS_INPUT {
 	float2	Tex			: TEXCOORD0;
 	float3	Normal		: TEXCOORD1;
 	float3	PosForPS	: TEXCOORD2;
+    
 };
 
-#define IF_SUB(x,y,z)      (x + ((x * y - x) * z))
-
+Texture2D    g_texture			: register(t0);	// テクスチャ
+Texture2D    g_texEmissive		: register(t1);	// 発光テクスチャ
+Texture2D    g_texTransparent	: register(t2);	// 透過テクスチャ
+Texture2D    g_texSpecular		: register(t3);	// 鏡面反射テクスチャ
+SamplerState g_sampler			: register(s0);	// サンプラ
 
 //
 // ピクセルシェーダ
@@ -66,6 +47,7 @@ float4 main(VS_INPUT input) : SV_Target0
         Alpha = IF_SUB(Alpha, TexTran.r * TexTran.g * TexTran.b * TexTran.a, z);
     }
     clip(Alpha - 1.0f); // 完全透明なら描画しない
+    
 	// 透過テクスチャ有無
     float3 Spec = g_Specular.rgb;
     {

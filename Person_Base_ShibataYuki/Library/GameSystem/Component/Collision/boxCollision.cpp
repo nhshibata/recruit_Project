@@ -296,7 +296,7 @@ void CBoxCollision::Update()
 	}
 
 	auto sys = SceneManager::CSceneManager::Get()->GetDrawSystem();
-	sys->SetInstanchingMesh(
+	sys->SetDebugMesh(
 		std::string(std::to_string(m_pDebugBox->GetIndexNum()) + std::to_string(m_pDebugBox->GetMaterial()->GetFloat())),
 		mW,
 		m_pDebugBox.get()

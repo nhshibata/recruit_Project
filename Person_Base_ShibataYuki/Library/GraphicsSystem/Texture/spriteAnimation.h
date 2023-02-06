@@ -50,7 +50,8 @@ namespace MySpace
 			{
 				int nAnimNo;
 				int nFrame;
-				ST_FRAME():nAnimNo(0),nFrame(4) {}
+				ST_FRAME():nAnimNo(0),nFrame(4)
+				{}
 			};
 		private:	
 			//--- ƒƒ“ƒo•Ï”
@@ -60,7 +61,7 @@ namespace MySpace
 			int m_nCnt;				// 
 			std::vector<ST_FRAME> m_stParam;
 
-			ImageSharedPtr m_pImage;		// Ã¸½Á¬æ“¾—p	æ“¾‚µ‚Ä‚È‚­‚Ä‚à•`‰æ‚Å‚«‚é‚æ‚¤‚É
+			ImageSharedPtr m_pImage;	// Ã¸½Á¬æ“¾—p	æ“¾‚µ‚Ä‚È‚­‚Ä‚à•`‰æ‚Å‚«‚é‚æ‚¤‚É
 			std::string m_ImageName;	// Ã¸½Á¬–¼
 
 		public:

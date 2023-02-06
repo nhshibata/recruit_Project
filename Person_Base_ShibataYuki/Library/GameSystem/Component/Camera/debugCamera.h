@@ -69,6 +69,7 @@ namespace MySpace
 			//virtual void ImGuiDebug();
 
 			void ResumeCamera(bool);
+			void Reset();
 
 			static CDebugCamera* GetDebugCamera() 
 			{

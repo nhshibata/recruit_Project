@@ -285,6 +285,7 @@ void CSceneManager::SaveScene(const std::string filename)
 		{
 			if (obj->GetTransform()->GetParent().lock())continue;	// 親が居れば
 			saveData->m_aGameObjectManager.emplace_back(obj);
+			//saveData->m_aGameObjectManager.push_back(obj);
 		}
 		// シリアライズ
 		sirial.OutputFile(filename, filePathName, saveData);
@@ -328,6 +329,18 @@ bool CSceneManager::LoadScene(std::string path)
 	sceneData->m_resource.Load();											// ロードしたResourceを読み込み
 	newScene->Init(newScene);
 	newScene->SetSceneName(sceneData->m_SceneName);							// 名前設定
+	// ロード時処理
+	for (auto & obj : sceneData->m_aGameObjectManager)
+	{
+		obj->SetPtr(obj);
+		obj->SetScene(newScene);
+
+		auto coms = obj->GetComponentList();
+		for (auto & com : coms)
+		{
+			com->SetOwner(obj);
+		}
+	}
 	newScene->GetObjManager()->SetObjList(sceneData->m_aGameObjectManager);	// オブジェクト設定
 
 	// ロード時処理

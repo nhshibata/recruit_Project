@@ -117,87 +117,94 @@ void CSpriteAnimation::ImGuiDebug()
 
 	ImVec2 texSize = (GetFrameSize().Convert<ImVec2>());
 
-	ImGui::Text(u8"filaName : %s", GetImageName().c_str());
-	ImGui::Text(u8"ﾃｸｽﾁｬサイズ %f %f", texSize.x, texSize.y);
-	ImGui::Text(u8"ﾃｸｽﾁｬ座標 %f %f", GetUV().x, GetUV().y);
-
-	int size = static_cast<int>(m_stParam.size());
-	//--- サイズ調整
-	if (ImGui::InputInt(u8"size", &size) && size >= 0)
+	ImGui::BeginTabBar("SpriteAnimation");
+	
+	if (ImGui::BeginTabItem("Texture Data"))
 	{
-		/*if (param.size() - size == 1)
-			param.pop_back();
-		else if(param.size() - size == -1)
-			param.push_back(ST_FRAME());*/
-		m_stParam.resize(size);
-		m_stParam.back().nAnimNo = m_stParam[size - 1].nAnimNo+1;
-		m_stParam.back().nFrame = m_stParam[size - 1].nFrame;
-	}
-	ImGui::InputInt(u8"No", &m_nAnimNo);
-	if (m_nAnimNo < 0)
-		m_nAnimNo = 0;
-
-	//--- 分割数変更
-	ImGui::InputInt(u8"分割x", &m_nSplitX);
-	ImGui::InputInt(u8"分割y", &m_nSplitY);
-	if (m_nSplitX < 0)
-		m_nSplitX = 0;
-	if (m_nSplitY < 0)
-		m_nSplitY = 0;
-
-
-	for (int i = 0; i < m_stParam.size(); i++)
-	{
-		std::string ii = u8"AnimNo" + std::to_string(i);
-		ImGui::InputInt(ii.c_str(), &m_stParam[i].nAnimNo);	
-		ii = u8"Frame" + std::to_string(i);
-		ImGui::InputInt(ii.c_str(), &m_stParam[i].nFrame);
+		ImGui::Text(u8"filaName : %s", GetImageName().c_str());
+		ImGui::Text(u8"ﾃｸｽﾁｬサイズ %f %f", texSize.x, texSize.y);
+		ImGui::Text(u8"ﾃｸｽﾁｬ座標 %f %f", GetUV().x, GetUV().y);
+		ImGui::EndTabItem();
 	}
 
 	if (!GetImage().lock())
 		return;
 
-	// ImGui.hにコンストラクタと演算子のオーバーロード追加
-	static int animationFrame = 0;
-	static int animaNo = 0;
-	auto split = GetSplit();
-	texSize = (GetFrameSize().Convert<ImVec2>());
-
-	if (++animationFrame % 30 == 0)
+	if (ImGui::BeginTabItem("param"))
 	{
-		++animaNo;
-		animationFrame = 0;
-		if(animaNo >= split.x * split.y)
-			animaNo = 0;
-	}
-	static float region_sz = 0.0f;
-	ImGui::InputFloat("aaa", &region_sz);
-	ImVec2 uv = GetUV(animaNo).Convert<ImVec2>();
-	ImVec2 uv0 = ImVec2((uv.x) / m_nSplitX, (uv.y) / m_nSplitY);
-	ImVec2 uv1 = ImVec2(uv.x + texSize.x, uv.y + texSize.y);
-	ImGui::Text("da%f%f", uv1.x, uv1.y);
-	ImGui::Image(
-		(void*)GetImage().lock()->GetSRV(),	// 画像
-		ImVec2(80, 80),									// サイズ
-		uv,												// UV
-		uv1//texSize											// フレームサイズ
-	);
+		int size = static_cast<int>(m_stParam.size());
+		//--- サイズ調整
+		if (ImGui::InputInt("size", &size) && size >= 0)
+		{
+			m_stParam.resize(size);
+			m_stParam.back().nAnimNo = m_stParam[size - 1].nAnimNo + 1;
+			m_stParam.back().nFrame = m_stParam[size - 1].nFrame;
+		}
+		ImGui::InputInt("No:", &m_nAnimNo);
+		if (m_nAnimNo < 0)
+			m_nAnimNo = 0;
 
-	//--- UV表示
-	for (int cnt = 0; cnt < split.x * split.y; ++cnt)
-	{
-		uv = GetUV(cnt).Convert<ImVec2>();
+		//--- 分割数変更
+		ImGui::InputInt("split x", &m_nSplitX);
+		ImGui::InputInt("split y", &m_nSplitY);
+		if (m_nSplitX < 0)
+			m_nSplitX = 0;
+		if (m_nSplitY < 0)
+			m_nSplitY = 0;
+
+		for (int i = 0; i < m_stParam.size(); i++)
+		{
+			std::string ii = "AnimNo" + std::to_string(i);
+			ImGui::InputInt(ii.c_str(), &m_stParam[i].nAnimNo);
+			ii = "Frame" + std::to_string(i);
+			ImGui::InputInt(ii.c_str(), &m_stParam[i].nFrame);
+		}
+
+		//--- image表示
+		static int animationFrame = 0;
+		static int animaNo = 0;
+
+		auto split = GetSplit();
+		texSize = (GetFrameSize().Convert<ImVec2>());
+
+		if (++animationFrame % 30 == 0)
+		{
+			++animaNo;
+			animationFrame = 0;
+			if (animaNo >= split.x * split.y)
+				animaNo = 0;
+		}
+
+		ImVec2 uv = GetUV(animaNo).Convert<ImVec2>();
+		ImVec2 uv0 = ImVec2((uv.x) / m_nSplitX, (uv.y) / m_nSplitY);
+		ImVec2 uv1 = ImVec2(uv.x + texSize.x, uv.y + texSize.y);
+		ImGui::Text("uv%f%f", uv1.x, uv1.y);
 		ImGui::Image(
 			(void*)GetImage().lock()->GetSRV(),	// 画像
 			ImVec2(80, 80),						// サイズ
 			uv,									// UV
-			texSize								// フレームサイズ
+			uv1//texSize						// フレームサイズ
 		);
 
-		// 段落
-		if ((cnt+1) % 3 == 0)
-			ImGui::SameLine();
+		//--- UV表示
+		for (int cnt = 0; cnt < split.x * split.y; ++cnt)
+		{
+			uv = GetUV(cnt).Convert<ImVec2>();
+			ImGui::Image(
+				(void*)GetImage().lock()->GetSRV(),	// 画像
+				ImVec2(80, 80),						// サイズ
+				uv,									// UV
+				texSize								// フレームサイズ
+			);
+
+			// 段落
+			if ((cnt + 1) % 3 == 0)
+				ImGui::SameLine();
+		}
+		ImGui::EndTabItem();
 	}
+
+	ImGui::EndTabBar();
 
 }
 

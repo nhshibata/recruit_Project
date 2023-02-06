@@ -24,14 +24,14 @@ namespace MySpace
 			template<class Archive>
 			void save(Archive& archive) const
 			{
-				archive(cereal::make_nvp("directionalLight", cereal::base_class<CComponent>(this)),
+				archive(cereal::make_nvp("directionalLight", cereal::base_class<CLight>(this)),
 					CEREAL_NVP(m_diffuse), CEREAL_NVP(m_ambient), CEREAL_NVP(m_specular)
 				);
 			}
 			template<class Archive>
 			void load(Archive& archive)
 			{
-				archive(cereal::make_nvp("directionalLight", cereal::base_class<CComponent>(this)),
+				archive(cereal::make_nvp("directionalLight", cereal::base_class<CLight>(this)),
 					CEREAL_NVP(m_diffuse), CEREAL_NVP(m_ambient), CEREAL_NVP(m_specular)
 				);
 			}

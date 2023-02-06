@@ -135,6 +135,9 @@
     <ClInclude Include="..\Library\GraphicsSystem\Shader\depthShadow.h">
       <Filter>ヘッダー ファイル\Shader</Filter>
     </ClInclude>
+    <ClInclude Include="..\Library\GraphicsSystem\Shader\instancingData.h">
+      <Filter>ヘッダー ファイル\Shader</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\Library\GraphicsSystem\Texture\Texture.cpp">
@@ -241,23 +244,28 @@
     <FxCompile Include="..\Library\hlsl\Pixel.hlsl">
       <Filter>リソース ファイル</Filter>
     </FxCompile>
-    <FxCompile Include="..\Library\hlsl\AssimpInstancingVertex.hlsl">
+    <FxCompile Include="..\Library\hlsl\PS_Mesh.hlsl">
       <Filter>リソース ファイル</Filter>
     </FxCompile>
-    <FxCompile Include="..\Library\hlsl\InstancingVertex.hlsl">
+    <FxCompile Include="..\Library\hlsl\VS_Assimp.hlsl">
       <Filter>リソース ファイル</Filter>
     </FxCompile>
-    <FxCompile Include="..\Library\hlsl\DepthWriteVS.hlsl">
+    <FxCompile Include="..\Library\hlsl\VS_Mesh.hlsl">
       <Filter>リソース ファイル</Filter>
     </FxCompile>
-    <FxCompile Include="..\Library\hlsl\DepthWritePS.hlsl">
+    <FxCompile Include="..\Library\hlsl\PS_Assimp.hlsl">
       <Filter>リソース ファイル</Filter>
     </FxCompile>
-    <FxCompile Include="..\Library\hlsl\ShadowPixel.hlsl">
+    <FxCompile Include="..\Library\hlsl\PS_DepthWrite.hlsl">
       <Filter>リソース ファイル</Filter>
     </FxCompile>
-    <FxCompile Include="..\Library\hlsl\AssimpShadowPS.hlsl">
+    <FxCompile Include="..\Library\hlsl\VS_DepthWrite.hlsl">
       <Filter>リソース ファイル</Filter>
     </FxCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="..\Library\hlsl\common.hlsli">
+      <Filter>リソース ファイル</Filter>
+    </None>
   </ItemGroup>
 </Project>

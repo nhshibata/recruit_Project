@@ -16,6 +16,7 @@
 #include <GameSystem/Manager/sceneManager.h>
 #include <GameSystem/Manager/gameObjectManager.h>
 #include <GameSystem/Component/Camera/camera.h>
+#include <GameSystem/Component/Light/directionalLight.h>
 #include <GameSystem/Component/Transform/Tween.h>
 #include <GameSystem/GameObject/tag.h>
 
@@ -79,6 +80,14 @@ HRESULT CGameApp::Init(Application* app)
 	//--- process order 006
 	//--- 描画関係
 
+	//--- アセット
+	// 素材全般所持ｸﾗｽ
+	auto pAssets = new CAssetsManager();
+	app->AddSystem(pAssets, typeid(CAssetsManager).name());
+	hr = pAssets->Init(app);
+	if (hr != S_OK)
+		MessageBox(NULL, _T("CAssetsManagerの初期化に失敗しました。"), _T("error"), MB_OK);
+
 	//--- メッシュ
 	hr = CMesh::InitShader();
 	if (hr != S_OK)
@@ -91,14 +100,6 @@ HRESULT CGameApp::Init(Application* app)
 	hr = CPolygon::InitShader(pDevice);
 	if (hr != S_OK)
 		MessageBox(NULL, _T("CPolygonの初期化に失敗しました。"), _T("error"), MB_OK);
-
-	//--- アセット
-	// 素材全般所持ｸﾗｽ
-	auto pAssets = new CAssetsManager();
-	app->AddSystem(pAssets, typeid(CAssetsManager).name());
-	hr = pAssets->Init(app);
-	if (hr != S_OK)
-		MessageBox(NULL, _T("CAssetsManagerの初期化に失敗しました。"), _T("error"), MB_OK);
 
 	//--- 音初期化
 	CSound::Init();

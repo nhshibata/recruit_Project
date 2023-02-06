@@ -98,7 +98,7 @@ HRESULT CShaderManager::Init()
 		pHullShader->Make(pTarget->data(), static_cast<size_t>(pTarget->size()));
 		pDomainShader->Make(pTarget2->data(), static_cast<size_t>(pTarget2->size()));
 		// äiî[
-		SetTessellation(g_szShaderList[cnt], pHullShader, pDomainShader);
+		//SetTessellation(g_szShaderList[cnt], pHullShader, pDomainShader);
 	}
 	
 	MatrixBufferType param;
@@ -114,8 +114,8 @@ HRESULT CShaderManager::Init()
 	CConstantBuffer::Ptr cb2 = std::make_shared<CConstantBuffer>();
 	cb->Make(sizeof(MatrixBufferType),0, CConstantBuffer::EType::MAX, &initData);
 	cb2->Make(sizeof(TessellationBufferType),0, CConstantBuffer::EType::MAX, &initData2);
-	SetConstantBuffer("MatrixBufferType", cb);
-	SetConstantBuffer("TessellationBufferType", cb2);
+	SetCB("MatrixBufferType", cb);
+	SetCB("TessellationBufferType", cb2);
 
 	return hr;
 }
@@ -125,27 +125,27 @@ HRESULT CShaderManager::Init()
 //==========================================================
 void CShaderManager::Uninit()
 {
-	for (auto & pixel : m_PixelMap)
+	for (auto & pixel : m_aPixelMap)
 	{
 		pixel.second.reset();
 	}
 	
-	for (auto & vtx : m_VtxMap)
+	for (auto & vtx : m_aVtxMap)
 	{
 		vtx.second.reset();
 	}
 
-	for (auto & con : m_ConstantMap)
+	for (auto & con : m_aConstantBufferMap)
 	{
 		con.second.reset();
 	}
 
-	for (auto & hs : m_pHullMap)
+	for (auto & hs : m_aHullMap)
 	{
 		hs.second.reset();
 	}
 	
-	for (auto & ds : m_pDomainMap)
+	for (auto & ds : m_aDomainMap)
 	{
 		ds.second.reset();
 	}
@@ -156,18 +156,103 @@ void CShaderManager::Uninit()
 //==========================================================
 void CShaderManager::Update()
 {
-	//for (auto & con : m_ConstantMap)
-	//{
-	//	con.second->Bind();
-	//}
+	
+}
+
+//==========================================================
+// PSÉoÉCÉìÉh
+//==========================================================
+void CShaderManager::BindPS(std::string name, UINT slot)
+{
+	if (!Find<PixelShaderSharedPtr>(name, m_aPixelMap))
+		return;
+	m_aPixelMap[name]->Bind(slot);
+}
+
+//==========================================================
+// VSÉoÉCÉìÉh
+//==========================================================
+void CShaderManager::BindVS(std::string name, UINT slot)
+{
+	if (!Find<VertexShaderSharedPtr>(name, m_aVtxMap))
+		return;
+	m_aVtxMap[name]->Bind(slot);
+}
+
+//==========================================================
+// CBÉoÉCÉìÉh
+//==========================================================
+void CShaderManager::BindCB(std::string name, UINT slot)
+{
+	if (!Find<ConstantBufferSharedPtr>(name, m_aConstantBufferMap))
+		return;
+	m_aConstantBufferMap[name]->Bind(slot);
+}
+
+//==========================================================
+// MBÉoÉCÉìÉh
+//==========================================================
+void CShaderManager::BindMB(std::string name, UINT slot) 
+{
+	if (!Find<MeshBufferSharedPtr>(name, m_aMeshBuffMap))
+		return;
+	m_aMeshBuffMap[name]->Bind(slot);
 }
 
 //==========================================================
 // íËêîèëÇ´çûÇ›
 //==========================================================
-void CShaderManager::ConstantWrite(std::string name, void* data)
+void CShaderManager::CBWrite(std::string name, void* data)
 {
-	m_ConstantMap[name]->Write(data);
+	m_aConstantBufferMap[name]->Write(data);
+}
+
+//==========================================================
+// íËêîèëÇ´çûÇ›
+//==========================================================
+void CShaderManager::CBWrite(std::string name, void* data, UINT size)
+{
+	m_aConstantBufferMap[name]->DynamicWrite(data, size);
+}
+
+//==========================================================
+// CBäiî[ : ñºëOê›íËïKê{
+//==========================================================
+void CShaderManager::SetCB(std::string name, ConstantBufferSharedPtr ptr)
+{
+	if (m_aConstantBufferMap.count(name))
+		return;
+	m_aConstantBufferMap.insert(ConstantPair(name, ptr)); 
+}
+
+//==========================================================
+// VertexShaderäiî[ : ñºëOê›íËïKê{
+//==========================================================
+void CShaderManager::SetVS(std::string name, VertexShaderSharedPtr vs) 
+{ 
+	if (m_aVtxMap.count(name))
+		return;
+	m_aVtxMap.insert(VertexPair(name, vs)); 
+}
+
+//==========================================================
+// PixelShaderäiî[ : ñºëOê›íËïKê{
+//==========================================================
+void CShaderManager::SetPS(std::string name, PixelShaderSharedPtr ps) 
+{ 
+	if (m_aPixelMap.count(name))
+		return;
+	m_aPixelMap.insert(PixelPair(name, ps)); 
+}
+
+//==========================================================
+// MSäiî[ : ñºëOê›íËïKê{
+//==========================================================
+void CShaderManager::SetMB(std::string name, MeshBufferSharedPtr mb) 
+{ 
+	if (m_aMeshBuffMap.count(name))
+		return;
+	m_aMeshBuffMap.insert(MeshBufferPair(name, mb));
 }
 
 //==========================================================
@@ -185,8 +270,8 @@ bool CShaderManager::SetShaderParameters(
 	//unsigned int bufferNumber;
 	MatrixBufferType* dataPtr;
 	TessellationBufferType* dataPtr2;
-	auto buffer = m_ConstantMap["MatrixBufferType"]->GetBuffer();
-	auto buffer2 = m_ConstantMap["TessellationBufferType"]->GetBuffer();
+	auto buffer = m_aConstantBufferMap["MatrixBufferType"]->GetBuffer();
+	auto buffer2 = m_aConstantBufferMap["TessellationBufferType"]->GetBuffer();
 
 	// Transpose the matrices to prepare them for the shader.
 	XMMatrixTranspose(worldMatrix);
@@ -237,29 +322,29 @@ bool CShaderManager::SetShaderParameters(
 //==========================================================
 void CShaderManager::Render(EShaderType etype, std::string cb, std::string vs, std::string ps, std::string mb)
 {
-	auto pCamera = Game::CCamera::GetMain();
+	//auto pCamera = Game::CCamera::GetMain();
 
-	//MatrixBufferType data1 = { pCamera->GetWorldMatrix(0), pCamera->GetLookAtMatrix(), pCamera->GetProjectionMatrix() };
-	//m_ConstantMap["MatrixBufferType"]->Write(&data1);
+	////MatrixBufferType data1 = { pCamera->GetWorldMatrix(0), pCamera->GetLookAtMatrix(), pCamera->GetProjectionMatrix() };
+	////m_ConstantMap["MatrixBufferType"]->Write(&data1);
 
-	//TessellationBufferType dataPtr2 = {m_fTessellationAmount ,XMFLOAT3(0.0f, 0.0f, 0.0f) };
-	//m_ConstantMap["TessellationBufferType"]->Write(&dataPtr2);
-	//m_ConstantMap["TessellationBufferType"]->Bind();
+	////TessellationBufferType dataPtr2 = {m_fTessellationAmount ,XMFLOAT3(0.0f, 0.0f, 0.0f) };
+	////m_ConstantMap["TessellationBufferType"]->Write(&dataPtr2);
+	////m_ConstantMap["TessellationBufferType"]->Bind();
 
-	BindCB(cb);
+	//BindCB(cb);
 
-	if (1/*||GetAsyncKeyState(VK_HOME)*/) {
-	//	m_pHullMap[g_szShaderList[static_cast<int>(etype)]]->Bind();
-	//	m_pDomainMap[g_szShaderList[static_cast<int>(etype)]]->Bind();
-	}
+	//if (1/*||GetAsyncKeyState(VK_HOME)*/) {
+	////	m_pHullMap[g_szShaderList[static_cast<int>(etype)]]->Bind();
+	////	m_pDomainMap[g_szShaderList[static_cast<int>(etype)]]->Bind();
+	//}
 
-	BindVS(vs);
+	//BindVS(vs);
 
-	SetShaderParameters(pCamera->GetWorldMatrix(0), pCamera->GetLookAtMatrix(), pCamera->GetProjectionMatrix(), m_fTessellationAmount);
+	//SetShaderParameters(pCamera->GetWorldMatrix(0), pCamera->GetLookAtMatrix(), pCamera->GetProjectionMatrix(), m_fTessellationAmount);
 
-	BindPS(ps);
-	
-	BindMB(mb);
+	//BindPS(ps);
+	//
+	//BindMB(mb);
 }
 
 //==========================================================
@@ -288,25 +373,25 @@ void CShaderManager::Load()
 	{
 		addPixel = std::make_shared<CPixelShader>();
 		addPixel->Make(g_szCSODir + "AssimpPixel.cso");
-		m_PixelMap.insert(PixelPair(g_szCSODir + "AssimpPixel.cso", addPixel));
+		m_aPixelMap.insert(PixelPair(g_szCSODir + "AssimpPixel.cso", addPixel));
 	}
 
 	{
 		addPixel = std::make_shared<CPixelShader>();
 		addPixel->Make(g_szCSODir + "ExpPixel.cso");
-		m_PixelMap.insert(PixelPair(g_szCSODir + "ExpPixel.cso", addPixel));
+		m_aPixelMap.insert(PixelPair(g_szCSODir + "ExpPixel.cso", addPixel));
 	}
 
 	{
 		addPixel = std::make_shared<CPixelShader>();
 		addPixel->Make(g_szCSODir + "Pixel.cso");
-		m_PixelMap.insert(PixelPair(g_szCSODir + "Pixel.cso", addPixel));
+		m_aPixelMap.insert(PixelPair(g_szCSODir + "Pixel.cso", addPixel));
 	}
 
 	{
 		addPixel = std::make_shared<CPixelShader>();
 		addPixel->Make(g_szCSODir + "Pixel2DPixel.cso");
-		m_PixelMap.insert(PixelPair(g_szCSODir + "Pixel2DPixel.cso", addPixel));
+		m_aPixelMap.insert(PixelPair(g_szCSODir + "Pixel2DPixel.cso", addPixel));
 	}
 	//--- í∏ì_ÉVÉFÅ[É_
 	{
@@ -318,7 +403,7 @@ void CShaderManager::Load()
 		};
 		addVertex = std::make_shared<CVertexShader>();
 		addVertex->Make(g_szCSODir, polygonLayout, _countof(polygonLayout));
-		m_VtxMap.insert(VertexPair("", addVertex));
+		m_aVtxMap.insert(VertexPair("", addVertex));
 	}
 
 	{
@@ -331,7 +416,7 @@ void CShaderManager::Load()
 		};
 		addVertex = std::make_shared<CVertexShader>();
 		addVertex->Make("", meshLayout, _countof(meshLayout));
-		m_VtxMap.insert(VertexPair("", addVertex));
+		m_aVtxMap.insert(VertexPair("", addVertex));
 	}
 
 	{
@@ -346,7 +431,7 @@ void CShaderManager::Load()
 		};
 		addVertex = std::make_shared<CVertexShader>();
 		addVertex->Make("", assimpLayout, _countof(assimpLayout));
-		m_VtxMap.insert(VertexPair("", addVertex));
+		m_aVtxMap.insert(VertexPair("", addVertex));
 	}
 #endif
 }

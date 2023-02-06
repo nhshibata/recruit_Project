@@ -1,24 +1,10 @@
+//=========================================================
 // Assimp用頂点シェーダ (AssimpVertex.hlsl)
-#define MAX_BONE_MATRIX	    64
+//---------------------------------------------------------
+// 更新:2023/02/05 定数管理のため、 hlsli追加
+//=========================================================
 
-// グローバル
-cbuffer global : register(b0) {
-    
-    matrix	g_mtxWVP;			// ワールド×ビュー×射影行列
-    
-	matrix	g_mtxWorld;			// ワールド行列
-	matrix	g_mtxTexture;		// テクスチャ行列
-	float4	g_vCameraPos;		// 視点座標(ワールド空間)
-	float4	g_vLightDir;		// 光源方向(ワールド空間)
-	float4	g_vLightAmbient;	// 環境光
-	float4	g_vLightDiffuse;	// 拡散光
-	float4	g_vLightSpecular;	// 鏡面反射光
-};
-
-// ボーンのポーズ行列
-cbuffer global_bones : register(b2) {
-	matrix g_BoneWorld[MAX_BONE_MATRIX];
-};
+#include "common.hlsli"
 
 // パラメータ
 struct VS_INPUT {
@@ -90,7 +76,8 @@ VS_OUTPUT main(VS_INPUT input)
 	VS_OUTPUT output;
 	SKIN vSkinned = SkinVert(input);
 
-	output.Pos = mul(vSkinned.Pos, g_mtxWVP);
+    matrix WVP = mul(g_mtxWorld, g_mtxVP); // ﾜｰﾙﾄﾞ×ビュー×プロジェクション作成
+	output.Pos = mul(vSkinned.Pos, WVP);
 	output.Tex = mul(float4(input.Tex, 0.0f, 1.0f), g_mtxTexture).xy;
 	output.Normal = mul(vSkinned.Norm, (float3x3)g_mtxWorld);
 	output.PosForPS = mul(vSkinned.Pos, g_mtxWorld).xyz;

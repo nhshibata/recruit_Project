@@ -33,14 +33,14 @@ namespace MySpace
 			template<class Archive>
 			void save(Archive& archive) const
 			{
-				archive(cereal::make_nvp("rectTransform", cereal::base_class<CBaseComponent>(this)),
+				archive(cereal::make_nvp("rectTransform", cereal::base_class<CComponent>(this)),
 					CEREAL_NVP(m_vPos), CEREAL_NVP(m_vSize), CEREAL_NVP(m_fAngle)
 				);
 			}
 			template<class Archive>
 			void load(Archive& archive)
 			{
-				archive(cereal::make_nvp("rectTransform", cereal::base_class<CBaseComponent>(this)),
+				archive(cereal::make_nvp("rectTransform", cereal::base_class<CComponent>(this)),
 					CEREAL_NVP(m_vPos), CEREAL_NVP(m_vSize), CEREAL_NVP(m_fAngle)
 				);
 			}
@@ -81,6 +81,7 @@ namespace MySpace
 		};
 	}
 }
+
 CEREAL_REGISTER_TYPE(MySpace::Game::CRectTransform)
 
 #endif // !__RECT_TRANSFORM_H__

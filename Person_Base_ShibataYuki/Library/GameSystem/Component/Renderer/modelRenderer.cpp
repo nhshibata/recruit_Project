@@ -1,9 +1,10 @@
 //=========================================================
 // [modelRenderer.h] 
+//---------------------------------------------------------
 // 作成: 2022/06/27
 // 更新: 2022/07/04 実装
 // 更新: 2022/12/08 インスタンシングに対応
-//---------------------------------------------------------
+// 更新: 2022/12/08 WayPoint生成用のLayの当たり判定をワールド座標に合うように変更
 //=========================================================
 
 //--- インクルード部
@@ -133,8 +134,7 @@ void CModelRenderer::Update()
 //==========================================================
 bool CModelRenderer::Draw()
 {
-	if (!CMeshRenderer::Draw())return false;
-	if (!m_pModel)return false;
+	if (!CMeshRenderer::Draw() || !m_pModel)return false;
 
 	auto pModelMgr = Application::Get()->GetSystem<CAssetsManager>()->GetModelManager();
 	auto pDX = Application::Get()->GetSystem<CDXDevice>();
@@ -144,7 +144,27 @@ bool CModelRenderer::Draw()
 
 #if 1
 	// システム側に依頼を出し、まとめて描画してもらう
-	SceneManager::CSceneManager::Get()->GetDrawSystem()->SetInstanchingModel(m_modelName, mtx);
+	XMUINT4 vFlags(0, 0, 0, 0);
+	if (auto pMaterial = GetModel().lock()->GetMaterial(); pMaterial)
+	{
+		if (pMaterial->pTexture)
+		{
+			vFlags.x = 1;
+			if (pMaterial->pTexEmmisive)
+				vFlags.y = 1;
+			if (pMaterial->pTexTransparent)
+				vFlags.z = 1;
+			if (pMaterial->pTexSpecular)
+				vFlags.w = 1;
+		}
+	}
+
+	SceneManager::CSceneManager::Get()->GetDrawSystem()->SetInstanchingModel(
+		m_modelName, 
+		RENDER_DATA(mtx, 
+					m_MeshMaterial.m_Ambient, m_MeshMaterial.m_Diffuse, m_MeshMaterial.m_Specular, m_MeshMaterial.m_Emissive,
+					vFlags));
+
 	return true;
 
 #else
@@ -324,13 +344,51 @@ bool CModelRenderer::CollisionRay(XMFLOAT3 vP0, XMFLOAT3 vW, XMFLOAT3* pX, XMFLO
 //==========================================================
 bool CModelRenderer::CollisionLineSegment(XMFLOAT3 vP0, XMFLOAT3 vP1, XMFLOAT3* pX, XMFLOAT3* pN)
 {
+	Matrix4x4 mtx = Transform()->GetWorldMatrix();
+	Matrix4x4 mtxPoint;
+	XMFLOAT3 pos;
+
 	// 全ての三角形について繰り返し
 	for (UINT i = 0; i < m_nIndex; )
 	{
+		// 三角形の3頂点を現在のマトリックスから計算
+		XMFLOAT3 v0 = m_pVertex[m_pIndex[i++]].vPos;
+		XMFLOAT3 v1 = m_pVertex[m_pIndex[i++]].vPos;
+		XMFLOAT3 v2 = m_pVertex[m_pIndex[i++]].vPos;
+
+		mtxPoint.Identity();
+		mtxPoint._41 = v0.x;
+		mtxPoint._42 = v0.y;
+		mtxPoint._43 = v0.z;
+		mtxPoint = mtxPoint.Multiply(mtx);
+		pos = XMFLOAT3(mtxPoint._41, mtxPoint._42, mtxPoint._43);
+		v0 = pos;
+
+		mtxPoint.Identity();
+		mtxPoint._41 = v1.x;
+		mtxPoint._42 = v1.y;
+		mtxPoint._43 = v1.z;
+		mtxPoint = mtxPoint.Multiply(mtx);
+		pos = XMFLOAT3(mtxPoint._41, mtxPoint._42, mtxPoint._43);
+		v1 = pos;
+
+		mtxPoint.Identity();
+		mtxPoint._41 = v2.x;
+		mtxPoint._42 = v2.y;
+		mtxPoint._43 = v2.z;
+		mtxPoint = mtxPoint.Multiply(mtx);
+		pos = XMFLOAT3(mtxPoint._41, mtxPoint._42, mtxPoint._43);
+		v2 = pos;
+
 		// 三角形の3頂点
-		XMFLOAT3& vV0 = m_pVertex[m_pIndex[i++]].vPos;
+		XMFLOAT3& vV0 = v0;
+		XMFLOAT3& vV1 = v1;
+		XMFLOAT3& vV2 = v2;
+
+		/*XMFLOAT3& vV0 = m_pVertex[m_pIndex[i++]].vPos;
 		XMFLOAT3& vV1 = m_pVertex[m_pIndex[i++]].vPos;
-		XMFLOAT3& vV2 = m_pVertex[m_pIndex[i++]].vPos;
+		XMFLOAT3& vV2 = m_pVertex[m_pIndex[i++]].vPos;*/
+
 		// 2辺より法線ベクトルを求める
 		XMVECTOR v0v1 = XMVectorSet(vV1.x - vV0.x, vV1.y - vV0.y, vV1.z - vV0.z, 0.0f);
 		XMVECTOR v1v2 = XMVectorSet(vV2.x - vV1.x, vV2.y - vV1.y, vV2.z - vV1.z, 0.0f);
@@ -525,6 +583,7 @@ void CModelRenderer::ImGuiDebug()
 	using namespace MySpace::Debug;
 
 	//--- フォルダからファイル名取得
+	// 入力時、再取得
 	if (m_aXModelList.empty() && m_aObjModelList.empty() && m_aFbxModelList.empty() || 
 		ImGui::Button(u8"model reload"))
 	{
@@ -557,39 +616,15 @@ void CModelRenderer::ImGuiDebug()
 		SetModel(name);
 	}
 
-
 	// 名前入力
 	m_modelName = InputString(m_modelName, u8"設定モデル");
 	if (ImGui::Button("Load"))
 		SetModel(m_modelName);
-	ImGui::Text("BSphere Radius :%f", GetBSRadius());
-	ImGui::Checkbox("Static", (bool*)&m_nStaticMode);
-	ImGui::SameLine();
-	ImGui::Checkbox("Shadow", (bool*)&m_bShadow);
 
-	//--- マテリアル
-	ImGui::BeginTabBar("Material");
-	if (ImGui::BeginTabItem("Diffuse"))
-	{
-		ImGui::ColorPicker4("Diffuse", (float*)&m_AssimpMaterial.Kd);
-		ImGui::EndTabItem();
-	}
-	if (ImGui::BeginTabItem("Ambient"))
-	{
-		ImGui::ColorPicker4("Ambient", (float*)&m_AssimpMaterial.Ka);
-		ImGui::EndTabItem();
-	}
-	if (ImGui::BeginTabItem("Specular"))
-	{
-		ImGui::ColorPicker4("Specular", (float*)&m_AssimpMaterial.Ks);
-		ImGui::EndTabItem();
-	}
-	if (ImGui::BeginTabItem("Emissive"))
-	{
-		ImGui::ColorPicker4("Emissive", (float*)&m_AssimpMaterial.Ke);
-		ImGui::EndTabItem();
-	}
-	
+	// static設定
+	// マテリアル
+	CMeshRenderer::ImGuiDebug();
+
 	ImGui::EndTabBar();
 }
 

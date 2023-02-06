@@ -14,6 +14,7 @@
 //--- インクルード部
 #include <GameSystem/Manager/mapSystemBase.h>
 #include <GameSystem/Shader/depthShadow.h>
+#include <GraphicsSystem/Shader/instancingData.h>
 
 #include <DirectXMath.h>
 
@@ -46,12 +47,12 @@ namespace MySpace
 			struct STMeshData
 			{
 				CMesh* pMesh;
-				std::vector<DirectX::XMFLOAT4X4> aMtx;
+				std::vector<MySpace::Graphics::RENDER_DATA> aData;
 			};
 
 			//--- エイリアス
 			using PolygonRenderWeakList = std::vector<std::weak_ptr<CPolygonRenderer>>;
-			using InstancingMap = std::map<std::string, std::vector<DirectX::XMFLOAT4X4>>;
+			using InstancingMap = std::map<std::string, std::vector<MySpace::Graphics::RENDER_DATA>>;
 			using InstancingMeshMap = std::map<std::string, STMeshData>;
 			
 		private:
@@ -63,13 +64,18 @@ namespace MySpace
 			std::unique_ptr<Game::CDepthShadow> m_pDepthShadow;	// 深度書き込み用
 
 #if BUILD_MODE
+			struct STDebugMeshData
+			{
+				CMesh* pMesh;
+				std::vector<DirectX::XMFLOAT4X4> mtx;
+			};
 			// 確認用変数
 			int m_nSkipCnt;
 			int m_nDrawCnt;
 			int m_nInstancingCnt;
 			bool m_bFrustum;
 			bool m_bShadowView;
-			InstancingMeshMap m_aDebugMeshMap;		// インスタンシング描画格納用
+			std::map<std::string,STDebugMeshData> m_aDebugMeshMap;		// インスタンシング描画格納用
 #endif // _DEBUG
 
 		private:
@@ -105,13 +111,13 @@ namespace MySpace
 			std::weak_ptr<CRenderer> ExecutSystem(int idx);
 
 			// *@インスタンシング描画のために情報を格納する
-			inline void SetInstanchingModel(std::string name, DirectX::XMFLOAT4X4 mtx)
+			inline void SetInstanchingModel(std::string name, MySpace::Graphics::RENDER_DATA data)
 			{
-				m_aInstancingModelMap[name].push_back(mtx);
+				m_aInstancingModelMap[name].push_back(data);
 			}
 			
 			// *@インスタンシング描画のために情報を格納する
-			void SetInstanchingMesh(std::string name, DirectX::XMFLOAT4X4 mtx, CMesh* mesh);
+			void SetInstanchingMesh(std::string name, MySpace::Graphics::RENDER_DATA data, CMesh* mesh);
 
 			// *@所持リスト
 			_NODISCARD inline std::vector<std::weak_ptr<CRenderer>> GetList()

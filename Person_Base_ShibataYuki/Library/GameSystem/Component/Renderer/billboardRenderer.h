@@ -27,14 +27,14 @@ namespace MySpace
 			template<class Archive>
 			void save(Archive& archive) const
 			{
-				archive(cereal::make_nvp("meshRender", cereal::base_class<CMeshRenderer>(this)),
+				archive(cereal::make_nvp("billboardRender", cereal::base_class<CMeshRenderer>(this)),
 					CEREAL_NVP(m_pBillboard), CEREAL_NVP(m_pSprite)
 				);
 			}
 			template<class Archive>
 			void load(Archive& archive)
 			{
-				archive(cereal::make_nvp("meshRender", cereal::base_class<CMeshRenderer>(this)),
+				archive(cereal::make_nvp("billboardRender", cereal::base_class<CMeshRenderer>(this)),
 					CEREAL_NVP(m_pBillboard), CEREAL_NVP(m_pSprite)
 				);
 			}

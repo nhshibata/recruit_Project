@@ -15,6 +15,7 @@
 #include <Application/Application.h>
 #include <GameSystem/Manager/drawSystem.h>
 #include <GameSystem/Component/Camera/camera.h>
+#include <GameSystem/Component/Light/directionalLight.h>
 #include <GameSystem/Component/Renderer/polygonRenderer.h>
 #include <GameSystem/Component/Renderer/meshRenderer.h>
 
@@ -80,12 +81,12 @@ int CDrawSystem::PolygonRegist(std::weak_ptr<CPolygonRenderer> render)
 //==========================================================
 // 登録
 //==========================================================
-void CDrawSystem::SetInstanchingMesh(std::string name, DirectX::XMFLOAT4X4 mtx, CMesh* mesh)
+void CDrawSystem::SetInstanchingMesh(std::string name, MySpace::Graphics::RENDER_DATA data, CMesh* mesh)
 {
 	if (!m_aInstancingMeshMap.count(name))
 		m_aInstancingMeshMap[name].pMesh = mesh;
 
-	m_aInstancingMeshMap[name].aMtx.push_back(mtx);
+	m_aInstancingMeshMap[name].aData.push_back(data);
 }
 
 //==========================================================
@@ -260,7 +261,7 @@ void CDrawSystem::Draw3DShadow()
 	//--- Mesh
 	for (auto & mesh : m_aInstancingMeshMap)
 	{
-		if (mesh.second.aMtx.size() == 0)// 一応確認
+		if (mesh.second.aData.size() == 0)// 一応確認
 			continue;
 
 		// ビルボードか確認
@@ -269,11 +270,11 @@ void CDrawSystem::Draw3DShadow()
 			// ﾃｸｽﾁｬ設定
 			auto image = pAssets->GetImageManager()->GetResource(mesh.first);
 			auto tex = image ? image->GetSRV() : NULL;
-			mesh.second.pMesh->DrawInstancing(mesh.second.aMtx, false, tex, &bill->GetTextureMatrix());
+			mesh.second.pMesh->DrawInstancing(mesh.second.aData, false, tex, &bill->GetTextureMatrix());
 		}
 		else
 		{
-			mesh.second.pMesh->DrawInstancing(mesh.second.aMtx, false);
+			mesh.second.pMesh->DrawInstancing(mesh.second.aData, false);
 		}
 	}
 
@@ -341,7 +342,7 @@ void CDrawSystem::Draw3D()
 	//--- メッシュインスタンシング描画
 	for (auto & mesh : m_aInstancingMeshMap)
 	{
-		if (mesh.second.aMtx.size() == 0)// 一応確認
+		if (mesh.second.aData.size() == 0)// 一応確認
 			continue;
 
 		// ビルボードか確認
@@ -350,11 +351,11 @@ void CDrawSystem::Draw3D()
 			// ﾃｸｽﾁｬ設定
 			auto image = pAssets->GetImageManager()->GetResource(mesh.first);
 			auto tex = image ? image->GetSRV() : NULL;
-			mesh.second.pMesh->DrawInstancing(mesh.second.aMtx, true, tex, &bill->GetTextureMatrix());
+			mesh.second.pMesh->DrawInstancing(mesh.second.aData, true, tex, &bill->GetTextureMatrix());
 		}
 		else
 		{
-			mesh.second.pMesh->DrawInstancing(mesh.second.aMtx);
+			mesh.second.pMesh->DrawInstancing(mesh.second.aData);
 		}
 #if BUILD_MODE
 		++m_nInstancingCnt;
@@ -374,7 +375,7 @@ void CDrawSystem::Draw3D()
 
 	for (auto & mesh : m_aDebugMeshMap)
 	{
-		mesh.second.pMesh->DrawInstancing(mesh.second.aMtx);
+		mesh.second.pMesh->DrawInstancing(mesh.second.mtx);
 	}
 	m_aDebugMeshMap.clear();
 	pDX->SetBlendState(static_cast<int>(EBlendState::BS_NONE));
@@ -420,7 +421,7 @@ void CDrawSystem::SetDebugMesh(std::string name, DirectX::XMFLOAT4X4 mtx, CMesh*
 	if (!m_aDebugMeshMap.count(name))
 		m_aDebugMeshMap[name].pMesh = mesh;
 
-	m_aDebugMeshMap[name].aMtx.push_back(mtx);
+	m_aDebugMeshMap[name].mtx.push_back(mtx);
 }
 
 #endif

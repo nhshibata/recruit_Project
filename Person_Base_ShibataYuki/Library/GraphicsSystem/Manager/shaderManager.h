@@ -48,6 +48,7 @@ namespace MySpace
 {
 	namespace Graphics
 	{
+
 		class CShaderManager
 		{
 		public:
@@ -75,25 +76,25 @@ namespace MySpace
 			//--- エイリアス
 			using VertexMap = std::map<std::string, VertexShaderSharedPtr>;
 			using VertexPair = std::pair<std::string, VertexShaderSharedPtr>;
-			using PixelMap = std::map <std::string, PixelShaderSharedPtr> ;
+			using PixelMap = std::map<std::string, PixelShaderSharedPtr> ;
 			using PixelPair = std::pair<std::string, PixelShaderSharedPtr>;
-			using ConstantMap = std::map < std::string, ConstantBufferSharedPtr> ;
+			using ConstantMap = std::map<std::string, ConstantBufferSharedPtr> ;
 			using ConstantPair = std::pair<std::string, ConstantBufferSharedPtr>;
-			using MeshBufferMap = std::map < std::string, MeshBufferSharedPtr> ;
+			using MeshBufferMap = std::map<std::string, MeshBufferSharedPtr> ;
 			using MeshBufferPair = std::pair<std::string, MeshBufferSharedPtr>;
-			using HullShaderMap = std::map < std::string, HullShaderSharedPtr> ;
+			using HullShaderMap = std::map<std::string, HullShaderSharedPtr> ;
 			using HullShaderPair = std::pair<std::string, HullShaderSharedPtr>;
-			using DomainShaderMap = std::map < std::string, DomainShaderSharedPtr> ;
+			using DomainShaderMap = std::map<std::string, DomainShaderSharedPtr> ;
 			using DomainShaderPair = std::pair<std::string, DomainShaderSharedPtr>;
 
 		private:
 			//--- メンバ変数
-			VertexMap m_VtxMap;
-			PixelMap m_PixelMap;
-			ConstantMap m_ConstantMap;
-			MeshBufferMap m_MeshBuffMap;
-			HullShaderMap m_pHullMap;
-			DomainShaderMap m_pDomainMap;
+			VertexMap m_aVtxMap;
+			PixelMap m_aPixelMap;
+			ConstantMap m_aConstantBufferMap;
+			MeshBufferMap m_aMeshBuffMap;
+			HullShaderMap m_aHullMap;
+			DomainShaderMap m_aDomainMap;
 			float m_fTessellationAmount;
 
 		public:
@@ -105,44 +106,25 @@ namespace MySpace
 			void Uninit();
 			void Update();
 
-			// *@今使ってない
-			bool SetShaderParameters(XMMATRIX worldMatrix, XMMATRIX viewMatrix, XMMATRIX projectionMatrix, float tessellationAmount);
-			void Render(EShaderType, std::string cb, std::string vs, std::string ps, std::string mb = "");
-			void EndRender();
-			void Load();
 
 			// *@PSバインド
-			void BindPS(std::string name, UINT slot = 0) 
-			{ 
-				if(!Find<PixelShaderSharedPtr>(name, m_PixelMap))
-					return;
-				m_PixelMap[name]->Bind(slot); 
-			}
-
+			void BindPS(std::string name, UINT slot = 0);
+			
 			// *@VSバインド
-			void BindVS(std::string name, UINT slot = 0) 
-			{
-				if (!Find<VertexShaderSharedPtr>(name, m_VtxMap))
-					return; 
-				m_VtxMap[name]->Bind(slot);
-			}
-
+			void BindVS(std::string name, UINT slot = 0);
+			
 			// *@CBバインド
-			inline void BindCB(std::string name, UINT slot = 0)
-			{ 
-				if (!Find<ConstantBufferSharedPtr>(name, m_ConstantMap)) { return; } m_ConstantMap[name]->Bind(slot);
-			}
+			void BindCB(std::string name, UINT slot = 0);
 
 			// *@MBバインド
-			inline void BindMB(std::string name, UINT slot = 0) { 
-				if (!Find<MeshBufferSharedPtr>(name, m_MeshBuffMap)) { return; } m_MeshBuffMap[name]->Bind(slot);
-			}
-
-			void BindTessellation(std::string name) 
+			void BindMB(std::string name, UINT slot = 0);
+			
+			/*void BindTessellation(std::string name) 
 			{ 
-				if (!Find<HullShaderSharedPtr>(name, m_pHullMap) || !Find<DomainShaderSharedPtr>(name, m_pDomainMap)) { return; }
+				if (!Find<HullShaderSharedPtr>(name, m_pHullMap) || !Find<DomainShaderSharedPtr>(name, m_pDomainMap)) 
+					return;
 				m_pHullMap[name]->Bind(); m_pDomainMap[name]->Bind();
-			}
+			}*/
 
 			// *@配列内探索
 			template <class T>
@@ -154,50 +136,57 @@ namespace MySpace
 			}
 
 			// *@名前指定したシェーダーへﾃﾞｰﾀ書き込み
-			void ConstantWrite(std::string name, void* data);
-
-
-			// *@CB格納 : 名前設定必須
-			inline void SetConstantBuffer(std::string name, ConstantBufferSharedPtr ptr) { m_ConstantMap.insert(ConstantPair(name, ptr)); }
-		
-			// *@VS格納 : 名前設定必須
-			inline void SetVS(std::string name, VertexShaderSharedPtr vs) { m_VtxMap.insert(VertexPair(name,vs)); }
+			void CBWrite(std::string name, void* data);
 			
-			// *@PS格納 : 名前設定必須
-			inline void SetPS(std::string name, PixelShaderSharedPtr ps) { m_PixelMap.insert(PixelPair(name,ps)); }
+			// *@名前指定したシェーダーへ動的ﾃﾞｰﾀ書き込み
+			void CBWrite(std::string name, void* data, UINT size);
+
+			// *@ConstantBuffer格納 : 名前設定必須
+			void SetCB(std::string name, ConstantBufferSharedPtr ptr);
+		
+			// *@VertexShader格納 : 名前設定必須
+			void SetVS(std::string name, VertexShaderSharedPtr vs);
+			
+			// *@PixelShader格納 : 名前設定必須
+			void SetPS(std::string name, PixelShaderSharedPtr ps);
 			
 			// *@MS格納 : 名前設定必須
-			inline void SetMB(std::string name, MeshBufferSharedPtr mb) { m_MeshBuffMap.insert(MeshBufferPair(name,mb)); }
-			
-			// *@使っていない
-			inline void SetTessellation(std::string name, HullShaderSharedPtr hs, DomainShaderSharedPtr ds)
-			{ 
-				m_pHullMap.insert(HullShaderPair(name, hs)); m_pDomainMap.insert(DomainShaderPair(name, ds));
-			}
-
-			// *@使っていない
-			inline void SetTessellation(float value)
-			{
-				m_fTessellationAmount = value; if (m_fTessellationAmount < 1)m_fTessellationAmount = 1;
-			}
+			void SetMB(std::string name, MeshBufferSharedPtr mb);
 
 			inline ConstantBufferSharedPtr GetCB(std::string name)
 			{
-				return m_ConstantMap[name];
+				return m_aConstantBufferMap[name];
 			}
 			
 			inline PixelShaderSharedPtr GetPS(std::string name)
 			{
-				return m_PixelMap[name];
+				return m_aPixelMap[name];
 			}
 
 			inline VertexShaderSharedPtr GetVS(std::string name)
 			{
-				return m_VtxMap[name];
+				return m_aVtxMap[name];
 			}
 
+			// *@今使ってない
+			bool SetShaderParameters(XMMATRIX worldMatrix, XMMATRIX viewMatrix, XMMATRIX projectionMatrix, float tessellationAmount);
+			void Render(EShaderType, std::string cb, std::string vs, std::string ps, std::string mb = "");
+			void EndRender();
+			void Load();
+			//// *@使っていない
+			//inline void SetTessellation(std::string name, HullShaderSharedPtr hs, DomainShaderSharedPtr ds)
+			//{ 
+			//	m_pHullMap.insert(HullShaderPair(name, hs)); m_pDomainMap.insert(DomainShaderPair(name, ds));
+			//}
+
+			//// *@使っていない
+			//inline void SetTessellation(float value)
+			//{
+			//	m_fTessellationAmount = value; if (m_fTessellationAmount < 1)m_fTessellationAmount = 1;
+			//}
 
 		};
+
 	}
 }
 #endif // !__SHADER_MANAGER_H__

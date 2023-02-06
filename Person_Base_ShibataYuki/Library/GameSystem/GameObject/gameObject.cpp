@@ -254,6 +254,23 @@ bool CGameObject::RemoveComponent(std::weak_ptr<CComponent> com)
 }
 
 //==========================================================
+// コンポーネント破棄
+//==========================================================
+bool CGameObject::SetComponent(std::shared_ptr<CComponent> com)
+{
+	// あればfalse
+	for (auto & it : m_aComponent)
+	{
+		if (com->GetName() == it->GetName())
+			return false;
+	}
+
+	com->SetOwner(GetPtr());
+	 m_aComponent.push_back(com); 
+	 return true;
+}
+
+//==========================================================
 // 状態設定
 // inline?
 //==========================================================

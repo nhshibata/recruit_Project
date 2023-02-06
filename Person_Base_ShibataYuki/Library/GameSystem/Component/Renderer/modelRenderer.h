@@ -53,7 +53,6 @@ namespace MySpace
 			TAssimpVertex* m_pVertex;	// 頂点配列
 			UINT m_nIndex;				// インデックス数
 			UINT* m_pIndex;				// インデックス配列
-			TAssimpMaterial m_AssimpMaterial;
 
 		private:
 			//--- メンバ関数
@@ -88,7 +87,6 @@ namespace MySpace
 			
 			inline ModelWeakPtr GetModel() { return m_pModel; }
 			inline std::string GetModelName() { return m_modelName; }
-			inline TAssimpMaterial* GetAssimoMaterial() { return &m_AssimpMaterial; }
 
 #ifdef BUILD_MODE
 

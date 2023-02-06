@@ -98,7 +98,7 @@ void CRenderer::SetLayer(int value)
 void CRenderer::ImGuiDebug()
 {
 	static bool disp = false;
-	ImGui::Text(u8"Renderer");
+	ImGui::Text("Renderer");
 	ImGui::Checkbox("bool", &m_bVisible);
 	if (ImGui::Begin(u8"ColorWindow", &disp))
 	{
@@ -106,7 +106,7 @@ void CRenderer::ImGuiDebug()
 		ImGui::ColorPicker4("color4", (float*)&color);
 		//ImGui::ColorEdit4("color", (float*)&color);
 		m_vColor = Color(color.x, color.y, color.z, color.w);
-	ImGui::End();
+		ImGui::End();
 	}
 
 }

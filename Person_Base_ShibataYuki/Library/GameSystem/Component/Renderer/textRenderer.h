@@ -9,8 +9,8 @@
 //=========================================================
 
 //--- インクルードガード
-#ifndef __TEXT_RENERER_H__
-#define __TEXT_RENERER_H__
+#ifndef __TEXT_RENDERER_COMPONENT_H__
+#define __TEXT_RENDERER_COMPONENT_H__
 
 //--- インクルード部
 #include <GameSystem/Component/Renderer/polygonRenderer.h>
@@ -36,8 +36,7 @@ namespace MySpace
 			{
 				std::string text = WStringToString(m_Text);	// wstringを保存するためstringとして変換
 				archive(cereal::make_nvp("TextRender", cereal::base_class<CPolygonRenderer>(this)),
-					CEREAL_NVP(m_fOffset), CEREAL_NVP(m_bVerticalWrit),
-					CEREAL_NVP(text)
+					CEREAL_NVP(m_fOffset), CEREAL_NVP(m_bVerticalWrit), CEREAL_NVP(text)
 				);
 			}
 			template<class Archive>
@@ -45,8 +44,7 @@ namespace MySpace
 			{
 				std::string text; // 文字列受け取り
 				archive(cereal::make_nvp("TextRender", cereal::base_class<CPolygonRenderer>(this)),
-					CEREAL_NVP(m_fOffset), CEREAL_NVP(m_bVerticalWrit),
-					CEREAL_NVP(text)
+					CEREAL_NVP(m_fOffset), CEREAL_NVP(m_bVerticalWrit), CEREAL_NVP(text)
 				);
 				// 受け取った文字列をワイド文字に変換
 				m_Text = StringToWString(text);
