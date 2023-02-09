@@ -119,6 +119,7 @@ HRESULT CBoxRenderer::SetBox(Vector3 vBBox)
 
 	if(!m_pBBox)
 		m_pBBox = std::make_shared<CBox>();
+	
 	m_vSize = vBBox;
 	hr = m_pBBox->Init(vBBox);
 	if (FAILED(hr))
@@ -140,7 +141,7 @@ void CBoxRenderer::ImGuiDebug()
 	if (ImGui::DragFloat3("BoxSize renderer", (float*)&m_vSize))
 	{
 		SetBox(m_vSize);
-		Transform()->SetScale(m_vSize);
+		//Transform()->SetScale(m_vSize);
 	}
 	CMeshRenderer::ImGuiDebug();
 

@@ -52,9 +52,7 @@ namespace MySpace
 			bool m_bOBBMode;	// OBB”»’è‚ðŽæ‚é‚©
 
 		public:
-			CBoxCollision()
-				:m_bOBBMode(true)
-			{};
+			CBoxCollision();
 			CBoxCollision(std::shared_ptr<CGameObject> owner, Vector3 size = Vector3(1, 1, 1));
 			~CBoxCollision();
 

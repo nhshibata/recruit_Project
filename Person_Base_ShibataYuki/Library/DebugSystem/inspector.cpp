@@ -167,6 +167,7 @@ void CInspector::CopyGameObject()
 			if (com->GetName().find("Renderer") != std::string::npos ||
 				com->GetName().find("Collision") != std::string::npos)
 			{
+				com->Awake();
 				com->Init();
 			}
 		}

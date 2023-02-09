@@ -25,17 +25,30 @@
 using namespace MySpace::Game;
 
 //==========================================================
+// コンストラクタ
+//==========================================================
+CBoxCollision::CBoxCollision()
+	:m_bOBBMode(true)
+{
+
+#if BUILD_MODE
+	m_pDebugBox = std::make_shared<CBox>();
+	m_pDebugBox->Init(Vector3(1,1,1));
+	m_pDebugBox->SetDiffuse(Vector4(0, 1, 0, 0.5f));
+#endif // BUILD_MODE
+
+}
+//==========================================================
 // 引き数付きコンストラクタ
 //==========================================================
 CBoxCollision::CBoxCollision(std::shared_ptr<CGameObject> owner, Vector3 size)
 	: CCollision(owner),m_vSize(size), m_bOBBMode(true)
 {
-#if BUILD_MODE
 
+#if BUILD_MODE
 	m_pDebugBox = std::make_shared<CBox>();
 	m_pDebugBox->Init(size);
 	m_pDebugBox->SetDiffuse(Vector4(0, 1, 0, 0.5f));
-
 #endif // BUILD_MODE
 }
 

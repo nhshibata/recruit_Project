@@ -8,14 +8,17 @@
 #include <Application/Application.h>
 #include <GameSystem/Component/Renderer/polygonRenderer.h>
 #include <GameSystem/Component/Transform/rectTransform.h>
-#include <GraphicsSystem/Texture/spriteAnimation.h>
 #include <GameSystem/Component/Transform/transform.h>
+#include <GraphicsSystem/Texture/spriteAnimation.h>
 
 #include <GameSystem/Manager/sceneManager.h>
 #include <GameSystem/Manager/drawSystem.h>
 
 #include <GraphicsSystem/DirectX/DXDevice.h>
 #include <GraphicsSystem/Manager/imageResourceManager.h>
+#include <GraphicsSystem/Manager/assetsManager.h>
+#include <GraphicsSystem/Manager/shaderManager.h>
+
 #include <GraphicsSystem/Render/polygon.h>
 #include <DebugSystem/imGuiPackage.h>
 #include <CoreSystem/File/filePath.h>
@@ -28,9 +31,9 @@ using namespace MySpace::Graphics;
 // コンストラクタ
 //==========================================================
 CPolygonRenderer::CPolygonRenderer()
-	:m_nZValue(0)
 {
 	//m_pSprite = std::make_shared<CSpriteAnimation>();
+	
 }
 
 //==========================================================
@@ -43,6 +46,8 @@ CPolygonRenderer::CPolygonRenderer(std::shared_ptr<CGameObject> owner)
 	auto rect = GetOwner()->AddComponent<CRectTransform>();
 	m_pRectTransform = rect;
 	rect->SetSize(100, 100);
+	m_strPixelShader = "Pixel2D";
+	m_strVertexShader = "Vertex2D";
 }
 
 //==========================================================
@@ -134,6 +139,10 @@ bool CPolygonRenderer::Draw()
 	pDX->SetZBuffer(false);
 	pDX->SetBlendState(static_cast<int>(EBlendState::BS_ALPHABLEND));
 
+	//--- シェーダー
+	auto pSM = Application::Get()->GetSystem<MySpace::Graphics::CAssetsManager>()->GetShaderManager();
+	pSM->CallBackFuncAndBind(m_strPixelShader, m_strVertexShader);
+
 	//--- 描画設定
 	CPolygon::SetColor(GetColor(1));	// rgba
 	CPolygon::SetAlpha(GetColor().a);	// rgba
@@ -212,8 +221,6 @@ void CPolygonRenderer::ImGuiDebug()
 
 	CRenderer::ImGuiDebug();
 	
-	//ImGui::Text(u8"filaName : %s", m_pSprite.GetImageName().c_str());
-
 	int z = m_nZValue;
 	if (ImGui::InputInt("ZValue", &z))
 	{

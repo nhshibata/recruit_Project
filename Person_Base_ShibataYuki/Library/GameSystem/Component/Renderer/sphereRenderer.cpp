@@ -104,8 +104,10 @@ HRESULT CSphereRenderer::SetSphere(float radius)
 {
 	HRESULT hr = S_OK;
 	
-	if(!m_pBSphere)
-		m_pBSphere = std::make_shared<CSphere>();
+	if (!m_pBSphere)
+		m_pBSphere.reset();
+	m_pBSphere = std::make_shared<CSphere>();
+
 	m_fRadius = radius;
 	
 	// TODO: •ªŠ„”

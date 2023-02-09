@@ -204,6 +204,9 @@
     <ClInclude Include="..\Library\GameSystem\Shader\depthShadow.h">
       <Filter>ヘッダー ファイル\Shader</Filter>
     </ClInclude>
+    <ClInclude Include="..\Library\GameSystem\Shader\shaderAssets.h">
+      <Filter>ヘッダー ファイル\Shader</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\Library\GameSystem\components.cpp">
@@ -312,6 +315,9 @@
       <Filter>ソース ファイル\GameObject</Filter>
     </ClCompile>
     <ClCompile Include="..\Library\GameSystem\Shader\depthShadow.cpp">
+      <Filter>ソース ファイル\Shader</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Library\GameSystem\Shader\shaderAssets.cpp">
       <Filter>ソース ファイル\Shader</Filter>
     </ClCompile>
   </ItemGroup>

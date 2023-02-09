@@ -17,6 +17,7 @@
 
 #include <GraphicsSystem/DirectX/DXDevice.h>
 #include <GraphicsSystem/Manager/assetsManager.h>
+#include <GraphicsSystem/Manager/shaderManager.h>
 #include <DebugSystem/imGuiPackage.h>
 #include <CoreSystem/File/filePath.h>
 
@@ -29,7 +30,15 @@ using namespace MySpace::Graphics;
 //==========================================================
 CModelRenderer::CModelRenderer()
 	:m_modelName(std::string()), m_nVertex(0), m_pVertex(nullptr), m_nIndex(0), m_pIndex(nullptr)
-{	
+{
+	m_MeshMaterial = CMeshMaterial(
+		Vector4(1.0f, 1.0f, 1.0f, 1.0f),
+		Vector4(1.0f, 1.0f, 1.0f, 0.0f),	// wはﾃｸｽﾁｬ有無に使われている
+		Vector4(0.0f, 0.0f, 0.0f, 1.0f),	// wはpowerに使われている
+		Vector4(0.0f, 0.0f, 0.0f, 0.0f),
+		1.0f);
+	m_strPixelShader = "PS_Assimp";
+	m_strVertexShader = "VS_Assimp";
 }
 
 //==========================================================
@@ -38,7 +47,15 @@ CModelRenderer::CModelRenderer()
 CModelRenderer::CModelRenderer(std::shared_ptr<CGameObject> owner)
 	:CMeshRenderer(owner), m_modelName(CHARACTER_PATH(mukade_head.obj)),
 	m_pIndex(nullptr), m_pVertex(nullptr), m_nVertex(0), m_nIndex(0)
-{	
+{
+	m_MeshMaterial = CMeshMaterial(
+		Vector4(1.0f, 1.0f, 1.0f, 1.0f),
+		Vector4(1.0f, 1.0f, 1.0f, 0.0f),	// wはﾃｸｽﾁｬ有無に使われている
+		Vector4(0.0f, 0.0f, 0.0f, 1.0f),	// wはpowerに使われている
+		Vector4(0.0f, 0.0f, 0.0f, 0.0f),
+		1.0f);
+	m_strPixelShader = "PS_Assimp";
+	m_strVertexShader = "VS_Assimp";
 }
 
 //==========================================================
@@ -116,7 +133,7 @@ void CModelRenderer::Awake()
 //==========================================================
 void CModelRenderer::Init()
 {
-	//SetModel(m_modelName);
+	SetModel(m_modelName);
 	CMeshRenderer::Init();
 }
 
@@ -142,7 +159,6 @@ bool CModelRenderer::Draw()
 
 	//--- インスタンシング描画
 
-#if 1
 	// システム側に依頼を出し、まとめて描画してもらう
 	XMUINT4 vFlags(0, 0, 0, 0);
 	if (auto pMaterial = GetModel().lock()->GetMaterial(); pMaterial)
@@ -161,34 +177,13 @@ bool CModelRenderer::Draw()
 
 	SceneManager::CSceneManager::Get()->GetDrawSystem()->SetInstanchingModel(
 		m_modelName, 
+		m_strPixelShader,
+		m_strVertexShader,
 		RENDER_DATA(mtx, 
 					m_MeshMaterial.m_Ambient, m_MeshMaterial.m_Diffuse, m_MeshMaterial.m_Specular, m_MeshMaterial.m_Emissive,
 					vFlags));
 
 	return true;
-
-#else
-	//--- インスタンシング描画
-	// 自身と管理クラス以外が所持しているか確認
-	if (pModelMgr->GetModelCnt(m_modelName) > 2)
-	{
-		// システム側に依頼を出し、まとめて描画してもらう
-		SceneManager::CSceneManager::Get()->GetDrawSystem()->SetInstanchingModel(m_modelName, mtx);
-		return true;
-	}
-
-	//--- 不透明描画
-	CLight* pLight = CLight::GetMain();
-	if (!pLight)return false;
-
-	pLight->SetEnable(GetLightEnable());	// ライティング変更
-	
-	m_pModel->Draw(pDX->GetDeviceContext(), mtx, EByOpacity::eOpacityOnly);
-
-	pLight->SetEnable();	// ライティング有効
-
-	return true;
-#endif // 1
 
 }
 
@@ -200,6 +195,10 @@ bool CModelRenderer::DrawAlpha()
 {
 	auto pDX = Application::Get()->GetSystem<CDXDevice>();
 	XMFLOAT4X4 mtx = Transform()->GetWorldMatrix();
+
+	//--- シェーダー
+	auto pSM = Application::Get()->GetSystem<MySpace::Graphics::CAssetsManager>()->GetShaderManager();
+	pSM->CallBackFuncAndBind(m_strPixelShader, m_strVertexShader);
 
 	//--- 半透明部分描画
 	pDX->SetBlendState(static_cast<int>(EBlendState::BS_ALPHABLEND));
@@ -222,21 +221,15 @@ bool CModelRenderer::Draw(int mode)
 	if (!m_pModel)return false;
 	
 	auto pDX = Application::Get()->GetSystem<CDXDevice>();
-
 	XMFLOAT4X4 mtx = Transform()->GetWorldMatrix();
 	
-	//--- 不透明描画
-	/*CLight* pLight = CLight::GetMain();
-	if (!pLight)return false;*/
+	//--- シェーダー
+	auto pSM = Application::Get()->GetSystem<MySpace::Graphics::CAssetsManager>()->GetShaderManager();
+	pSM->CallBackFuncAndBind(m_strPixelShader, m_strVertexShader);
 	
-	m_pModel->Draw(pDX->GetDeviceContext(), mtx, EByOpacity(mode));
-
+	//--- 不透明描画
 	//--- 半透明部分描画
-	//pDX->SetBlendState(static_cast<int>(EBlendState::BS_ALPHABLEND));
-
-	//m_pModel->Draw(pDX->GetDeviceContext(), mtx, EByOpacity::eTransparentOnly);
-
-	//pDX->SetBlendState(static_cast<int>(EBlendState::BS_NONE));		// 光源有効
+	m_pModel->Draw(pDX->GetDeviceContext(), mtx, EByOpacity(mode));
 
 	return true;
 }

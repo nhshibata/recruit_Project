@@ -323,6 +323,8 @@ void CGameObjectManager::TagMove(std::string NextTag, std::weak_ptr<CGameObject>
 //==========================================================
 std::shared_ptr<CGameObject> CGameObjectManager::CreateGameObject(CGameObject* pObj)
 {
+	static int nCreateObjNum = 0;
+
 	std::shared_ptr<CGameObject> spObj;
 	//--- ｺﾋﾟｰ確認
 	if (pObj)
@@ -333,7 +335,7 @@ std::shared_ptr<CGameObject> CGameObjectManager::CreateGameObject(CGameObject* p
 	{
 		spObj = std::make_shared<CGameObject>();
 		// 初期名
-		spObj->SetName(std::string("GameObj_" + std::to_string(static_cast<int>(m_aGameObjList.size() + m_aAddObjList.size()) + 1)));
+		spObj->SetName(std::string("GameObj_" + std::to_string(++nCreateObjNum)));
 	}
 	
 	// 自分の所属シーンを教える

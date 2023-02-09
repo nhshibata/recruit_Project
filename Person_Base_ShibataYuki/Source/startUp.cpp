@@ -114,17 +114,23 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 		}
 #pragma warning(push)
 #pragma warning(disable:4100)
-		void* Load(CScene* scene, int mode)
+		void* Load(CScene* pScene, int mode)
 		{
-			scene->CreateEmptyScene();
+			if (0)
+			{
+				pScene->CreateEmptyScene();
 
+				//--- –¼‘OÝ’è
+				pScene->SetSceneName("StartScene");
+			}
+			else
+				CSceneManager::Get()->LoadScene(FORDER_DIR(Data/scene/GG_Shadow.scene));
 			/*auto obj = CGameObject::CreateObject().lock();
 			auto game = obj->AddComponent<Spell::CGameManager>();
 			game->GetOwner()->SetName("GameManager");*/
 			//game->Awake();
 
-			//--- –¼‘OÝ’è
-			scene->SetSceneName("StartScene");
+
 			return nullptr;
 		}
 #pragma warning(pop)

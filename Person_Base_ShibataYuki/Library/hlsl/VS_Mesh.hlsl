@@ -8,17 +8,8 @@
 // インスタンシング前提
 //=========================================================
 
-#include "common.hlsli"
+#include "meshCommon.hlsli"
 
-// パラメータ
-struct VS_INPUT {
-	float3	Position	: POSITION;
-	float3	Normal		: NORMAL;
-	float2	TexCoord	: TEXCOORD0;
-	float4	Diffuse		: COLOR0;
-    
-    uint id : SV_InstanceID; // インスタンスID
-};
 
 struct VS_OUTPUT {
 	float4	Position	: SV_Position;
@@ -36,20 +27,18 @@ VS_OUTPUT main(VS_INPUT input)
 	VS_OUTPUT output;
     uint id = input.id % MAX_WORLD_MATRIX;
 
-    float4 P = float4(input.Position, 1.0f);
-    float4 wPos = mul(P, g_Instancing[id].mWorld);
-    output.Position = mul(wPos,g_mVP);
-    output.Pos4PS = wPos.xyz;
-	//output.Normal = mul(float4(input.Normal, 0.0f), g_mWorld).xyz;
-    output.Normal = mul(float4(input.Normal, 0.0f), g_Instancing[id].mWorld).xyz;
-	//output.Normal = input.Normal.xyz;
-	output.TexCoord = mul(float4(input.TexCoord, 0.0f, 1.0f), g_mTexture).xy;
-	output.Diffuse = input.Diffuse;
+    MeshOutput work = CalcMesh(input, g_Instancing[id].mWorld, g_view, g_proj);
+    output.Position = work.Position;
+    output.Pos4PS = work.Pos4PS;
+    output.Normal = work.Normal;
+    output.TexCoord = work.TexCoord;
+    output.Diffuse = work.Diffuse;
 
      // 太陽用頂点計算
-    float4 sunPos = mul(float4(input.Position.xyz, 1.0f), g_mWorld);
-    sunPos = mul(sunPos, sunView);
-    sunPos = mul(sunPos, sunProj);
+    float4 sunPos = float4(input.Position.xyz, 1.0f);
+    sunPos = mul(sunPos, g_Instancing[id].mWorld);
+    sunPos = mul(sunPos, g_sunView);
+    sunPos = mul(sunPos, g_sunProj);
     output.SunPos = sunPos;
     
     output.id = id;

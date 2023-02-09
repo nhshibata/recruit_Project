@@ -14,6 +14,7 @@
 #include <Application/Application.h>
 #include <GraphicsSystem/Manager/shaderManager.h>
 #include <GraphicsSystem/Manager/assetsManager.h>
+#include <GraphicsSystem/Shader/shaderStruct.h>
 
 using namespace MySpace::Game;
 using namespace MySpace::Graphics;
@@ -45,22 +46,22 @@ void CDepthShadow::InitShader()
 	// 太陽
 	auto sm = Application::Get()->GetSystem<CAssetsManager>()->GetShaderManager();
 	ConstantBufferSharedPtr sunCB = std::make_shared<CConstantBuffer>();
-	if (FAILED(sunCB->Make(sizeof(DirectX::XMFLOAT4X4) * 2, 4, CConstantBuffer::EType::Vertex)))
+	if (FAILED(sunCB->Make(sizeof(SHADER_SUN), 6, CConstantBuffer::EType::Vertex)))
 	{
 
 	}
 	else
-		sm->SetCB(m_LightCB, sunCB);
+		sm->SetCB(NAME_TO(SHADER_SUN), sunCB);
 	
 	// 深度書き込み用
-	ConstantBufferSharedPtr writeCB = std::make_shared<CConstantBuffer>();
+	/*ConstantBufferSharedPtr writeCB = std::make_shared<CConstantBuffer>();
 	if (FAILED(writeCB->Make(sizeof(DirectX::XMFLOAT4X4) * 3, 5, CConstantBuffer::EType::Vertex)))
 	{
 
 	}
 	else
 		sm->SetCB(m_DepthWriteCB, writeCB);
-
+*/
 
 	PixelShaderSharedPtr ps = std::make_shared<CPixelShader>();
 	if (FAILED(ps->Make(FORDER_DIR(Data/shader/PS_DepthWrite.cso))))
@@ -68,7 +69,7 @@ void CDepthShadow::InitShader()
 
 	}
 	else
-		sm->SetPS(SHADER_NAME_PSVS,ps);
+		sm->SetPS("PS_DepthWrite",ps);
 
 	VertexShaderSharedPtr vs = std::make_shared<CVertexShader>();
 	const D3D11_INPUT_ELEMENT_DESC layout[] =
@@ -82,7 +83,7 @@ void CDepthShadow::InitShader()
 
 	}
 	else
-		sm->SetVS(SHADER_NAME_PSVS, vs);
+		sm->SetVS("VS_DepthWrite", vs);
 }
 
 //=========================================================
@@ -110,49 +111,48 @@ void CDepthShadow::Begin()
 	Application::Get()->GetSystem<CDXDevice>()->SwitchRender(*view, m_pDepthStencil->GetView());
 
 	//--- 定数バッファ書き込み
-	XMFLOAT4X4 mat[3];
+	XMFLOAT4X4 mat[4];
 	auto sm = Application::Get()->GetSystem<CAssetsManager>()->GetShaderManager();
 
 	// ps,vs設定
-	sm->BindPS(SHADER_NAME_PSVS);
-	sm->BindVS(SHADER_NAME_PSVS);
+	sm->BindPS("PS_DepthWrite");
+	sm->BindVS("VS_DepthWrite");
 
 	//--- ｶﾒﾗ
 	auto pCam = CCamera::GetMain();
 	mat[0] = pCam->Transform()->GetLocalMatrix().Transpose();
-	//XMStoreFloat4x4(&mat[0], XMMatrixIdentity());
-	//mat[0] = pCam->GetViewMatrix().Transpose();
 	mat[1] = pCam->GetViewMatrix().Transpose();
 	//mat[2] = pCam->GetProjMatrix().Transpose();
 	mat[2] = CCamera::CalcProjMatrix(45.0f, CScreen::GetWidth() / CScreen::GetHeight(), 10.2f, 100.0f).Transpose();
+	XMStoreFloat4x4(&mat[3], XMMatrixIdentity()); // 使わないdummy
 	
 	//--- ライト
 	CDirectionalLight* light = dynamic_cast<CDirectionalLight*>(CLight::GetMain());
-	auto sunPos = light->Transform()->GetPos();
+	if (!light)
+		return;
+
+	//auto sunPos = light->Transform()->GetPos();
 	auto dir = light->GetDir();
 
-	//DirectX::XMStoreFloat4x4(&mat[0], DirectX::XMMatrixIdentity());
-	mat[0] = light->Transform()->GetLocalMatrix().Transpose();
 	DirectX::XMMATRIX sunView = DirectX::XMMatrixLookAtLH(
-		DirectX::XMVectorSet(sunPos.x, sunPos.y, sunPos.z, 0),
+		//DirectX::XMVectorSet(sunPos.x, sunPos.y, sunPos.z, 0),
+		DirectX::XMVectorSet(50, 300, -3, 0),
 		DirectX::XMVectorSet(dir.x, dir.y, dir.z, 0),
 		DirectX::XMVectorSet(0, 1, 0, 0)
 	);
 	// 平行投影
 	DirectX::XMMATRIX sunProj = DirectX::XMMatrixOrthographicLH(
 		//5.0f, 5.0f * (9.0f / 16.0f), 0.2f, 1000.0f
-		CScreen::GetWidth(), CScreen::GetHeight(), 0.2f, 100.0f
+		CScreen::GetWidth()*5, CScreen::GetHeight()*5, 0.2f, 1000.0f/2	// 全体の影マップを作るには、Sceneの利用している大きさでなければ
+		
 	);
-	
-	DirectX::XMStoreFloat4x4(&mat[1], DirectX::XMMatrixTranspose(sunView));
-	DirectX::XMStoreFloat4x4(&mat[2], DirectX::XMMatrixTranspose(sunProj));
 
-	sm->CBWrite(m_DepthWriteCB, mat);
-	sm->BindCB(m_DepthWriteCB, 5);
-
+	SHADER_SUN sunMat;
+	DirectX::XMStoreFloat4x4(&sunMat.sunView, DirectX::XMMatrixTranspose(sunView));
+	DirectX::XMStoreFloat4x4(&sunMat.sunProj, DirectX::XMMatrixTranspose(sunProj));
 	// 1,2番目を渡す
-	sm->CBWrite(m_LightCB, &mat[1]);
-	sm->BindCB(m_LightCB, 4);
+	sm->CBWrite(NAME_TO(SHADER_SUN), &sunMat);
+	sm->BindCB(NAME_TO(SHADER_SUN));
 
 }
 
@@ -174,11 +174,4 @@ void CDepthShadow::SetUpTexture(UINT slot)
 	// model 4? mesh 1?
 	auto pTex = m_pRenderTarget->GetSRV();
 	Application::Get()->GetSystem<CDXDevice>()->GetDeviceContext()->PSSetShaderResources(slot, 1, &pTex);
-}
-
-
-ConstantBufferSharedPtr CDepthShadow::GetCB()
-{
-	auto sm = Application::Get()->GetSystem<CAssetsManager>()->GetShaderManager();
-	return sm->GetCB(m_DepthWriteCB);
 }

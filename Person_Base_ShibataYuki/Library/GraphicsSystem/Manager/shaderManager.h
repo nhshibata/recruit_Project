@@ -11,6 +11,7 @@
 
 //--- インクルード部
 #include <d3d11.h>
+#include <functional>
 #include <CoreSystem/Math/MyMath.h>
 #include <CoreSystem/Util/stl.h>
 
@@ -21,6 +22,7 @@
 #include <GraphicsSystem/Shader/hullShader.h>
 #include <GraphicsSystem/Shader/meshBuffer.h>
 
+//--- 定数定義
 #define CSO_PATH(name)		FORDER_DIR(Data/shader/name)
 
 namespace MySpace
@@ -96,6 +98,7 @@ namespace MySpace
 			HullShaderMap m_aHullMap;
 			DomainShaderMap m_aDomainMap;
 			float m_fTessellationAmount;
+			std::map<std::string, std::function<void()>> m_aCallbackFunc; // 名前で登録された関数の呼び出し用
 
 		public:
 			//--- メンバ関数
@@ -106,6 +109,11 @@ namespace MySpace
 			void Uninit();
 			void Update();
 
+			// *@コールバック設定
+			// *@void(void)型静的関数のみ
+			void AddFunction(std::string name, std::function<void(void)> func);
+			// *@コールバック呼び出し
+			void CallBackFuncAndBind(std::string ps, std::string vs);
 
 			// *@PSバインド
 			void BindPS(std::string name, UINT slot = 0);
@@ -168,11 +176,18 @@ namespace MySpace
 				return m_aVtxMap[name];
 			}
 
+#ifdef BUILD_MODE
+			// *@ps取得
+			std::string ImGuiGetPixelShader(std::string preview);
+			// *@vs取得
+			std::string ImGuiGetVertexShader(std::string preview);
+#endif // BUILD_MODE
+
+
 			// *@今使ってない
 			bool SetShaderParameters(XMMATRIX worldMatrix, XMMATRIX viewMatrix, XMMATRIX projectionMatrix, float tessellationAmount);
 			void Render(EShaderType, std::string cb, std::string vs, std::string ps, std::string mb = "");
 			void EndRender();
-			void Load();
 			//// *@使っていない
 			//inline void SetTessellation(std::string name, HullShaderSharedPtr hs, DomainShaderSharedPtr ds)
 			//{ 

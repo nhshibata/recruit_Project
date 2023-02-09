@@ -76,11 +76,12 @@ VS_OUTPUT main(VS_INPUT input)
 	VS_OUTPUT output;
 	SKIN vSkinned = SkinVert(input);
 
-    matrix WVP = mul(g_mtxWorld, g_mtxVP); // ﾜｰﾙﾄﾞ×ビュー×プロジェクション作成
-	output.Pos = mul(vSkinned.Pos, WVP);
-	output.Tex = mul(float4(input.Tex, 0.0f, 1.0f), g_mtxTexture).xy;
-	output.Normal = mul(vSkinned.Norm, (float3x3)g_mtxWorld);
-	output.PosForPS = mul(vSkinned.Pos, g_mtxWorld).xyz;
+    matrix VP = mul(g_view, g_proj); 
+    // ﾜｰﾙﾄﾞ×ビュー×プロジェクション作成
+    output.Pos = mul(vSkinned.Pos, mul(g_world, VP));
+	output.Tex = mul(float4(input.Tex, 0.0f, 1.0f), g_mTexture).xy;
+	output.Normal = mul(vSkinned.Norm, (float3x3)g_world);
+	output.PosForPS = mul(vSkinned.Pos, g_world).xyz;
 
 	return output;
 }

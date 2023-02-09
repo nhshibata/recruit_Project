@@ -21,10 +21,9 @@ namespace MySpace
 {
 	namespace Graphics
 	{
-		constexpr const char* CB_NAME_INSTANCE_MATRIX = "InstancingMatrix";
-		constexpr const char* CB_NAME_INSTANCE_MATERIAL = "InstancingMaterial";
+		//constexpr const char* CB_NAME_INSTANCE_MATRIX = "InstancingMatrix";
+		//constexpr const char* CB_NAME_INSTANCE_MATERIAL = "InstancingMaterial";
 		//using INSTANCHING_DATA = DirectX::XMFLOAT4X4;
-
 
 
 		struct RENDER_DATA_BASE
@@ -85,7 +84,7 @@ namespace MySpace
 		};
 
 		// “n‚·‚æ‚¤
-		struct INSTANCHING_DATA
+		struct INSTANCHING_MATERIAL
 		{
 			RENDER_DATA_BASE renderData[MAX_WORLD_MATRIX];
 		};
@@ -94,6 +93,6 @@ namespace MySpace
 
 }
 
-using MySpace::Graphics::INSTANCHING_DATA;
+using MySpace::Graphics::INSTANCHING_MATERIAL;
 
 #endif // !__INSTANCING_DATA_H__

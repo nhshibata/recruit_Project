@@ -68,7 +68,13 @@ HRESULT CSceneManager::Init()
 	if (m_pCurrentScene.lock())
 		m_pCurrentScene.lock()->Init(m_pCurrentScene);
 	else
-		CreateNewScene<CScene>("Title");
+	{
+		//CreateNewScene<CScene>("Title");
+		auto newScene = NewScene("Title");
+		// Scene‚ª“r’†‚Å’Ç‰Á‚³‚ê‚Ä‚¢‚È‚¢
+		if (!m_pCurrentScene.lock())
+			m_pCurrentScene = newScene;
+	}
 
 	return hr;
 }

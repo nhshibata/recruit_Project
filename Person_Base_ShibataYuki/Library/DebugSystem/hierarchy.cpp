@@ -79,9 +79,16 @@ void CHierachy::Update(ImGuiManager* manager)
 		//--- ƒV[ƒ“
 		if (ImGui::BeginMenu("Scene File"))
 		{
-			if (ImGui::MenuItem("New Scene"))
+			if (ImGui::MenuItem("New empty Scene"))
 			{
 				CSceneManager::Get()->CreateNewScene<CScene>();
+				//auto newScene = CSceneManager::Get()->CreateNewScene<CScene>();
+				//CSceneManager::Get()->SetActiveScene(CSceneManager::Get()->GetSceneByName(newScene->GetSceneName()));
+			}
+			if (ImGui::MenuItem("New Scene"))
+			{
+				auto newScene = CSceneManager::Get()->CreateNewScene<CScene>();
+				newScene->CreateEmptyScene();
 			}
 			ImGui::Separator();
 			if (ImGui::MenuItem("Load/Save"))

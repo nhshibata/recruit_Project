@@ -56,7 +56,7 @@ namespace MySpace
 
 		public:
 			//--- メンバ関数
-			CMeshMaterial():m_Power(0){};
+			CMeshMaterial():m_Diffuse(1,1,1,1), m_Ambient(1,1,1,0),m_Power(0){};
 			CMeshMaterial(Vector4 diff, Vector4 amb, Vector4 spe, Vector4 emi, float pow)
 			{
 				m_Diffuse = diff;
@@ -121,9 +121,6 @@ namespace MySpace
 			//static inline ID3D11PixelShader* m_pShadowPS;		// ピクセルシェーダ
 			//static inline ID3D11InputLayout* m_pShadowIL;		// 頂点フォーマット
 			//static inline ID3D11Buffer* m_pConstantBufferI;
-		public:
-			static constexpr const char* SHADER_NAME_MESH_PSVS = "Mesh";						// シェーダー登録名PS,VS共通
-			static constexpr const char* SHADER_NAME_INSTANCING_MESH_PSVS = "InstancingMesh";	// シェーダー登録名PS,VS共通
 
 		public:
 			//--- メンバ関数

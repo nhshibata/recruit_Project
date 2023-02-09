@@ -50,8 +50,7 @@ namespace MySpace
 
 		public:
 			//--- “› ﬁä÷êî
-			CSphereCollision() :m_fRadius(1)
-			{};
+			CSphereCollision();
 			CSphereCollision(std::shared_ptr<CGameObject> owner, float radius = 1.0f);
 			~CSphereCollision();
 

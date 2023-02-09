@@ -69,11 +69,11 @@ void CMyGizmo::ViewGizmo(ImGuiManager* manager, const CCamera& camera, CTransfor
 	//ImGuizmo::SetDrawlist();
 	
 	//--- ó‘Ô•ÏX
-	if (GetAsyncKeyState('W') && GetAsyncKeyState(VK_LMENU))
+	if (GetAsyncKeyState('W') && GetAsyncKeyState(VK_LSHIFT))
 		m_CurrentGizmoOperation = ImGuizmo::TRANSLATE;
-	if (GetAsyncKeyState('E') && GetAsyncKeyState(VK_LMENU))
+	if (GetAsyncKeyState('E') && GetAsyncKeyState(VK_LSHIFT))
 		m_CurrentGizmoOperation = ImGuizmo::ROTATE;
-	if (GetAsyncKeyState('R') && GetAsyncKeyState(VK_LMENU)) // r Key
+	if (GetAsyncKeyState('R') && GetAsyncKeyState(VK_LSHIFT)) // r Key
 		m_CurrentGizmoOperation = ImGuizmo::SCALE;
 
 	XMFLOAT4X4 oldMatrix = editTransform->GetWorldMatrix();
