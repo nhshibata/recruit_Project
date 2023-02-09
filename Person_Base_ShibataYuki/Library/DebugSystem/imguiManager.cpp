@@ -145,7 +145,7 @@ void ImGuiManager::Uninit()
 void ImGuiManager::Update() 
 {
 	// ON/OFF
-	if (CInput::GetKeyTrigger(VK_I) && CInput::GetKeyTrigger(VK_LMENU))
+	if (CInput::GetKeyTrigger(VK_I) && CInput::GetKeyTrigger(VK_LSHIFT))
 	{
 		m_bEditFlg ^= true;
 		if(m_pDebugCamera.lock())
@@ -154,7 +154,7 @@ void ImGuiManager::Update()
 	if (!m_bEditFlg)
 		return;
 
-	if (CInput::GetKeyTrigger(VK_P) && CInput::GetKeyTrigger(VK_LMENU))
+	if (CInput::GetKeyTrigger(VK_P) && CInput::GetKeyTrigger(VK_LSHIFT))
 		m_bSceneRender ^= true;
 
 	//--- imGuiの更新処理
@@ -345,7 +345,7 @@ void ImGuiManager::Pause()
 	ImGui::SameLine();
 
 	// デバッグポーズ処理
-	if (ImGui::Button("STOP") || CInput::GetKeyTrigger(VK_L) && CInput::GetKeyTrigger(VK_LMENU))
+	if (ImGui::Button("STOP") || CInput::GetKeyTrigger(VK_L) && CInput::GetKeyTrigger(VK_LSHIFT))
 	{
 		m_bPause ^= true;
 	}
@@ -354,7 +354,7 @@ void ImGuiManager::Pause()
 	if (m_bPause)
 	{
 		ImGui::SameLine();
-		if (ImGui::Button("STEP") || CInput::GetKeyTrigger(VK_O) && CInput::GetKeyTrigger(VK_LMENU))
+		if (ImGui::Button("STEP") || CInput::GetKeyTrigger(VK_O) && CInput::GetKeyTrigger(VK_LSHIFT))
 		{
 			if (!m_bOneFlame)
 			{

@@ -259,10 +259,6 @@ private:
 #endif // INSTANCE
 
 public:
-	static constexpr const char* SHADER_NAME_INSTANCING_MODEL_PSVS = "InstancingModel";	// シェーダー登録名
-	static constexpr const char* SHADER_NAME_MODEL_PSVS = "Model";						// シェーダー登録名
-
-public:
 	CAssimpModel();
 	virtual ~CAssimpModel();
 

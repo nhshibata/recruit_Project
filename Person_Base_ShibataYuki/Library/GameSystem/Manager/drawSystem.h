@@ -89,6 +89,9 @@ namespace MySpace
 			// *@3Dインスタンシング描画
 			void Draw3D();
 			
+		private:
+			const std::vector<std::string> GetPSVSName(const std::string name);
+
 		public:
 			CDrawSystem();
 			~CDrawSystem();
@@ -111,13 +114,10 @@ namespace MySpace
 			std::weak_ptr<CRenderer> ExecutSystem(int idx);
 
 			// *@インスタンシング描画のために情報を格納する
-			inline void SetInstanchingModel(std::string name, MySpace::Graphics::RENDER_DATA data)
-			{
-				m_aInstancingModelMap[name].push_back(data);
-			}
+			void SetInstanchingModel(std::string name, std::string ps, std::string vs, MySpace::Graphics::RENDER_DATA data);
 			
 			// *@インスタンシング描画のために情報を格納する
-			void SetInstanchingMesh(std::string name, MySpace::Graphics::RENDER_DATA data, CMesh* mesh);
+			void SetInstanchingMesh(std::string name,std::string ps,std::string vs, MySpace::Graphics::RENDER_DATA data, CMesh* mesh);
 
 			// *@所持リスト
 			_NODISCARD inline std::vector<std::weak_ptr<CRenderer>> GetList()

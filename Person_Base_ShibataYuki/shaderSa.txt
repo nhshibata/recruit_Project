@@ -1,0 +1,296 @@
+float3 L = normalize(-g_lightDir.xyz);					// 光源へのベクトル
+		float3 N = normalize(input.Normal);						// 法線ベクトル
+		
+		float d = dot(N, L);
+		float4 ToonColor = g_texToon.Sample(g_sampler, float2(1 - d, 0));
+		
+		
+		
+//==========================================================
+nega
+
+float4 color = tex;
+float3 negaColor;
+negaColor.r = 1.0f - color.r;
+lerp(color, negaColor, rate);
+
+//==========================================================
+
+cbuffer Screen
+{
+    float2 g_screenSize;
+    float2 scrDummy;
+};
+
+Texture2D Tex : register(t0);
+float4 main(PS_IN pin)
+{
+    float4 color = Tex.Sample(g_sampler, pin.uv);
+
+    //--- 基準テクセル + 近傍8テクセルの平均を計算する
+    
+    // 2.5テクセルずらすためのUVを求める
+    float2 offset = float2(1.5f / g_screenSize.x, 1.5f / g_screenSize.y);
+    
+    // 右のテクセルのカラーをサンプル
+    color += Tex.Sample(g_sampler, pin.uv + float2(offset.x, 0.0f));
+    // 左のテクセルのカラーをサンプル
+    color += Tex.Sample(g_sampler, pin.uv + float2(-offset.x, 0.0f));
+    // 下のテクセルのカラーをサンプル
+    color += Tex.Sample(g_sampler, pin.uv + float2(0.0f, offset.y));
+    // 上のテクセルのカラーをサンプル
+    color += Tex.Sample(g_sampler, pin.uv + float2(0.0f, -offset.y));
+    // 右下のテクセルのカラーをサンプル
+    color += Tex.Sample(g_sampler, pin.uv + float2(offset.x, offset.y));
+    // 右上のテクセルのカラーをサンプル
+    color += Tex.Sample(g_sampler, pin.uv + float2(offset.x, -offset.y));
+    // 左下のテクセルのカラーをサンプル
+    color += Tex.Sample(g_sampler, pin.uv + float2(-offset.x, offset.y));
+    // 左上のテクセルのカラーをサンプル
+    color += Tex.Sample(g_sampler, pin.uv + float2(-offset.x, -offset.y));
+    
+    // 近傍8テクセルの平均なので、9で除算
+    color /= 9.0f;
+    
+    return color;
+}
+//=========================================================
+オフスクリーンRTに変更
+オフスクリーン描画
+輝度抽出用のRTに変更
+ガウスブラー処理
+ﾒｲﾝRT
+オンスクリーン描画
+スクリーン描画
+オフスクリーン描画をブラーかけた画像を加算合成して描画
+
+
+
+
+
+//=========================================================
+レンダリング
+const int NUM_WEIGHTS = 8;
+float weight[NUM_WEITGHTS];
+// 重みテーブル
+CalcWeightTableFromGaoussiam(
+	weight,
+	NUM_WEIGHTS,
+	8.0f);
+
+void CalcWeightsTableFromGaussian(float* weightsTbl, int sizeOfWeightsTbl, float sigma)
+{
+    // 重みの合計を記録する変数を定義する
+    float total = 0;
+
+    // ここからガウス関数を用いて重みを計算している
+    // ループ変数のxが基準テクセルからの距離
+    for (int x = 0; x < sizeOfWeightsTbl; x++)
+    {
+        weightsTbl[x] = expf(-0.5f * (float)(x * x) / sigma);
+        total += 2.0f * weightsTbl[x];
+    }
+
+    // 重みの合計で除算することで、重みの合計を1にしている
+    for (int i = 0; i < sizeOfWeightsTbl; i++)
+    {
+        weightsTbl[i] /= total;
+    }
+}
+
+
+// 通常描画後
+
+// 横ブラー用レンダー
+(
+	640, // mainRTの横幅半分
+	720, // mainRTと同じ
+	float3
+)
+ポリゴン描画後
+// 縦ブラー
+(
+	640, // mainRTの横幅半分
+	360, // mainRTと同じ
+	float3	
+)
+再度ポリゴン描画
+
+struct PS_BLUR_IN
+{
+    float4 pos : SV_Position;
+    float2 uv : TEXCOORD0;
+};
+
+
+
+Texture2D originTex : register(t0);
+Texture2D sceneTex : register(t1);
+// 横ブラー頂点
+struct VSInput
+{
+    float4 pos : POSITION;
+    float2 uv : TEXCOORD0;
+};
+struct PSInput
+{
+    float4 pos : SV_POSITION;
+    float2 uv : TEXCOORD0;
+};
+struct PS_BlurInput
+{
+    float4 pos : SV_POSITION;
+    float4 tex0 : TEXCOORD0;
+    float4 tex1 : TEXCOORD1;
+    float4 tex2 : TEXCOORD2;
+    float4 tex3 : TEXCOORD3;
+    float4 tex4 : TEXCOORD4;
+    float4 tex5 : TEXCOORD5;
+    float4 tex6 : TEXCOORD6;
+    float4 tex7 : TEXCOORD7;
+};
+
+cbuffer Blur : register(b1)
+{
+    float4 g_weight[2]; // 重み
+}
+PS_BlurInput main(VSInput vin)
+{
+    PS_BlurInput vout;
+    
+    // ﾃｸｽﾁｬ
+    float2 texSize;
+    float level;
+    sceneTex.GetDimensions(0, texSize.x, texSize.y, level);
+    
+    // UV保存
+    float2 tex = vin.uv;
+    
+    // テクセルからU座標を1テクセルずらすためのオフセット計算
+    vout.tex0.xy = float2(1.0f / texSize.x, 0.0f);
+    // テクセルからU座標を3テクセルずらすためのオフセット計算
+    vout.tex1.xy = float2(3.0f / texSize.x, 0.0f);
+    // テクセルからU座標を5テクセルずらすためのオフセット計算
+    vout.tex2.xy = float2(5.0f / texSize.x, 0.0f);
+    // テクセルからU座標を7テクセルずらすためのオフセット計算
+    vout.tex3.xy = float2(7.0f / texSize.x, 0.0f);
+    // テクセルからU座標を9テクセルずらすためのオフセット計算
+    vout.tex4.xy = float2(9.0f / texSize.x, 0.0f);
+    // テクセルからU座標を11テクセルずらすためのオフセット計算
+    vout.tex5.xy = float2(11.0f / texSize.x, 0.0f);
+    // テクセルからU座標を13テクセルずらすためのオフセット計算
+    vout.tex6.xy = float2(13.0f / texSize.x, 0.0f);
+    // テクセルからU座標を15テクセルずらすためのオフセット計算
+    vout.tex7.xy = float2(15.0f / texSize.x, 0.0f);
+    
+    // オフセットに-1を掛けてマイナス方向のオフセットも計算
+    vout.tex0.zw = vout.tex0.xy * -1.0f;
+    vout.tex1.zw = vout.tex1.xy * -1.0f;
+    vout.tex2.zw = vout.tex2.xy * -1.0f;
+    vout.tex3.zw = vout.tex3.xy * -1.0f;
+    vout.tex4.zw = vout.tex4.xy * -1.0f;
+    vout.tex5.zw = vout.tex5.xy * -1.0f;
+    vout.tex6.zw = vout.tex6.xy * -1.0f;
+    vout.tex7.zw = vout.tex7.xy * -1.0f;
+    
+    // オフセットにテクセルのUV座標を足し算して、実際のサンプリンするUV座標に変換
+    vout.tex0 += float4(tex, tex);
+    vout.tex1 += float4(tex, tex);
+    vout.tex2 += float4(tex, tex);
+    vout.tex3 += float4(tex, tex);
+    vout.tex4 += float4(tex, tex);
+    vout.tex5 += float4(tex, tex);
+    vout.tex6 += float4(tex, tex);
+    vout.tex7 += float4(tex, tex);
+ 
+    return vout;
+}
+
+// 縦ブラー
+PS_BlurInput main(VSInput vin)
+{
+    PS_BlurInput vout;
+    
+    // ﾃｸｽﾁｬ
+    float2 texSize;
+    float level;
+    sceneTex.GetDimensions(0, texSize.x, texSize.y, level);
+    
+    // UV保存
+    float2 tex = vin.uv;
+    
+    // テクセルからU座標を1テクセルずらすためのオフセット計算
+    vout.tex0.xy = float2(0.0f, 1.0f / texSize.x);
+    // テクセルからU座標を3テクセルずらすためのオフセット計算
+    vout.tex1.xy = float2(0.0f, 3.0f / texSize.x);
+    // テクセルからU座標を5テクセルずらすためのオフセット計算
+    vout.tex2.xy = float2(0.0f, 5.0f / texSize.x);
+    // テクセルからU座標を7テクセルずらすためのオフセット計算
+    vout.tex3.xy = float2(0.0f, 7.0f / texSize.x);
+    // テクセルからU座標を9テクセルずらすためのオフセット計算
+    vout.tex4.xy = float2(0.0f, 9.0f / texSize.x);
+    // テクセルからU座標を11テクセルずらすためのオフセット計算
+    vout.tex5.xy = float2(0.0f, 11.0f / texSize.x);
+    // テクセルからU座標を13テクセルずらすためのオフセット計算
+    vout.tex6.xy = float2(0.0f, 13.0f / texSize.x);
+    // テクセルからU座標を15テクセルずらすためのオフセット計算
+    vout.tex7.xy = float2(0.0f, 15.0f / texSize.x);
+    
+    // オフセットに-1を掛けてマイナス方向のオフセットも計算
+    vout.tex0.zw = vout.tex0.xy * -1.0f;
+    vout.tex1.zw = vout.tex1.xy * -1.0f;
+    vout.tex2.zw = vout.tex2.xy * -1.0f;
+    vout.tex3.zw = vout.tex3.xy * -1.0f;
+    vout.tex4.zw = vout.tex4.xy * -1.0f;
+    vout.tex5.zw = vout.tex5.xy * -1.0f;
+    vout.tex6.zw = vout.tex6.xy * -1.0f;
+    vout.tex7.zw = vout.tex7.xy * -1.0f;
+    
+    // オフセットにテクセルのUV座標を足し算して、実際のサンプリンするUV座標に変換
+    vout.tex0 += float4(tex, tex);
+    vout.tex1 += float4(tex, tex);
+    vout.tex2 += float4(tex, tex);
+    vout.tex3 += float4(tex, tex);
+    vout.tex4 += float4(tex, tex);
+    vout.tex5 += float4(tex, tex);
+    vout.tex6 += float4(tex, tex);
+    vout.tex7 += float4(tex, tex);
+ 
+    return vout;
+}
+
+// ps
+// 横ブラー
+float4 main(PS_BlurInput pin)
+{
+    float4 color;
+    
+    // テクセルから+に8テクセル、重みつきでサンプル
+    color = g_weight[0].x * originTex.Sample(g_sampler, pin.tex0.xy);  
+    color += g_weight[0].y * originTex.Sample(g_sampler, pin.tex1.xy); 
+    color += g_weight[0].z * originTex.Sample(g_sampler, pin.tex2.xy); 
+    color += g_weight[0].w * originTex.Sample(g_sampler, pin.tex3.xy); 
+    color += g_weight[1].x * originTex.Sample(g_sampler, pin.tex4.xy);  
+    color += g_weight[1].y * originTex.Sample(g_sampler, pin.tex5.xy); 
+    color += g_weight[1].z * originTex.Sample(g_sampler, pin.tex6.xy); 
+    color += g_weight[1].w * originTex.Sample(g_sampler, pin.tex7.xy); 
+    
+    // テクセルから-に8テクセル、重みつきでサンプル
+    color += g_weight[0].x * originTex.Sample(g_sampler, pin.tex0.zw);
+    color += g_weight[0].y * originTex.Sample(g_sampler, pin.tex1.zw);
+    color += g_weight[0].z * originTex.Sample(g_sampler, pin.tex2.zw);
+    color += g_weight[0].w * originTex.Sample(g_sampler, pin.tex3.zw);
+    color += g_weight[1].x * originTex.Sample(g_sampler, pin.tex4.zw);
+    color += g_weight[1].y * originTex.Sample(g_sampler, pin.tex5.zw);
+    color += g_weight[1].z * originTex.Sample(g_sampler, pin.tex6.zw);
+    color += g_weight[1].w * originTex.Sample(g_sampler, pin.tex7.zw);
+
+    return float4(color.rgb, 1.0f);
+}
+
+
+
+
+
+
+

@@ -19,15 +19,8 @@ using namespace MySpace::Graphics;
 // コンストラクタ
 //==========================================================
 CMeshRenderer::CMeshRenderer()
-	:m_vCenter(0, 0, 0), m_bLightEnable(false), m_fBSRadius(1)
-	, m_nStaticMode(static_cast<int>(EStaticMode::NONE)), m_bShadow(false)
 {
-	m_MeshMaterial = CMeshMaterial(
-		Vector4(0.0f, 1.0f, 0.0f, 0.3f),
-		Vector4(0.0f, 1.0f, 0.0f, 0.0f),
-		Vector4(0.0f, 0.0f, 0.0f, 1.0f),
-		Vector4(0.0f, 0.0f, 0.0f, 1.0f),
-		1.0f);
+
 }
 
 //==========================================================
@@ -43,6 +36,9 @@ CMeshRenderer::CMeshRenderer(std::shared_ptr<CGameObject> owner)
 		Vector4(0.0f, 0.0f, 0.0f, 1.0f),	// wはpowerに使われている
 		Vector4(0.0f, 0.0f, 0.0f, 1.0f),
 		1.0f);
+	// デフォルトシェーダー
+	m_strPixelShader = "PS_Mesh";
+	m_strVertexShader = "VS_Mesh";
 }
 
 //==========================================================
@@ -100,6 +96,8 @@ void CMeshRenderer::SetInstancing(CMesh* mesh, std::string name, DirectX::XMUINT
 	{
 		sys->SetInstanchingMesh(
 			name,
+			m_strPixelShader,
+			m_strVertexShader,
 			RENDER_DATA(Transform()->GetWorldMatrix(),
 						m_MeshMaterial.m_Ambient, m_MeshMaterial.m_Diffuse,
 						spec, m_MeshMaterial.m_Emissive,
@@ -110,6 +108,8 @@ void CMeshRenderer::SetInstancing(CMesh* mesh, std::string name, DirectX::XMUINT
 	{
 		sys->SetInstanchingMesh(
 			std::string(std::to_string(mesh->GetIndexNum()) + std::to_string(mesh->GetMaterial()->GetFloat())),
+			m_strPixelShader,
+			m_strVertexShader,
 			RENDER_DATA(Transform()->GetWorldMatrix(),
 						m_MeshMaterial.m_Ambient, m_MeshMaterial.m_Diffuse,
 						spec, m_MeshMaterial.m_Emissive,
@@ -123,6 +123,8 @@ void CMeshRenderer::SetInstancing(CMesh* mesh, std::string name, DirectX::XMUINT
 
 void CMeshRenderer::ImGuiDebug()
 {
+	CRenderer::ImGuiDebug();
+
 	ImGui::Text("BSphere:%f", GetBSRadius());
 	ImGui::Checkbox("Static", (bool*)&m_nStaticMode);
 	ImGui::SameLine();

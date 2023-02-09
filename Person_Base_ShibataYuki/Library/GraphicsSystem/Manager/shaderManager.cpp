@@ -11,11 +11,16 @@
 //--- インクルード部
 #include <Application/Application.h>
 #include <GraphicsSystem/Manager/shaderManager.h>
+#include <GraphicsSystem/Shader/shaderStruct.h>
 #include <GameSystem/Component/Camera/camera.h>
+#include <GameSystem/Component/Light/directionalLight.h>
+
 #include <d3dcompiler.h>
 #include <DirectXMath.h>
 
 #include <fstream>
+#include <DebugSystem/imGuiPackage.h>
+
 
 using namespace MySpace::Graphics;
 
@@ -62,60 +67,69 @@ CShaderManager::CShaderManager()
 HRESULT CShaderManager::Init()
 {
 	HRESULT hr = S_OK;
-	auto device = Application::Get()->GetDevice();
+	//auto device = Application::Get()->GetDevice();
 
-	for (int cnt = 0 ; cnt < static_cast<int>(EShaderType::MAX); ++cnt)
+	//for (int cnt = 0 ; cnt < static_cast<int>(EShaderType::MAX); ++cnt)
+	//{
+	//	/*ID3D10Blob* hullShaderBuffer;
+	//	ID3D10Blob* domainShaderBuffer;
+	//	ID3D10Blob* errorMessage;*/
+	//	std::string hullName = "HS"; 
+	//	std::string domainName = "DS";
+	//	hullName += g_szShaderList[cnt];
+	//	domainName += g_szShaderList[cnt];
+
+	//	// シェーダー読み込み
+	//	//hr = D3DX11CompileFromFile(std::string(g_szCSODir + hullName + ".cso").c_str(), NULL, NULL, hullName.c_str(), "hs_5_0", //D3D10_SHADER_ENABLE_STRICTNESS, 0, NULL,
+	//	//	&hullShaderBuffer, &errorMessage, NULL);
+	//	//if (FAILED(hr)) { return E_FAIL; }
+	//	//hr = D3DX11CompileFromFile(std::string(g_szCSODir + domainName + ".cso").c_str(), NULL, NULL, domainName.c_str(), "ds_5_0", //D3D10_SHADER_ENABLE_STRICTNESS, 0, NULL,
+	//	//	&domainShaderBuffer, &errorMessage, NULL);
+
+	//	std::vector<char> byteCode; /*pOutByteCode ? pOutByteCode :*/
+	//	auto* pTarget = &byteCode;
+	//	if (!loadBinaryFile(pTarget, std::string(g_szCSODir + hullName + ".cso").c_str())) {
+	//		throw std::runtime_error("の読み込みに失敗");
+	//	}
+	//	
+	//	std::vector<char> byteCode2; /*pOutByteCode ? pOutByteCode :*/
+	//	auto* pTarget2 = &byteCode2;
+	//	if (!loadBinaryFile(pTarget2, std::string(g_szCSODir + domainName + ".cso").c_str())) {
+	//		throw std::runtime_error("の読み込みに失敗");
+	//	}
+
+	//	HullShaderSharedPtr pHullShader = std::make_shared<CHullShader>();
+	//	DomainShaderSharedPtr pDomainShader = std::make_shared<CDomainShader>();
+	//	pHullShader->Make(pTarget->data(), static_cast<size_t>(pTarget->size()));
+	//	pDomainShader->Make(pTarget2->data(), static_cast<size_t>(pTarget2->size()));
+	//	// 格納
+	//	//SetTessellation(g_szShaderList[cnt], pHullShader, pDomainShader);
+	//}
+	//
+	//MatrixBufferType param;
+	//TessellationBufferType param2;
+	//D3D11_SUBRESOURCE_DATA initData = {};
+	//initData.pSysMem = &param;
+	//initData.SysMemPitch = sizeof(param);
+	//D3D11_SUBRESOURCE_DATA initData2 = {};
+	//initData2.pSysMem = &param2;
+	//initData2.SysMemPitch = sizeof(param2);
+
+	//CConstantBuffer::Ptr cb = std::make_shared<CConstantBuffer>();
+	//CConstantBuffer::Ptr cb2 = std::make_shared<CConstantBuffer>();
+	//cb->Make(sizeof(MatrixBufferType),0, CConstantBuffer::EType::MAX, &initData);
+	//cb2->Make(sizeof(TessellationBufferType),0, CConstantBuffer::EType::MAX, &initData2);
+	//SetCB("MatrixBufferType", cb);
+	//SetCB("TessellationBufferType", cb2);
+
+	ConstantBufferSharedPtr sunCB = std::make_shared<CConstantBuffer>();
+	hr = sunCB->MakeCPU(sizeof(SHADER_GLOBAL_CAMERA_LIGHT), 1, CConstantBuffer::EType::All);
+	if(FAILED(hr))
 	{
-		/*ID3D10Blob* hullShaderBuffer;
-		ID3D10Blob* domainShaderBuffer;
-		ID3D10Blob* errorMessage;*/
-		std::string hullName = "HS"; 
-		std::string domainName = "DS";
-		hullName += g_szShaderList[cnt];
-		domainName += g_szShaderList[cnt];
-
-		// シェーダー読み込み
-		//hr = D3DX11CompileFromFile(std::string(g_szCSODir + hullName + ".cso").c_str(), NULL, NULL, hullName.c_str(), "hs_5_0", //D3D10_SHADER_ENABLE_STRICTNESS, 0, NULL,
-		//	&hullShaderBuffer, &errorMessage, NULL);
-		//if (FAILED(hr)) { return E_FAIL; }
-		//hr = D3DX11CompileFromFile(std::string(g_szCSODir + domainName + ".cso").c_str(), NULL, NULL, domainName.c_str(), "ds_5_0", //D3D10_SHADER_ENABLE_STRICTNESS, 0, NULL,
-		//	&domainShaderBuffer, &errorMessage, NULL);
-
-		std::vector<char> byteCode; /*pOutByteCode ? pOutByteCode :*/
-		auto* pTarget = &byteCode;
-		if (!loadBinaryFile(pTarget, std::string(g_szCSODir + hullName + ".cso").c_str())) {
-			throw std::runtime_error("の読み込みに失敗");
-		}
-		
-		std::vector<char> byteCode2; /*pOutByteCode ? pOutByteCode :*/
-		auto* pTarget2 = &byteCode2;
-		if (!loadBinaryFile(pTarget2, std::string(g_szCSODir + domainName + ".cso").c_str())) {
-			throw std::runtime_error("の読み込みに失敗");
-		}
-
-		HullShaderSharedPtr pHullShader = std::make_shared<CHullShader>();
-		DomainShaderSharedPtr pDomainShader = std::make_shared<CDomainShader>();
-		pHullShader->Make(pTarget->data(), static_cast<size_t>(pTarget->size()));
-		pDomainShader->Make(pTarget2->data(), static_cast<size_t>(pTarget2->size()));
-		// 格納
-		//SetTessellation(g_szShaderList[cnt], pHullShader, pDomainShader);
+		return hr;
 	}
-	
-	MatrixBufferType param;
-	TessellationBufferType param2;
-	D3D11_SUBRESOURCE_DATA initData = {};
-	initData.pSysMem = &param;
-	initData.SysMemPitch = sizeof(param);
-	D3D11_SUBRESOURCE_DATA initData2 = {};
-	initData2.pSysMem = &param2;
-	initData2.SysMemPitch = sizeof(param2);
-
-	CConstantBuffer::Ptr cb = std::make_shared<CConstantBuffer>();
-	CConstantBuffer::Ptr cb2 = std::make_shared<CConstantBuffer>();
-	cb->Make(sizeof(MatrixBufferType),0, CConstantBuffer::EType::MAX, &initData);
-	cb2->Make(sizeof(TessellationBufferType),0, CConstantBuffer::EType::MAX, &initData2);
-	SetCB("MatrixBufferType", cb);
-	SetCB("TessellationBufferType", cb2);
+	else
+		this->SetCB(NAME_TO(SHADER_GLOBAL_CAMERA_LIGHT), sunCB);
 
 	return hr;
 }
@@ -125,6 +139,12 @@ HRESULT CShaderManager::Init()
 //==========================================================
 void CShaderManager::Uninit()
 {
+	/*for (auto & func : m_aCallbackFunc)
+	{
+		func.second = nullptr;
+	}
+	m_aCallbackFunc.clear();*/
+
 	for (auto & pixel : m_aPixelMap)
 	{
 		pixel.second.reset();
@@ -156,7 +176,46 @@ void CShaderManager::Uninit()
 //==========================================================
 void CShaderManager::Update()
 {
+	SHADER_GLOBAL_CAMERA_LIGHT sg;
+	auto pCamera = CCamera::GetMain();
+	sg.vEye = XMLoadFloat3(&pCamera->Transform()->GetPos());
+	CDirectionalLight* pLight = dynamic_cast<CDirectionalLight*>(CLight::GetMain());
+	if (!pLight)
+		return;
+
+	sg.vLightDir = XMLoadFloat3(&pLight->GetDir());
+	sg.vLd = XMLoadFloat4(&pLight->GetDiffuse());
+	sg.vLa = XMLoadFloat4(&pLight->GetAmbient());
+	sg.vLs = XMLoadFloat4(&pLight->GetSpecular());
+
+	CBWrite(NAME_TO(SHADER_GLOBAL_CAMERA_LIGHT), &sg, sizeof(SHADER_GLOBAL_CAMERA_LIGHT));
+	BindCB(NAME_TO(SHADER_GLOBAL_CAMERA_LIGHT));
+}
+
+//==========================================================
+// 関数格納
+//==========================================================
+void CShaderManager::AddFunction(std::string name, std::function<void(void)> func)
+{
+	m_aCallbackFunc[name] = func;
+}
+
+//==========================================================
+// 関数呼び出しかつ、バインド
+//==========================================================
+void CShaderManager::CallBackFuncAndBind(std::string ps, std::string vs)
+{
+	if (m_aCallbackFunc.count(ps))
+	{
+		m_aCallbackFunc[ps]();
+	}
+	if (m_aCallbackFunc.count(vs))
+	{
+		m_aCallbackFunc[vs]();
+	}
 	
+	BindVS(vs);
+	BindPS(ps);
 }
 
 //==========================================================
@@ -164,7 +223,7 @@ void CShaderManager::Update()
 //==========================================================
 void CShaderManager::BindPS(std::string name, UINT slot)
 {
-	if (!Find<PixelShaderSharedPtr>(name, m_aPixelMap))
+	if (!m_aPixelMap.count(name))
 		return;
 	m_aPixelMap[name]->Bind(slot);
 }
@@ -174,7 +233,7 @@ void CShaderManager::BindPS(std::string name, UINT slot)
 //==========================================================
 void CShaderManager::BindVS(std::string name, UINT slot)
 {
-	if (!Find<VertexShaderSharedPtr>(name, m_aVtxMap))
+	if (!m_aVtxMap.count(name))
 		return;
 	m_aVtxMap[name]->Bind(slot);
 }
@@ -184,7 +243,7 @@ void CShaderManager::BindVS(std::string name, UINT slot)
 //==========================================================
 void CShaderManager::BindCB(std::string name, UINT slot)
 {
-	if (!Find<ConstantBufferSharedPtr>(name, m_aConstantBufferMap))
+	if (!m_aConstantBufferMap.count(name))
 		return;
 	m_aConstantBufferMap[name]->Bind(slot);
 }
@@ -212,6 +271,8 @@ void CShaderManager::CBWrite(std::string name, void* data)
 //==========================================================
 void CShaderManager::CBWrite(std::string name, void* data, UINT size)
 {
+	if (!m_aConstantBufferMap.count(name))
+		return;
 	m_aConstantBufferMap[name]->DynamicWrite(data, size);
 }
 
@@ -362,77 +423,28 @@ void CShaderManager::EndRender()
 }
 
 
-void CShaderManager::Load()
+#ifdef BUILD_MODE
+
+//=========================================================
+// vs取得
+//=========================================================
+std::string CShaderManager::ImGuiGetVertexShader(std::string preview)
 {
-#if 0
-	// 追加用変数
-	VertexShaderSharedPtr addVertex;
-	PixelShaderSharedPtr addPixel;
-
-	//--- ピクセルシェーダ
-	{
-		addPixel = std::make_shared<CPixelShader>();
-		addPixel->Make(g_szCSODir + "AssimpPixel.cso");
-		m_aPixelMap.insert(PixelPair(g_szCSODir + "AssimpPixel.cso", addPixel));
-	}
-
-	{
-		addPixel = std::make_shared<CPixelShader>();
-		addPixel->Make(g_szCSODir + "ExpPixel.cso");
-		m_aPixelMap.insert(PixelPair(g_szCSODir + "ExpPixel.cso", addPixel));
-	}
-
-	{
-		addPixel = std::make_shared<CPixelShader>();
-		addPixel->Make(g_szCSODir + "Pixel.cso");
-		m_aPixelMap.insert(PixelPair(g_szCSODir + "Pixel.cso", addPixel));
-	}
-
-	{
-		addPixel = std::make_shared<CPixelShader>();
-		addPixel->Make(g_szCSODir + "Pixel2DPixel.cso");
-		m_aPixelMap.insert(PixelPair(g_szCSODir + "Pixel2DPixel.cso", addPixel));
-	}
-	//--- 頂点シェーダ
-	{
-		const D3D11_INPUT_ELEMENT_DESC polygonLayout[] =
-		{
-			{"POSITION",0,DXGI_FORMAT_R32G32B32_FLOAT,0,0,D3D11_INPUT_PER_VERTEX_DATA,0},
-			{"TEXCOORD",0,DXGI_FORMAT_R32G32_FLOAT,0,D3D11_APPEND_ALIGNED_ELEMENT,D3D11_INPUT_PER_VERTEX_DATA,0},
-			{"COLOR",0,DXGI_FORMAT_R32G32B32A32_FLOAT,0,D3D11_APPEND_ALIGNED_ELEMENT,D3D11_INPUT_PER_VERTEX_DATA,0},
-		};
-		addVertex = std::make_shared<CVertexShader>();
-		addVertex->Make(g_szCSODir, polygonLayout, _countof(polygonLayout));
-		m_aVtxMap.insert(VertexPair("", addVertex));
-	}
-
-	{
-		const D3D11_INPUT_ELEMENT_DESC meshLayout[] =
-		{
-			{"POSITION",0,DXGI_FORMAT_R32G32B32_FLOAT,0,0,D3D11_INPUT_PER_VERTEX_DATA,0},
-			{"COLOR",0,DXGI_FORMAT_R32G32B32A32_FLOAT,0,D3D11_APPEND_ALIGNED_ELEMENT,D3D11_INPUT_PER_VERTEX_DATA,0},
-			{"TEXCOORD",0,DXGI_FORMAT_R32G32_FLOAT,0,D3D11_APPEND_ALIGNED_ELEMENT,D3D11_INPUT_PER_VERTEX_DATA,0},
-			{"NORMAL",0,DXGI_FORMAT_R32G32B32_FLOAT,0,D3D11_APPEND_ALIGNED_ELEMENT,D3D11_INPUT_PER_VERTEX_DATA,0},
-		};
-		addVertex = std::make_shared<CVertexShader>();
-		addVertex->Make("", meshLayout, _countof(meshLayout));
-		m_aVtxMap.insert(VertexPair("", addVertex));
-	}
-
-	{
-		const D3D11_INPUT_ELEMENT_DESC assimpLayout[] =
-		{
-			{"POSITION",    0, DXGI_FORMAT_R32G32B32_FLOAT,    0, 0,                            D3D11_INPUT_PER_VERTEX_DATA, 0},
-			{"NORMAL",      0, DXGI_FORMAT_R32G32B32_FLOAT,    0, D3D11_APPEND_ALIGNED_ELEMENT, D3D11_INPUT_PER_VERTEX_DATA, 0},
-			{"TEXCOORD",    0, DXGI_FORMAT_R32G32_FLOAT,       0, D3D11_APPEND_ALIGNED_ELEMENT, D3D11_INPUT_PER_VERTEX_DATA, 0},
-			{"TANGENT",     0, DXGI_FORMAT_R32G32B32_FLOAT,    0, D3D11_APPEND_ALIGNED_ELEMENT, D3D11_INPUT_PER_VERTEX_DATA, 0},
-			{"BONE_INDEX",  0, DXGI_FORMAT_R32G32B32A32_UINT,  0, D3D11_APPEND_ALIGNED_ELEMENT, D3D11_INPUT_PER_VERTEX_DATA, 0},
-			{"BONE_WEIGHT", 0, DXGI_FORMAT_R32G32B32A32_FLOAT, 0, D3D11_APPEND_ALIGNED_ELEMENT, D3D11_INPUT_PER_VERTEX_DATA, 0},
-		};
-		addVertex = std::make_shared<CVertexShader>();
-		addVertex->Make("", assimpLayout, _countof(assimpLayout));
-		m_aVtxMap.insert(VertexPair("", addVertex));
-	}
-#endif
+	std::vector<std::string> ver;
+	for (auto vertex : m_aVtxMap)
+		ver.push_back(vertex.first);
+	return MySpace::Debug::DispCombo(ver, "VertexShader", preview);
 }
 
+//=========================================================
+// ps取得
+//=========================================================
+std::string CShaderManager::ImGuiGetPixelShader(std::string preview)
+{
+	std::vector<std::string> ver;
+	for (auto pixel : m_aPixelMap)
+		ver.push_back(pixel.first);
+	return MySpace::Debug::DispCombo(ver, "PixelShader", preview);
+}
+
+#endif // BUILD_MODE

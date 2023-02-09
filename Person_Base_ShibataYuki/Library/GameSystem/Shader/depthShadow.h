@@ -46,8 +46,6 @@ namespace MySpace
 			// *@√∏Ω¡¨ê›íË
 			void SetUpTexture(UINT slot);
 
-			std::shared_ptr<MySpace::Graphics::CConstantBuffer> GetCB();
-
 			ID3D11ShaderResourceView* GetResource() { return m_pRenderTarget->GetSRV(); }
 		};
 

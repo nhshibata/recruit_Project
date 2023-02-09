@@ -13,14 +13,13 @@ struct VS_INPUT {
 	float2	Tex			: TEXCOORD0;
 	float3	Normal		: TEXCOORD1;
 	float3	PosForPS	: TEXCOORD2;
-    
 };
 
-Texture2D    g_texture			: register(t0);	// テクスチャ
-Texture2D    g_texEmissive		: register(t1);	// 発光テクスチャ
-Texture2D    g_texTransparent	: register(t2);	// 透過テクスチャ
-Texture2D    g_texSpecular		: register(t3);	// 鏡面反射テクスチャ
-SamplerState g_sampler			: register(s0);	// サンプラ
+//Texture2D    g_texture			: register(t0);	// テクスチャ
+//Texture2D    g_texEmissive		: register(t1);	// 発光テクスチャ
+//Texture2D    g_texTransparent	: register(t2);	// 透過テクスチャ
+//Texture2D    g_texSpecular		: register(t3);	// 鏡面反射テクスチャ
+//SamplerState g_sampler			: register(s0);	// サンプラ
 
 //
 // ピクセルシェーダ

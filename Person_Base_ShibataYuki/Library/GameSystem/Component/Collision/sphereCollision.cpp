@@ -22,6 +22,20 @@
 using namespace MySpace::Game;
 
 //==========================================================
+// コンストラクタ
+//==========================================================
+CSphereCollision::CSphereCollision()
+{
+
+#if BUILD_MODE
+	m_pDebugSphere = std::make_shared<CSphere>();
+	m_pDebugSphere->Init(16, 8, m_fRadius);
+	m_pDebugSphere->SetDiffuse(Vector4(0, 1, 0, 0.5f));
+#endif //
+
+}
+
+//==========================================================
 // 引き数付きコンストラクタ
 //==========================================================
 CSphereCollision::CSphereCollision(std::shared_ptr<CGameObject> owner, float radius)

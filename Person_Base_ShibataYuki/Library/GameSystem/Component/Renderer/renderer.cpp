@@ -1,6 +1,7 @@
 //=========================================================
 // [renderer.cpp] 
-// çÏê¨: 2022/06/27
+// çÏê¨:2022/06/27
+// çXêV:2023/02/07 ps,vsï∂éöóÒí«â¡
 //---------------------------------------------------------
 //=========================================================
 
@@ -10,6 +11,10 @@
 #include <GameSystem/GameObject/gameObject.h>
 #include <GameSystem/Manager/sceneManager.h>
 #include <GameSystem/Manager/drawSystem.h>
+
+#include <Application/Application.h>
+#include <GraphicsSystem/Manager/assetsManager.h>
+#include <GraphicsSystem/Manager/shaderManager.h>
 
 #include <ImGui/imgui.h>
 
@@ -38,6 +43,10 @@ CRenderer::~CRenderer()
 //==========================================================
 void CRenderer::DrawRequest()
 {
+	// âΩåÃÇ©ìoò^Ç≥ÇÍÇƒÇ¢ÇÈÇÃÇ≈ó£íE
+	if (m_nDrawIdx != -1)
+		return;
+
 	if (auto sys = SceneManager::CSceneManager::Get()->GetDrawSystem(); sys)
 		m_nDrawIdx = sys->RegistToSystem(BaseToDerived<CRenderer>());
 }
@@ -98,13 +107,28 @@ void CRenderer::SetLayer(int value)
 void CRenderer::ImGuiDebug()
 {
 	static bool disp = false;
-	ImGui::Text("Renderer");
-	ImGui::Checkbox("bool", &m_bVisible);
-	if (ImGui::Begin(u8"ColorWindow", &disp))
+	auto pSM = Application::Get()->GetSystem<MySpace::Graphics::CAssetsManager>()->GetShaderManager();
+	
+	// shaderëIëÅAï\é¶
+	if (auto psName = pSM->ImGuiGetPixelShader(m_strPixelShader); !psName.empty())
+	{
+		m_strPixelShader = psName;
+	}
+
+	if (auto vsName = pSM->ImGuiGetVertexShader(m_strVertexShader); !vsName.empty())
+	{
+		m_strVertexShader = vsName;
+	}
+
+	ImGui::Checkbox("render visible", &m_bVisible);
+
+	ImGui::Checkbox("baseColor", &disp);
+	if (!disp)
+		return;
+	if (ImGui::Begin("ColorWindow", &disp))
 	{
 		Vector4 color = Vector4(m_vColor.a, m_vColor.g, m_vColor.b, m_vColor.a);
 		ImGui::ColorPicker4("color4", (float*)&color);
-		//ImGui::ColorEdit4("color", (float*)&color);
 		m_vColor = Color(color.x, color.y, color.z, color.w);
 		ImGui::End();
 	}

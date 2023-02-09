@@ -27,6 +27,12 @@ using namespace MySpace::Graphics;
 CBillboardRenderer::CBillboardRenderer(std::shared_ptr<CGameObject> owner)
 	: CMeshRenderer(owner)
 {
+	m_MeshMaterial = CMeshMaterial(
+		Vector4(1.0f, 1.0f, 1.0f, 0.3f),
+		Vector4(1.0f, 1.0f, 1.0f, 0.0f),	// wはﾃｸｽﾁｬ有無に使われている
+		Vector4(0.0f, 0.0f, 0.0f, 1.0f),	// wはpowerに使われている
+		Vector4(0.0f, 0.0f, 0.0f, 1.0f),
+		1.0f);
 }
 
 //==========================================================
@@ -121,7 +127,7 @@ bool CBillboardRenderer::Draw()
 	else
 	{
 		m_MeshMaterial.m_Ambient.w = 0.0f;	// ﾃｸｽﾁｬフラグとなっている
-		SetInstancing(m_pBillboard.get(), std::string(), DirectX::XMUINT4(1,0,0,0));
+		SetInstancing(m_pBillboard.get(), std::string(), DirectX::XMUINT4(1, 0, 0, 0));
 	}
 
 	//CDXDevice::Get()->SetZBuffer(true);			

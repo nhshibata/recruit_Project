@@ -9,8 +9,9 @@
 #include <GameSystem/Component/Renderer/textRenderer.h>
 #include <GameSystem/GameObject/gameObject.h>
 
-#include <GraphicsSystem/Manager/assetsManager.h>
 #include <GraphicsSystem/DirectX/DXDevice.h>
+#include <GraphicsSystem/Manager/assetsManager.h>
+#include <GraphicsSystem/Manager/shaderManager.h>
 #include <GraphicsSystem/Render/polygon.h>
 #include <DebugSystem/imGuiPackage.h>
 #include <CoreSystem/Util/stringConvert.h>
@@ -119,6 +120,10 @@ bool CTextRenderer::Draw()
 	auto pDX = Application::Get()->GetSystem<CDXDevice>();
 	pDX->SetZBuffer(false);
 	pDX->SetBlendState(static_cast<int>(EBlendState::BS_ALPHABLEND));
+
+	//--- シェーダー
+	auto pSM = Application::Get()->GetSystem<MySpace::Graphics::CAssetsManager>()->GetShaderManager();
+	pSM->CallBackFuncAndBind(m_strPixelShader, m_strVertexShader);
 
 	//--- 描画
 	// ﾃｸｽﾁｬの数だけ繰り返す

@@ -55,7 +55,7 @@ HRESULT CAssetsManager::Init(Application* app)
 	
 	m_pApp = app;
 	//hr = m_pEffekseer->Init(app->GetDevice(), app->GetDeviceContext());
-	//m_pShader->Init();
+	hr = m_pShader->Init();
 	hr = m_pFont->Init();
 	return hr;
 }
@@ -65,6 +65,7 @@ HRESULT CAssetsManager::Init(Application* app)
 //==========================================================
 void CAssetsManager::Update()
 {
+	m_pShader->Update();
 	m_pEffekseer->Update();
 }
 

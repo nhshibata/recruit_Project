@@ -46,6 +46,7 @@ void CDirectionalLight::Awake()
 	m_specular = LIGHT0_SPECULAR;
 	SetEnable();
 }
+
 XMFLOAT3 CDirectionalLight::GetDir()
 {
 	if (IsEnable())

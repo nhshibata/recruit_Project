@@ -28,9 +28,6 @@
     <Filter Include="ヘッダー ファイル\Render">
       <UniqueIdentifier>{b0772b1d-bc53-499f-9092-843b8520675c}</UniqueIdentifier>
     </Filter>
-    <Filter Include="ソース ファイル\Render">
-      <UniqueIdentifier>{37d8ff2f-bfa0-4428-9166-364c438ecdef}</UniqueIdentifier>
-    </Filter>
     <Filter Include="ソース ファイル\Shader">
       <UniqueIdentifier>{26e90bc4-c2b3-49fa-b6f5-ccd0eaf880c3}</UniqueIdentifier>
     </Filter>
@@ -42,6 +39,9 @@
     </Filter>
     <Filter Include="ヘッダー ファイル\Texture">
       <UniqueIdentifier>{ef2ade10-d8f3-423b-8356-d9e6fe8d964b}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ソース ファイル\Render">
+      <UniqueIdentifier>{37d8ff2f-bfa0-4428-9166-364c438ecdef}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -136,6 +136,9 @@
       <Filter>ヘッダー ファイル\Shader</Filter>
     </ClInclude>
     <ClInclude Include="..\Library\GraphicsSystem\Shader\instancingData.h">
+      <Filter>ヘッダー ファイル\Shader</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Library\GraphicsSystem\Shader\shaderStruct.h">
       <Filter>ヘッダー ファイル\Shader</Filter>
     </ClInclude>
   </ItemGroup>
@@ -235,12 +238,6 @@
     <FxCompile Include="..\Library\hlsl\AssimpVertex.hlsl">
       <Filter>リソース ファイル</Filter>
     </FxCompile>
-    <FxCompile Include="..\Library\hlsl\ExpPixel.hlsl">
-      <Filter>リソース ファイル</Filter>
-    </FxCompile>
-    <FxCompile Include="..\Library\hlsl\ExpVertex.hlsl">
-      <Filter>リソース ファイル</Filter>
-    </FxCompile>
     <FxCompile Include="..\Library\hlsl\Pixel.hlsl">
       <Filter>リソース ファイル</Filter>
     </FxCompile>
@@ -262,9 +259,39 @@
     <FxCompile Include="..\Library\hlsl\VS_DepthWrite.hlsl">
       <Filter>リソース ファイル</Filter>
     </FxCompile>
+    <FxCompile Include="..\Library\hlsl\PS_Monotone.hlsl">
+      <Filter>リソース ファイル</Filter>
+    </FxCompile>
+    <FxCompile Include="..\Library\hlsl\VS_ToonOutline.hlsl">
+      <Filter>リソース ファイル</Filter>
+    </FxCompile>
+    <FxCompile Include="..\Library\hlsl\PS_Toon.hlsl">
+      <Filter>リソース ファイル</Filter>
+    </FxCompile>
+    <FxCompile Include="..\Library\hlsl\PS_ToonOutline.hlsl">
+      <Filter>リソース ファイル</Filter>
+    </FxCompile>
+    <FxCompile Include="..\Library\hlsl\PS_AssimpToon.hlsl">
+      <Filter>リソース ファイル</Filter>
+    </FxCompile>
+    <FxCompile Include="..\Library\hlsl\PS_MeshToon.hlsl">
+      <Filter>リソース ファイル</Filter>
+    </FxCompile>
+    <FxCompile Include="..\Library\hlsl\PS_AssimpNega.hlsl">
+      <Filter>リソース ファイル</Filter>
+    </FxCompile>
+    <FxCompile Include="..\Library\hlsl\PS_MeshNega.hlsl">
+      <Filter>リソース ファイル</Filter>
+    </FxCompile>
   </ItemGroup>
   <ItemGroup>
     <None Include="..\Library\hlsl\common.hlsli">
+      <Filter>リソース ファイル</Filter>
+    </None>
+    <None Include="..\Library\hlsl\modelCommon.hlsli">
+      <Filter>リソース ファイル</Filter>
+    </None>
+    <None Include="..\Library\hlsl\meshCommon.hlsli">
       <Filter>リソース ファイル</Filter>
     </None>
   </ItemGroup>

@@ -26,14 +26,16 @@ namespace MySpace
 			void save(Archive& archive) const
 			{
 				archive(cereal::make_nvp("baseRender", cereal::base_class<CComponent>(this)),
-					CEREAL_NVP(m_bVisible), CEREAL_NVP(m_vColor)
+						CEREAL_NVP(m_bVisible), CEREAL_NVP(m_vColor),
+						CEREAL_NVP(m_strPixelShader), CEREAL_NVP(m_strVertexShader)
 				);
 			}
 			template<class Archive>
 			void load(Archive& archive)
 			{
 				archive(cereal::make_nvp("baseRender", cereal::base_class<CComponent>(this)),
-					CEREAL_NVP(m_bVisible), CEREAL_NVP(m_vColor)
+						CEREAL_NVP(m_bVisible), CEREAL_NVP(m_vColor),
+						CEREAL_NVP(m_strPixelShader), CEREAL_NVP(m_strVertexShader)
 				);
 			}
 
@@ -43,6 +45,8 @@ namespace MySpace
 			Color m_vColor;
 		protected:
 			int m_nDrawIdx = -1;	// DrawSystemに登録した際に渡されるID
+			std::string m_strPixelShader;
+			std::string m_strVertexShader;
 
 		private:
 			//--- メンバ関数
@@ -62,16 +66,17 @@ namespace MySpace
 
 			//--- セッター・ゲッター
 			_NODISCARD inline Color GetColor() { return m_vColor; }
-#pragma warning(push)
-#pragma warning(disable:4100)
 			_NODISCARD inline XMFLOAT4 GetColor(int num) { return XMFLOAT4(m_vColor.r, m_vColor.g, m_vColor.b, m_vColor.a); }
-#pragma warning(pop)   
 			// *@ｲﾝﾃﾞｯｸｽ取得
 			_NODISCARD inline UINT GetIdx() { return m_nDrawIdx; }
+			inline std::string GetPSName() { return m_strPixelShader; }
+			inline std::string GetVSName() { return m_strVertexShader; }
 
 			void SetLayer(int value);
 			inline void SetColor(Color color) { m_vColor = color; }
 			inline void SetVisible(bool value) { m_bVisible = value; }
+			inline void SetPSName(std::string value) { m_strPixelShader = value; }
+			inline void SetVSName(std::string value) { m_strVertexShader = value; }
 
 			// *描画状態確認
 			inline bool IsVisible() { return m_bVisible; }

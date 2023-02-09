@@ -12,7 +12,7 @@
 
 #include "common.hlsli"
 
-struct VS_IN
+struct VS_IN_Depth
 {
     float3 pos : POSITION;
     float3 normal : NORMAL;
@@ -28,7 +28,7 @@ struct VS_OUT
 };
 
 
-VS_OUT main(VS_IN vin)
+VS_OUT main(VS_IN_Depth vin)
 {
     VS_OUT vout;
     
@@ -40,8 +40,10 @@ VS_OUT main(VS_IN vin)
     float4x4 mWorld = g_Instancing[vin.id].mWorld;
     vout.pos = float4(vin.pos, 1.0f);
     vout.pos = mul(vout.pos, mWorld);
-    vout.pos = mul(vout.pos, view);
-    vout.pos = mul(vout.pos, proj);
+    //vout.pos = mul(vout.pos, g_view);
+    //vout.pos = mul(vout.pos, g_proj);
+    vout.pos = mul(vout.pos, g_sunView);
+    vout.pos = mul(vout.pos, g_sunProj);
     
     // SV_POSITION‚Æ‚Í•Ê‚ÉÃÞ°À‚ð“n‚·
     vout.screenPos = vout.pos;

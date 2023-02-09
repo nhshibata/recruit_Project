@@ -32,7 +32,7 @@ namespace MySpace
 			{
 				archive(cereal::make_nvp("meshRender", cereal::base_class<CRenderer>(this)),
 					CEREAL_NVP(m_vCenter), CEREAL_NVP(m_bLightEnable), CEREAL_NVP(m_fBSRadius),CEREAL_NVP(m_nStaticMode),
-					CEREAL_NVP(m_bShadow)
+					CEREAL_NVP(m_bShadow), CEREAL_NVP(m_MeshMaterial)
 				);
 			}
 			template<class Archive>
@@ -40,7 +40,7 @@ namespace MySpace
 			{
 				archive(cereal::make_nvp("meshRender", cereal::base_class<CRenderer>(this)),
 					CEREAL_NVP(m_vCenter), CEREAL_NVP(m_bLightEnable), CEREAL_NVP(m_fBSRadius), CEREAL_NVP(m_nStaticMode),
-					CEREAL_NVP(m_bShadow)
+					CEREAL_NVP(m_bShadow), CEREAL_NVP(m_MeshMaterial)
 				);
 			}
 		public:
