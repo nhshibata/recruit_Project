@@ -27,8 +27,6 @@
 #include <CoreSystem/Input/input.h>
 #include <CoreSystem/File/cerealize.h>
 
-#define GAME_COPY FORDER_DIR(data/SystemData/copyObject.json)
-
 using namespace MySpace::System;
 using namespace MySpace::Game;
 using namespace MySpace::SceneManager;
@@ -175,16 +173,6 @@ void CInspector::CopyGameObject()
 		// オブジェクト破棄
 		work.reset();
 	}
-
-#if 1
-	// 持ち主数確認
-	auto comList = m_spViewObj.lock()->GetComponentList();
-	for (auto & com : comList)
-	{
-		int i = com.use_count();
-
-	}
-#endif // 1
 
 }
 

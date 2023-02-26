@@ -17,15 +17,14 @@
 #include <iostream>
 #include <CoreSystem/Util/define.h>
 
+#define GAME_COPY FORDER_DIR(data/SystemData/copyObject.json)
+#define TAG_PATH		FORDER_DIR(data/SystemData/tag.json)
+#define LAYER_PATH		FORDER_DIR(data/SystemData/layer.json)
+
 namespace MySpace
 {
 	namespace System
 	{
-		class CCerealizePath
-		{
-			static constexpr const char* TAG_PATH = FORDER_DIR(data/SystemData/tag.json);
-		};
-
 		//--- ¸×½’è‹`
 		template <class T>
 		class CCerealize

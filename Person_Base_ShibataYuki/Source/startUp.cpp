@@ -116,7 +116,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 #pragma warning(disable:4100)
 		void* Load(CScene* pScene, int mode)
 		{
-			if (0)
+			if (1)
 			{
 				pScene->CreateEmptyScene();
 

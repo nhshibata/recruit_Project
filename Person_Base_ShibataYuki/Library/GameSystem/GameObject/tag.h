@@ -21,12 +21,13 @@ namespace MySpace
 	namespace Game
 	{
 		// 基本的なタグ所持ｸﾗｽ
-		class CDefaultTagChar
+		class CTagDefault
 		{
 		public:
-			static constexpr const char* DEFAULT = "Default";
-			static constexpr const char* CAMERA = "MainCamera";
-			static constexpr const char* LIGHT = "Light";
+			static constexpr const char* DEFAULT =		"Default";
+			static constexpr const char* MAIN_CAMERA =	"MainCamera";
+			static constexpr const char* SUB_CAMERA =	"SubCamera";
+			static constexpr const char* LIGHT =		"Light";
 		};
 
 		//--- クラス定義
@@ -120,16 +121,19 @@ namespace MySpace
 			}
 
 			// *@リスト取得
-			static inline std::vector<std::string> GetNameList()
-			{
-				return m_aTagName;
-			}
+			static inline std::vector<std::string> GetNameList() { return m_aTagName; }
 
 			// *@ファイル保存
 			static void SaveSystem();
 
 			// *@ファイル読み込み
 			static void LoadSystem();
+
+#ifdef BUILD_MODE
+			// *@ImGui表示
+			static void ImGuiTag(bool& disp);
+#endif // BUILD_MODE
+
 		};
 	}
 }

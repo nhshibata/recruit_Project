@@ -1,7 +1,10 @@
 //=========================================================
 // [camera.h]
+//---------------------------------------------------------
 // 作成:2022/06/27
-// 
+//---------------------------------------------------------
+// ｶﾒﾗに必要な機能の実装
+// 拡張したい場合は、継承する
 //=========================================================
 
 //--- インクルードガード
@@ -31,7 +34,7 @@ namespace MySpace
 		class CCamera : public CComponent
 		{
 		private:
-			// シリアライズ
+			//--- シリアライズ
 #pragma region _cereal
 			friend class cereal::access;
 			template<class Archive>
@@ -90,6 +93,7 @@ namespace MySpace
 			XMFLOAT4 m_frusw[MAX_FRUS];
 
 			static inline std::weak_ptr<CCamera> m_pMainCamera;	// メインカメラ
+			static inline std::vector<CCamera*> m_aCamera;
 
 		private:
 			//--- ﾒﾝﾊﾞ関数
@@ -110,7 +114,13 @@ namespace MySpace
 			void DrawSkyDome();
 			void UpdateMatrix();
 			Matrix4x4& CalcWorldMatrix();
+
+
 			static Matrix4x4 CalcProjMatrix(float fov, float aspect, float nearZ, float farZ);
+			static CCamera* GetMain() { if (!m_pMainCamera.lock())return nullptr; return m_pMainCamera.lock().get(); };
+			static inline std::weak_ptr<CCamera> GetMain(int) { return m_pMainCamera.lock(); };
+			// *@全てのｶﾒﾗ取得
+			static inline std::vector<CCamera*> GetAllCamera(){ return m_aCamera; }
 
 			//--- ゲッター・セッター
 			inline Vector3 GetPos() { return Transform()->GetPos(); }
@@ -131,8 +141,6 @@ namespace MySpace
 #pragma warning(pop)   
 			inline DirectX::XMMATRIX GetLookAtMatrix() { return DirectX::XMLoadFloat4x4(&m_mtxView); };
 			inline DirectX::XMMATRIX GetProjectionMatrix() { return DirectX::XMLoadFloat4x4(&m_mtxProj); };
-			static inline CCamera* GetMain() { if (!m_pMainCamera.lock())return nullptr; return m_pMainCamera.lock().get(); };
-			static inline std::weak_ptr<CCamera> GetMain(int) { return m_pMainCamera.lock(); };
 			
 			inline void SetPos(DirectX::XMFLOAT3& vPos) { Transform()->SetPos(vPos); }
 			inline void SetPos(float x, float y, float z) { Transform()->SetPos(Vector3(x, y, z)); }
@@ -151,7 +159,6 @@ namespace MySpace
 			
 			// *@スクリーン座標を3D座標へ変換
 			Vector3 ConvertScreenToWorld(Vector2 pos);
-			
 
 #ifdef BUILD_MODE
 

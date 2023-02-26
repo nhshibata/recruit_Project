@@ -141,11 +141,12 @@ void CDepthShadow::Begin()
 		DirectX::XMVectorSet(0, 1, 0, 0)
 	);
 	// 平行投影
-	DirectX::XMMATRIX sunProj = DirectX::XMMatrixOrthographicLH(
-		//5.0f, 5.0f * (9.0f / 16.0f), 0.2f, 1000.0f
-		CScreen::GetWidth()*5, CScreen::GetHeight()*5, 0.2f, 1000.0f/2	// 全体の影マップを作るには、Sceneの利用している大きさでなければ
-		
-	);
+	//DirectX::XMMATRIX sunProj = DirectX::XMMatrixOrthographicLH(
+	//	5.0f, 5.0f * (9.0f / 16.0f), 0.2f, 1000.0f
+	//	//CScreen::GetWidth()*5, CScreen::GetHeight()*5, 0.2f, 1000.0f/2	
+	//	// 全体の影マップを作るには、Sceneの利用している大きさでなければ
+	//);
+	DirectX::XMMATRIX sunProj =	XMMatrixPerspectiveFovLH(XMConvertToRadians(45), CScreen::GetWidth()/ CScreen::GetHeight(), 0.2f, 1000.0f);
 
 	SHADER_SUN sunMat;
 	DirectX::XMStoreFloat4x4(&sunMat.sunView, DirectX::XMMatrixTranspose(sunView));
@@ -164,6 +165,8 @@ void CDepthShadow::End()
 	// 元に戻す
 	auto pDX = Application::Get()->GetSystem<CDXDevice>();
 	pDX->SwitchRender(pDX->GetRenderTargetView(), pDX->GetDepthStencilView());
+
+	
 }
 
 //=========================================================

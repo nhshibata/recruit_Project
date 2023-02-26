@@ -430,10 +430,13 @@ void CShaderManager::EndRender()
 //=========================================================
 std::string CShaderManager::ImGuiGetVertexShader(std::string preview)
 {
-	std::vector<std::string> ver;
-	for (auto vertex : m_aVtxMap)
-		ver.push_back(vertex.first);
-	return MySpace::Debug::DispCombo(ver, "VertexShader", preview);
+	static std::vector<std::string> ver;
+	if (ver.size() != m_aVtxMap.size())
+	{
+		for (auto vertex : m_aVtxMap)
+			ver.push_back(vertex.first);
+	}
+	return MySpace::Debug::DispComboSelect(ver, "VertexShader", preview);
 }
 
 //=========================================================
@@ -441,10 +444,13 @@ std::string CShaderManager::ImGuiGetVertexShader(std::string preview)
 //=========================================================
 std::string CShaderManager::ImGuiGetPixelShader(std::string preview)
 {
-	std::vector<std::string> ver;
-	for (auto pixel : m_aPixelMap)
-		ver.push_back(pixel.first);
-	return MySpace::Debug::DispCombo(ver, "PixelShader", preview);
+	static std::vector<std::string> ver;
+	if (ver.size() != m_aPixelMap.size())
+	{
+		for (auto pixel : m_aPixelMap)
+			ver.push_back(pixel.first);
+	}
+	return MySpace::Debug::DispComboSelect(ver, "PixelShader", preview);
 }
 
 #endif // BUILD_MODE

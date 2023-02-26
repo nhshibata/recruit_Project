@@ -181,6 +181,7 @@ void CTextRenderer::ImGuiDebug()
 {
 	std::string text = WStringToString(m_Text);
 	auto inputStr = MySpace::Debug::InputString(text, "String");
+	
 	{
 		m_Text = StringToWString(inputStr);
 	}

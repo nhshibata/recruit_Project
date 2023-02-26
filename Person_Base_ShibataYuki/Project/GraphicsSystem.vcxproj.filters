@@ -43,6 +43,12 @@
     <Filter Include="ソース ファイル\Render">
       <UniqueIdentifier>{37d8ff2f-bfa0-4428-9166-364c438ecdef}</UniqueIdentifier>
     </Filter>
+    <Filter Include="ヘッダー ファイル\PostProcess">
+      <UniqueIdentifier>{4ffce67c-3afd-4f96-ae46-2a992ebf4d2b}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ソース ファイル\PostProcess">
+      <UniqueIdentifier>{9bd7f7dd-8354-4970-9656-9edcbd9e7bac}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\Library\GraphicsSystem\Shader\constantBuffer.h">
@@ -141,6 +147,18 @@
     <ClInclude Include="..\Library\GraphicsSystem\Shader\shaderStruct.h">
       <Filter>ヘッダー ファイル\Shader</Filter>
     </ClInclude>
+    <ClInclude Include="..\Library\GraphicsSystem\DirectX\GBuffer.h">
+      <Filter>ヘッダー ファイル\DirectX</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Library\GraphicsSystem\PostProcess\gaussianBlur.h">
+      <Filter>ヘッダー ファイル\PostProcess</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Library\GraphicsSystem\PostProcess\bloom.h">
+      <Filter>ヘッダー ファイル\PostProcess</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Library\GraphicsSystem\PostProcess\postProcess.h">
+      <Filter>ヘッダー ファイル\PostProcess</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\Library\GraphicsSystem\Texture\Texture.cpp">
@@ -221,15 +239,21 @@
     <ClCompile Include="..\Library\GraphicsSystem\Manager\assetsManager.cpp">
       <Filter>ソース ファイル\Manager</Filter>
     </ClCompile>
+    <ClCompile Include="..\Library\GraphicsSystem\DirectX\GBuffer.cpp">
+      <Filter>ソース ファイル\DirectX</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Library\GraphicsSystem\PostProcess\gaussianBlur.cpp">
+      <Filter>ソース ファイル\PostProcess</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Library\GraphicsSystem\PostProcess\bloom.cpp">
+      <Filter>ソース ファイル\PostProcess</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Library\GraphicsSystem\PostProcess\postProcess.cpp">
+      <Filter>ソース ファイル\PostProcess</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <FxCompile Include="..\Library\hlsl\Pixel2D.hlsl">
-      <Filter>リソース ファイル</Filter>
-    </FxCompile>
     <FxCompile Include="..\Library\hlsl\Vertex.hlsl">
-      <Filter>リソース ファイル</Filter>
-    </FxCompile>
-    <FxCompile Include="..\Library\hlsl\Vertex2D.hlsl">
       <Filter>リソース ファイル</Filter>
     </FxCompile>
     <FxCompile Include="..\Library\hlsl\AssimpPixel.hlsl">
@@ -281,6 +305,30 @@
       <Filter>リソース ファイル</Filter>
     </FxCompile>
     <FxCompile Include="..\Library\hlsl\PS_MeshNega.hlsl">
+      <Filter>リソース ファイル</Filter>
+    </FxCompile>
+    <FxCompile Include="..\Library\hlsl\PS_Luminance.hlsl">
+      <Filter>リソース ファイル</Filter>
+    </FxCompile>
+    <FxCompile Include="..\Library\hlsl\PS_ColorTexture.hlsl">
+      <Filter>リソース ファイル</Filter>
+    </FxCompile>
+    <FxCompile Include="..\Library\hlsl\PS_Mix2DColor.hlsl">
+      <Filter>リソース ファイル</Filter>
+    </FxCompile>
+    <FxCompile Include="..\Library\hlsl\PS_2D.hlsl">
+      <Filter>リソース ファイル</Filter>
+    </FxCompile>
+    <FxCompile Include="..\Library\hlsl\VS_2D.hlsl">
+      <Filter>リソース ファイル</Filter>
+    </FxCompile>
+    <FxCompile Include="..\Library\hlsl\VS_XBlur.hlsl">
+      <Filter>リソース ファイル</Filter>
+    </FxCompile>
+    <FxCompile Include="..\Library\hlsl\VS_YBlur.hlsl">
+      <Filter>リソース ファイル</Filter>
+    </FxCompile>
+    <FxCompile Include="..\Library\hlsl\PS_Blur.hlsl">
       <Filter>リソース ファイル</Filter>
     </FxCompile>
   </ItemGroup>

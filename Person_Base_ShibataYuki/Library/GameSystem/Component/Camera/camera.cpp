@@ -47,11 +47,10 @@ using namespace Camera;
 // コンストラクタ
 //==========================================================
 CCamera::CCamera()
-	:m_vTarget(1, 1, 1), m_vUp(0, 1, 0), m_vAngle(0, 0, 0), m_fFovY(0), 
-	m_fAspectRatio(0), m_fFarZ(0), m_fLengthInterval(0), m_fNearZ(0),
-	m_frus{ XMFLOAT4(0,0,0,0) }, m_frusw{ XMFLOAT4(0,0,0,0) }
 {
-
+	// 格納済みか確認
+	if(auto it = std::find(m_aCamera.begin(), m_aCamera.end(), this); it == m_aCamera.end())
+		m_aCamera.push_back(this);
 }
 
 //==========================================================
@@ -62,6 +61,9 @@ CCamera::CCamera(std::shared_ptr<CGameObject> owner)
 	m_fAspectRatio(0), m_fFarZ(0), m_fLengthInterval(0), m_fNearZ(0),
 	m_frus{ XMFLOAT4(0,0,0,0) }, m_frusw{ XMFLOAT4(0,0,0,0) }
 {
+	// 格納済みか確認
+	if (auto it = std::find(m_aCamera.begin(), m_aCamera.end(), this); it == m_aCamera.end())
+		m_aCamera.push_back(this);
 }
 
 //==========================================================
@@ -69,6 +71,10 @@ CCamera::CCamera(std::shared_ptr<CGameObject> owner)
 //==========================================================
 CCamera::~CCamera()
 {
+	// 格納済みか確認し、除外
+	if (auto it = std::find(m_aCamera.begin(), m_aCamera.end(), this); it != m_aCamera.end())
+		m_aCamera.erase(it);
+
 	// 自身が破棄されたときにreset
 	if (m_pMainCamera.lock().get() == this)
 		m_pMainCamera.reset();
@@ -82,7 +88,7 @@ CCamera::~CCamera()
 	// 破棄されたときにｶﾒﾗが存在しているか確認
 	// あればﾒｲﾝｶﾒﾗを移動
 	if (!CSceneManager::Get()->GetActiveScene())return;
-	if (auto camObj = CGameObject::FindGameObjectWithTag(CDefaultTagChar::CAMERA); camObj.lock())
+	if (auto camObj = CGameObject::FindGameObjectWithTag(CTagDefault::MAIN_CAMERA); camObj.lock())
 	{
 		auto cameraCom = camObj.lock()->GetComponent<CCamera>().lock();
 		SetMain(cameraCom);
@@ -110,7 +116,6 @@ void CCamera::Awake()
 
 	// スカイドームモデル
 	m_pSky = GetOwner()->AddComponent<CModelRenderer>();
-	GetOwner()->SetLayer(CLayer::E_Layer::SKY);
 	//m_pSky.lock()->SetModel(FORDER_DIR(Data/model/SkyDome/sky.fbx));
 	m_pSky.lock()->SetModel(FORDER_DIR(Data/model/SkyDome/sky2.fbx));
 	m_pSky.lock()->SetBSRadius(1000);
@@ -118,8 +123,8 @@ void CCamera::Awake()
 	Transform()->SetScale({ 10, 10, 10 });
 
 	// tagの設定
-	GetOwner()->GetTagPtr()->CreateTag(CDefaultTagChar::CAMERA);
-	GetOwner()->SetObjTag(CDefaultTagChar::CAMERA);
+	GetOwner()->GetTagPtr()->CreateTag(CTagDefault::MAIN_CAMERA);
+	GetOwner()->SetObjTag(CTagDefault::MAIN_CAMERA);
 
 	DirectX::XMStoreFloat4x4(&m_mtxView, XMMatrixIdentity());
 	DirectX::XMStoreFloat4x4(&m_mtxProj, XMMatrixIdentity());
@@ -136,10 +141,10 @@ void CCamera::Init()
 	m_vUp = XMFLOAT3(0.0f, 1.0f, 0.0f);										// 上方ベクトル
 
 	auto screen = CScreen::GetSize();
-	m_fAspectRatio = (float)screen.x / (float)screen.y;	// 縦横比
-	m_fFovY = VIEW_ANGLE;								// 視野角(Degree)
-	m_fNearZ = VIEW_NEAR_Z;								// 前方クリップ距離
-	m_fFarZ = VIEW_FAR_Z;								// 後方クリップ距離
+	m_fAspectRatio = screen.x / screen.y;	// 縦横比
+	m_fFovY = VIEW_ANGLE;					// 視野角(Degree)
+	m_fNearZ = VIEW_NEAR_Z;					// 前方クリップ距離
+	m_fFarZ = VIEW_FAR_Z;					// 後方クリップ距離
 
 	m_vAngle = XMFLOAT3(0.0f, 0.0f, 0.0f);
 
@@ -363,7 +368,28 @@ Vector3 CCamera::ConvertScreenToWorld(Vector2 pos)
 
 void CCamera::ImGuiDebug()
 {
-	
+	//--- MainCamera設定
+	bool isMain = GetMain() == BaseToDerived<CCamera>().get();
+	if(ImGui::Checkbox("Main Camera", &isMain))
+		CCamera::SetMain(BaseToDerived<CCamera>());
+
+	m_fAspectRatio = CScreen::GetWidth() / CScreen::GetHeight();
+	ImGui::DragFloat("Near", &m_fNearZ, 1.0f, 0.0f);
+	ImGui::SameLine();
+	ImGui::DragFloat("Far", &m_fFarZ, 1.0f, 1.0f);
+	ImGui::DragFloat("Fovy", &m_fFovY);
+	ImGui::DragFloat3("camera Angle", m_vAngle);
+	if(ImGui::DragFloat3("camera Target", m_vTarget))
+	{
+		auto vPos = Transform()->GetPos();
+		float fVecX, fVecZ;
+		fVecX = vPos.x - m_vTarget.x;
+		fVecZ = vPos.z - m_vTarget.z;
+		m_fLengthInterval = sqrtf(fVecX * fVecX + fVecZ * fVecZ);
+	}
+	ImGui::Text("Length", &m_fLengthInterval);
+	ImGui::DragFloat3("camera Up", m_vUp);
+
 }
 
 #endif // BUILD_MODE

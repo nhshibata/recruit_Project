@@ -5,15 +5,16 @@
 
 //--- インクルード部
 #include <GameSystem/GameObject/tag.h>
+#include <Application/screen.h>
 
 #include <CoreSystem/Util/define.h>
 #include <CoreSystem/File/cerealize.h>
 
+#include <ImGui/imgui.h>
+
 using namespace MySpace::Game;
 using namespace MySpace::System;
 
-//--- 定数定義
-#define TAG_PATH		FORDER_DIR(data/SystemData/tag.json)
 
 //==========================================================
 // コンストラクタ
@@ -21,8 +22,8 @@ using namespace MySpace::System;
 CTag::CTag()
 	:m_nTagID(0)
 {
-	CreateTag(CDefaultTagChar::DEFAULT);
-	SetTag(CDefaultTagChar::DEFAULT);
+	CreateTag(CTagDefault::DEFAULT);
+	SetTag(CTagDefault::DEFAULT);
 }
 
 //==========================================================
@@ -58,5 +59,39 @@ void CTag::LoadSystem()
 {
 	CCerealize<std::vector<std::string>> sirial;
 	m_aTagName = sirial.InputFile(TAG_PATH);
+}
+
+//==========================================================
+// 表示
+//==========================================================
+void CTag::ImGuiTag(bool& disp)
+{
+	static std::string newTagName;
+
+	if (!disp)
+		return;
+	
+	ImGui::SetNextWindowPos(ImGui::GetMousePos(), ImGuiCond_::ImGuiCond_Once);
+	ImGui::SetNextWindowSize(ImVec2(CScreen::GetWidth() / 8, CScreen::GetHeight() / 8), ImGuiCond_::ImGuiCond_Once);
+	if (ImGui::Begin("Create Tag", &disp))
+	{
+		char input[52];
+		strcpy_s(input, newTagName.c_str());
+		ImGui::Text("New Tag >>");
+		ImGui::SameLine();
+		if (ImGui::InputText("input", input, 52))
+		{
+			newTagName = input;
+		}
+
+		if (ImGui::Button("Create"))
+		{
+			CTag::CreateTag(newTagName);
+			newTagName.clear();
+			disp = false;
+		}
+		ImGui::End();
+	}
+
 }
 

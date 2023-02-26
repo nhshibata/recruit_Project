@@ -258,7 +258,7 @@ void CDebugCamera::ResumeCamera(bool bSwitch)
 			SetMain(work);
 		else
 		{
-			if (auto obj = CGameObject::FindGameObjectWithTag(CDefaultTagChar::CAMERA); obj.lock())
+			if (auto obj = CGameObject::FindGameObjectWithTag(CTagDefault::MAIN_CAMERA); obj.lock())
 			{
 				CCamera::SetMain(obj.lock()->GetComponent<CCamera>());
 			}

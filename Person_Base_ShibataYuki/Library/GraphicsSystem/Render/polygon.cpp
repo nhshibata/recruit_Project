@@ -6,6 +6,7 @@
 
 //--- インクルード部
 #include <GraphicsSystem/Manager/shaderManager.h>
+#include <GraphicsSystem/Manager/assetsManager.h>
 #include <GraphicsSystem/Render/polygon.h>
 #include <GraphicsSystem/Shader/shader.h>
 #include <GraphicsSystem/Render/mesh.h>
@@ -67,22 +68,26 @@ HRESULT CPolygon::InitShader(ID3D11Device* pDevice)
 		{"COLOR",    0, DXGI_FORMAT_R32G32B32A32_FLOAT, 0, D3D11_APPEND_ALIGNED_ELEMENT, D3D11_INPUT_PER_VERTEX_DATA, 0},
 		{"TEXCOORD", 0, DXGI_FORMAT_R32G32_FLOAT,       0, D3D11_APPEND_ALIGNED_ELEMENT, D3D11_INPUT_PER_VERTEX_DATA, 0},
 	};
-	hr = LoadShader("Vertex2D", "Pixel2D",
+
+#if 0
+	hr = LoadShader("VS_2D", "PS_2D",
 		&m_pVertexShader, &m_pInputLayout, &m_pPixelShader, layout, _countof(layout));
 	if (FAILED(hr)) {
 		return hr;
 	}
+#endif // 0
 
-	/*PixelShaderSharedPtr ps = std::make_shared<CPixelShader>();
+	auto pSM = Application::Get()->GetSystem<CAssetsManager>()->GetShaderManager();
+	PixelShaderSharedPtr ps = std::make_shared<CPixelShader>();
 	VertexShaderSharedPtr vs = std::make_shared<CVertexShader>();
-	ConstantBufferSharedPtr cb_sg = std::make_shared<CConstantBuffer>();
-	ps->Make(FORDER_DIR(Pixel2D.cso));
-	vs->Make(FORDER_DIR(Vertex2D.cso), layout, _countof(layout));
-	cb_sg->Make(sizeof(SHADER_GLOBAL_POLYGON), 0, CConstantBuffer::EType::Vertex);
-
-	CShaderManager::Get()->SetConstantBuffer("SHADER_GLOBAL_POLYGON", cb_sg);
-	CShaderManager::Get()->SetVS("Vertex2D", vs);
-	CShaderManager::Get()->SetPS("Pixel2D", ps);*/
+	hr = ps->Make(CSO_PATH(PS_2D.cso));
+	if (FAILED(hr))
+		return hr;
+	hr = vs->Make(CSO_PATH(VS_2D.cso), layout, _countof(layout));
+	if (FAILED(hr))
+		return hr;
+	pSM->SetPS("PS_2D", ps);
+	pSM->SetVS("VS_2D", vs);
 
 	// 定数バッファ生成
 	D3D11_BUFFER_DESC bd;
@@ -186,9 +191,75 @@ void CPolygon::Draw(ID3D11DeviceContext* pDeviceContext)
 	// 頂点バッファ更新
 	SetVertex();
 
-	pDeviceContext->VSSetShader(m_pVertexShader, nullptr, 0);
+	/*pDeviceContext->VSSetShader(m_pVertexShader, nullptr, 0);
 	pDeviceContext->PSSetShader(m_pPixelShader, nullptr, 0);
-	pDeviceContext->IASetInputLayout(m_pInputLayout);
+	pDeviceContext->IASetInputLayout(m_pInputLayout);*/
+	{
+		auto pSM = Application::Get()->GetSystem<CAssetsManager>()->GetShaderManager();
+		pSM->BindPS("PS_2D");
+		pSM->BindVS("VS_2D");
+	}
+
+	UINT stride = sizeof(VERTEX_2D);
+	UINT offset = 0;
+	pDeviceContext->IASetVertexBuffers(0, 1, &m_pVertexBuffer, &stride, &offset);
+
+	pDeviceContext->PSSetSamplers(0, 1, &m_pSamplerState);
+	pDeviceContext->PSSetShaderResources(0, 1, &m_pTexture);
+
+	SHADER_GLOBAL_POLYGON cb;
+	cb.mProj = XMMatrixTranspose(XMLoadFloat4x4(&m_mProj));
+	cb.mView = XMMatrixTranspose(XMLoadFloat4x4(&m_mView));
+	cb.mWorld = XMMatrixTranspose(XMLoadFloat4x4(&m_mWorld));
+	cb.mTex = XMMatrixTranspose(XMLoadFloat4x4(&m_mTex));
+	pDeviceContext->UpdateSubresource(m_pConstantBuffer, 0, nullptr, &cb, 0, 0);
+	pDeviceContext->VSSetConstantBuffers(0, 1, &m_pConstantBuffer);
+	pDeviceContext->PSSetConstantBuffers(0, 1, &m_pConstantBuffer);
+
+	// プリミティブ形状をセット
+	pDeviceContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLESTRIP);
+
+	// ポリゴンの描画
+	pDeviceContext->Draw(NUM_VERTEX, 0);
+}
+
+//==========================================================
+// 描画
+//==========================================================
+void CPolygon::Draw(ID3D11DeviceContext* pDeviceContext, std::string ps, std::string vs)
+{
+	// 拡縮
+	XMMATRIX mWorld = XMMatrixScaling(m_vScale.x, m_vScale.y, m_vScale.z);
+	// 回転
+	mWorld *= XMMatrixRotationRollPitchYaw(XMConvertToRadians(m_vAngle.x),
+		XMConvertToRadians(m_vAngle.y), XMConvertToRadians(m_vAngle.z));
+	// 移動
+	mWorld *= XMMatrixTranslation(m_vPos.x, m_vPos.y, m_vPos.z);
+	// ワールド マトリックスに設定
+	XMStoreFloat4x4(&m_mWorld, mWorld);
+
+	if (m_pTexture) {
+		// 拡縮
+		mWorld = XMMatrixScaling(m_vSizeTexFrame.x, m_vSizeTexFrame.y, 1.0f);
+		// 移動
+		mWorld *= XMMatrixTranslation(m_vPosTexFrame.x, m_vPosTexFrame.y, 0.0f);
+		// テクスチャ マトリックスに設定
+		XMStoreFloat4x4(&m_mTex, mWorld);
+	}
+	else {
+		// テクスチャ無し
+		m_mTex._44 = 0.0f;
+	}
+
+	// 頂点バッファ更新
+	SetVertex();
+
+	{
+		auto pSM = Application::Get()->GetSystem<CAssetsManager>()->GetShaderManager();
+		pSM->BindPS(ps);
+		pSM->BindVS(vs);
+	}
+	//pDeviceContext->IASetInputLayout(m_pInputLayout);
 
 	UINT stride = sizeof(VERTEX_2D);
 	UINT offset = 0;

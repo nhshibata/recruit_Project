@@ -344,7 +344,7 @@ std::shared_ptr<CGameObject> CGameObjectManager::CreateGameObject(CGameObject* p
 	// ©g‚ÌweakPtr‚ğ“n‚·
 	spObj.get()->SetPtr(spObj);
 	if (!pObj)
-		TagMove(CDefaultTagChar::DEFAULT, spObj);
+		TagMove(CTagDefault::DEFAULT, spObj);
 	else
 		TagMove(pObj->GetTag(), spObj);
 
