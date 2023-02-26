@@ -7,13 +7,16 @@ float3 L = normalize(-g_lightDir.xyz);					// 光源へのベクトル
 		
 		
 //==========================================================
-nega
+wipe
+float2 centerPos;
+float wipeSize;
+color = tex.sample;
+float2 posFromCenter = pin.pos.xy - float(centerPos.x, centerPos.y);
+clip(lenght(posFromCenter) - wipeSize);
 
-float4 color = tex;
-float3 negaColor;
-negaColor.r = 1.0f - color.r;
-lerp(color, negaColor, rate);
-
+wipe Height 
+float t = (int)fmod(pin.pos.x, 64.0f);
+clip(t -wipeSize);
 //==========================================================
 
 cbuffer Screen

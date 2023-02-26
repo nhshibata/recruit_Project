@@ -153,7 +153,7 @@ void CBillboardRenderer::ImGuiDebug()
 	}
 
 	//--- ƒƒjƒ…[‚©‚çÃ¸½Á¬‘I‘ð
-	if (auto name = DispCombo(s_FileList, u8"Image", m_pSprite->GetImageName()); !name.empty())
+	if (auto name = DispComboSelect(s_FileList, u8"Image", m_pSprite->GetImageName()); !name.empty())
 	{
 		m_pSprite->SetImage(name);
 	}

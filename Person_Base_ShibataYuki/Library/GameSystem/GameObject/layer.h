@@ -1,7 +1,8 @@
 //=========================================================
 // [layer.h]
 //---------------------------------------------------------
-//作成:2022/04/19
+// 作成:2022/04/19
+// 更新:2023/02/14 ビットに対応できるよう変更
 //---------------------------------------------------------
 // レイヤーｸﾗｽ : 部品ｸﾗｽ
 //=========================================================
@@ -14,9 +15,11 @@
 #include <CoreSystem/Util/cerealCommon.h>
 #include <string>
 
+//--- 定数定義
 #ifndef NAME_TO
 #define NAME_TO(name)		#name
 #endif // NAME_TO
+
 #define MAP_SET(key, value)	static_cast<int>(key), NAME_TO(value)
 
 namespace MySpace
@@ -38,44 +41,49 @@ namespace MySpace
 			{
 				archive(CEREAL_NVP(m_nLayer));
 			}
-		public:
-			//--- 列挙体定義
-			enum class E_Layer : int	// レイヤーを増やす
-			{
-				SKY = 0, 
-				BG = 1,			// 背景
-				DEFAULT = 10,	// デフォルト
-				MODEL = 30,
-				UI = 50,		// UI
-				FOG = 99,		// 前景(フェード等)
-			};
-
 		private:
 			//--- メンバ変数
-			int m_nLayer;
+			int m_nLayer = 0;
 
 			// 登録用静的メンバ変数
-			static std::map<int, std::string> m_aNoList;
+			static std::map<int, std::string> m_aLayerMap;
 
 		public:
 			//--- メンバ関数
-			CLayer() :m_nLayer(static_cast<int>(E_Layer::DEFAULT)) 
-			{};
-			CLayer(E_Layer layer) :m_nLayer((int)layer)
-			{};
-			~CLayer() 
-			{};
+			CLayer();
+			CLayer(int layer);
+			~CLayer();
 
 			//--- ゲッター・セッター
 			inline int GetLayer() { return m_nLayer; }
-			inline void SetLayer(int layer) { m_nLayer = layer; };
-			inline void SetLayer(E_Layer layer) { m_nLayer = static_cast<int>(layer); };
+			inline std::string GetName() { return NumberToName(m_nLayer); }
+			void SetLayer(int layer);
 
-			static void Regist(int no, std::string registName)
-			{
-				if(!m_aNoList.count(no))
-					m_aNoList[no] = registName;
-			}
+			// *@静的メンバ関数
+			// *@新規登録
+			static bool Regist(int no, std::string registName);
+			// *@静的メンバ関数
+			// *@名前を数字に
+			static int GetNumber(std::string name);
+			// *@静的メンバ関数
+			// *@数字を名前に
+			static std::string NumberToName(int No);
+			// *@静的メンバ関数
+			// *@数字を二進数変換
+			static int NumberToBit(int no);
+			// *@静的メンバ関数
+			// *@ファイル読み込み
+			static void LoadSystem();
+			// *@静的メンバ関数
+			// *@ファイル書き出し
+			static void SaveSystem();
+
+#ifdef BUILD_MODE
+			static std::vector<std::string> GetNameList();
+			static void ImGuiLayer(bool& disp);
+			static int ImGuiSetLayerList(int bit);
+#endif // BUILD_MODE
+
 
 		};
 

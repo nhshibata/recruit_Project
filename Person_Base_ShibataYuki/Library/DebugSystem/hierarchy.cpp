@@ -43,8 +43,8 @@ using namespace MySpace::Game;
 CHierachy::CHierachy()
 	:m_bLoadSaveWindow(false)
 {
-	m_savePath.clear();
-	m_loadPath = FORDER_DIR(Data/scene);
+	m_strSavePath.clear();
+	m_strLoadPath = FORDER_DIR(Data/scene);
 	LoadScenePathList();
 }
 
@@ -102,59 +102,24 @@ void CHierachy::Update(ImGuiManager* manager)
 		if (ImGui::BeginMenu("New GameObject"))
 		{
 			if (ImGui::MenuItem("Empty"))
-			{
-				CGameObject::Ptr obj = CSceneManager::Get()->GetActiveScene()->GetObjManager()->CreateGameObject();
-				manager->GetInspector()->SetSelectGameObject(obj);
-			}
+				manager->GetInspector()->SetSelectGameObject(CreateObject(0));
 			if (ImGui::MenuItem("Model"))
-			{
-				CGameObject::Ptr obj = CSceneManager::Get()->GetActiveScene()->GetObjManager()->CreateGameObject();
-				obj->AddComponent<CModelRenderer>();
-				// ｺﾝﾎﾟｰﾈﾝﾄの追加後
-				manager->GetInspector()->SetSelectGameObject(obj);
-			}
+				manager->GetInspector()->SetSelectGameObject(CreateObject(1));
 			if (ImGui::MenuItem("StaticModel"))
-			{
-				CGameObject::Ptr obj = CSceneManager::Get()->GetActiveScene()->GetObjManager()->CreateGameObject();
-				auto render = obj->AddComponent<CModelRenderer>();
-				render->SetStatic(CMeshRenderer::EStaticMode::STATIC);
-				// ｺﾝﾎﾟｰﾈﾝﾄの追加後
-				manager->GetInspector()->SetSelectGameObject(obj);
-			}
+				manager->GetInspector()->SetSelectGameObject(CreateObject(2));
 			if (ImGui::MenuItem("Billboard"))
-			{
-				CGameObject::Ptr obj = CSceneManager::Get()->GetActiveScene()->GetObjManager()->CreateGameObject();
-				obj->AddComponent<Game::CBillboardRenderer>();
-				// ｺﾝﾎﾟｰﾈﾝﾄの追加後
-				manager->GetInspector()->SetSelectGameObject(obj);
-			}
+				manager->GetInspector()->SetSelectGameObject(CreateObject(3));
 			if (ImGui::MenuItem("Sphere"))
-			{
-				CGameObject::Ptr obj = CSceneManager::Get()->GetActiveScene()->GetObjManager()->CreateGameObject();
-				obj->AddComponent<Game::CSphereRenderer>();
-				// ｺﾝﾎﾟｰﾈﾝﾄの追加後
-				manager->GetInspector()->SetSelectGameObject(obj);
-			}
+				manager->GetInspector()->SetSelectGameObject(CreateObject(4));
 			if (ImGui::MenuItem("Box"))
-			{
-				CGameObject::Ptr obj = CSceneManager::Get()->GetActiveScene()->GetObjManager()->CreateGameObject();
-				obj->AddComponent<Game::CBoxRenderer>();
-				// ｺﾝﾎﾟｰﾈﾝﾄの追加後
-				manager->GetInspector()->SetSelectGameObject(obj);
-			}
+				manager->GetInspector()->SetSelectGameObject(CreateObject(5));
 			if (ImGui::MenuItem("Polygon"))
-			{
-				CGameObject::Ptr obj = CSceneManager::Get()->GetActiveScene()->GetObjManager()->CreateGameObject();
-				obj->AddComponent<Game::CPolygonRenderer>();
-				// ｺﾝﾎﾟｰﾈﾝﾄの追加後
-				manager->GetInspector()->SetSelectGameObject(obj);
-			}
+				manager->GetInspector()->SetSelectGameObject(CreateObject(6));			
 			if (ImGui::MenuItem("Text"))
+				manager->GetInspector()->SetSelectGameObject(CreateObject(7));
+			if (ImGui::MenuItem("Objects"))
 			{
-				CGameObject::Ptr obj = CSceneManager::Get()->GetActiveScene()->GetObjManager()->CreateGameObject();
-				obj->AddComponent<Game::CTextRenderer>();
-				// ｺﾝﾎﾟｰﾈﾝﾄの追加後
-				manager->GetInspector()->SetSelectGameObject(obj);
+				m_CreateValue.bDisp ^= true;
 			}
 			ImGui::EndMenu();
 		}
@@ -163,6 +128,10 @@ void CHierachy::Update(ImGuiManager* manager)
 
 	// 検索更新
 	DispSearch();
+
+	// オブジェクトウィンドウ
+	if(m_CreateValue.bDisp)
+		CreateObjectsWindow();
 
 	//--- GameObject表示
 	auto objList = CSceneManager::Get()->GetActiveScene()->GetObjManager()->GetList();
@@ -219,7 +188,7 @@ void CHierachy::Update(ImGuiManager* manager)
 void CHierachy::LoadScenePathList()
 {
 	CFilePath path;
-	m_scenePathList = path.GetFileName(m_loadPath);
+	m_aScenePathList = path.GetFileName(m_strLoadPath);
 }
 
 //==========================================================
@@ -236,12 +205,12 @@ void CHierachy::DispSaveLoadMenu()
 		{
 			if (ImGui::BeginMenu("SceneList"))
 			{
-				for (auto it = m_scenePathList.begin(); it < m_scenePathList.end(); ++it)
+				for (auto it = m_aScenePathList.begin(); it < m_aScenePathList.end(); ++it)
 				{
 					auto name = (*it).c_str();
 					if (ImGui::MenuItem(name))
 					{
-						m_loadPath = name;
+						m_strLoadPath = name;
 					}
 				}
 				ImGui::EndMenu();
@@ -253,11 +222,11 @@ void CHierachy::DispSaveLoadMenu()
 			LoadScenePathList();
 		}
 
-		m_loadPath = InputString(m_loadPath, "LoadFile");
+		m_strLoadPath = InputString(m_strLoadPath, "LoadFile");
 
 		if (ImGui::Button("Load"))
 		{
-			if (CSceneManager::Get()->LoadScene(m_loadPath))
+			if (CSceneManager::Get()->LoadScene(m_strLoadPath))
 				m_bLoadSaveWindow = false;
 		}
 		ImGui::Separator();
@@ -266,19 +235,19 @@ void CHierachy::DispSaveLoadMenu()
 		ImGui::SetNextWindowPos(ImVec2(20, 20), ImGuiCond_Once);
 		ImGui::SetNextWindowSize(ImVec2(200, 300), ImGuiCond_Once);
 
-		m_savePath = InputString(m_savePath, "SaveFile");
+		m_strSavePath = InputString(m_strSavePath, "SaveFile");
 		if (ImGui::Button("Save"))
 		{
-			CSceneManager::Get()->SaveScene(m_savePath);
+			CSceneManager::Get()->SaveScene(m_strSavePath);
 		}
 		ImGui::Separator();
 		if (ImGui::Button("SaveScene OverWrite"))
 		{
-			CSceneManager::Get()->SaveScene(m_savePath);
+			CSceneManager::Get()->SaveScene(m_strSavePath);
 		}
 		if (ImGui::Button("LoadScene OverWrite"))
 		{
-			CSceneManager::Get()->SaveScene(m_loadPath);
+			CSceneManager::Get()->SaveScene(m_strLoadPath);
 		}
 
 		ImGui::End();
@@ -431,8 +400,6 @@ bool CHierachy::DispCheck(CGameObject* obj)
 #pragma endregion
 
 
-#pragma region LIST_SWAP
-
 //==========================================================
 // list用コンテナ内で挿入入れ替え
 // 受け取ったリストを入れ替え返却 else そのまま返却
@@ -465,7 +432,99 @@ std::list<T> CHierachy::MovingInList(std::list<T> list, T newT, int index)
 	return list;
 }
 
-#pragma endregion
+//==========================================================
+// オブジェクト一括生成
+//==========================================================
+void CHierachy::CreateObjectsWindow()
+{
+	static const char* aSelectType[] ={
+		"empty", 
+		"Model",
+		"StaticModel",
+		"Billboard",
+		"Sphere",
+		"Box",
+		"Polygon",
+		"Text"
+	};
+	ImGui::Begin("Objects Create", &m_CreateValue.bDisp);
 
+	// type選択
+	for (auto cnt = 0; cnt < _countof(aSelectType); ++cnt)
+	{
+		if (ImGui::Selectable(aSelectType[cnt], m_CreateValue.nObjType))
+		{
+			m_CreateValue.nObjType = cnt;
+			break;
+		}
+	}
+
+	ImGui::DragInt("Grid", &m_CreateValue.nGrid);
+	ImGui::DragFloat("Margin", &m_CreateValue.fMargin);
+	ImGui::DragFloat3("Center", (float*)&m_CreateValue.vCenter);
+	// 実行
+	if (ImGui::Button("Create"))
+	{
+		for (int grid = 0; grid < m_CreateValue.nGrid * m_CreateValue.nGrid; ++grid)
+		{
+			float col = float(grid % m_CreateValue.nGrid);
+			float row = float(grid / m_CreateValue.nGrid);
+			auto pObj = CreateObject(m_CreateValue.nObjType);
+			auto newPos = m_CreateValue.vCenter;
+			newPos.x = (m_CreateValue.vCenter.x - (m_CreateValue.nGrid - 1 * m_CreateValue.fMargin * 0.5f)) + col * m_CreateValue.fMargin;
+			newPos.z = (m_CreateValue.vCenter.z - (m_CreateValue.nGrid - 1 * m_CreateValue.fMargin * 0.5f)) + row * m_CreateValue.fMargin;
+			pObj->GetTransform()->SetPos(newPos);
+		}
+	}
+
+	ImGui::End();
+
+}
+
+//==========================================================
+// オブジェクト生成
+//==========================================================
+CGameObject::Ptr CHierachy::CreateObject(int No, std::shared_ptr<MySpace::Game::CGameObject> copy)
+{
+	CGameObject::Ptr obj;
+	if (copy)
+		obj = CGameObject::CopyObject(copy).lock();
+	else
+		obj = CGameObject::CreateObject().lock();
+
+	switch (No)
+	{
+	case 0:
+		break;
+	case 1:
+		obj->AddComponent<CModelRenderer>();
+		break;
+	case 2:
+	{
+		auto render = obj->AddComponent<CModelRenderer>();
+		render->SetStatic(CMeshRenderer::EStaticMode::STATIC);
+		break;
+	}
+	case 3:
+		obj->AddComponent<Game::CBillboardRenderer>();
+		break;
+	case 4:
+		obj->AddComponent<Game::CSphereRenderer>();
+		break;
+	case 5:
+		obj->AddComponent<Game::CBoxRenderer>();
+		break;
+	case 6:
+		obj->AddComponent<Game::CPolygonRenderer>();
+		break;
+	case 7:
+		obj->AddComponent<Game::CTextRenderer>();
+		break;
+	default:
+		break;
+	};
+
+	return obj;
+}
 
 #endif // !BUILD_MODE

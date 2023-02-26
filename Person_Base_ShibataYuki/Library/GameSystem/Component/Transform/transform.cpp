@@ -22,14 +22,19 @@ namespace
 	const float RATE_ROTATE = 0.2f;
 }
 
+//==========================================================
 // コンストラクタ
+//==========================================================
 CTransform::CTransform()
-	:m_pChilds(0),m_vPos(0,0,20), m_vRot(0,0,0), m_vScale(1,1,1),m_vDestRot(0, 0, 0)
 {
 	m_pChilds = std::vector<std::weak_ptr<CTransform>>();
 	XMStoreFloat4x4(&m_mLocalMtx, XMMatrixIdentity());
 	XMStoreFloat4x4(&m_mWorldMtx, XMMatrixIdentity());
 }
+
+//==========================================================
+// 引数付きコンストラクタ
+//==========================================================
 CTransform::CTransform(std::shared_ptr<CGameObject> owner)
 	:CComponent(owner),m_pChilds(0),m_vPos(0,0,0), m_vRot(0,0,0), m_vScale(1,1,1), m_vDestRot(0, 0, 0)
 {
@@ -37,9 +42,17 @@ CTransform::CTransform(std::shared_ptr<CGameObject> owner)
 	XMStoreFloat4x4(&m_mLocalMtx, XMMatrixIdentity());
 	XMStoreFloat4x4(&m_mWorldMtx, XMMatrixIdentity());
 }
+
+//==========================================================
+// デストラクタ
+//==========================================================
 CTransform::~CTransform()
 {
 }
+
+//==========================================================
+// 解放
+//==========================================================
 void CTransform::Uninit()
 {
 	std::vector<std::weak_ptr<CTransform>>::iterator it = m_pChilds.begin();
@@ -52,10 +65,18 @@ void CTransform::Uninit()
 		}
 	}
 }
+
+//==========================================================
+// 初期化
+//==========================================================
 void CTransform::Init()
 {
 
 }
+
+//==========================================================
+// 更新処理
+//==========================================================
 void CTransform::Update()
 {
 	//--- 過去座標格納
@@ -67,14 +88,22 @@ void CTransform::Update()
 	UpdateWorldMatrix();
 }
 
+//==========================================================
+// 未実装
+//==========================================================
 Quaternion CTransform::GetWorldQuaternion()
 {
 	return m_Rot;
 }
+// 未実装
 Quaternion CTransform::GetLocalQuaternion()
 {
 	return m_Rot;
 }
+
+//==========================================================
+// マトリックス更新
+//==========================================================
 void CTransform::UpdateWorldMatrix()
 {
 	XMMATRIX mtx, scl, rot, translate;
@@ -112,6 +141,9 @@ void CTransform::UpdateWorldMatrix()
 	}
 }
 
+//==========================================================
+// ﾛｰｶﾙ更新
+//==========================================================
 Matrix4x4 CTransform::CalcLocalMatrix()
 {
 	XMMATRIX mtx, scl, rot, translate;
@@ -135,6 +167,7 @@ Matrix4x4 CTransform::CalcLocalMatrix()
 	return ret;
 }
 
+
 void CTransform::SetWorldMatrix(Vector3 trans, Vector3 rotate, Vector3 scale)
 {
 	m_vPos = trans;
@@ -143,6 +176,7 @@ void CTransform::SetWorldMatrix(Vector3 trans, Vector3 rotate, Vector3 scale)
 
 	//UpdateWorldMatrix();
 }
+
 void CTransform::SetWorldQuaternion(const Quaternion &  rotation)
 {
 
@@ -152,6 +186,9 @@ void CTransform::SetLocalQuaternion(const Quaternion &  rotation)
 
 }
 
+//==========================================================
+// 子オブジェクトの更新
+//==========================================================
 void CTransform::UpdateChildMatrix(CTransform* child, Matrix4x4 mtx)
 {
 	// 子のワールドマトリックス更新
@@ -180,6 +217,9 @@ void CTransform::UpdateChildMatrix(CTransform* child, Matrix4x4 mtx)
 	
 }
 
+//==========================================================
+// 子の追加
+//==========================================================
 void CTransform::AddChild(std::weak_ptr<CTransform> child)
 {
 	// ﾎﾟｲﾝﾀ
@@ -213,6 +253,7 @@ std::weak_ptr<CTransform> CTransform::GetChild(int no)
 		return std::shared_ptr<CTransform>();
 	return m_pChilds[no].lock();
 }
+
 
 #ifdef BUILD_MODE
 

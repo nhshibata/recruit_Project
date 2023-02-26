@@ -60,6 +60,7 @@ namespace MySpace
 			static HRESULT InitShader(ID3D11Device* pDevice);
 			static void Fin();
 			static void Draw(ID3D11DeviceContext* pDeviceContext);
+			static void Draw(ID3D11DeviceContext* pDeviceContext, std::string ps, std::string vs);
 
 			// *@テクスチャの設定
 			static inline void SetTexture(ID3D11ShaderResourceView* pTexture)

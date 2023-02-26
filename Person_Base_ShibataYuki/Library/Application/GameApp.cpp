@@ -19,6 +19,7 @@
 #include <GameSystem/Component/Light/directionalLight.h>
 #include <GameSystem/Component/Transform/Tween.h>
 #include <GameSystem/GameObject/tag.h>
+#include <GameSystem/GameObject/layer.h>
 
 #include <GraphicsSystem/DirectX/DXDevice.h>
 #include <GraphicsSystem/Render/polygon.h>
@@ -26,7 +27,6 @@
 #include <GraphicsSystem/Manager/assetsManager.h>
 #include <GraphicsSystem/Manager/modelManager.h>
 #include <GraphicsSystem/Manager/effectManager.h>
-//#include <GraphicsSystem/Manager/shaderManager.h>
 
 #include <DebugSystem/imguiManager.h>
 #include <DebugSystem/typeSaveManager.h>
@@ -79,8 +79,6 @@ HRESULT CGameApp::Init(Application* app)
 
 	//--- process order 006
 	//--- 描画関係
-
-	//--- アセット
 	// 素材全般所持ｸﾗｽ
 	auto pAssets = new CAssetsManager();
 	app->AddSystem(pAssets, typeid(CAssetsManager).name());
@@ -103,6 +101,11 @@ HRESULT CGameApp::Init(Application* app)
 
 	//--- 音初期化
 	CSound::Init();
+
+	{
+		CTag::LoadSystem();
+		CLayer::LoadSystem();
+	}
 
 	//--- process order 007
 	//--- シーンの生成
@@ -140,6 +143,11 @@ HRESULT CGameApp::Init(Application* app)
 void CGameApp::Uninit(Application* app)const
 {
 	//_CrtDumpMemoryLeaks();
+
+	{
+		CTag::SaveSystem();
+		CLayer::SaveSystem();
+	}
 
 	// 音終了
 	CSound::Fin();

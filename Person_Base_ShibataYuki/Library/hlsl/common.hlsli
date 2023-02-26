@@ -19,7 +19,6 @@ struct InstancingData
     matrix mWorld;
 };
 
-
 // マテリアル
 struct MaterialData
 {
@@ -111,6 +110,18 @@ cbuffer Rate : register(b7)
     float4 g_rate;
 }
 
+// VS用
+// 画面サイズ
+cbuffer ScreenSize : register(b8)
+{
+    float2 g_screenSize;
+    float2 screenDummy;
+}
+
+cbuffer Blur : register(b9)
+{
+    float4 g_weight[2]; // 重み
+}
 
 //==========================================================
 // 関数
@@ -146,5 +157,11 @@ Texture2D g_texTransparent : register(t2);  // 透過テクスチャ
 Texture2D g_texSpecular : register(t3);     // 鏡面反射テクスチャ
 Texture2D g_texSunView : register(t4);      // 影ﾃｸｽﾁｬ
 Texture2D g_rampTexture : register(t5);     // Toon用
+Texture2D g_worldTexture : register(t6);    // GBuffer:World用
+Texture2D g_ColorTexture : register(t7);    // GBuffer:Color用
+Texture2D g_NormalTexture : register(t8);   // GBuffer:Normal用
+Texture2D g_depthTexture : register(t9);    // GBuffer:Depth用
+Texture2D g_postTexture : register(t10);    // PostProcess後ﾃｸｽﾁｬ
+Texture2D g_mainTexture : register(t10);    // PostProcess後ﾃｸｽﾁｬ
 
 SamplerState g_sampler : register(s0);      // サンプラ

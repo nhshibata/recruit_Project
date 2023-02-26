@@ -15,7 +15,7 @@
 #include <algorithm>
 #include <Application/Application.h>
 #include <GameSystem/Manager/drawSystem.h>
-#include <GameSystem/Component/Camera/camera.h>
+#include <GameSystem/Component/Camera/stackCamera.h>
 #include <GameSystem/Component/Light/directionalLight.h>
 #include <GameSystem/Component/Renderer/polygonRenderer.h>
 #include <GameSystem/Component/Renderer/meshRenderer.h>
@@ -446,6 +446,57 @@ void CDrawSystem::Draw3D()
 
 }
 
+void CDrawSystem::StackDraw()
+{
+	/*auto pCamera = CCamera::GetMain()->BaseToDerived<CStackCamera>();
+	if (!pCamera)
+		return;
+*/
+	auto pAssets = Application::Get()->GetSystem<CAssetsManager>();
+	auto pDX = Application::Get()->GetSystem<CDXDevice>();
+
+	//--- 登録されたモデル名別に描画
+	for (auto & instancingModel : m_aInstancingModelMap)
+	{
+		auto aName = GetPSVSName(instancingModel.first);
+		if (aName.size() != 3)
+			continue;
+
+		//--- 描画するモデルの取得
+		auto model = pAssets->GetModelManager()->GetModel(aName[0]);
+		// モデルが解放されていないか一応確認
+		if (!model)
+			continue;
+
+		model->DrawInstancing(pDX->GetDeviceContext(), instancingModel.second, EByOpacity::eOpacityOnly, false);
+	}
+
+	//--- Mesh
+	for (auto & mesh : m_aInstancingMeshMap)
+	{
+		if (mesh.second.aData.size() == 0)// 一応確認
+			continue;
+
+		// ビルボードか確認
+		if (CBillboard* bill = dynamic_cast<CBillboard*>(mesh.second.pMesh); bill != nullptr)
+		{
+			auto aName = GetPSVSName(mesh.first);
+			if (aName.size() != 3)
+				continue;
+
+			// ﾃｸｽﾁｬ設定
+			auto image = pAssets->GetImageManager()->GetResource(aName[0]);
+			auto tex = image ? image->GetSRV() : NULL;
+			mesh.second.pMesh->DrawInstancing(mesh.second.aData, false, tex, &bill->GetTextureMatrix());
+		}
+		else
+		{
+			mesh.second.pMesh->DrawInstancing(mesh.second.aData, false);
+		}
+	}
+
+}
+
 
 #ifdef BUILD_MODE
 
@@ -486,48 +537,3 @@ void CDrawSystem::SetDebugMesh(std::string name, DirectX::XMFLOAT4X4 mtx, CMesh*
 
 #endif
 
-
-
-#if POST_TEST
-
-//==========================================================
-// コンストラクタ
-//==========================================================
-CDrawSystemMap::CDrawSystemMap()
-{
-
-}
-
-//==========================================================
-// デストラクタ
-//==========================================================
-CDrawSystemMap::~CDrawSystemMap()
-{
-
-}
-
-//==========================================================
-// 更新
-//==========================================================
-void CDrawSystemMap::Update()
-{
-	// TODO:後で変える。実際の登録されたLayer順でなければ無駄が多い
-	auto layer = static_cast<int>(CLayer::E_Layer::FOG);
-
-	//--- レイヤー順に描画
-	for (int cnt = 0; cnt < layer; ++cnt)
-	{
-		if (!m_aLayerMap.count(cnt))
-			continue;
-		
-		//--- 前準備
-		// 描画先変更や効果を掛けたい
-		// 未作成:CPostProcessクラスがレイヤーに存在するか確認
-		// 存在していれば効果を掛ける?
-
-		// 描画処理
-		m_aLayerMap[cnt].Update();
-	}
-}
-
-#endif // POST_TEST

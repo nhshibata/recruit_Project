@@ -46,8 +46,8 @@ CPolygonRenderer::CPolygonRenderer(std::shared_ptr<CGameObject> owner)
 	auto rect = GetOwner()->AddComponent<CRectTransform>();
 	m_pRectTransform = rect;
 	rect->SetSize(100, 100);
-	m_strPixelShader = "Pixel2D";
-	m_strVertexShader = "Vertex2D";
+	m_strPixelShader = "PS_2D";
+	m_strVertexShader = "VS_2D";
 }
 
 //==========================================================
@@ -243,7 +243,7 @@ void CPolygonRenderer::ImGuiDebug()
 	}
 
 	// Ã¸½Á¬
-	if (auto name = DispCombo(s_FileList, "2D Image", m_pSprite->GetImageName()); !name.empty())
+	if (auto name = DispComboSelect(s_FileList, "2D Image", m_pSprite->GetImageName()); !name.empty())
 	{
 		m_pSprite->SetImage(name);
 	}

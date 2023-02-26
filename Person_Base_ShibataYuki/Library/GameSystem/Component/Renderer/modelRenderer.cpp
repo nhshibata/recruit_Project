@@ -589,21 +589,21 @@ void CModelRenderer::ImGuiDebug()
 	//--- モデル選択読み込み
 
 	// xファイル
-	if (auto name = DispCombo(m_aXModelList, "x File", m_modelName); !name.empty())
+	if (auto name = DispComboSelect(m_aXModelList, "x File", m_modelName); !name.empty())
 	{
 		// ポインタを受け取る
 		SetModel(name);
 	}
 	
 	// objファイル
-	if (auto name = DispCombo(m_aObjModelList, "obj File", m_modelName); !name.empty())
+	if (auto name = DispComboSelect(m_aObjModelList, "obj File", m_modelName); !name.empty())
 	{
 		// ポインタを受け取る
 		SetModel(name);
 	}
 	
 	// fbxファイル
-	if (auto name = DispCombo(m_aFbxModelList, "fbx File", m_modelName); !name.empty())
+	if (auto name = DispComboSelect(m_aFbxModelList, "fbx File", m_modelName); !name.empty())
 	{
 		// ポインタを受け取る
 		SetModel(name);

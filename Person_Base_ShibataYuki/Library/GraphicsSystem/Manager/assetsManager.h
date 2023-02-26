@@ -13,6 +13,10 @@
 #include <memory>
 #include <CoreSystem/systemBase.h>
 
+#ifndef NAME_TO
+#define NAME_TO(name)	#name
+#endif // !NAME_TO
+
 #pragma region ForwardDeclaration
 
 class Application;

@@ -17,7 +17,7 @@ using namespace MySpace::Graphics;
 CRenderTarget::CRenderTarget()
 	:m_pRTV(nullptr)
 {
-	HRESULT hr = Create();
+	
 }
 
 //==========================================================
@@ -157,5 +157,14 @@ void CRenderTarget::Release()
 //==========================================================
 void CRenderTarget::Clear(float* color)
 {
+	Application::Get()->GetDeviceContext()->ClearRenderTargetView(GetView(), color);
+}
+
+//==========================================================
+// レンダー ﾃﾞｰﾀリセット
+//==========================================================
+void CRenderTarget::Clear(float r, float g, float b, float a)
+{
+	float color[] = { r,g,b,a };
 	Application::Get()->GetDeviceContext()->ClearRenderTargetView(GetView(), color);
 }

@@ -88,6 +88,8 @@ namespace MySpace
 			void Draw3DShadow();
 			// *@3Dインスタンシング描画
 			void Draw3D();
+			// *@stackCameraによる描画
+			void StackDraw();
 			
 		private:
 			const std::vector<std::string> GetPSVSName(const std::string name);

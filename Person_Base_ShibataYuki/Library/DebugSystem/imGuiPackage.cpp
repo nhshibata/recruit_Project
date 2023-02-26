@@ -33,9 +33,9 @@ namespace MySpace
 
 #pragma region DISP_FILE
 		//==========================================================
-		// 指定パスのフォルダ内のファイル名を表示する
+		// vector型のリストから表示し、選択された際にそのstringを返す
 		//==========================================================
-		std::string DispCombo(std::vector<std::string> list, std::string desc, std::string preview)
+		std::string DispComboSelect(std::vector<std::string> list, std::string desc, std::string preview)
 		{
 			std::string ret = std::string();
 			if (ImGui::BeginCombo(desc.c_str(), preview.c_str()))
@@ -51,6 +51,27 @@ namespace MySpace
 				ImGui::EndCombo();
 			}
 			return ret;
+		}
+
+		//==========================================================
+		// vector型のリストから表示し、選択された際にインデックスを返す
+		//==========================================================
+		int DispComboSelect(std::vector<std::string> list, std::string desc, int idx)
+		{
+			std::string preview = (idx < 0) ? "" : list[idx];
+			if (ImGui::BeginCombo(desc.c_str(), preview.c_str()))
+			{
+				for (int cnt = 0; cnt < list.size(); cnt++)
+				{
+					if (bool bg = ImGui::Selectable(list[cnt].c_str(), &bg); bg)
+					{
+						idx = cnt;
+						break;
+					}
+				}
+				ImGui::EndCombo();
+			}
+			return idx;
 		}
 
 		//==========================================================

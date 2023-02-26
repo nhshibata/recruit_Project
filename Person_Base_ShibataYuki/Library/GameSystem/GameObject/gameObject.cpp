@@ -5,6 +5,7 @@
 // 更新:2022/05/11 タグが一致するオブジェクトを全て取得する関数作成
 //			課題: 同一のコンポーネントを使う場合、mapは適切ではない
 // 更新:2022/11/14 コピーコンストラクタを改造、同一のコンポーネントを生成するように変更
+// 更新:2023/02/13 TODO:神ｸﾗｽ化が深刻。Factoryクラスなどを作るべき
 //---------------------------------------------------------
 // ゲームオブジェクト : 基底クラス
 // 
@@ -18,6 +19,7 @@
 #include <GameSystem/Manager/gameObjectManager.h>
 #include <GameSystem/Factory/componentFactory.h>
 
+#include <CoreSystem/File/cerealize.h>
 #include <ImGui/imgui.h>
 
 using namespace MySpace::SceneManager;
@@ -465,6 +467,53 @@ std::list<std::weak_ptr<CGameObject>> CGameObject::FindGameObjectsWithTag(CTag t
 // オブジェクト生成
 // 管理クラス側に登録された後ﾎﾟｲﾝﾀを引き渡す
 //==========================================================
+std::weak_ptr<CGameObject> CGameObject::CopyObject(CGameObject::Ptr pObj)
+{
+	// シリアライズクラス作成
+	CCerealize<std::shared_ptr<CGameObject>> sirial;
+	{
+		// ﾃﾞｰﾀを外部保存
+		auto obj = pObj;
+		sirial.OutputFile(obj->GetName(), GAME_COPY, obj);
+	}
+
+	// 一時的なオブジェクト生成
+	if (auto work = std::make_shared<CGameObject>(); work)
+	{
+		// ﾃﾞｰﾀ読み込み
+		work = sirial.InputFile(GAME_COPY);
+
+		// 新しいオブジェクト生成
+		auto newObj = CGameObject::CreateObject();
+		// 読みこまれたコンポーネントの受け渡し
+		auto comList = work->GetComponentList();
+		for (auto & com : comList)
+		{
+			newObj.lock()->SetComponent(com);
+			//--- 描画と当たり判定クラスは要請する必要があるため、Initを呼び出す
+			// MEMO: 限定的なもので、正直どうなのか
+			if (com->GetName().find("Renderer") != std::string::npos ||
+				com->GetName().find("Collision") != std::string::npos)
+			{
+				com->Awake();
+				com->Init();
+			}
+		}
+
+		// オブジェクト破棄
+		work.reset();
+
+		return newObj;
+	}
+
+	// 失敗
+	return CGameObject::Ptr();
+}
+
+//==========================================================
+// オブジェクト生成
+// 管理クラス側に登録された後ﾎﾟｲﾝﾀを引き渡す
+//==========================================================
 std::weak_ptr<CGameObject> CGameObject::CreateObject(CGameObject* pObj)
 {
 #ifdef _DEBUG
@@ -519,12 +568,16 @@ void CGameObject::DontDestroy(std::weak_ptr<CGameObject> pObj)
 void CGameObject::ImGuiDebug()
 {
 	static const char* szState[CGameObject::MAX_OBJECT_STATE] = {
-		"ACTIVE",				// 更新状態
+		"ACTIVE",			// 更新状態
 		"WAIT",				// 待機
 		"DESTROY",			// 削除
 		"TAKEOVER",			// 引き継ぎ（使いまわし)
 		"STOP",				// デバッグ?
 	};
+	static bool isAddTag = false;
+	static bool isAddLayer = false;
+
+	// FIXME: コンボでもよかった?
 
 	//--- 状態変更
 	if (ImGui::BeginMenuBar()) 
@@ -533,8 +586,10 @@ void CGameObject::ImGuiDebug()
 		{
 			for (int state = 0; state < E_ObjectState::MAX_OBJECT_STATE; ++state)
 			{
-				if (ImGui::MenuItem(szState[state])) {
+				if (ImGui::MenuItem(szState[state])) 
+				{
 					m_eState = (E_ObjectState)state;
+					break;
 				}
 			}
 			ImGui::EndMenu();
@@ -543,8 +598,6 @@ void CGameObject::ImGuiDebug()
 	}
 
 	//--- タグ変更
-	static bool isAddTag = false;
-	static std::string newTagName;
 	if (ImGui::BeginMenuBar()) 
 	{
 		if (ImGui::BeginMenu(u8"tag"))
@@ -567,31 +620,35 @@ void CGameObject::ImGuiDebug()
 		}
 		ImGui::EndMenuBar();
 	}
-	if (isAddTag)
+	CTag::ImGuiTag(isAddTag);
+	
+	//--- レイヤー変更
+	if (ImGui::BeginMenuBar())
 	{
-		ImGui::SetNextWindowPos(ImGui::GetMousePos(), ImGuiCond_::ImGuiCond_Once);
-		ImGui::SetNextWindowSize(ImVec2(CScreen::GetWidth()/8, CScreen::GetHeight()/8), ImGuiCond_::ImGuiCond_Once);
-		if (ImGui::Begin("Create Tag", &isAddTag))
+		if (ImGui::BeginMenu(u8"layer"))
 		{
-			char input[52];
-			strcpy_s(input, newTagName.c_str());
-			ImGui::Text("New Tag >>");
-			ImGui::SameLine();
-			if (ImGui::InputText("input", input, 52))
+			auto layerList = CLayer::GetNameList();
+			for (int idx = 0; idx < static_cast<int>(layerList.size()); ++idx)
 			{
-				newTagName = input;
+				auto tagName = layerList[idx].c_str();
+				if (ImGui::MenuItem(tagName))
+				{
+					GetLayerPtr()->SetLayer(idx);
+					break;
+				}
 			}
-
-			if (ImGui::Button("Create"))
+			ImGui::NewLine();
+			if (ImGui::MenuItem("Add Layer"))
 			{
-				CTag::CreateTag(newTagName);
-				newTagName.clear();
-				isAddTag = false;
+				isAddLayer = true;
 			}
-			ImGui::End();
+			ImGui::EndMenu();
 		}
+		ImGui::EndMenuBar();
 	}
+	CLayer::ImGuiLayer(isAddLayer);
 
+	
 	//--- 名前変更
 	char name[56] = "";
 	strcpy_s(name, GetName().c_str());
@@ -599,24 +656,13 @@ void CGameObject::ImGuiDebug()
 	ImGui::SameLine();
 	if(ImGui::InputText(u8"名前", name, 56))
 		SetName(name);
+	//--- 表示
 	ImGui::Text(u8"State:%s", szState[m_eState]);
 	ImGui::SameLine();
 	ImGui::Text(u8"Tag:%s", GetTagPtr()->GetTag().c_str());
-	//if (ImGui::BeginCombo(u8"Layer:%d", "1"))
-	//{
-	//	// TODO: 途中
-	//	for (int cnt = 0; cnt < 5; cnt++)
-	//	{
-	//		auto label = std::to_string(cnt).c_str(); 
-	//		
-	//		if (bool bg = ImGui::Selectable(label, &bg) ; bg)
-	//		{
-	//			GetLayerPtr()->SetLayer(cnt);
-	//		}
-	//	}
-	//	
-	//	ImGui::EndCombo();
-	//}
+	ImGui::SameLine();
+	ImGui::Text(u8"Layer %d:%s", GetLayerPtr()->GetLayer(), GetLayerPtr()->GetName().c_str());
+
 	ImGui::Text(u8"ｺﾝﾎﾟｰﾈﾝﾄ数:%d", GetComponentList().size());
 
 }

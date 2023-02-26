@@ -199,8 +199,6 @@ namespace MySpace
 			inline void SetScene(std::weak_ptr<CScene> scene) { m_pScene = scene; };
 			// *@レイヤー番号の変更
 			inline void SetLayer(int layer) { m_pLayer->SetLayer(layer); };
-			// *@レイヤーｸﾗｽの設定
-			inline void SetLayer(CLayer::E_Layer layer) { m_pLayer->SetLayer(layer); };
 			// *@タグ名の設定
 			void SetObjTag(const std::string tag);
 			// *@状態により親子関係にあるオブジェクトの状態を変える
@@ -241,8 +239,10 @@ namespace MySpace
 			static std::weak_ptr<CGameObject> FindGameObjectWithTag(CTag tag);						
 			// *@タグ検索リスト取得
 			static std::list<std::weak_ptr<CGameObject>> FindGameObjectsWithTag(CTag tag);			
+			// *@オブジェクトのｺﾋﾟｰ
+			static std::weak_ptr<CGameObject> CopyObject(CGameObject::Ptr pObj);
 			// *@オブジェクトの生成
-			static std::weak_ptr<CGameObject> CreateObject(CGameObject* pObj = nullptr);			
+			static std::weak_ptr<CGameObject> CreateObject(CGameObject* pObj = nullptr);		
 			// *@オブジェクトの生成(Debug版)
 			static std::shared_ptr<CGameObject> CreateDebugObject(std::shared_ptr<CGameObject>);	
 			// *@オブジェクト破棄

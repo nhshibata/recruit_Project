@@ -207,6 +207,12 @@
     <ClInclude Include="..\Library\GameSystem\Shader\shaderAssets.h">
       <Filter>ヘッダー ファイル\Shader</Filter>
     </ClInclude>
+    <ClInclude Include="..\Library\GameSystem\Component\Camera\layerCamera.h">
+      <Filter>ヘッダー ファイル\Component\Camera</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Library\GameSystem\Component\Camera\stackCamera.h">
+      <Filter>ヘッダー ファイル\Component\Camera</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\Library\GameSystem\components.cpp">
@@ -319,6 +325,12 @@
     </ClCompile>
     <ClCompile Include="..\Library\GameSystem\Shader\shaderAssets.cpp">
       <Filter>ソース ファイル\Shader</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Library\GameSystem\Component\Camera\layerCamera.cpp">
+      <Filter>ソース ファイル\Component\Camera</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Library\GameSystem\Component\Camera\stackCamera.cpp">
+      <Filter>ソース ファイル\Component\Camera</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

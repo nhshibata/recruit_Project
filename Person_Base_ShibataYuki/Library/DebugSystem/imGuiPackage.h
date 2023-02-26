@@ -1,5 +1,6 @@
 //==========================================================
 // [imGuiPackage.h]
+//---------------------------------------------------------
 // 複数回記述することの多いImGuiのセットを関数化
 //==========================================================
 
@@ -24,7 +25,12 @@ namespace MySpace
 
 		// *@コンボ表示
 		// *@引き数: 表示リスト vector<string>, メニュー名 string
-		std::string DispCombo(std::vector<std::string> list, std::string desc, std::string preview = std::string());
+		std::string DispComboSelect(std::vector<std::string> list, std::string desc, std::string preview = std::string());
+		
+		// *@コンボ表示
+		// *@インデックス取得用
+		// *@引き数: 表示リスト vector<string>, メニュー名 string, int idx
+		int DispComboSelect(std::vector<std::string> list, std::string desc, int idx);
 
 		// *@メニューバー表示
 		std::string DispFileMenuBar(std::string path, std::string desc = std::string(), std::string ext = std::string());
@@ -54,6 +60,7 @@ namespace MySpace
 		// *@ラジオボタン表示
 		_NODISCARD int CreateRadio(std::vector<std::string> vec, int current);
 
+
 #pragma region DRAG_AND_DROP
 
 		// *@Source関数の第一引き数と同一にする(定数などで管理すべき)
@@ -78,14 +85,14 @@ namespace MySpace
 		}
 
 		// *@Target関数の第一引き数と同一にする(定数などで管理すべき)
-		// *@ドラッグ元
+		// *@ドラッグ元表示
 		template<class T>
-		bool DragDropSource(std::string name, std::string moveName, T type)
+		bool DragDropSource(std::string dispText, std::string moveName, T type)
 		{
 			if (ImGui::BeginDragDropSource())
 			{
 				const ImGuiPayload* payload = ImGui::GetDragDropPayload();
-				ImGui::SetDragDropPayload(name.c_str(), &type, sizeof(T));
+				ImGui::SetDragDropPayload(dispText.c_str(), &type, sizeof(T));
 				// ドラッグ中のものの名前
 				ImGui::Text(std::string("Move Parent ==>>" + moveName).c_str());
 				ImGui::EndDragDropSource();

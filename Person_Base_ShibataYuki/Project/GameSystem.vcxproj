@@ -24,6 +24,8 @@
     <ClInclude Include="..\Library\GameSystem\Component\Camera\camera.h" />
     <ClInclude Include="..\Library\GameSystem\Component\Camera\debugCamera.h" />
     <ClInclude Include="..\Library\GameSystem\Component\Camera\gameCamera.h" />
+    <ClInclude Include="..\Library\GameSystem\Component\Camera\layerCamera.h" />
+    <ClInclude Include="..\Library\GameSystem\Component\Camera\stackCamera.h" />
     <ClInclude Include="..\Library\GameSystem\Component\Collision\boxCollision.h" />
     <ClInclude Include="..\Library\GameSystem\Component\Collision\collision.h" />
     <ClInclude Include="..\Library\GameSystem\Component\Collision\sphereCollision.h" />
@@ -67,6 +69,8 @@
     <ClCompile Include="..\Library\GameSystem\Component\Camera\camera.cpp" />
     <ClCompile Include="..\Library\GameSystem\Component\Camera\debugCamera.cpp" />
     <ClCompile Include="..\Library\GameSystem\Component\Camera\gameCamera.cpp" />
+    <ClCompile Include="..\Library\GameSystem\Component\Camera\layerCamera.cpp" />
+    <ClCompile Include="..\Library\GameSystem\Component\Camera\stackCamera.cpp" />
     <ClCompile Include="..\Library\GameSystem\Component\Collision\boxCollision.cpp" />
     <ClCompile Include="..\Library\GameSystem\Component\Collision\collision.cpp" />
     <ClCompile Include="..\Library\GameSystem\Component\Collision\sphereCollision.cpp" />

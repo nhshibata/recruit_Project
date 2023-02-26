@@ -60,7 +60,7 @@ void CFadeController::Init()
 	
 	m_pPolygon.lock()->SetColor(Color(0, 0, 0, 0));
 	m_pPolygon.lock()->GetRectTransform()->SetSize(CScreen::GetWidth(), CScreen::GetHeight());
-	m_pPolygon.lock()->SetZ(static_cast<int>(CLayer::E_Layer::FOG));
+	m_pPolygon.lock()->SetZ(static_cast<int>(CPolygonRenderer::EZValue::FOG));
 }
 
 void CFadeController::Update()
