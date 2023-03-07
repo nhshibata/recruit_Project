@@ -10,30 +10,23 @@
 #ifndef __SHADER_ASSETS_H__
 #define __SHADER_ASSETS_H__
 
+//--- インクルード部
 #include <GraphicsSystem/Manager/shaderManager.h>
 #include <GraphicsSystem/Texture/imageResource.h>
+#include <GraphicsSystem/Shader/shaderStruct.h>
 #include <CoreSystem/Math/myVector.h>
 
 namespace MySpace
 {
 	namespace Game
 	{
-		struct SHADER_RATE
-		{
-			float nega;
-			float mono;
-			float dummy;
-			float dummy_one;
-		};
-
 		class CShaderAssets
 		{
 		private:
-			static inline MySpace::Graphics::CImageResource m_pToonResource;
-			static inline SHADER_RATE m_Rate;	// 実際に使うのはxのみ?
+			static inline MySpace::Graphics::SHADER_RATE m_Rate;	// 実際に使うのはxのみ?
 
 		public:
-			static void Init();
+			static HRESULT Init();
 			static void Uninit();
 
 			static void ToonSet();

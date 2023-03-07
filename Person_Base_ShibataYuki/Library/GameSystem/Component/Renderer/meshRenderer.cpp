@@ -91,6 +91,11 @@ void CMeshRenderer::SetInstancing(CMesh* mesh, std::string name, DirectX::XMUINT
 	// wはpowerに使われている
 	Vector4 spec(m_MeshMaterial.m_Specular.x, m_MeshMaterial.m_Specular.y, m_MeshMaterial.m_Specular.z, m_MeshMaterial.m_Power);
 	
+	RENDER_DATA rd = RENDER_DATA(Transform()->GetWorldMatrix(),
+								 m_MeshMaterial.m_Ambient, m_MeshMaterial.m_Diffuse,
+								 spec, m_MeshMaterial.m_Emissive,
+								 vFlag);
+
 	//--- インスタンシング依頼
 	if (!name.empty())
 	{
@@ -98,10 +103,7 @@ void CMeshRenderer::SetInstancing(CMesh* mesh, std::string name, DirectX::XMUINT
 			name,
 			m_strPixelShader,
 			m_strVertexShader,
-			RENDER_DATA(Transform()->GetWorldMatrix(),
-						m_MeshMaterial.m_Ambient, m_MeshMaterial.m_Diffuse,
-						spec, m_MeshMaterial.m_Emissive,
-						vFlag),
+			rd,
 			mesh);
 	}
 	else
@@ -110,12 +112,10 @@ void CMeshRenderer::SetInstancing(CMesh* mesh, std::string name, DirectX::XMUINT
 			std::string(std::to_string(mesh->GetIndexNum()) + std::to_string(mesh->GetMaterial()->GetFloat())),
 			m_strPixelShader,
 			m_strVertexShader,
-			RENDER_DATA(Transform()->GetWorldMatrix(),
-						m_MeshMaterial.m_Ambient, m_MeshMaterial.m_Diffuse,
-						spec, m_MeshMaterial.m_Emissive,
-						vFlag),
+			rd,
 			mesh);
 	}
+
 }
 
 

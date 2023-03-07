@@ -16,6 +16,7 @@
 
 #include <GameSystem/Component/Camera/camera.h>
 #include <GameSystem/Component/Camera/gameCamera.h>
+#include <GameSystem/Component/Camera/stackCamera.h>
 #include <GameSystem/Component/Camera/debugCamera.h>
 
 #include <GameSystem/Component/Light/light.h>
@@ -30,6 +31,7 @@
 #include <GameSystem/Component/Renderer/modelRenderer.h>
 #include <GameSystem/Component/Renderer/textRenderer.h>
 #include <GameSystem/Component/Renderer/effekseerRenderer.h>
+#include <GameSystem/Component/Renderer/volume.h>
 
 //--- serealize, AddComponent ‚·‚éºÝÎß°ÈÝÄ‚ð’Ç‰Á
 #include <AISystem/System/aiSystem.h>

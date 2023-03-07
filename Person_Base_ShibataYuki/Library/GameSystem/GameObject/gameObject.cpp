@@ -658,10 +658,10 @@ void CGameObject::ImGuiDebug()
 		SetName(name);
 	//--- •\¦
 	ImGui::Text(u8"State:%s", szState[m_eState]);
-	ImGui::SameLine();
 	ImGui::Text(u8"Tag:%s", GetTagPtr()->GetTag().c_str());
-	ImGui::SameLine();
 	ImGui::Text(u8"Layer %d:%s", GetLayerPtr()->GetLayer(), GetLayerPtr()->GetName().c_str());
+	ImGui::SameLine();
+	ImGui::Text("bit%b", GetLayerPtr()->GetLayer());
 
 	ImGui::Text(u8"ºİÎß°ÈİÄ”:%d", GetComponentList().size());
 

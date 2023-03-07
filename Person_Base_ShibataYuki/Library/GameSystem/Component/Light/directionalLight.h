@@ -44,7 +44,7 @@ namespace MySpace
 
 		public:
 			//--- ﾒﾝﾊﾞ関数
-			CDirectionalLight() {};
+			CDirectionalLight();
 			CDirectionalLight(std::shared_ptr<CGameObject> owner);
 			~CDirectionalLight();
 
@@ -58,7 +58,7 @@ namespace MySpace
 #ifdef BUILD_MODE
 
 			// セッター・ゲッター
-			//virtual void ImGuiDebug();
+			virtual void ImGuiDebug();
 
 #endif // BUILD_MODE
 		};

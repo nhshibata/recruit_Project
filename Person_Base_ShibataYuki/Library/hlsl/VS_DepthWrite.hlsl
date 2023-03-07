@@ -40,8 +40,6 @@ VS_OUT main(VS_IN_Depth vin)
     float4x4 mWorld = g_Instancing[vin.id].mWorld;
     vout.pos = float4(vin.pos, 1.0f);
     vout.pos = mul(vout.pos, mWorld);
-    //vout.pos = mul(vout.pos, g_view);
-    //vout.pos = mul(vout.pos, g_proj);
     vout.pos = mul(vout.pos, g_sunView);
     vout.pos = mul(vout.pos, g_sunProj);
     

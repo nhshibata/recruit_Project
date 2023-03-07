@@ -21,9 +21,9 @@ namespace MySpace
 	{
 		// *@wstring‚ğstring‚Ö•ÏŠ·
 		// *@‹t‚Í•¶š‰»‚¯‚·‚é(‰p”šˆÈŠO)
-		std::string WStringToString(std::wstring wszWord);
+		std::string WStringToString(const std::wstring& wszWord);
 		// *@string‚ğwstring‚Ö•ÏŠ·
-		std::wstring StringToWString(std::string szWord);
+		std::wstring StringToWString(const std::string& szWord);
 	}
 }
 

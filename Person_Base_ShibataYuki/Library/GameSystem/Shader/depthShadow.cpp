@@ -8,8 +8,8 @@
 //--- インクルード部
 #include <GameSystem/Shader/depthShadow.h>
 #include <GameSystem/Component/Light/directionalLight.h>
-#include <GameSystem/Component/Transform/transform.h>
 #include <GameSystem/Component/Camera/camera.h>
+#include <GameSystem/Component/Transform/transform.h>
 
 #include <Application/Application.h>
 #include <GraphicsSystem/Manager/shaderManager.h>

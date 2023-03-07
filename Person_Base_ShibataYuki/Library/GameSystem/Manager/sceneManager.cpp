@@ -11,9 +11,9 @@
 #include <GameSystem/components.h>
 #include <GameSystem/Manager/collisionSystem.h>
 #include <GameSystem/Manager/drawSystem.h>
-#include <DebugSystem/imguiManager.h>
 #include <AISystem/Nav/navMeshBake.h>
 
+#include <DebugSystem/imguiManager.h>
 #include <CoreSystem/File/cerealize.h>
 
 using namespace MySpace::SceneManager;
@@ -25,17 +25,14 @@ using namespace MySpace::Game;
 // コンストラクタ
 //========================================================
 CSceneManager::CSceneManager()
-	:m_bTransition(false), m_currentPath(std::string())
+	:m_bTransition(false), m_currentPath(std::string()),
+	m_sceneDetection(nullptr), m_pCollisionSystem(nullptr), m_pDrawSystem(nullptr),
+	m_pNavMesh(nullptr)
 {
-	m_sceneDetection.reset();
-	m_pCollisionSystem.reset();
-	m_pDrawSystem.reset();
-	m_pNavMesh.reset();
-
-	m_sceneDetection = std::make_shared<CSceneTransitionDetection>();
-	m_pCollisionSystem = std::make_shared<CCollisionSystem>();
-	m_pDrawSystem = std::make_shared<CDrawSystem>();
-	m_pNavMesh = std::make_shared<CNavMeshBake>();
+	m_sceneDetection = new CSceneTransitionDetection();
+	m_pCollisionSystem = new CCollisionSystem();
+	m_pDrawSystem = new CDrawSystem();
+	m_pNavMesh = new CNavMeshBake();
 }
 
 //========================================================
@@ -43,7 +40,7 @@ CSceneManager::CSceneManager()
 //========================================================
 CSceneManager::~CSceneManager()
 {
-	Uninit();
+	
 }
 
 //========================================================
@@ -91,9 +88,11 @@ void CSceneManager::Uninit()
 		scene.reset();
 	}
 
-	m_sceneDetection.reset();
-	m_pCollisionSystem.reset();
-	m_pDrawSystem.reset();
+	delete m_sceneDetection;
+	delete m_pCollisionSystem;
+	delete m_pDrawSystem;
+	delete m_pNavMesh;
+	
 	m_aScenes.clear();
 }
 
@@ -155,6 +154,7 @@ std::shared_ptr<CScene> CSceneManager::GetSceneByName(std::string name)
 std::weak_ptr<CScene> CSceneManager::SceneTransition(std::string name)
 {
 	std::shared_ptr<CScene> pNextScene = NewScene(name);
+
 	// objの引き渡し
 	if (m_pCurrentScene.lock())
 	{
@@ -215,7 +215,8 @@ void CSceneManager::RemoveScene(std::shared_ptr<CScene> pRemove, std::shared_ptr
 	if (pNext)
 	{
 		m_pCurrentScene = pNext;
-		m_sceneDetection->Call(pRemove.get(), pNext.get());	// 関数ポインタ呼び出し
+		// 関数ポインタ呼び出し
+		m_sceneDetection->Call(pRemove.get(), pNext.get());	
 		AddList(pNext);
 	}
 
@@ -367,6 +368,7 @@ CSceneManager* CSceneManager::Get()
 	static CSceneManager pInstance;
 	return &pInstance;
 }
+
 
 #ifdef BUILD_MODE
 

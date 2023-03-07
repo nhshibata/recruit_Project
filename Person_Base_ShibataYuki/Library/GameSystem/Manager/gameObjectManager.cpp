@@ -14,7 +14,7 @@
 #include <GameSystem/Component/component.h>
 #include <GameSystem/Component/Transform/Tween.h>
 #include <GameSystem/Component/Light/directionalLight.h>
-#include <GameSystem/Component/Camera/camera.h>
+#include <GameSystem/Component/Camera/stackCamera.h>
 
 using namespace MySpace::Game;
 
@@ -251,7 +251,7 @@ void CGameObjectManager::CreateBasicObject()
 	std::shared_ptr<CGameObject> pObj = CreateGameObject();
 	
 	// ¶Ò×
-	auto cam = pObj->AddComponent<CCamera>();
+	auto cam = pObj->AddComponent<CStackCamera>();
 	cam->GetOwner()->SetName("MainCamera");
 
 	// ƒ‰ƒCƒg

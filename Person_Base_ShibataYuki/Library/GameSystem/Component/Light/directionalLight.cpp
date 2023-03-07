@@ -22,17 +22,34 @@ namespace
 	const Vector4 LIGHT0_SPECULAR = Vector4(0.2f, 0.2f, 0.2f, 1.0f);
 }
 
-//--- ﾒﾝﾊﾞ関数
+//=========================================================
+// コンストラクタ
+//=========================================================
+CDirectionalLight::CDirectionalLight()
+{
+	Set(this);
+}
+
+//=========================================================
+// 引数付きコンストラクタ
+//=========================================================
 CDirectionalLight::CDirectionalLight(std::shared_ptr<CGameObject> owner)
 	:CLight(owner)
 {
 	Set(this);
 }
+
+//=========================================================
+// デストラクタ
+//=========================================================
 CDirectionalLight::~CDirectionalLight()
 {
 
 }
 
+//=========================================================
+// 生成時呼び出し
+//=========================================================
 void CDirectionalLight::Awake()
 {
 	CLight::Init();
@@ -47,6 +64,9 @@ void CDirectionalLight::Awake()
 	SetEnable();
 }
 
+//=========================================================
+// 方向
+//=========================================================
 XMFLOAT3 CDirectionalLight::GetDir()
 {
 	if (IsEnable())
@@ -60,9 +80,14 @@ XMFLOAT3 CDirectionalLight::GetDir()
 
 #ifdef BUILD_MODE
 
-//void CDirectionalLight::ImGuiDebug()
-//{
-//
-//}
+void CDirectionalLight::ImGuiDebug()
+{
+	CLight::ImGuiDebug();
+
+	ImGui::DragFloat4("light Ambient", (float*)&m_ambient, 0.01f);
+	ImGui::DragFloat3("light Diffuse", (float*)&m_diffuse, 0.01f);
+	ImGui::DragFloat3("light Specular", (float*)&m_specular, 0.01f);
+
+}
 
 #endif // BUILD_MODE

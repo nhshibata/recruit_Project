@@ -81,15 +81,9 @@ namespace MySpace
 			std::shared_ptr<D3D11_VIEWPORT> m_viewPort;
 			ComPtr<ID3D11SamplerState>		m_SamplerState;
 			
-#if RT_DS_TEST
-			// unique_ptrにしたかったが循環参照防止のため断念
-			std::shared_ptr<Graphics::CRenderTarget> m_pRenderTarget;
-			std::shared_ptr<Graphics::CDepthStencil> m_pDepthStencil;
-#else
 			ComPtr<ID3D11RenderTargetView>	g_pRenderTargetView;	// フレームバッファ
 			ComPtr<ID3D11Texture2D>			g_pDepthStencilTexture;	// Zバッファ用メモリ
 			ComPtr<ID3D11DepthStencilView>	g_pDepthStencilView;	// Zバッファ
-#endif // RT_DS_TEST
 
 		public:
 			//--- メンバ関数
@@ -110,16 +104,11 @@ namespace MySpace
 			// *@スワップチェイン
 			inline IDXGISwapChain* GetSwapChain() { return g_pSwapChain.Get(); }
 
-#if !RT_DS_TEST
 			// *@レンダーターゲット
 			inline ID3D11RenderTargetView* GetRenderTargetView() { return g_pRenderTargetView.Get(); }
 			
 			// *@深度
 			inline ID3D11DepthStencilView* GetDepthStencilView() { return g_pDepthStencilView.Get(); }
-#else
-			ID3D11RenderTargetView* GetRenderTargetView();
-			ID3D11DepthStencilView* GetDepthStencilView();
-#endif // RT_DS_TEST
 
 			// *@深度
 			inline ID3D11DepthStencilState* GetDepthStencilState(int no) { return g_pDSS[no].Get(); }
@@ -151,10 +140,21 @@ namespace MySpace
 			// *@ブレンド ステート設定
 			void SetBlendState(int nBlendState)
 			{
-				if (nBlendState >= 0 && nBlendState < (int)EBlendState::MAX_BLENDSTATE) 
+				if (nBlendState >= 0 && nBlendState < (int)EBlendState::MAX_BLENDSTATE)
 				{
 					float blendFactor[4] = { 0.0f, 0.0f, 0.0f, 0.0f };
 					g_pDeviceContext->OMSetBlendState(g_pBlendState[nBlendState].Get(), blendFactor, 0xffffffff);
+				}
+			}
+
+
+			// *@ブレンド ステート設定
+			void SetBlendState(EBlendState eBlendState)
+			{
+				if (eBlendState >= EBlendState::BS_NONE && eBlendState < EBlendState::MAX_BLENDSTATE)
+				{
+					float blendFactor[4] = { 0.0f, 0.0f, 0.0f, 0.0f };
+					g_pDeviceContext->OMSetBlendState(g_pBlendState[(int)eBlendState].Get(), blendFactor, 0xffffffff);
 				}
 			}
 
@@ -167,7 +167,6 @@ namespace MySpace
 				}
 			}
 
-#if !RT_DS_TEST
 			// *@描画先の変更
 			// *@nullptrで通常に戻す
 			void SwitchRender(ID3D11RenderTargetView* pRTV, ID3D11DepthStencilView* pDSV)
@@ -177,13 +176,7 @@ namespace MySpace
 					pRTV ? &pRTV : g_pRenderTargetView.GetAddressOf(),
 					pDSV
 				);
-				
 			}
-#else
-			// *@描画先の変更
-			// *@nullptrで通常に戻す
-			void SwitchRender(ID3D11RenderTargetView* pRTV, ID3D11DepthStencilView* pDSV);
-#endif // RT_DS_TEST
 
 		};
 	}

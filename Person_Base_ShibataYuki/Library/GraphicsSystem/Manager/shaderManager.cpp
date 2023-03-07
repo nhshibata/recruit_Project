@@ -214,8 +214,10 @@ void CShaderManager::CallBackFuncAndBind(std::string ps, std::string vs)
 		m_aCallbackFunc[vs]();
 	}
 	
-	BindVS(vs);
-	BindPS(ps);
+	if(!ps.empty())
+		BindPS(ps);
+	if(!vs.empty())
+		BindVS(vs);
 }
 
 //==========================================================
@@ -223,8 +225,8 @@ void CShaderManager::CallBackFuncAndBind(std::string ps, std::string vs)
 //==========================================================
 void CShaderManager::BindPS(std::string name, UINT slot)
 {
-	if (!m_aPixelMap.count(name))
-		return;
+	/*if (!m_aPixelMap.count(name))
+		return;*/
 	m_aPixelMap[name]->Bind(slot);
 }
 

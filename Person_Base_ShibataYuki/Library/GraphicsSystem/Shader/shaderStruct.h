@@ -16,6 +16,10 @@ namespace MySpace
 {
 	namespace Graphics
 	{
+		static const LPCSTR m_LightCB = "sunLightCB";
+		static const LPCSTR m_DepthWriteCB = "DepthWriteCB";
+		static constexpr const char* SHADER_NAME_PSVS = "DepthWrite";
+
 		// シェーダに渡す値
 		// b0
 		struct SHADER_GLOBAL_WVP
@@ -60,6 +64,14 @@ namespace MySpace
 		{
 			DirectX::XMFLOAT4X4 sunView;
 			DirectX::XMFLOAT4X4 sunProj;
+		};
+
+		struct SHADER_RATE
+		{
+			float nega;
+			float mono;
+			float dummy;
+			float dummy_one;
 		};
 
 	}

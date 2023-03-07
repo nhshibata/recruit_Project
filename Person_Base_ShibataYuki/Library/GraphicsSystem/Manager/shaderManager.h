@@ -112,6 +112,7 @@ namespace MySpace
 			// *@コールバック設定
 			// *@void(void)型静的関数のみ
 			void AddFunction(std::string name, std::function<void(void)> func);
+
 			// *@コールバック呼び出し
 			void CallBackFuncAndBind(std::string ps, std::string vs);
 
@@ -126,13 +127,6 @@ namespace MySpace
 
 			// *@MBバインド
 			void BindMB(std::string name, UINT slot = 0);
-			
-			/*void BindTessellation(std::string name) 
-			{ 
-				if (!Find<HullShaderSharedPtr>(name, m_pHullMap) || !Find<DomainShaderSharedPtr>(name, m_pDomainMap)) 
-					return;
-				m_pHullMap[name]->Bind(); m_pDomainMap[name]->Bind();
-			}*/
 
 			// *@配列内探索
 			template <class T>
@@ -199,6 +193,13 @@ namespace MySpace
 			//{
 			//	m_fTessellationAmount = value; if (m_fTessellationAmount < 1)m_fTessellationAmount = 1;
 			//}
+
+			/*void BindTessellation(std::string name)
+			{
+				if (!Find<HullShaderSharedPtr>(name, m_pHullMap) || !Find<DomainShaderSharedPtr>(name, m_pDomainMap))
+					return;
+				m_pHullMap[name]->Bind(); m_pDomainMap[name]->Bind();
+			}*/
 
 		};
 

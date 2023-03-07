@@ -10,12 +10,12 @@
 
 #include "meshCommon.hlsli"
 
-
-struct VS_OUTPUT {
+struct VS_OUTPUT 
+{
 	float4	Position	: SV_Position;
-	float3	Pos4PS		: TEXCOORD0;
+	float2	TexCoord	: TEXCOORD0;
 	float3	Normal		: TEXCOORD1;
-	float2	TexCoord	: TEXCOORD2;
+	float4	Pos4PS		: TEXCOORD2;
 	float4	Diffuse		: COLOR0;
     float4  SunPos      : TEXCOORD3; // ‘¾—z‚©‚çŒ©‚½ˆÊ’u
     
