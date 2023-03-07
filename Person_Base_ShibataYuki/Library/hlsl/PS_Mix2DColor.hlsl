@@ -20,7 +20,7 @@ float4 main(PS_IN pin) : SV_TARGET
 {
     float4 color = g_ColorTexture.Sample(g_sampler, pin.uv);    // GBufferカラーﾃｸｽﾁｬ
     float4 mainColor = g_texture.Sample(g_sampler, pin.uv);     // ﾒｲﾝﾃｸｽﾁｬ
-    float4 postColor = g_postTexture.Sample(g_sampler, pin.uv); // ポストプロセス後ﾃｸｽﾁｬ
+    float4 postColor = g_rampTexture.Sample(g_sampler, pin.uv); // ポストプロセス後ﾃｸｽﾁｬ
     
     // 描画された色とGBufferに書き込まれた色
     float4 check = mainColor - color;

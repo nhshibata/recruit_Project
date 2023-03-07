@@ -1,19 +1,11 @@
 
 #include <Common.hlsli>
 
-// グローバル
-cbuffer global : register(b0)
-{
-    matrix g_mWorld;
-    matrix g_mView;
-    matrix g_mProjection;
-    matrix g_mtxTexture;
-};
-
 // ブラー頂点
 struct VSInput
 {
     float3 pos : POSITION0;
+    float4 color : COLOR0;
     float2 uv : TEXCOORD0;
 };
 struct PS_BlurInput
@@ -34,17 +26,20 @@ PS_BlurInput main(VSInput vin)
 {
     PS_BlurInput vout;
     
-    float4 P = mul(float4(vin.pos, 1.0f), g_mWorld);
-    P = mul(P, g_mView);
-    vout.pos = mul(P, g_mProjection);
+    float4 P = mul(float4(vin.pos, 1.0f), g_world);
+    P = mul(P, g_view);
+    vout.pos = mul(P, g_proj);
     
     // ﾃｸｽﾁｬ
     float2 texSize;
     float level;
-    g_mainTexture.GetDimensions(0, texSize.x, texSize.y, level);
+    g_texture.GetDimensions(0, texSize.x, texSize.y, level);
     
     // UV保存
     float2 tex = vin.uv;
+    
+    texSize.x = 1280.0f / 2;
+    texSize.y = 720.0f / 2;
     
     // テクセルからU座標を1テクセルずらすためのオフセット計算
     vout.tex0.xy = float2(0.0f, 1.0f / texSize.x);

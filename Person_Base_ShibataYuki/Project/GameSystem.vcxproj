@@ -42,6 +42,7 @@
     <ClInclude Include="..\Library\GameSystem\Component\Renderer\renderer.h" />
     <ClInclude Include="..\Library\GameSystem\Component\Renderer\sphereRenderer.h" />
     <ClInclude Include="..\Library\GameSystem\Component\Renderer\textRenderer.h" />
+    <ClInclude Include="..\Library\GameSystem\Component\Renderer\volume.h" />
     <ClInclude Include="..\Library\GameSystem\Component\Transform\rectTransform.h" />
     <ClInclude Include="..\Library\GameSystem\Component\Transform\rigidbody.h" />
     <ClInclude Include="..\Library\GameSystem\Component\Transform\transform.h" />
@@ -54,10 +55,12 @@
     <ClInclude Include="..\Library\GameSystem\GameObject\UIGameObject.h" />
     <ClInclude Include="..\Library\GameSystem\Manager\collisionSystem.h" />
     <ClInclude Include="..\Library\GameSystem\Manager\drawSystem.h" />
+    <ClInclude Include="..\Library\GameSystem\Manager\drawSystemBase.h" />
     <ClInclude Include="..\Library\GameSystem\Manager\gameObjectManager.h" />
     <ClInclude Include="..\Library\GameSystem\Manager\instantResourceManager.h" />
     <ClInclude Include="..\Library\GameSystem\Manager\mapSystemBase.h" />
     <ClInclude Include="..\Library\GameSystem\Manager\sceneManager.h" />
+    <ClInclude Include="..\Library\GameSystem\Manager\volumeManager.h" />
     <ClInclude Include="..\Library\GameSystem\propertyCereal.h" />
     <ClInclude Include="..\Library\GameSystem\Scene\scene.h" />
     <ClInclude Include="..\Library\GameSystem\Scene\sceneTransitionDetection.h" />
@@ -91,6 +94,7 @@
     <ClCompile Include="..\Library\GameSystem\Component\Renderer\renderer.cpp" />
     <ClCompile Include="..\Library\GameSystem\Component\Renderer\sphereRenderer.cpp" />
     <ClCompile Include="..\Library\GameSystem\Component\Renderer\textRenderer.cpp" />
+    <ClCompile Include="..\Library\GameSystem\Component\Renderer\volume.cpp" />
     <ClCompile Include="..\Library\GameSystem\Component\Transform\rectTrabsform.cpp" />
     <ClCompile Include="..\Library\GameSystem\Component\Transform\rigidbody.cpp" />
     <ClCompile Include="..\Library\GameSystem\Component\Transform\transform.cpp" />
@@ -101,9 +105,11 @@
     <ClCompile Include="..\Library\GameSystem\GameObject\tag.cpp" />
     <ClCompile Include="..\Library\GameSystem\Manager\collisionSystem.cpp" />
     <ClCompile Include="..\Library\GameSystem\Manager\drawSystem.cpp" />
+    <ClCompile Include="..\Library\GameSystem\Manager\drawSystemBase.cpp" />
     <ClCompile Include="..\Library\GameSystem\Manager\gameObjectManager.cpp" />
     <ClCompile Include="..\Library\GameSystem\Manager\instantResourceManager.cpp" />
     <ClCompile Include="..\Library\GameSystem\Manager\sceneManager.cpp" />
+    <ClCompile Include="..\Library\GameSystem\Manager\volumeManager.cpp" />
     <ClCompile Include="..\Library\GameSystem\Scene\scene.cpp" />
     <ClCompile Include="..\Library\GameSystem\Scene\sceneTransitionDetection.cpp" />
     <ClCompile Include="..\Library\GameSystem\Shader\depthShadow.cpp" />

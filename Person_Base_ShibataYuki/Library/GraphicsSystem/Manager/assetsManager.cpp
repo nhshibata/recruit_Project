@@ -14,8 +14,6 @@
 #include <GraphicsSystem/Manager/modelManager.h>
 #include <GraphicsSystem/Manager/effectManager.h>
 #include <GraphicsSystem/Manager/shaderManager.h>
-#include <GraphicsSystem/PostProcess/bloom.h>
-#include <GraphicsSystem/PostProcess/gaussianBlur.h>
 
 using namespace MySpace::Graphics;
 
@@ -63,12 +61,6 @@ HRESULT CAssetsManager::Init(Application* app)
 	if (FAILED(hr))
 		return hr;
 	hr = m_pFont->Init();
-	if (FAILED(hr))
-		return hr;
-	hr = CGaussianBlur::InitShader();
-	if (FAILED(hr))
-		return hr;
-	hr = CBloom::InitShader();
 	if (FAILED(hr))
 		return hr;
 

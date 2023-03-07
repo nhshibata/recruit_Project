@@ -29,59 +29,51 @@ namespace MySpace
 		class CSceneTransitionDetection
 		{
 		private:
-			// *std::functionは型以外は応用が利く
-			// *関数ポインタ:ﾃﾝﾌﾟﾚｰﾄｸﾗｽで指定
-			// *引き数:可変長引き数
+			// *@std::functionは型以外は応用が利く
+			// *@関数ポインタ:ﾃﾝﾌﾟﾚｰﾄｸﾗｽで指定
+			// *@引き数:可変長引き数
 
-			// 引き数決定
+			// 引き数決定クラス
 			template <class... Args>
-			class CReturnVoidFunc 
+			class CFunctionBinder 
 			{
 			protected:
-				using Ptr = std::function<void*(Args...)>;
-				// 関数ポインタ
+				//--- メンバ変数
 				std::function<void*(Args...)> m_Func;
 			public:
-				CReturnVoidFunc(std::function<void*(Args...)> func) { m_Func = func; }
+				// *@コンストラクタ
+				CFunctionBinder(std::function<void*(Args...)> func)
+					:m_Func(func)
+				{}
 
+				// *@関数呼び出し
 				virtual void Call(Args... args) 
 				{
 					m_Func(args...);
 				}
-				//virtual void* GetAdress() { return nullptr; };
+				// *@アドレス取得
 				void* GetAdress() { return &m_Func; }
 			};
-			// 関数型決定(戻り値void*固定)
+			// 関数型決定クラス(戻り値void*固定)
 			template <class T, class... Args>
-			class CCallFunc : public CReturnVoidFunc<Args...>
+			class CFunctionBinderCall : public CFunctionBinder<Args...>
 			{
 			public:
-				// 関数ポインタ型
-				typedef void* (T::*Func)(Args... args);
-				
-			public:
-				CCallFunc(std::function<void*(Args...)> func):CReturnVoidFunc<Args...>(func){ }
-				//void Call(Args... args) 
+				// *@コンストラクタ
+				CFunctionBinderCall(std::function<void*(Args...)> func)
+					:CFunctionBinder<Args...>(func)
+				{}
 			};
 			
 		public:
 			//--- 定義
-			enum class EFuncType
-			{
-				CHANGED,
-				LOADED,
-				UNLOADED,
-			};
 			using PTR = std::function<void*(void)>;
-			/*using ChangePtr = std::function<void*(CScene*, CScene*)>;
-			using LoadPtr = std::function<void*(CScene*, int)>;
-			using UnloadPtr = std::function<void*(CScene*)>;*/
 			
 		private:
 			//--- メンバ変数
-			std::vector<CReturnVoidFunc<CScene*,CScene*>> m_pChangeFunc;
-			std::vector<CReturnVoidFunc<CScene*,int>> m_pLoadFunc;
-			std::vector<CReturnVoidFunc<CScene*>> m_pUnloadFunc;
+			std::vector<CFunctionBinder<CScene*,CScene*>> m_pChangeFunc;
+			std::vector<CFunctionBinder<CScene*,int>> m_pLoadFunc;
+			std::vector<CFunctionBinder<CScene*>> m_pUnloadFunc;
 
 		public:
 			//--- メンバ関数
@@ -105,7 +97,7 @@ namespace MySpace
 			template <class T>
 			void Changed(void* (T::*func)(CScene*, CScene*), T* ptr)
 			{
-				m_pChangeFunc.push_back(CCallFunc<T, CScene*, CScene*>(std::bind(func, ptr, std::placeholders::_1, std::placeholders::_2)));
+				m_pChangeFunc.push_back(CFunctionBinderCall<T, CScene*, CScene*>(std::bind(func, ptr, std::placeholders::_1, std::placeholders::_2)));
 			}
 
 			// *@シーン読み込み時
@@ -113,14 +105,15 @@ namespace MySpace
 			template <class T>
 			void Loaded(void* (T::*func)(CScene*, int), T* ptr)
 			{
-				m_pLoadFunc.push_back(CCallFunc<T, CScene*, int>(std::bind(func, ptr, std::placeholders::_1, std::placeholders::_2)));
+				m_pLoadFunc.push_back(CFunctionBinderCall<T, CScene*, int>(std::bind(func, ptr, std::placeholders::_1, std::placeholders::_2)));
 			}
+
 			// *@シーン破棄時
 			// *@ﾃﾝﾌﾟﾚｰﾄｸﾗｽ:渡したい関数の型
 			template <class T>
 			void Unloaded(void* (T::*func)(CScene*), T* ptr)
 			{
-				m_pUnloadFunc.push_back(CCallFunc<T, CScene*>(std::bind(func, ptr, std::placeholders::_1)));
+				m_pUnloadFunc.push_back(CFunctionBinderCall<T, CScene*>(std::bind(func, ptr, std::placeholders::_1)));
 			}
 
 			// *@登録した関数除外

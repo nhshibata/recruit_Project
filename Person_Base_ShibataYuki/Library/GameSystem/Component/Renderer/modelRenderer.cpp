@@ -33,7 +33,7 @@ CModelRenderer::CModelRenderer()
 {
 	m_MeshMaterial = CMeshMaterial(
 		Vector4(1.0f, 1.0f, 1.0f, 1.0f),
-		Vector4(1.0f, 1.0f, 1.0f, 0.0f),	// wはﾃｸｽﾁｬ有無に使われている
+		Vector4(1.0f, 1.0f, 1.0f, 1.0f),	// wはﾃｸｽﾁｬ有無に使われている
 		Vector4(0.0f, 0.0f, 0.0f, 1.0f),	// wはpowerに使われている
 		Vector4(0.0f, 0.0f, 0.0f, 0.0f),
 		1.0f);
@@ -50,7 +50,7 @@ CModelRenderer::CModelRenderer(std::shared_ptr<CGameObject> owner)
 {
 	m_MeshMaterial = CMeshMaterial(
 		Vector4(1.0f, 1.0f, 1.0f, 1.0f),
-		Vector4(1.0f, 1.0f, 1.0f, 0.0f),	// wはﾃｸｽﾁｬ有無に使われている
+		Vector4(1.0f, 1.0f, 1.0f, 1.0f),	// wはﾃｸｽﾁｬ有無に使われている
 		Vector4(0.0f, 0.0f, 0.0f, 1.0f),	// wはpowerに使われている
 		Vector4(0.0f, 0.0f, 0.0f, 0.0f),
 		1.0f);

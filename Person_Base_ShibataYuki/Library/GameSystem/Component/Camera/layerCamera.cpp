@@ -27,7 +27,7 @@ CLayerCamera::CLayerCamera(std::shared_ptr<CGameObject> owner)
 	:CCamera(owner)
 {
 	// 初期値として、全てのビットを1にする
-	m_nLayerMask = (1 << 31) - 1;
+	m_nLayerMask = (1u << 31) - 1;
 }
 
 CLayerCamera::~CLayerCamera()

@@ -93,6 +93,7 @@ namespace MySpace
 			// *@頂点カラーの設定
 			static inline void SetColor(float fRed, float fGreen, float fBlue) { SetColor(XMFLOAT3(fRed, fGreen, fBlue)); }
 			// *@頂点カラーの設定
+			
 			static inline void SetColor(XMFLOAT3 vColor)
 			{
 				if (m_vColor != vColor)

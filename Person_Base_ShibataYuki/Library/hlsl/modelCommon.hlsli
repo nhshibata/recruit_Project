@@ -7,7 +7,7 @@
 // モデルに必要な処理まとめ
 //==========================================================
 
-#include "common.hlsli"
+#include <common.hlsli>
 
 // パラメータ
 struct VS_INPUT
@@ -79,7 +79,7 @@ struct ModelOutput
     float4 Pos : SV_Position;
     float2 Tex : TEXCOORD0;
     float3 Normal : TEXCOORD1;
-    float3 PosForPS : TEXCOORD2;
+    float4 PosForPS : TEXCOORD2;
 };
 
 ModelOutput SkinModel(VS_INPUT vin, float4x4 mtx, matrix world, matrix view, matrix proj, matrix mTexture)
@@ -93,7 +93,7 @@ ModelOutput SkinModel(VS_INPUT vin, float4x4 mtx, matrix world, matrix view, mat
     vout.Pos = mul(vSkinned.Pos, WVP);
     vout.Tex = mul(float4(vin.Tex, 0.0f, 1.0f), mTexture).xy;
     vout.Normal = mul(vSkinned.Norm, (float3x3) mWorld);
-    vout.PosForPS = mul(vSkinned.Pos, mWorld).xyz;
+    vout.PosForPS = mul(vSkinned.Pos, mWorld);
 
     return vout;
 }
@@ -146,7 +146,7 @@ float4 CalcMaterial(float4 ambi, float4 diff, float4 spec, float4 emi, ModelOutp
     {
         float3 L = normalize(-g_vLightDir.xyz);                 // 光源へのベクトル
         float3 N = normalize(input.Normal);                     // 法線ベクトル
-        float3 V = normalize(g_vCameraPos.xyz - input.PosForPS); // 視点へのベクトル
+        float3 V = normalize(g_vCameraPos.xyz - input.PosForPS.xyz); // 視点へのベクトル
         float3 H = normalize(L + V); // ハーフベクトル
         float3 mulAmbi = ambi.rgb * g_Ambient.rgb;
         float mulSpec = g_Specular.a * spec.a;

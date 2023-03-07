@@ -17,12 +17,26 @@ namespace MySpace
 {
 	namespace Graphics
 	{
+		class CGBuffer;
+	}
+}
+
+namespace MySpace
+{
+	namespace Graphics
+	{
 		class CPostProcess
 		{
-		private:
 
 		public:
+			// *@スプライト描画
+			virtual void DrawSprite(CGBuffer* pGBuf) = 0;
+
 			virtual ID3D11ShaderResourceView* GetResource() = 0;
+
+#if BUILD_MODE
+			virtual void ImGuiDebug() {};
+#endif // BIULD_MODE
 
 		};
 	}

@@ -29,6 +29,18 @@ struct MaterialData
     float4 fFlags;      // 拡散色テクスチャ有無, 発光色テクスチャ有無, 透過テクスチャ有無
 };
 
+// 3D用
+struct PS_INPUT
+{
+    float4 Pos : SV_Position;
+    float2 Tex : TEXCOORD0;
+    float3 Normal : TEXCOORD1;
+    float4 PosForPS : TEXCOORD2;
+    float4 Diffuse : COLOR0;
+    float4 sunPos : TEXCOORD3; // 太陽から見た位置
+    
+    uint id : SV_InstanceID; // インスタンスID
+};
 
 //==========================================================
 // 定数バッファ
@@ -157,11 +169,9 @@ Texture2D g_texTransparent : register(t2);  // 透過テクスチャ
 Texture2D g_texSpecular : register(t3);     // 鏡面反射テクスチャ
 Texture2D g_texSunView : register(t4);      // 影ﾃｸｽﾁｬ
 Texture2D g_rampTexture : register(t5);     // Toon用
-Texture2D g_worldTexture : register(t6);    // GBuffer:World用
-Texture2D g_ColorTexture : register(t7);    // GBuffer:Color用
-Texture2D g_NormalTexture : register(t8);   // GBuffer:Normal用
+Texture2D g_ColorTexture : register(t6);    // GBuffer:Color用
+Texture2D g_NormalTexture : register(t7);   // GBuffer:Normal用
+Texture2D g_worldTexture : register(t8);    // GBuffer:World用
 Texture2D g_depthTexture : register(t9);    // GBuffer:Depth用
-Texture2D g_postTexture : register(t10);    // PostProcess後ﾃｸｽﾁｬ
-Texture2D g_mainTexture : register(t10);    // PostProcess後ﾃｸｽﾁｬ
 
 SamplerState g_sampler : register(s0);      // サンプラ

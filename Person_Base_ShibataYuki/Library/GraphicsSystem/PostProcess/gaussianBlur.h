@@ -53,17 +53,25 @@ namespace MySpace
 					  float m_fWidth,
 					  float m_fHeight);
 
-			/// ガウシアンブラーをGPU上で実行。			
-			// レンダリングターゲット</param>
-			// ブラーの強さ。値が大きいほどボケが強くなる。
-			void ExecuteOnGPU(float blurPower);
+			// ガウシアンブラーをGPU上で実行
+			// レンダリングターゲット
+			// ブラーの強さ。値が大きいほどボケが強くなる
+			void ExecuteOnGPU(float blurPower, ID3D11ShaderResourceView* tex);
 			
-			/// ボケテクスチャを取得。
+
+			// 横ブラーテクスチャを取得
+			ID3D11ShaderResourceView* GetXBlurTexture()
+			{
+				return m_xBlurRenderTarget.GetSRV();
+			}
+			
+			// ボケテクスチャを取得
 			ID3D11ShaderResourceView* GetBokeTexture()
 			{
 				return m_yBlurRenderTarget.GetSRV();
 			}
 		
+			static void CalcWeightsTableFromGaussian(float* weightsTbl, int sizeOfWeightsTbl, float sigma);
 		};
 
 	}

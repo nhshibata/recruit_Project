@@ -28,7 +28,7 @@ CStackCamera::CStackCamera()
 CStackCamera::CStackCamera(CGameObject::Ptr owner)
 	:CLayerCamera(owner),m_eMode(EStackMode::BASE)
 {
-	m_pGBuf = std::make_shared<CGBuffer>();	
+	m_pGBuf = std::make_unique<CGBuffer>();	
 }
 
 //==========================================================
@@ -146,6 +146,9 @@ void CStackCamera::ImGuiDebug()
 		}
 	}
 
+	m_pGBuf->ImGuiDebug();
+
+	// Šî’êƒNƒ‰ƒXŒÄ‚Ño‚µ
 	CLayerCamera::ImGuiDebug();
 
 }

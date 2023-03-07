@@ -2,7 +2,6 @@
 // [meshCommon]
 //---------------------------------------------------------
 //
-//---------------------------------------------------------
 //
 //=========================================================
 
@@ -22,10 +21,10 @@ struct VS_INPUT
 struct MeshOutput
 {
     float4 Position : SV_Position;
-    float3 Pos4PS : TEXCOORD0;
-    float3 Normal : TEXCOORD1;
+    float4 Pos4PS   : TEXCOORD0;
+    float3 Normal   : TEXCOORD1;
     float2 TexCoord : TEXCOORD2;
-    float4 Diffuse : COLOR0;
+    float4 Diffuse  : COLOR0;
 };
 
 MeshOutput CalcMesh(VS_INPUT input, matrix world, matrix view, matrix proj)
@@ -34,7 +33,7 @@ MeshOutput CalcMesh(VS_INPUT input, matrix world, matrix view, matrix proj)
     float4 wPos = mul(float4(input.Position, 1.0f), world);
     float4x4 VP = mul(view, proj);
     output.Position = mul(wPos, VP);
-    output.Pos4PS = wPos.xyz;
+    output.Pos4PS = wPos;
     output.Normal = mul(float4(input.Normal, 0.0f), world).xyz;
     output.TexCoord = mul(float4(input.TexCoord, 0.0f, 1.0f), g_mTexture).xy;
     output.Diffuse = input.Diffuse;
@@ -79,7 +78,7 @@ float4 CalcPSMaterial(MeshOutput input, float4 ambi, float4 diff, float4 spec, f
 		// 光源有効
         float3 L = normalize(-g_vLightDir.xyz); // 光源へのベクトル
         float3 N = normalize(input.Normal); // 法線ベクトル
-        float3 V = normalize(g_vCameraPos.xyz - input.Pos4PS); // 視点へのベクトル
+        float3 V = normalize(g_vCameraPos.xyz - input.Pos4PS.xyz); // 視点へのベクトル
         float3 H = normalize(L + V); // ハーフベクトル
         float4 Spec = spec;
         Diff = g_vLightAmbient.rgb * Ambi + g_vLightDiffuse.rgb *

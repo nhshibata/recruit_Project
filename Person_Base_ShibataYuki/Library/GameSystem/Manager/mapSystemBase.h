@@ -44,12 +44,14 @@ namespace MySpace
 			// *@“o˜^‚µ‚½Û‚É”Ô†‚ğ•Ô‚·
 			_NODISCARD inline int RegistToSystem(T type)
 			{
-				//int ret = static_cast<int>(m_nRegistCnt);
 				//--- intŒ^Å‘å’l
 				int* nMax = new int(0);
 				*nMax = (std::numeric_limits<int>::max)();
+
+				//--- Ši”[ƒTƒCƒYŠm”F
 				if(m_aIntMap.size() >= *nMax)
 					return -1;
+				
 				//--- Ši”[æ’Tõ
 				int retIdx = 0;
 				while (1)

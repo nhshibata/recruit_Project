@@ -213,6 +213,15 @@
     <ClInclude Include="..\Library\GameSystem\Component\Camera\stackCamera.h">
       <Filter>ヘッダー ファイル\Component\Camera</Filter>
     </ClInclude>
+    <ClInclude Include="..\Library\GameSystem\Component\Renderer\volume.h">
+      <Filter>ヘッダー ファイル\Component\Renderer</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Library\GameSystem\Manager\volumeManager.h">
+      <Filter>ヘッダー ファイル\Manager</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Library\GameSystem\Manager\drawSystemBase.h">
+      <Filter>ヘッダー ファイル\Manager</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\Library\GameSystem\components.cpp">
@@ -331,6 +340,15 @@
     </ClCompile>
     <ClCompile Include="..\Library\GameSystem\Component\Camera\stackCamera.cpp">
       <Filter>ソース ファイル\Component\Camera</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Library\GameSystem\Component\Renderer\volume.cpp">
+      <Filter>ソース ファイル\Component\Renderer</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Library\GameSystem\Manager\volumeManager.cpp">
+      <Filter>ソース ファイル\Manager</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Library\GameSystem\Manager\drawSystemBase.cpp">
+      <Filter>ソース ファイル\Manager</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

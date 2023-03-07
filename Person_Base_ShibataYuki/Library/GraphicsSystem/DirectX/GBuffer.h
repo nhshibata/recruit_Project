@@ -20,6 +20,7 @@ namespace MySpace
 {
 	namespace Graphics
 	{
+
 		class CGBuffer
 		{
 		public:
@@ -28,11 +29,12 @@ namespace MySpace
 				COLOR,
 				NORMAL,
 				WORLD,
+				DEPTH,
 				MAX
 			};
 		private:
-			std::vector<std::unique_ptr<CRenderTarget>> m_aRenderTaget;
-			std::unique_ptr<CDepthStencil> m_pDepthStencil;
+			std::vector<std::unique_ptr<CRenderTarget>> m_aRenderTaget; // 各種レンダーターゲット
+			std::unique_ptr<CDepthStencil> m_pDepthStencil;				// 共通したデプスステンシル
 
 		public:
 			CGBuffer();
@@ -45,11 +47,20 @@ namespace MySpace
 			void SetUpTextures();
 
 			// *@スプライト描画
+			// *@VS,PS設定は呼び出していない
 			void DrawSpriteRender(const ETexture e, float width, float height);
 
 			// *@指定されたﾃｸｽﾁｬ取得
 			ID3D11ShaderResourceView* GetRenderTexture(const ETexture e) { return m_aRenderTaget[int(e)]->GetSRV(); };
+
+			void SetSRV(const ETexture e);
+
+#if BUILD_MODE
+			void ImGuiDebug();
+#endif // BUILD_MODE
+
 		};
+
 	}
 }
 

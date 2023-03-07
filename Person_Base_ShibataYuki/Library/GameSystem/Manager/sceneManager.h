@@ -80,15 +80,15 @@ namespace MySpace
 
 		private:
 			//--- メンバ変数	
-			std::weak_ptr<CScene> m_pCurrentScene;
-			SceneList m_aScenes;
-			std::string m_currentPath = std::string();
+			std::weak_ptr<CScene> m_pCurrentScene;			// 現在Scene
+			SceneList m_aScenes;							// Scene保持リスト
+			std::string m_currentPath;						// Scene現在パス
 
-			std::shared_ptr<CSceneTransitionDetection> m_sceneDetection;
-			std::shared_ptr<CCollisionSystem> m_pCollisionSystem;
-			std::shared_ptr<CDrawSystem> m_pDrawSystem;
-			std::shared_ptr<CNavMeshBake> m_pNavMesh;
-			bool m_bTransition;
+			CSceneTransitionDetection* m_sceneDetection;	// シーン遷移時コールバッククラス
+			CCollisionSystem* m_pCollisionSystem;			// 当たり判定管理
+			CDrawSystem* m_pDrawSystem;						// 描画管理
+			CNavMeshBake* m_pNavMesh;						// ナビメッシュクラス
+			bool m_bTransition;								// シーン遷移フラグ
 
 		private:
 			//--- ﾒﾝﾊﾞ関数
@@ -112,11 +112,7 @@ namespace MySpace
 
 		public:
 			
-//#pragma warning(push)
-//#pragma warning(disable:4789)
-			// *@シングルトンの取得
 			static CSceneManager* Get();
-//#pragma warning(pop)   
 			
 			HRESULT Init();
 			void Uninit();
@@ -202,34 +198,32 @@ namespace MySpace
 				m_sceneDetection->Unloaded<T>(func, ptr);
 			}
 
-			//--- ゲッター
-
 			// *@文字列が一致するシーン取得
 			std::shared_ptr<CScene> GetSceneByName(std::string name);
 
 			// *@メインシーン取得(引き数ありでSP取得)
-			CScene* GetActiveScene()const										{ return m_pCurrentScene.lock().get(); }
+			CScene* GetActiveScene()const								{ return m_pCurrentScene.lock().get(); }
 
 			// *@メインシーン取得(引き数なしで生ﾎﾟｲﾝﾀ取得)
-			std::shared_ptr<CScene> GetActiveScene(int)const					{ return m_pCurrentScene.lock(); }
+			std::shared_ptr<CScene> GetActiveScene(int)const			{ return m_pCurrentScene.lock(); }
 
 			// *@メインシーン名前取得
-			std::string GetActiveSceneName()const								{ return m_pCurrentScene.lock()->GetSceneName(); }
+			std::string GetActiveSceneName()const						{ return m_pCurrentScene.lock()->GetSceneName(); }
 
 			// *@全シーン取得
-			std::vector<std::shared_ptr<CScene>> GetAllScene()const				{ return m_aScenes; }
+			std::vector<std::shared_ptr<CScene>> GetAllScene()const		{ return m_aScenes; }
 
 			// *@切替呼び出しｸﾗｽの取得
-			inline CSceneTransitionDetection* GetDetection()const				{ return m_sceneDetection.get(); }
+			inline CSceneTransitionDetection* GetDetection()const		{ return m_sceneDetection; }
 			
 			// *@コリジョンシステムの取得
-			inline std::shared_ptr<CCollisionSystem> GetCollisionSystem()const	{ return m_pCollisionSystem; }
+			inline CCollisionSystem* GetCollisionSystem()const			{ return m_pCollisionSystem; }
 			
 			// *@描画システムの取得
-			inline std::shared_ptr<CDrawSystem> GetDrawSystem()const			{ return m_pDrawSystem; }
+			inline CDrawSystem* GetDrawSystem()const					{ return m_pDrawSystem; }
 
 			// *@所持NavMeshの取得
-			inline std::shared_ptr<CNavMeshBake> GetNavMesh()const				{ return m_pNavMesh; };
+			inline CNavMeshBake* GetNavMesh()const						{ return m_pNavMesh; };
 
 #ifdef BUILD_MODE
 		private:
