@@ -15,6 +15,7 @@
 //--- インクルード部
 #include <GameSystem/Component/Renderer/renderer.h>
 #include <GraphicsSystem/Render/mesh.h>
+#include <GraphicsSystem/Shader/instancingData.h>
 
 namespace MySpace
 {
@@ -67,7 +68,7 @@ namespace MySpace
 		protected:
 			// *@インスタンシング要請
 			// *@第3引き数はシェーダーフラグ用
-			void SetInstancing(CMesh* mesh, std::string name = std::string(), DirectX::XMUINT4 vFlag = DirectX::XMUINT4(0,0,0,0));
+			void SetInstancing(CMesh* mesh, std::string name = std::string());
 
 		public:
 			//--- メンバ関数
@@ -86,13 +87,15 @@ namespace MySpace
 			float GetBSRadius();
 			inline CMeshMaterial* GetMaterial() { return &m_MeshMaterial; }
 			inline int GetStatic() { return m_nStaticMode; }
-			inline bool IsShadow() { return m_bShadow; }
+			virtual Graphics::RENDER_DATA GetShaderData();
 
 			inline void SetLightEnable(bool flg) { m_bLightEnable = flg; };
 			inline void SetCenter(Vector3 value) { m_vCenter = value; }
 			inline void SetBSRadius(const float value) { m_fBSRadius = value; };
 			inline void SetStatic(EStaticMode value) { m_nStaticMode = static_cast<int>(value); }
 			inline void SetShadow(const bool flg) { m_bShadow = flg; }
+
+			inline bool IsShadow() { return m_bShadow; }
 
 #if BUILD_MODE
 

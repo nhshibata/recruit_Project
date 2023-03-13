@@ -17,9 +17,25 @@ namespace MySpace
 	{
 		class CMonochrome : public CPostProcess
 		{
+#pragma region CEREAL
+			//--- シリアライズ
+			friend class cereal::access;
+			template<class Archive>
+			void save(Archive& archive) const
+			{
+				archive(cereal::make_nvp("monochorme", cereal::base_class<CPostProcess>(this))
+				);
+			}
+			template<class Archive>
+			void load(Archive& archive)
+			{
+				archive(cereal::make_nvp("monochorme", cereal::base_class<CPostProcess>(this))
+				);
+			}
+#pragma endregion
 		private:
 			CRenderTarget m_pMainRT;		// 最終描画先
-			ImageSharedPtr m_pToon;
+			static inline ImageSharedPtr m_pToon;
 
 		public:
 			CMonochrome();
@@ -39,5 +55,7 @@ namespace MySpace
 
 	}
 }
+
+CEREAL_REGISTER_TYPE(MySpace::Graphics::CMonochrome)
 
 #endif // !__MONOCHROME_H__

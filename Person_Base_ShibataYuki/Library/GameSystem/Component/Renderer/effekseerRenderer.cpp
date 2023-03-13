@@ -119,7 +119,7 @@ void CEffekseerRenderer::ImGuiDebug()
 	static std::vector<std::string> s_FileNameList;
 	static std::vector<std::u16string> s_FileList;
 
-	if (s_FileNameList.empty() || ImGui::Button(u8"エフェクト reload"))
+	if (s_FileNameList.empty() || ImGui::Button("effect reload"))
 	{
 		MySpace::System::CFilePath file;
 		s_FileNameList = file.GetAllFileName(EFFECT_PATH1, ".efkefc");
@@ -134,8 +134,10 @@ void CEffekseerRenderer::ImGuiDebug()
 	}
 
 	ImGui::Text(u8"name%zu", m_EffectName.c_str());
-	ImGui::InputFloat(u8"angle", &m_fAngle);
-	if (ImGui::Button(u8"loop"))
+
+	Debug::SetTextAndAligned("Angle");
+	ImGui::InputFloat("##angle", &m_fAngle);
+	if (ImGui::Button("Loop Mode"))
 	{
 		m_bLoop ^= true;
 	}

@@ -18,9 +18,34 @@ namespace MySpace
 	{
 		class CGaussianBlur 
 		{
+			//--- シリアライズ
+			friend class cereal::access;
+			template<class Archive>
+			void save(Archive& archive) const
+			{
+				archive(CEREAL_NVP(m_weight), CEREAL_NVP(m_eFormat), CEREAL_NVP(m_fWidth), CEREAL_NVP(m_fHeight)
+				);
+			}
+			template<class Archive>
+			void load(Archive& archive)
+			{
+				archive(CEREAL_NVP(m_weight), CEREAL_NVP(m_eFormat),CEREAL_NVP(m_fWidth), CEREAL_NVP(m_fHeight)
+				);
+			}
+			
+		private:
+			//--- 定数バッファ用構造体
 			enum { NUM_WEIGHTS = 8 };				//重みの数。
 			struct WEIGHT_TABLE
 			{
+				//--- シリアライズ
+				template<class Archive>
+				void serialize(Archive &archive) 
+				{
+					archive(
+						CEREAL_NVP(fWeights)
+					);
+				}
 				float fWeights[NUM_WEIGHTS];			//重みテーブル。
 			};
 		private:
@@ -35,17 +60,21 @@ namespace MySpace
 			float m_fHeight;
 
 		private:
-			/// レンダリングターゲットを初期化。
+			// レンダリングターゲット初期化
 			void InitRenderTargets();
-			/// スプライトを初期化。
 
+			// スプライト
 			void DrawSpriteXBlur();
 			void DrawSpriteYBlur();
 
-			/// 重みテーブルを更新する。
+			// 重みテーブル更新
 			void UpdateWeightsTable(float blurPower);
 
 		public:
+			CGaussianBlur();
+			CGaussianBlur(ID3D11ShaderResourceView* originalTexture, DXGI_FORMAT eFormat,
+						  float fWidth, float fHeight);
+			~CGaussianBlur();
 
 			static HRESULT InitShader();
 
@@ -57,7 +86,6 @@ namespace MySpace
 			// レンダリングターゲット
 			// ブラーの強さ。値が大きいほどボケが強くなる
 			void ExecuteOnGPU(float blurPower, ID3D11ShaderResourceView* tex);
-			
 
 			// 横ブラーテクスチャを取得
 			ID3D11ShaderResourceView* GetXBlurTexture()

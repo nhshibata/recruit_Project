@@ -44,7 +44,7 @@ namespace MySpace
 		protected:
 			friend CGameObject;
 		private:
-			// シリアライズ
+			//--- シリアライズ
 			friend class cereal::access;
 			template<class Archive>
 			void save(Archive& archive) const
@@ -94,6 +94,13 @@ namespace MySpace
 			virtual void FixedUpdate();
 			// *@読み込み時呼び出し関数
 			virtual void OnLoad();
+
+			// *@見えた瞬間
+			virtual void OnBecameVisible();
+			// *@見えなくなった瞬間
+			virtual void OnBecameInvisible();
+			// *@見えている時
+			virtual void OnWillRenderObject();
 
 			//--- 当たり判定呼び出し
 			// 衝突したときに呼び出される関数

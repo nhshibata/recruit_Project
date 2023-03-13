@@ -247,6 +247,10 @@ void CTransform::AddChild(std::weak_ptr<CTransform> child)
 
 	child.lock()->SetLocalMatrix(childMtx);
 }
+
+//==========================================================
+// éqÇÃéÊìæ
+//==========================================================
 std::weak_ptr<CTransform> CTransform::GetChild(int no)
 {
 	if (no >= m_pChilds.size())
@@ -260,11 +264,18 @@ std::weak_ptr<CTransform> CTransform::GetChild(int no)
 void CTransform::ImGuiDebug()
 {
 	// 3éüå≥ç¿ïW
-	ImGui::Text("T:OldPos %f %f %f", m_vOldPos.x, m_vOldPos.y, m_vOldPos.z);
-	ImGui::DragFloat3("T:Pos", (float*)&m_vPos);
-	ImGui::DragFloat3("T:Rot", (float*)&m_vRot, 1.0f, -360.0f, 360.0f);
-	ImGui::DragFloat3("T:Scale", (float*)&m_vScale);
+	Debug::SetTextAndAligned("Transform:OldPos");
+	ImGui::Text("%f %f %f", m_vOldPos.x, m_vOldPos.y, m_vOldPos.z);
+
+	Debug::SetTextAndAligned("Transform:Pos");
+	ImGui::DragFloat3("##T:Pos", (float*)&m_vPos);
+
+	Debug::SetTextAndAligned("Transform:Rot");
+	ImGui::DragFloat3("##T:Rot", (float*)&m_vRot, 1.0f, -360.0f, 360.0f);
 	
-	//UpdateWorldMatrix();
+	Debug::SetTextAndAligned("Transform:Scale");
+	ImGui::DragFloat3("##T:Scale", (float*)&m_vScale);
+	
 }
+
 #endif // BUILD_MODE

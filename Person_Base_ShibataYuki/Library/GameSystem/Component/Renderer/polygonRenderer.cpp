@@ -221,18 +221,26 @@ void CPolygonRenderer::ImGuiDebug()
 
 	CRenderer::ImGuiDebug();
 	
+	ImGui::Separator();
+
 	int z = m_nZValue;
-	if (ImGui::InputInt("ZValue", &z))
+	Debug::SetTextAndAligned("ZValue");
+	if (ImGui::InputInt("##value", &z))
 	{
 		SetZ(z);
 	}
-	if(ImGui::Button("BG"))
+
+	Debug::SetTextAndAligned("BG");
+	if(ImGui::Button("##bg"))
 		SetZ((int)EZValue::BG);
 	ImGui::SameLine();
-	if(ImGui::Button("Default"))
+
+	Debug::SetTextAndAligned("Default");
+	if(ImGui::Button("##Default"))
 		SetZ((int)EZValue::DEFAULT);
-	ImGui::SameLine();
-	if(ImGui::Button("FOG"))
+
+	Debug::SetTextAndAligned("FOG");
+	if(ImGui::Button("##fog"))
 		SetZ((int)EZValue::FOG);
 	
 	//--- ƒtƒ@ƒCƒ‹“àŒŸõ
@@ -243,10 +251,13 @@ void CPolygonRenderer::ImGuiDebug()
 	}
 
 	// Ã¸½Á¬
-	if (auto name = DispComboSelect(s_FileList, "2D Image", m_pSprite->GetImageName()); !name.empty())
+	Debug::SetTextAndAligned("Image");
+	if (auto name = DispComboSelect(s_FileList, "##Image", m_pSprite->GetImageName()); !name.empty())
 	{
 		m_pSprite->SetImage(name);
 	}
+
+	ImGui::Separator();
 
 	m_pSprite->ImGuiDebug();
 

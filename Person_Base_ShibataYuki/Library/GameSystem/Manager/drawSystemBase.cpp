@@ -4,6 +4,8 @@
 //---------------------------------------------------------
 // 
 //---------------------------------------------------------
+// drawSystemが長くなったのと、
+// 旧システムを大きく変える必要がないと思い、基底クラスを挟む
 //=========================================================
 
 //--- インクルード部
@@ -12,6 +14,7 @@
 #include <GameSystem/Manager/drawSystemBase.h>
 #include <GameSystem/Component/Light/directionalLight.h>
 #include <GameSystem/Component/Camera/camera.h>
+#include <GameSystem/Component/Camera/stackCamera.h>
 #include <GameSystem/Component/Renderer/polygonRenderer.h>
 #include <GameSystem/Component/Renderer/meshRenderer.h>
 #include <GameSystem/Shader/shaderAssets.h>
@@ -69,6 +72,145 @@ void CDrawSystemBase::Init()
 }
 
 //==========================================================
+// 更新
+//==========================================================
+void CDrawSystemBase::Update()
+{
+	// CRenderer::Drawはboolを返す
+	// trueであれば描画する
+	// 描画数などの確認をするならばこれを活用する
+
+	//--- レイヤーで並び替え
+	// 追加されたときなど
+	if (m_bIsSortNecessary)
+	{
+		Sort();
+		m_bIsSortNecessary = false;
+	}
+
+	//--- BGの描画
+	int UIIdx = 0;	// UIが何番目記憶するための変数
+	for (int cnt = 0; cnt < m_aPolygonList.size(); ++cnt, ++UIIdx)
+	{
+		// ポインタ確認
+		if (!m_aPolygonList[cnt].lock())
+			continue;
+
+		if (m_aPolygonList[cnt].lock()->GetZ() > static_cast<int>(CPolygonRenderer::EZValue::BG))
+			break;
+
+		// 描画可能な状態か確認
+		if (!m_aPolygonList[cnt].lock()->IsActive() || !m_aPolygonList[cnt].lock()->IsVisible())
+			continue;
+
+		//--- 描画
+		m_aPolygonList[cnt].lock()->Draw();
+	}
+
+	// 描画対象の確認
+	CheckRenderedObjectsIn3D();
+
+	//--- 3D描画
+	// インスタンシング長いので関数化
+	Draw3D();		// 3D実描画
+
+	// クリア
+	m_aInstancingModelMap.clear();
+	m_aInstancingMeshMap.clear();
+
+	//--- UI部分描画
+	for (int cnt = UIIdx; cnt < m_aPolygonList.size(); ++cnt)
+	{
+		// ポインタ確認
+		if (!m_aPolygonList[cnt].lock())
+			continue;
+
+		// 描画可能な状態か確認
+		if (!m_aPolygonList[cnt].lock()->IsActive() || !m_aPolygonList[cnt].lock()->IsVisible())
+			continue;
+
+		//--- 描画
+		m_aPolygonList[cnt].lock()->Draw();
+	}
+
+#ifdef BUILD_MODE
+	//--- 当たり判定メッシュ描画
+	auto pDX = Application::Get()->GetSystem<CDXDevice>();
+	pDX->SetBlendState(static_cast<int>(EBlendState::BS_ALPHABLEND));
+
+	for (auto & name : m_aDebugMeshMap)
+	{
+		std::vector<XMFLOAT4X4> inMtx;
+		for (auto & mesh : name.second)
+		{
+			inMtx.push_back(mesh->GetWorld());
+		}
+		name.second[0]->DrawInstancing(inMtx, D3D11_PRIMITIVE_TOPOLOGY::D3D11_PRIMITIVE_TOPOLOGY_POINTLIST);
+	}
+	pDX->SetBlendState(static_cast<int>(EBlendState::BS_NONE));
+#endif // BUILD_MODE
+
+}
+
+//==========================================================
+// 描画対象の確認
+//==========================================================
+void CDrawSystemBase::CheckRenderedObjectsIn3D()
+{
+	//--- 3D描画(Mesh,Model)
+	for (auto & it : m_aIntMap)
+	{
+		auto render = it.second;
+
+		// ポインタ確認
+		if (!render.lock())
+			continue;
+
+		// 描画可能な状態か確認
+		if (!render.lock()->IsActive() || !render.lock()->IsVisible())
+			continue;
+
+		// layer確認
+		if (!CCamera::GetMain()->IsMask(render.lock()->GetLayer()))
+			continue;
+
+#ifdef BUILD_MODE
+		++m_nDrawCnt;
+		auto name = render.lock()->GetName();
+#endif // _DEBUG
+
+		//--- Meshｺﾝﾎﾟｰﾈﾝﾄ(および継承)か確認
+		// カリングフラグも確認
+		if (auto mesh = render.lock()->BaseToDerived<CMeshRenderer>().get(); mesh)
+		{
+
+			float fRadius = mesh->GetBSRadius();
+			auto mW = mesh->Transform()->GetWorldMatrix();
+			fRadius = (mW._11 > fRadius) ? mW._11 : fRadius;
+			fRadius = (mW._22 > fRadius) ? mW._22 : fRadius;
+			fRadius = (mW._33 > fRadius) ? mW._33 : fRadius;
+
+			//--- ｶﾒﾗに映るか判定
+			//if (CCamera::GetMain()->CollisionViewFrustum(&mesh->GetCenter(0), mesh->GetBSRadius())==CCamera::EFrustumResult::OUTSIDE)
+			if (CCamera::GetMain()->CollisionViewFrustum(&Vector3(mW._41, mW._42, mW._43), fRadius) == CCamera::EFrustumResult::OUTSIDE)
+			{
+#ifdef BUILD_MODE
+				++m_nSkipCnt;
+				if (m_bFrustum)
+					continue;
+#else
+				continue;
+#endif // _DEBUG
+			}
+
+		}
+
+		// ここまできたら描画
+		render.lock()->Draw();
+	}
+}
+
+//==========================================================
 // 登録
 //==========================================================
 int CDrawSystemBase::PolygonRegist(std::weak_ptr<CPolygonRenderer> render)
@@ -83,22 +225,22 @@ int CDrawSystemBase::PolygonRegist(std::weak_ptr<CPolygonRenderer> render)
 // 登録 
 // インスタンシング描画のために情報を格納する
 //==========================================================
-void CDrawSystemBase::SetInstanchingModel(std::string name, std::string ps, std::string vs, MySpace::Graphics::RENDER_DATA data)
+void CDrawSystemBase::SetInstanchingModel(std::string name, std::string ps, std::string vs, const int id)
 {
-	std::string pushName = name + "#" + ps + "#" + vs;
-	m_aInstancingModelMap[pushName].push_back(data);
+	const auto pushName = name + "#" + ps + "#" + vs;
+	m_aInstancingModelMap[pushName].aID.push_back(id);
 }
 
 //==========================================================
 // 登録
 //==========================================================
-void CDrawSystemBase::SetInstanchingMesh(std::string name, std::string ps, std::string vs, MySpace::Graphics::RENDER_DATA data, CMesh* mesh)
+void CDrawSystemBase::SetInstanchingMesh(std::string name, std::string ps, std::string vs, const int id, CMesh* mesh)
 {
-	std::string pushName = name + "#" + ps + "#" + vs;
+	const auto pushName = name + "#" + ps + "#" + vs;
 	if (!m_aInstancingMeshMap.count(pushName))
 		m_aInstancingMeshMap[pushName].pMesh = mesh;
 
-	m_aInstancingMeshMap[pushName].aData.push_back(data);
+	m_aInstancingMeshMap[pushName].aID.push_back(id);
 }
 
 //==========================================================
@@ -159,116 +301,6 @@ std::weak_ptr<CRenderer> CDrawSystemBase::ExecutSystem(int idx)
 }
 
 //==========================================================
-// 更新
-//==========================================================
-void CDrawSystemBase::Update()
-{
-	// CRenderer::Drawはboolを返す
-	// trueであれば描画する
-	// 描画数などの確認をするならばこれを活用する
-
-	//--- レイヤーで並び替え
-	// 追加されたときなど
-	if (m_bIsSortNecessary)
-	{
-		Sort();
-		m_bIsSortNecessary = false;
-	}
-
-	//--- BGの描画
-	int UIIdx = 0;	// UIが何番目記憶するための変数
-	for (int cnt = 0; cnt < m_aPolygonList.size(); ++cnt, ++UIIdx)
-	{
-		// ポインタ確認
-		if (!m_aPolygonList[cnt].lock())
-			continue;
-
-		if (m_aPolygonList[cnt].lock()->GetZ() > static_cast<int>(CPolygonRenderer::EZValue::BG))
-			break;
-
-		// 描画可能な状態か確認
-		if (!m_aPolygonList[cnt].lock()->IsActive() || !m_aPolygonList[cnt].lock()->IsVisible())
-			continue;
-
-		//--- 描画
-		m_aPolygonList[cnt].lock()->Draw();
-	}
-
-
-	//--- 3D描画(Mesh,Model)
-	for (auto & it : m_aIntMap)
-	{
-		auto render = it.second;
-
-		// ポインタ確認
-		if (!render.lock())
-			continue;
-
-		// 描画可能な状態か確認
-		if (!render.lock()->IsActive() || !render.lock()->IsVisible())
-			continue;
-
-#ifdef BUILD_MODE
-		++m_nDrawCnt;
-		auto name = render.lock()->GetName();
-#endif // _DEBUG
-
-		//--- Meshｺﾝﾎﾟｰﾈﾝﾄ(および継承)か確認
-		// カリングフラグも確認
-		if (auto mesh = render.lock()->BaseToDerived<CMeshRenderer>().get(); mesh)
-		{
-
-			float fRadius = mesh->GetBSRadius();
-			auto mW = mesh->Transform()->GetWorldMatrix();
-			fRadius = (mW._11 > fRadius) ? mW._11 : fRadius;
-			fRadius = (mW._22 > fRadius) ? mW._22 : fRadius;
-			fRadius = (mW._33 > fRadius) ? mW._33 : fRadius;
-
-			//--- ｶﾒﾗに映るか判定
-			//if (CCamera::GetMain()->CollisionViewFrustum(&mesh->GetCenter(0), mesh->GetBSRadius())==CCamera::EFrustumResult::OUTSIDE)
-			if (CCamera::GetMain()->CollisionViewFrustum(&Vector3(mW._41, mW._42, mW._43), fRadius) == CCamera::EFrustumResult::OUTSIDE)
-			{
-#ifdef BUILD_MODE
-				++m_nSkipCnt;
-				if (m_bFrustum)
-					continue;
-#else
-				continue;
-#endif // _DEBUG
-			}
-
-		}
-
-		// ここまできたら描画
-		render.lock()->Draw();
-	}
-
-	//--- 3D描画
-	// インスタンシング長いので関数化
-	Draw3D();		// 3D実描画
-
-	// クリア
-	m_aInstancingModelMap.clear();
-	m_aInstancingMeshMap.clear();
-
-	//--- UI部分描画
-	for (int cnt = UIIdx; cnt < m_aPolygonList.size(); ++cnt)
-	{
-		// ポインタ確認
-		if (!m_aPolygonList[cnt].lock())
-			continue;
-
-		// 描画可能な状態か確認
-		if (!m_aPolygonList[cnt].lock()->IsActive() || !m_aPolygonList[cnt].lock()->IsVisible())
-			continue;
-
-		//--- 描画
-		m_aPolygonList[cnt].lock()->Draw();
-	}
-
-}
-
-//==========================================================
 // 整列
 //==========================================================
 void CDrawSystemBase::Sort()
@@ -297,42 +329,67 @@ void CDrawSystemBase::Draw3DShadow()
 	m_pDepthShadow->Begin();
 
 	//--- 登録されたモデル名別に描画
-	for (auto & instancingModel : m_aInstancingModelMap)
+	for (auto & modelObj : m_aInstancingModelMap)
 	{
-		auto aName = GetPSVSName(instancingModel.first);
+		auto aName = GetPSVSName(modelObj.first);
 		if (aName.size() != 3)
 			continue;
 
 		//--- 描画するモデルの取得
-		auto model = pAssets->GetModelManager()->GetModel(aName[0]);
+		auto pModel = pAssets->GetModelManager()->GetModel(aName[0]);
 		// モデルが解放されていないか一応確認
-		if (!model)
+		if (!pModel)
 			continue;
 
-		model->DrawInstancing(pDX->GetDeviceContext(), instancingModel.second, EByOpacity::eOpacityOnly, false);
+		//--- インスタンシングに必要なデータ格納
+		std::vector<RENDER_DATA> data;
+		for (auto & id : modelObj.second.aID)
+		{
+			CMeshRenderer* mesh = dynamic_cast<CMeshRenderer*>(m_aIntMap[id].lock().get());
+			data.push_back(mesh->GetShaderData());
+		}
+
+		pModel->DrawInstancing(pDX->GetDeviceContext(), data, EByOpacity::eOpacityOnly, false);
 	}
 
 	//--- Mesh
-	for (auto & mesh : m_aInstancingMeshMap)
+	for (auto & meshObj : m_aInstancingMeshMap)
 	{
-		if (mesh.second.aData.size() == 0)// 一応確認
+		if (meshObj.second.aID.size() == 0)// 一応確認
 			continue;
 
 		// ビルボードか確認
-		if (CBillboard* bill = dynamic_cast<CBillboard*>(mesh.second.pMesh); bill != nullptr)
+		if (CBillboard* bill = dynamic_cast<CBillboard*>(meshObj.second.pMesh); bill != nullptr)
 		{
-			auto aName = GetPSVSName(mesh.first);
+			auto aName = GetPSVSName(meshObj.first);
 			if (aName.size() != 3)
 				continue;
 
 			// ﾃｸｽﾁｬ設定
 			auto image = pAssets->GetImageManager()->GetResource(aName[0]);
 			auto tex = image ? image->GetSRV() : NULL;
-			mesh.second.pMesh->DrawInstancing(mesh.second.aData, false, tex, &bill->GetTextureMatrix());
+
+			//--- インスタンシングに必要なデータ格納
+			std::vector<RENDER_DATA> data;
+			for (auto & id : meshObj.second.aID)
+			{
+				CMeshRenderer* mesh = dynamic_cast<CMeshRenderer*>(m_aIntMap[id].lock().get());
+				data.push_back(mesh->GetShaderData());
+			}
+
+			meshObj.second.pMesh->DrawInstancing(data, false, tex, &bill->GetTextureMatrix());
 		}
 		else
 		{
-			mesh.second.pMesh->DrawInstancing(mesh.second.aData, false);
+			//--- インスタンシングに必要なデータ格納
+			std::vector<RENDER_DATA> data;
+			for (auto & id : meshObj.second.aID)
+			{
+				CMeshRenderer* mesh = dynamic_cast<CMeshRenderer*>(m_aIntMap[id].lock().get());
+				data.push_back(mesh->GetShaderData());
+			}
+
+			meshObj.second.pMesh->DrawInstancing(data, false);
 		}
 	}
 
@@ -374,9 +431,18 @@ void CDrawSystemBase::Draw3D()
 		// モデルが解放されていないか一応確認
 		if (!model)
 			continue;
+
+		//--- インスタンシングに必要なデータ格納
+		std::vector<RENDER_DATA> data;
+		for (auto & id : intancingModel.second.aID)
+		{
+			CMeshRenderer* mesh = dynamic_cast<CMeshRenderer*>(m_aIntMap[id].lock().get());
+			data.push_back(mesh->GetShaderData());
+		}
+
 		// shaderBind
 		pSM->CallBackFuncAndBind(aName[1], aName[2]);
-		model->DrawInstancing(pDX->GetDeviceContext(), intancingModel.second, EByOpacity::eOpacityOnly, false);
+		model->DrawInstancing(pDX->GetDeviceContext(), data, EByOpacity::eOpacityOnly, false);
 
 #if BUILD_MODE
 		++m_nInstancingCnt;
@@ -389,30 +455,38 @@ void CDrawSystemBase::Draw3D()
 	pDX->SetBlendState(static_cast<int>(EBlendState::BS_ALPHABLEND));
 	pDX->SetZWrite(false);			// Z書き込み
 
-	for (auto & intancingModel : m_aInstancingModelMap)
+	for (auto & modelObj : m_aInstancingModelMap)
 	{
-		auto aName = GetPSVSName(intancingModel.first);
+		auto aName = GetPSVSName(modelObj.first);
 		if (aName.size() != 3)
 			continue;
 
 		//--- 描画するモデルの取得
 		auto model = pAssets->GetModelManager()->GetModel(aName[0]);
 
+		//--- インスタンシングに必要なデータ格納
+		std::vector<RENDER_DATA> data;
+		for (auto & id : modelObj.second.aID)
+		{
+			CMeshRenderer* mesh = dynamic_cast<CMeshRenderer*>(m_aIntMap[id].lock().get());
+			data.push_back(mesh->GetShaderData());
+		}
+
 		// shaderBind
 		pSM->CallBackFuncAndBind(aName[1], aName[2]);
-		model->DrawInstancing(pDX->GetDeviceContext(), intancingModel.second, EByOpacity::eTransparentOnly, false);
+		model->DrawInstancing(pDX->GetDeviceContext(), data, EByOpacity::eTransparentOnly, false);
 	}
 
 	pDX->SetZWrite(true);			// Z書き込み
 	pDX->SetBlendState(static_cast<int>(EBlendState::BS_NONE));
 
 	//--- メッシュインスタンシング描画
-	for (auto & mesh : m_aInstancingMeshMap)
+	for (auto & meshObj : m_aInstancingMeshMap)
 	{
-		if (mesh.second.aData.size() == 0)// 一応確認
+		if (meshObj.second.aID.size() == 0)// 一応確認
 			continue;
 
-		std::vector<std::string> aName = GetPSVSName(mesh.first);
+		std::vector<std::string> aName = GetPSVSName(meshObj.first);
 		if (aName.size() != 3)
 			continue;
 
@@ -420,16 +494,33 @@ void CDrawSystemBase::Draw3D()
 		pSM->CallBackFuncAndBind(aName[1], aName[2]);
 
 		// ビルボードか確認
-		if (CBillboard* bill = dynamic_cast<CBillboard*>(mesh.second.pMesh); bill != nullptr)
+		if (CBillboard* bill = dynamic_cast<CBillboard*>(meshObj.second.pMesh); bill != nullptr)
 		{
 			// ﾃｸｽﾁｬ設定
 			auto image = pAssets->GetImageManager()->GetResource(aName[0]);
 			auto tex = image ? image->GetSRV() : NULL;
-			mesh.second.pMesh->DrawInstancing(mesh.second.aData, false, tex, &bill->GetTextureMatrix());
+			
+			//--- インスタンシングに必要なデータ格納
+			std::vector<RENDER_DATA> data;
+			for (auto & id : meshObj.second.aID)
+			{
+				CMeshRenderer* mesh = dynamic_cast<CMeshRenderer*>(m_aIntMap[id].lock().get());
+				data.push_back(mesh->GetShaderData());
+			}
+
+			meshObj.second.pMesh->DrawInstancing(data, false, tex, &bill->GetTextureMatrix());
 		}
 		else
 		{
-			mesh.second.pMesh->DrawInstancing(mesh.second.aData, false);
+			//--- インスタンシングに必要なデータ格納
+			std::vector<RENDER_DATA> data;
+			for (auto & id : meshObj.second.aID)
+			{
+				CMeshRenderer* mesh = dynamic_cast<CMeshRenderer*>(m_aIntMap[id].lock().get());
+				data.push_back(mesh->GetShaderData());
+			}
+
+			meshObj.second.pMesh->DrawInstancing(data, false);
 		}
 #if BUILD_MODE
 		++m_nInstancingCnt;
@@ -440,17 +531,6 @@ void CDrawSystemBase::Draw3D()
 	pLight->SetEnable();		// ライティング有効
 	//pDX->SetZBuffer(true);
 	//CDXDevice::Get()->SetBlendState(static_cast<int>(EBlendState::BS_NONE));		// αブレンディング無効
-
-#ifdef BUILD_MODE
-	pDX->SetBlendState(static_cast<int>(EBlendState::BS_ALPHABLEND));
-
-	for (auto & mesh : m_aDebugMeshMap)
-	{
-		mesh.second.pMesh->DrawInstancing(mesh.second.mtx);
-	}
-	m_aDebugMeshMap.clear();
-	pDX->SetBlendState(static_cast<int>(EBlendState::BS_NONE));
-#endif // BUILD_MODE
 
 }
 
@@ -482,6 +562,28 @@ void CDrawSystemBase::ImGuiDebug()
 	m_nDrawCnt = 0;
 	m_nSkipCnt = 0;
 	m_nInstancingCnt = 0;
+}
+
+void CDrawSystemBase::SetDebugMesh(std::string name, CMesh* mesh)
+{
+	m_aDebugMeshMap[name].push_back(mesh);
+}
+
+void CDrawSystemBase::ReleaseDebugMesh(CMesh* pMesh)
+{
+	for (auto & name : m_aDebugMeshMap)
+	{
+		for (auto & mesh : name.second)
+		{
+			// 同一のメッシュﾎﾟｲﾝﾀを見つけたので除外
+			if (pMesh == mesh)
+			{
+				auto it = std::find(name.second.begin(), name.second.end(), mesh);
+				name.second.erase(it);
+				return;
+			}
+		}
+	}
 }
 
 #endif // BUILD_MODE

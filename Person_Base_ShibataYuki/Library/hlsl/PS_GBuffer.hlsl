@@ -14,15 +14,15 @@ struct PS_OUT
 };
 
 // 設定された画面表示用のレンダーターゲットに色を渡す
-PS_OUT main(PS_INPUT pin, out float4 mainColor : SV_Target4)
+//PS_OUT main(PS_INPUT pin, out float4 screenColor : SV_Target4)
+PS_OUT main(PS_INPUT pin)
 {
     PS_OUT pout;
     
-    pout.color = g_material[pin.id].fDiffuse;
     // 色情報書き込み
+    pout.color = g_material[pin.id].fDiffuse;
     if (any(g_material[pin.id].fAmbient.a))
         pout.color *= g_texture.Sample(g_sampler, pin.Tex);
-    mainColor = pout.color;
     
     // 法線
     // 法線の情報は-1～1だが、ﾃｸｽﾁｬは0～1で扱うため、-1～1 → 0～1への変換が必要

@@ -11,7 +11,8 @@
 #include <GameSystem/Component/Transform/transform.h>
 #include <GameSystem/Manager/sceneManager.h>
 #include <GraphicsSystem/DirectX/DXDevice.h>
-#include <ImGui/imgui.h>
+
+#include <DebugSystem/imGuiPackage.h>
 
 using namespace MySpace::Game;
 
@@ -125,14 +126,16 @@ HRESULT CSphereRenderer::SetSphere(float radius)
 
 void CSphereRenderer::ImGuiDebug()
 {
-	//this->SetMaterial(*this->GetMaterial());
 
-	//if(ImGui::Button(u8"SphereRenderer"))
-	//m_fRadius = Transform()->GetScale().GetLargeValue();
-	if (ImGui::DragFloat("SphereRadius renderer", &m_fRadius))
+	Debug::SetTextAndAligned("Renderer SphereRadius");
+
+	if (ImGui::DragFloat("##Renderer SphereRadius", &m_fRadius))
 	{
 		SetSphere(m_fRadius);
 	}
+
+	ImGui::Separator();
+
 	CMeshRenderer::ImGuiDebug();
 }
 

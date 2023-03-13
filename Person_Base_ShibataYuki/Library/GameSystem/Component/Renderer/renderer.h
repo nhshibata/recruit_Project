@@ -52,9 +52,7 @@ namespace MySpace
 			//--- メンバ関数
 			void DrawRequest();
 		public:
-			CRenderer()
-				:m_bVisible(true), m_nDrawIdx(-1)
-			{};
+			CRenderer();
 			CRenderer(std::shared_ptr<CGameObject> owner);
 			virtual ~CRenderer();
 
@@ -66,20 +64,20 @@ namespace MySpace
 
 			//--- セッター・ゲッター
 			_NODISCARD inline Color GetColor() { return m_vColor; }
-			_NODISCARD inline XMFLOAT4 GetColor(int num) { return XMFLOAT4(m_vColor.r, m_vColor.g, m_vColor.b, m_vColor.a); }
+			_NODISCARD inline XMFLOAT4 GetColor(int dummy) { return XMFLOAT4(m_vColor.r, m_vColor.g, m_vColor.b, m_vColor.a); }
 			// *@ｲﾝﾃﾞｯｸｽ取得
 			_NODISCARD inline UINT GetIdx() { return m_nDrawIdx; }
 			inline std::string GetPSName() { return m_strPixelShader; }
 			inline std::string GetVSName() { return m_strVertexShader; }
 
 			void SetLayer(int value);
-			inline void SetColor(Color color) { m_vColor = color; }
-			inline void SetVisible(bool value) { m_bVisible = value; }
+			inline void SetColor(const Color color) { m_vColor = color; }
+			inline void SetVisible(const bool value) { m_bVisible = value; }
 			inline void SetPSName(std::string value) { m_strPixelShader = value; }
 			inline void SetVSName(std::string value) { m_strVertexShader = value; }
 
-			// *描画状態確認
-			inline bool IsVisible() { return m_bVisible; }
+			// *@描画状態確認
+			virtual bool IsVisible() { return m_bVisible; }
 
 #ifdef BUILD_MODE
 

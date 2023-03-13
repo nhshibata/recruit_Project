@@ -8,7 +8,7 @@
 
 // --- インクルード部 ---
 #include <CoreSystem/Time/fps.h>
-#include <ImGui/imgui.h>
+#include <DebugSystem/imGuiPackage.h>
 
 using namespace MySpace::System;
 
@@ -198,24 +198,36 @@ CFps* CFps::Get()
 void CFps::ImGuiDebug()
 {
 	//--- 情報表示
-	ImGui::Checkbox(u8"更新フレーム", &m_bUpdate);
+	ImGui::Checkbox(u8"UpdateON", &m_bUpdate);
 	
-	ImGui::Text(u8"現在のDeltaTime : %.5f", CFps::Get()->DeltaTime());
-	ImGui::Text(u8"現在のUnScaleDeltaTime : %.5f", CFps::Get()->UnScaleDeltaTime());
-	ImGui::Text(u8"現在のTimeScale : %.5f", CFps::Get()->GetTimeScale());
-	ImGui::Text(u8"現在のCount : %d", CFps::Get()->GetFPSCount());
+	Debug::SetTextAndAligned("DeltaTime:");
+	ImGui::Text("%.5f", CFps::Get()->DeltaTime());
+
+	Debug::SetTextAndAligned("UnScaleDeltaTime:");
+	ImGui::Text("%.5f", CFps::Get()->UnScaleDeltaTime());
+
+	Debug::SetTextAndAligned("TimeScale:");
+	ImGui::Text("%.5f", CFps::Get()->GetTimeScale());
+	
+	Debug::SetTextAndAligned("Count:");
+	ImGui::Text("%d", CFps::Get()->GetFPSCount());
 
 	//--- 設定
-	if (ImGui::Button("FPS Set"))
-		SetSlow(m_nDebugFPS);
-	ImGui::SameLine();
-	ImGui::DragInt(u8"FPS 分割数", &m_nDebugFPS, 1, 1, 60);
+	/*if (ImGui::Button("FPS Set"))
+		SetSlow(m_nDebugFPS);*/
+	
+	Debug::SetTextAndAligned(u8"FPS 分割数");
+	ImGui::DragInt("##fps", &m_nDebugFPS, 1, 1, 60);
 
-	if(ImGui::InputFloat(u8"TimeScale", &m_fTimeScale))
+	Debug::SetTextAndAligned("TimeScale");
+	if(ImGui::DragFloat("##TimeScale", &m_fTimeScale))
 		SetTimeScale(m_fTimeScale);
 
-	ImGui::DragInt("HitStop Num", &m_nHitStopFrame);
-	ImGui::DragInt("Slow Time", (int*)&m_dwDebugSlow);
+	Debug::SetTextAndAligned("HitStop Num");
+	ImGui::DragInt("##HitStopNum", &m_nHitStopFrame);
+	
+	Debug::SetTextAndAligned("Slow Time");
+	ImGui::DragInt("##SlowTime", (int*)&m_dwDebugSlow);
 	
 	if (ImGui::Button("Slow OK?"))
 	{
@@ -229,9 +241,10 @@ void CFps::ImGuiDebug()
 
 	//--- 固定時間
 	ImGui::Checkbox("Fixed Update", &m_FixedData.m_bUpdate);
-	ImGui::SameLine();
+
 	int newFixedTime = (int)m_FixedData.m_dwFixedTime;
-	if (ImGui::DragInt("Fixed Time", &newFixedTime))
+	Debug::SetTextAndAligned("Fixed Time");
+	if (ImGui::DragInt("##FixedTime", &newFixedTime))
 	{
 		m_FixedData.m_dwFixedTime = newFixedTime;
 	}

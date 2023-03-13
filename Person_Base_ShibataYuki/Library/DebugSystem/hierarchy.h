@@ -43,7 +43,6 @@ namespace MySpace
 				COMPONENT,
 				STATE_ACTIVE,
 				STATE_STOP,
-				STATE_DESTROY,
 				MAX
 			};
 			//--- 構造体定義
@@ -83,10 +82,6 @@ namespace MySpace
 			// *@検索条件と一致するか確認する
 			bool DispCheck(MySpace::Game::CGameObject* obj);
 			
-			// *@リスト内の移動用関数
-			template<class T>
-			_NODISCARD std::list<T> MovingInList(std::list<T> list, T newT, int index);
-			
 			// *@子要素の表示
 			// *@孫の表示などを行うため、再帰する
 			void DispChild(MySpace::Debug::ImGuiManager* manager, std::weak_ptr<MySpace::Game::CGameObject> obj);
@@ -95,13 +90,15 @@ namespace MySpace
 			void CreateObjectsWindow();
 			std::shared_ptr<MySpace::Game::CGameObject> CreateObject(int No, std::shared_ptr<MySpace::Game::CGameObject> = std::shared_ptr<MySpace::Game::CGameObject>());
 
+
 		public:
 			CHierachy();
 			~CHierachy();
 
-			void Update(MySpace::Debug::ImGuiManager*);
+			void Update(MySpace::Debug::ImGuiManager* mgr);
 
 			void SetPath(std::string name) { m_strSavePath = name; };
+
 			// *sceneファイルの再取得
 			void LoadScenePathList();
 		};

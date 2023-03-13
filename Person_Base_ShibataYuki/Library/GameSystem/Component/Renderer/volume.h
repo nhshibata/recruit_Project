@@ -1,6 +1,9 @@
 //==========================================================
 // [volume.h]
 //----------------------------------------------------------
+// 作成:2023/03/06
+// 更新:2023/03/12 Rendererキャッシュ機能追加
+//----------------------------------------------------------
 // 
 //==========================================================
 
@@ -10,6 +13,11 @@
 //--- インクルード部
 #include <GameSystem/Component/component.h>
 #include <GraphicsSystem/PostProcess/postProcess.h>
+
+#include <GraphicsSystem/PostProcess/bloom.h>
+#include <GraphicsSystem/PostProcess/negative.h>
+#include <GraphicsSystem/PostProcess/monochrome.h>
+#include <GraphicsSystem/PostProcess/outline.h>
 
 namespace MySpace
 {
@@ -25,14 +33,14 @@ namespace MySpace
 			void save(Archive& archive) const
 			{
 				archive(cereal::make_nvp("VolumeComponent", cereal::base_class<CComponent>(this)),
-						/*CEREAL_NVP(m_pPost),*/ CEREAL_NVP(m_nPriority), CEREAL_NVP(m_nID)
+						CEREAL_NVP(m_pPost), CEREAL_NVP(m_nPriority), CEREAL_NVP(m_nID)
 				);
 			}
 			template<class Archive>
 			void load(Archive& archive)
 			{
 				archive(cereal::make_nvp("VolumeComponent", cereal::base_class<CComponent>(this)),
-						/*CEREAL_NVP(m_pPost),*/ CEREAL_NVP(m_nPriority), CEREAL_NVP(m_nID)
+						CEREAL_NVP(m_pPost), CEREAL_NVP(m_nPriority), CEREAL_NVP(m_nID)
 				);
 			}
 #pragma endregion
@@ -41,6 +49,7 @@ namespace MySpace
 			std::unique_ptr<MySpace::Graphics::CPostProcess> m_pPost;
 			int m_nPriority;
 			int m_nID;
+			std::unordered_map<int, std::vector<int>> m_aRenderIDCash;  // キャッシュ用
 
 		public:
 			CVolume();
@@ -49,6 +58,13 @@ namespace MySpace
 
 			void Awake();
 			void Init();
+
+			// *@描画ID追加
+			void AddRendererID(const int nID);
+
+			void ResetRenderCash();
+
+			std::vector<int> GetRenderCash()const;
 
 			// *@所持PostProcess取得
 			MySpace::Graphics::CPostProcess* GetEffect()const { return m_pPost.get(); }
@@ -59,9 +75,6 @@ namespace MySpace
 			// *@優先度設定
 			void SetPriority(const int value) { m_nPriority = value; }
 
-			// *@適用するLayerか確認
-			bool IsLayer(const int layerNo);
-
 			// *@ポストプロセス設定用
 			template <class T>
 			void SetPostProcess()
@@ -71,6 +84,9 @@ namespace MySpace
 				m_pPost = std::make_unique<T>();
 			}
 
+			// *@適用するLayerか確認
+			bool IsLayer(const int layerNo);
+
 #if BUILD_MODE
 			void ImGuiDebug();
 #endif // BUILD_MODE
@@ -79,5 +95,7 @@ namespace MySpace
 
 	}
 }
+
+CEREAL_REGISTER_TYPE(MySpace::Game::CVolume)
 
 #endif // !__VOLUME_COMPONENT_H__

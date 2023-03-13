@@ -19,7 +19,7 @@
 #include <GraphicsSystem/Manager/shaderManager.h>
 #include <GraphicsSystem/Shader/shaderStruct.h>
 
-#include <ImGui/imgui.h>
+#include <DebugSystem/imGuiPackage.h>
 
 using namespace MySpace::Graphics;
 
@@ -150,19 +150,23 @@ ID3D11ShaderResourceView* CBloom::GetResource()
 
 void CBloom::ImGuiDebug() 
 {
-	static bool disp = true;
+	static bool viewDisp = true;
 
-	ImGui::DragFloat("Bloom Power", &m_fBlurPower, 0.1f);
-	ImGui::DragFloat("Bloom Threshold", &m_fThreshold, 0.01f, -1.0f, 1.0f);
-	ImGui::Checkbox("bloom view", &disp);
+	Debug::SetTextAndAligned("Bloom Power");
+	ImGui::DragFloat("##Bloom Power", &m_fBlurPower, 0.1f);
 
-	if (!disp)
+	Debug::SetTextAndAligned("Bloom Threshold");
+	ImGui::DragFloat("##Bloom Threshold", &m_fThreshold, 0.01f, -1.0f, 1.0f);
+	
+	ImGui::Checkbox("bloom view", &viewDisp);
+
+	if (!viewDisp)
 		return;
 	
 	ImVec2 size = ImVec2(CScreen::GetWidth() / 5, CScreen::GetHeight() / 5);
 	//ImGui::SetNextWindowSize(size, ImGuiCond_::ImGuiCond_Once);
 
-	if (ImGui::Begin("view 2", &disp))
+	if (ImGui::Begin("bloom window", &viewDisp))
 	{
 		ImGui::Text(u8"‹P“x");
 		ImGui::Image(m_pLuminnceRT.GetSRV(), size);

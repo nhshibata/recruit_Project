@@ -52,7 +52,7 @@ namespace MySpace
 			Vector4 m_Ambient;		// Ambient color RGB
 			Vector4 m_Specular;		// Specular 'shininess'
 			Vector4 m_Emissive;		// Emissive color RGB
-			float		m_Power;		// Sharpness if specular highlight
+			float m_Power;		// Sharpness if specular highlight
 
 		public:
 			//--- メンバ関数
@@ -133,6 +133,7 @@ namespace MySpace
 
 			// *@初期化
 			HRESULT Init(const VERTEX_3D vertexWk[], int nVertex, int indexWk[], int nIndex);
+			
 			// *@終了
 			virtual void Fin();
 
@@ -146,11 +147,14 @@ namespace MySpace
 			
 			// *@インスタンシング描画
 			// *@第二引数falseでdefaultShader off
-			void DrawInstancing(std::vector<DirectX::XMFLOAT4X4> aMesh, bool defaultShader = true,
+			void DrawInstancing(std::vector<DirectX::XMFLOAT4X4> aMesh, 
+								D3D11_PRIMITIVE_TOPOLOGY topology=D3D11_PRIMITIVE_TOPOLOGY::D3D11_PRIMITIVE_TOPOLOGY_TRIANGLESTRIP,
+								bool defaultShader = true,
 								ID3D11ShaderResourceView* m_pTexture = nullptr,XMFLOAT4X4* mWorld = nullptr);
 			
 			// *@インスタンシング描画
-			void DrawInstancing(std::vector<RENDER_DATA> aData, ID3D11Buffer* vertexS, ID3D11Buffer* indexS,
+			void DrawInstancing(std::vector<RENDER_DATA> aData, D3D11_PRIMITIVE_TOPOLOGY eTopology,
+								ID3D11Buffer* vertexS, ID3D11Buffer* indexS,
 								ID3D11ShaderResourceView* m_pTexture = nullptr, XMFLOAT4X4* mWorld = nullptr);
 			
 			//--- ゲッター・セッター

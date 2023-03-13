@@ -43,15 +43,18 @@ namespace MySpace
 			friend class CRenderer;
 			friend class CPolygonRenderer;
 		protected:
-			struct STMeshData
+			struct ST3DData
+			{
+				std::vector<int> aID;
+			};
+			struct STMeshData : public ST3DData
 			{
 				CMesh* pMesh;
-				std::vector<MySpace::Graphics::RENDER_DATA> aData;
 			};
 
 			//--- エイリアス
 			using PolygonRenderWeakList = std::vector<std::weak_ptr<CPolygonRenderer>>;
-			using InstancingMap = std::map<std::string, std::vector<MySpace::Graphics::RENDER_DATA>>;
+			using InstancingMap = std::map<std::string, ST3DData>;
 			using InstancingMeshMap = std::map<std::string, STMeshData>;
 
 		protected:
@@ -63,18 +66,13 @@ namespace MySpace
 			std::unique_ptr<Game::CDepthShadow> m_pDepthShadow;	// 深度書き込み用
 
 #if BUILD_MODE
-			struct STDebugMeshData
-			{
-				CMesh* pMesh;
-				std::vector<DirectX::XMFLOAT4X4> mtx;
-			};
 			// 確認用変数
 			int m_nSkipCnt;
 			int m_nDrawCnt;
 			int m_nInstancingCnt;
 			bool m_bFrustum;
 			bool m_bShadowView;
-			std::map<std::string, STDebugMeshData> m_aDebugMeshMap;		// インスタンシング描画格納用
+			std::map<std::string, std::vector<CMesh*>> m_aDebugMeshMap;		// インスタンシング描画格納用
 #endif // _DEBUG
 
 		protected:
@@ -83,10 +81,13 @@ namespace MySpace
 			void Sort();
 			// *@整列ﾌﾗｸﾞ
 			inline void SortOn() { m_bIsSortNecessary = true; }
+			
 			// *@3Dインスタンシング影描画
 			void Draw3DShadow();
 			// *@3Dインスタンシング描画
 			virtual void Draw3D();
+			// *@3Dオブジェクトの描画確認
+			virtual void CheckRenderedObjectsIn3D();
 
 		protected:
 			const std::vector<std::string> GetPSVSName(const std::string name);
@@ -110,13 +111,13 @@ namespace MySpace
 			_NODISCARD int PolygonRegist(std::weak_ptr<CPolygonRenderer> render);
 
 			// *@破棄 overlide
-			std::weak_ptr<CRenderer> ExecutSystem(int idx);
+			std::weak_ptr<CRenderer> ExecutSystem(const int idx);
 
 			// *@インスタンシング描画のために情報を格納する
-			void SetInstanchingModel(std::string name, std::string ps, std::string vs, MySpace::Graphics::RENDER_DATA data);
+			void SetInstanchingModel(std::string name, std::string ps, std::string vs, const int id);
 
 			// *@インスタンシング描画のために情報を格納する
-			void SetInstanchingMesh(std::string name, std::string ps, std::string vs, MySpace::Graphics::RENDER_DATA data, CMesh* mesh);
+			void SetInstanchingMesh(std::string name, std::string ps, std::string vs, const int id, CMesh* mesh);
 
 			// *@所持リスト
 			_NODISCARD std::vector<std::weak_ptr<CRenderer>> GetList();
@@ -124,7 +125,8 @@ namespace MySpace
 #if BUILD_MODE
 			virtual void ImGuiDebug();
 			// *@インスタンシング描画のために情報を格納する
-			virtual void SetDebugMesh(std::string name, DirectX::XMFLOAT4X4 mtx, CMesh* mesh) = 0;
+			void SetDebugMesh(std::string name, CMesh* mesh);
+			void ReleaseDebugMesh(CMesh* mesh);
 #endif // BUILD_MODE
 
 		};

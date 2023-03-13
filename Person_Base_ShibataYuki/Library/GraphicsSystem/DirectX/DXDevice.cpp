@@ -32,8 +32,6 @@ HRESULT CDXDevice::Init(HWND hWnd, unsigned int Width, unsigned int Height, bool
 {
 	HRESULT hr = S_OK;
 
-	//--- 上手くいく
-
 	// デバイス、スワップチェーンの作成
 	DXGI_SWAP_CHAIN_DESC scd;
 	ZeroMemory(&scd, sizeof(scd));
@@ -72,6 +70,27 @@ HRESULT CDXDevice::Init(HWND hWnd, unsigned int Width, unsigned int Height, bool
 	g_pDevice->CreateRenderTargetView(pBackBuffer, nullptr, &g_pRenderTargetView);
 	pBackBuffer->Release();
 	pBackBuffer = nullptr;
+
+	D3D11_TEXTURE2D_DESC desc{};
+	desc.Width = 256;
+	desc.Height = 256;
+	desc.MipLevels = 1;
+	desc.ArraySize = 1;
+	desc.Format = DXGI_FORMAT_R8G8B8A8_UNORM;
+	desc.SampleDesc.Count = 1;
+	desc.Usage = D3D11_USAGE_DEFAULT;
+	desc.BindFlags = D3D11_BIND_SHADER_RESOURCE;
+	desc.CPUAccessFlags = 0;
+
+	hr = g_pDevice->CreateTexture2D(&desc, nullptr, &g_pRenderTexture);
+	if (FAILED(hr))
+		return hr;
+
+	// ShaderResourceViewの作成
+	//g_pRenderTargetView->GetResource((ID3D11Resource**)g_pRenderTexture.GetAddressOf());
+	hr = g_pDevice->CreateShaderResourceView(g_pRenderTexture.Get(), nullptr, &g_pSRV);
+	if (FAILED(hr))
+		return hr;
 
 	// Zバッファ用テクスチャ生成
 	D3D11_TEXTURE2D_DESC td;

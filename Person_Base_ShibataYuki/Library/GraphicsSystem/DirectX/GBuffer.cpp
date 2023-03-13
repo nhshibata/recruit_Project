@@ -20,7 +20,8 @@
 #include <GraphicsSystem/Manager/assetsManager.h>
 #include <GraphicsSystem/Shader/shaderStruct.h>
 
-#include <ImGui/imgui.h>
+#include <DebugSystem/imGuiPackage.h>
+
 using namespace MySpace::Graphics;
 
 //==========================================================
@@ -68,15 +69,13 @@ void CGBuffer::SetUpMultiRenderTarget()
 
 	//--- マルチレンダーターゲット設定
 	auto pDC = Application::Get()->GetDeviceContext();
-	auto pDX = Application::Get()->GetSystem<CDXDevice>();
 	ID3D11RenderTargetView* aView[] = {
 		m_aRenderTaget[int(ETexture::COLOR)]->GetView(),
 		m_aRenderTaget[int(ETexture::NORMAL)]->GetView(),
 		m_aRenderTaget[int(ETexture::WORLD)]->GetView(),
 		m_aRenderTaget[int(ETexture::DEPTH)]->GetView(),
-		pDX->GetRenderTargetView(),
 	};
-	pDC->OMSetRenderTargets(int(ETexture::MAX) + 1, aView, m_pDepthStencil->GetView());
+	pDC->OMSetRenderTargets(int(ETexture::MAX), aView, m_pDepthStencil->GetView());
 
 	//--- 定数バッファ書き込み
 	XMFLOAT4X4 mat[4];
@@ -137,15 +136,28 @@ void CGBuffer::SetUpTextures()
 		m_aRenderTaget[int(ETexture::DEPTH)]->GetSRV(),
 	};
 
-	pDC->PSSetShaderResources(1, 1, &aTex[int(ETexture::COLOR)]);
-	pDC->PSSetShaderResources(2, 1, &aTex[int(ETexture::NORMAL)]);
-	pDC->PSSetShaderResources(3, 1, &aTex[int(ETexture::WORLD)]);
-	pDC->PSSetShaderResources(4, 1, &aTex[int(ETexture::DEPTH)]);
-	/*pDC->PSSetShaderResources(6, 1, &aTex[int(ETexture::COLOR)]);
+	pDC->PSSetShaderResources(6, 1, &aTex[int(ETexture::COLOR)]);
 	pDC->PSSetShaderResources(7, 1, &aTex[int(ETexture::NORMAL)]);
 	pDC->PSSetShaderResources(8, 1, &aTex[int(ETexture::WORLD)]);
-	pDC->PSSetShaderResources(9, 1, &aTex[int(ETexture::DEPTH)]);*/
-	//pDC->PSSetShaderResources(4, 1, &aTex[int(ETexture::DEPTH)]);
+	pDC->PSSetShaderResources(9, 1, &aTex[int(ETexture::DEPTH)]);
+	pDC->PSSetShaderResources(4, 1, &aTex[int(ETexture::DEPTH)]);
+
+}
+
+//==========================================================
+// 
+//==========================================================
+void CGBuffer::CopyTexture()
+{
+	//--- Colorﾃｸｽﾁｬのみ、スクリーン描画された画像の取得
+	auto pDC = Application::Get()->GetDeviceContext();
+	auto pDX = Application::Get()->GetSystem<CDXDevice>();
+	ID3D11Texture2D* resource = nullptr;
+	ID3D11Texture2D* copy = nullptr;
+
+	resource = pDX->GetRenderTexture();
+	copy = m_aRenderTaget[int(ETexture::COLOR)]->GetTexter();
+	pDC->CopyResource(copy, resource);
 }
 
 //==========================================================
@@ -216,8 +228,11 @@ void CGBuffer::SetSRV(const ETexture e)
 void CGBuffer::ImGuiDebug()
 {
 	static bool disp = true;
+	static ImVec2 size = ImVec2(CScreen::GetWidth() / 10, CScreen::GetHeight() / 10);
 
-	ImGui::Checkbox("GBuffer view", &disp);
+	ImGui::Checkbox("GBuffer View", &disp);
+	Debug::SetTextAndAligned("ViewSize");
+	ImGui::DragFloat2("##View", (float*)&size);
 	if (!disp)
 		return;
 
@@ -229,8 +244,6 @@ void CGBuffer::ImGuiDebug()
 		m_aRenderTaget[int(ETexture::WORLD)]->GetSRV(),
 		m_aRenderTaget[int(ETexture::DEPTH)]->GetSRV(),
 		};
-
-		ImVec2 size = ImVec2(CScreen::GetWidth()/10, CScreen::GetHeight()/10);
 
 		ImGui::Text("RenderTarget Color");
 		ImGui::Image(aTex[int(ETexture::COLOR)], size);

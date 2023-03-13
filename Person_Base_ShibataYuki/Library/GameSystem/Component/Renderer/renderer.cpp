@@ -20,6 +20,15 @@
 
 using namespace MySpace::Game;
 
+
+//==========================================================
+// コンストラクタ
+//==========================================================
+CRenderer::CRenderer()
+	:m_bVisible(true), m_nDrawIdx(-1)
+{
+}
+
 //==========================================================
 // コンストラクタ
 //==========================================================
@@ -106,7 +115,7 @@ void CRenderer::SetLayer(int value)
 
 void CRenderer::ImGuiDebug()
 {
-	static bool disp = false;
+	static bool windowDisp = false;
 	auto pSM = Application::Get()->GetSystem<MySpace::Graphics::CAssetsManager>()->GetShaderManager();
 	
 	// shader選択、表示
@@ -122,10 +131,10 @@ void CRenderer::ImGuiDebug()
 
 	ImGui::Checkbox("render visible", &m_bVisible);
 
-	ImGui::Checkbox("baseColor", &disp);
-	if (!disp)
+	ImGui::Checkbox("baseColor", &windowDisp);
+	if (!windowDisp)
 		return;
-	if (ImGui::Begin("ColorWindow", &disp))
+	if (ImGui::Begin("ColorWindow", &windowDisp))
 	{
 		Vector4 color = Vector4(m_vColor.a, m_vColor.g, m_vColor.b, m_vColor.a);
 		ImGui::ColorPicker4("color4", (float*)&color);

@@ -11,11 +11,12 @@
 
 #ifdef BUILD_MODE
 
-#include <ImGui/imgui.h>
 #include <GraphicsSystem/Render/Sphere.h>
 #include <GameSystem/Manager/drawSystem.h>
 #include <GameSystem/Component/Renderer/modelRenderer.h>
 #include <GameSystem/Component/Renderer/sphereRenderer.h>
+
+#include <DebugSystem/imGuiPackage.h>
 
 #endif // BUILD_MODE
 
@@ -31,6 +32,11 @@ CSphereCollision::CSphereCollision()
 	m_pDebugSphere = std::make_shared<CSphere>();
 	m_pDebugSphere->Init(16, 8, m_fRadius);
 	m_pDebugSphere->SetDiffuse(Vector4(0, 1, 0, 0.5f));
+	auto sys = SceneManager::CSceneManager::Get()->GetDrawSystem();
+	sys->SetDebugMesh(
+		std::string(std::to_string(m_pDebugSphere->GetIndexNum()) + std::to_string(m_pDebugSphere->GetMaterial()->GetFloat())),
+		m_pDebugSphere.get()
+	);
 #endif //
 
 }
@@ -45,6 +51,11 @@ CSphereCollision::CSphereCollision(std::shared_ptr<CGameObject> owner, float rad
 	m_pDebugSphere = std::make_shared<CSphere>();
 	m_pDebugSphere->Init(16, 8, radius);
 	m_pDebugSphere->SetDiffuse(Vector4(0, 1, 0, 0.5f));
+	auto sys = SceneManager::CSceneManager::Get()->GetDrawSystem();
+	sys->SetDebugMesh(
+		std::string(std::to_string(m_pDebugSphere->GetIndexNum()) + std::to_string(m_pDebugSphere->GetMaterial()->GetFloat())),
+		m_pDebugSphere.get()
+	);
 #endif //
 }
 
@@ -54,6 +65,8 @@ CSphereCollision::CSphereCollision(std::shared_ptr<CGameObject> owner, float rad
 CSphereCollision::~CSphereCollision()
 {
 #if BUILD_MODE
+	auto sys = SceneManager::CSceneManager::Get()->GetDrawSystem();
+	sys->ReleaseDebugMesh(m_pDebugSphere.get());
 	m_pDebugSphere->Fin();
 	m_pDebugSphere.reset();
 #endif // BUILD_MODE
@@ -112,7 +125,7 @@ bool CSphereCollision::HitCheckPtr(CCollision* other)
 			// 押し出し
 			if (!trigger)
 			{
-				PushObject(com, com->GetRadius());
+				PushBack(com, com->GetRadius());
 				// 押し出しを行うと相手は判定されないため、ここで行う
 				other->HitResponse(this);
 			}
@@ -124,12 +137,13 @@ bool CSphereCollision::HitCheckPtr(CCollision* other)
 	else if (auto otherBox = other->GetComponent<CBoxCollision>(); otherBox)
 	{
 		Vector3 size = { this->GetRadius() ,this->GetRadius() ,this->GetRadius() };
-		if (otherBox->Box(Transform()->GetPos(), size, other->Transform()->GetPos(), otherBox->GetSize()))
+		//if (otherBox->Box(Transform()->GetPos(), size, other->Transform()->GetPos(), otherBox->GetSize()))
+		if(BoxSphere(otherBox, this))
 		{
 			// 押し出し
 			if (!trigger)
 			{				
-				PushObject(other, otherBox->GetSize().GetLargeValue());
+				PushBack(other, otherBox->GetSize().GetLargeValue());
 				// 押し出しを行うと相手は判定されないため、ここで行う
 				other->HitResponse(this);
 			}
@@ -145,10 +159,25 @@ bool CSphereCollision::HitCheckPtr(CCollision* other)
 //==========================================================
 // 押し出し
 //==========================================================
-void CSphereCollision::PushObject(CCollision* other, float radius)
+void CSphereCollision::PushBack(CCollision* other, float radius)
 {
+#if 1
+	CTransform* transform = Transform();
+	CTransform* otherTransform = other->Transform();
+
+	// 2点間と２半径の差
+	Vector3 distance = transform->GetPos() - otherTransform->GetPos();
+	float len = (GetRadius() + radius) - distance.Length();
+
+	// 押し出す方向
+	distance = distance.Normalize();
+	Vector3 pushVec = distance * len;
+
+	// 押し戻し
+	transform->SetPos(transform->GetPos() + pushVec);
+#else
 	//---  押し出し
-	// 二点間と２半径の差
+		// 二点間と２半径の差
 	Vector3 distance = Transform()->GetPos() - other->Transform()->GetPos();
 	float len = (GetRadius() + radius) - distance.Length();
 	// 押し出す方向
@@ -156,23 +185,47 @@ void CSphereCollision::PushObject(CCollision* other, float radius)
 	Vector3 vec = distance * len;
 	// 押し出し
 	Transform()->SetPos(Transform()->GetPos() + vec);
+#endif // 1
+
 }
 
+bool CSphereCollision::BoxSphere(CBoxCollision* box, CSphereCollision* sphere)
+{
+	Vector3 boxCenter = box->Transform()->GetPos();
+	Vector3 sphereCenter = sphere->Transform()->GetPos();
+	float distance = (boxCenter - sphereCenter).Length();
+
+	// 矩形の中心から最も近い球の表面上の点を求める
+	Vector3 closestPoint = sphereCenter;
+	if (distance > 0)
+	{
+		closestPoint = boxCenter + (sphereCenter - boxCenter) * (box->GetSize() / distance);
+	}
+
+	// その点と球の中心点の距離を求め、半径と比較する
+	distance = (closestPoint - sphereCenter).Length();
+	return distance <= sphere->GetRadius();
+}
 
 #ifdef BUILD_MODE
 
 void CSphereCollision::ImGuiDebug()
 {
 	CCollision::ImGuiDebug();
+
+	ImGui::Separator();
+
 	if (!m_pDebugSphere)
 		return;
 
-	if (ImGui::DragFloat("radius", &m_fRadius))
+	Debug::SetTextAndAligned("collision radius");
+	if (ImGui::DragFloat("##radius", &m_fRadius))
 	{
 		m_pDebugSphere->Init(16, 8, m_fRadius);
 	}
 
-	if (ImGui::Button("sphere resize"))
+	Debug::SetTextAndAligned("sphere resize");
+	if (ImGui::Button("##sphereresize"))
 	{
 		if (auto model = GetComponent<CModelRenderer>(); model)
 			m_fRadius = model->GetModel().lock()->GetRadius();
@@ -180,31 +233,11 @@ void CSphereCollision::ImGuiDebug()
 			m_fRadius = Transform()->GetScale().GetLargeValue();
 	}
 
-	// debug表示
-	XMVECTOR vCenter = XMLoadFloat3(&GetCenter());
-	XMMATRIX mWorld = XMLoadFloat4x4(&Transform()->GetWorldMatrix());
-
-	vCenter = XMVector3TransformCoord(vCenter, mWorld);
-	mWorld = XMMatrixTranslationFromVector(vCenter);
-	XMFLOAT4X4 mW;
-	XMStoreFloat4x4(&mW, mWorld);
-	m_pDebugSphere->SetWorld(&mW);
-
-	auto sys = SceneManager::CSceneManager::Get()->GetDrawSystem();
-	sys->SetDebugMesh(
-		std::string(std::to_string(m_pDebugSphere->GetIndexNum()) + std::to_string(m_pDebugSphere->GetMaterial()->GetFloat())),
-		mW,
-		m_pDebugSphere.get()
-	);
-
 }
 
 // 仮実装
 void CSphereCollision::Update()
 {
-	//if (!this->IsActive())
-		return;
-
 	// debug表示
 	XMVECTOR vCenter = XMLoadFloat3(&GetCenter());
 	XMMATRIX mWorld = XMLoadFloat4x4(&Transform()->GetWorldMatrix());
@@ -214,13 +247,6 @@ void CSphereCollision::Update()
 	XMFLOAT4X4 mW;
 	XMStoreFloat4x4(&mW, mWorld);
 	m_pDebugSphere->SetWorld(&mW);
-
-	auto sys = SceneManager::CSceneManager::Get()->GetDrawSystem();
-	sys->SetDebugMesh(
-		std::string(std::to_string(m_pDebugSphere->GetIndexNum()) + std::to_string(m_pDebugSphere->GetMaterial()->GetFloat())),
-		mW,
-		m_pDebugSphere.get()
-	);
 }
 
 #endif // BUILD_MODE

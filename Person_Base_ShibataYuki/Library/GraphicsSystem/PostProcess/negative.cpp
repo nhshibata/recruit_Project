@@ -16,7 +16,7 @@
 #include <GraphicsSystem/DirectX/GBuffer.h>
 #include <GraphicsSystem/Render/polygon.h>
 
-#include <ImGui/imgui.h>
+#include <DebugSystem/imGuiPackage.h>
 
 using namespace MySpace::Graphics;
 
@@ -111,7 +111,8 @@ ID3D11ShaderResourceView* CNegative::GetResource()
 
 void CNegative::ImGuiDebug()
 {
-	ImGui::DragFloat(u8"Nega ”½“]—¦", &m_fNega);
+	Debug::SetTextAndAligned(u8"Nega ”½“]—¦");
+	ImGui::DragFloat("##Nega”½“]—¦", &m_fNega);
 }
 
 #endif // BIULD_MODE

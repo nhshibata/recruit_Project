@@ -61,22 +61,87 @@ void CDrawSystem::Update()
 }
 
 //==========================================================
+// 描画対象の確認
+// Baseとほぼ同じだが、Layerが追加され、volumeへ格納している
+//==========================================================
+void CDrawSystem::CheckRenderedObjectsIn3D()
+{
+	// キャッシュのクリア
+	m_VolumeMgr.ResetRendererCash();
+
+	//--- 3D描画(Mesh,Model)
+	for (auto & it : m_aIntMap)
+	{
+		auto render = it.second.lock();
+
+		// ポインタ確認
+		if (!render)
+			continue;
+
+		// 描画可能な状態か確認
+		if (!render->IsActive() || !render->IsVisible())
+			continue;
+
+		// layer確認
+		if (!CCamera::GetMain()->IsMask(render->GetLayer()))
+			continue;
+
+#ifdef BUILD_MODE
+		++m_nDrawCnt;
+		auto name = render->GetName();
+#endif // _DEBUG
+
+		//--- Meshｺﾝﾎﾟｰﾈﾝﾄ(および継承)か確認
+		// カリングフラグも確認
+		if (auto mesh = render->BaseToDerived<CMeshRenderer>().get(); mesh)
+		{
+
+			float fRadius = mesh->GetBSRadius();
+			auto mW = mesh->Transform()->GetWorldMatrix();
+			fRadius = (mW._11 > fRadius) ? mW._11 : fRadius;
+			fRadius = (mW._22 > fRadius) ? mW._22 : fRadius;
+			fRadius = (mW._33 > fRadius) ? mW._33 : fRadius;
+
+			//--- ｶﾒﾗに映るか判定
+			//if (CCamera::GetMain()->CollisionViewFrustum(&mesh->GetCenter(0), mesh->GetBSRadius())==CCamera::EFrustumResult::OUTSIDE)
+			if (CCamera::GetMain()->CollisionViewFrustum(&Vector3(mW._41, mW._42, mW._43), fRadius) == CCamera::EFrustumResult::OUTSIDE)
+			{
+				render->GetOwner()->CameraTest(false);
+#ifdef BUILD_MODE
+				++m_nSkipCnt;
+				if (m_bFrustum)
+					continue;
+#else
+				continue;
+#endif // _DEBUG
+			}
+
+		}
+
+		// ここまできたら描画
+		render->Draw();
+		render->GetOwner()->CameraTest(true);
+
+		// 所属LayerとIDを格納
+		m_VolumeMgr.AddRendererCash(render->GetLayer(), it.first);
+	}
+}
+
+//==========================================================
 // 3Dインスタンシング描画
 //==========================================================
-void CDrawSystem::GBufferDraw()
+void CDrawSystem::GBufferDraw(const bool bGbuffer, std::function<bool(int)> func)
 {
 	auto pAssets = Application::Get()->GetSystem<CAssetsManager>();
 	auto pDX = Application::Get()->GetSystem<CDXDevice>();
 	auto pSM = Application::Get()->GetSystem<CAssetsManager>()->GetShaderManager();
-	LPCSTR vsName[] = {
+	LPCSTR aVSName[] = {
 		"VS_Assimp",
 		"VS_Mesh",
 	};
 
 	pDX->SetCullMode((int)ECullMode::CULLMODE_CCW);
 	CLight* pLight = CLight::GetMain();
-	//pLight->SetDisable();			// ライティング無効
-	//pDX->SetZBuffer(true);		// Z書き込み
 
 	//--- 登録されたモデル名別に描画
 	//--- 不透明描画
@@ -91,20 +156,38 @@ void CDrawSystem::GBufferDraw()
 		// モデルが解放されていないか一応確認
 		if (!model)
 			continue;
+
 		// shaderBind
-		pSM->CallBackFuncAndBind(std::string(), vsName[0]);
-		model->DrawInstancing(pDX->GetDeviceContext(), intancingModel.second, EByOpacity::eOpacityOnly, false);
+		if(bGbuffer)
+			pSM->CallBackFuncAndBind(std::string(), aVSName[0]);
+		else
+			pSM->CallBackFuncAndBind(aName[1], aName[2]);
+
+		//--- インスタンシングに必要なデータ格納
+		std::vector<RENDER_DATA> data;
+		for (auto & id : intancingModel.second.aID)
+		{
+			if (func)
+			{
+				if (func(id))
+					continue;
+			}
+			CMeshRenderer* mesh = dynamic_cast<CMeshRenderer*>(m_aIntMap[id].lock().get());
+			data.push_back(mesh->GetShaderData());
+		}
+
+		model->DrawInstancing(pDX->GetDeviceContext(), data, EByOpacity::eOpacityOnly, false);
 
 #if BUILD_MODE
 		++m_nInstancingCnt;
 #endif // _DEBUG
 	}
-	pLight->SetEnable();			// ライティング有効
-
+	// ライティング有効
+	pLight->SetEnable();
 
 	//--- 半透明部分描画
 	pDX->SetBlendState(static_cast<int>(EBlendState::BS_ALPHABLEND));
-	pDX->SetZWrite(false);			// Z書き込み
+	pDX->SetZWrite(false);// Z書き込み
 
 	for (auto & intancingModel : m_aInstancingModelMap)
 	{
@@ -116,37 +199,71 @@ void CDrawSystem::GBufferDraw()
 		auto model = pAssets->GetModelManager()->GetModel(aName[0]);
 
 		// shaderBind
-		pSM->CallBackFuncAndBind(std::string(), vsName[0]);
-		model->DrawInstancing(pDX->GetDeviceContext(), intancingModel.second, EByOpacity::eTransparentOnly, false);
+		if(bGbuffer)
+			pSM->CallBackFuncAndBind(std::string(), aVSName[0]);
+		else
+			pSM->CallBackFuncAndBind(aName[1], aName[2]);
+
+		//--- インスタンシングに必要なデータ格納
+		std::vector<RENDER_DATA> data;
+		for (auto & id : intancingModel.second.aID)
+		{
+			if (func)
+			{
+				if (func(id))
+					continue;
+			}
+
+			CMeshRenderer* mesh = dynamic_cast<CMeshRenderer*>(m_aIntMap[id].lock().get());
+			data.push_back(mesh->GetShaderData());
+		}
+
+		model->DrawInstancing(pDX->GetDeviceContext(), data, EByOpacity::eTransparentOnly, false);
 	}
 
 	pDX->SetZWrite(true);	// Z書き込み
 	pDX->SetBlendState(static_cast<int>(EBlendState::BS_NONE));
 
 	//--- メッシュインスタンシング描画
-	for (auto & mesh : m_aInstancingMeshMap)
+	for (auto & meshObj : m_aInstancingMeshMap)
 	{
-		if (mesh.second.aData.size() == 0)// 一応確認
+		if (meshObj.second.aID.size() == 0)// 一応確認
 			continue;
 
-		std::vector<std::string> aName = GetPSVSName(mesh.first);
+		std::vector<std::string> aName = GetPSVSName(meshObj.first);
 		if (aName.size() != 3)
 			continue;
 
 		// shaderBind
-		pSM->CallBackFuncAndBind(std::string(), vsName[1]);
+		if(bGbuffer)
+			pSM->CallBackFuncAndBind(std::string(), aVSName[1]);
+		else
+			pSM->CallBackFuncAndBind(aName[1], aName[2]);
+
+		//--- インスタンシングに必要なデータ格納
+		std::vector<RENDER_DATA> data;
+		for (auto & id : meshObj.second.aID)
+		{
+			if (func)
+			{
+				if (func(id))
+					continue;
+			}
+			CMeshRenderer* mesh = dynamic_cast<CMeshRenderer*>(m_aIntMap[id].lock().get());
+			data.push_back(mesh->GetShaderData());
+		}
 
 		// ビルボードか確認
-		if (CBillboard* bill = dynamic_cast<CBillboard*>(mesh.second.pMesh); bill != nullptr)
+		if (CBillboard* bill = dynamic_cast<CBillboard*>(meshObj.second.pMesh); bill != nullptr)
 		{
 			// ﾃｸｽﾁｬ設定
 			auto image = pAssets->GetImageManager()->GetResource(aName[0]);
 			auto tex = image ? image->GetSRV() : NULL;
-			mesh.second.pMesh->DrawInstancing(mesh.second.aData, false, tex, &bill->GetTextureMatrix());
+			meshObj.second.pMesh->DrawInstancing(data, false, tex, &bill->GetTextureMatrix());
 		}
 		else
 		{
-			mesh.second.pMesh->DrawInstancing(mesh.second.aData, false);
+			meshObj.second.pMesh->DrawInstancing(data, false);
 		}
 #if BUILD_MODE
 		++m_nInstancingCnt;
@@ -166,7 +283,7 @@ void CDrawSystem::GBufferDraw()
 //=========================================================
 void CDrawSystem::Draw3D()
 {
-#if BUILD_MODE
+#if BUILD_MODE	// ImGui表示中はDebugCameraがMainなので、hierarchyを探索
 	// ｶﾒﾗを見つける
 	auto pCamera = CCamera::GetMain()->BaseToDerived<CStackCamera>();
 	if (!pCamera)
@@ -185,56 +302,100 @@ void CDrawSystem::Draw3D()
 
 	auto pCamera = CCamera::GetMain()->BaseToDerived<CStackCamera>();
 	if (!pCamera)
+	{
+		CDrawSystemBase::Draw3D();
 		return;
+	}
 
 #endif // BUILD_MODE
 
+	/*
+	0.描画するオブジェクトの選定とVolumeへのキャッシュ
+	1.StackCameraから順に描画を始める
+	2.GBufferの作成
+	*/
+
 	// ｶﾒﾗを順に描画
-	auto aCamera = pCamera->GetStackCamera();
-	int idx = 0;
-	std::vector<ID3D11ShaderResourceView*> aTex;
+	auto pDX = Application::Get()->GetSystem<CDXDevice>();
+	auto aCamera = pCamera->GetStackCameras();
+	int idxCnt = 0;
+	std::vector<ID3D11ShaderResourceView*> aEffectTex;
 
 	do
 	{
+		//--- GBufferが必要なLayerを取得
+		const int layerBit = m_VolumeMgr.GetBit(pCamera->GetMask());
+		// ラムダ式
+		auto layerChaeck = [=](int id)->bool {
+			CMeshRenderer* mesh = dynamic_cast<CMeshRenderer*>(m_aIntMap[id].lock().get());
+			return (CLayer::NumberToBit(mesh->GetLayer()) & layerBit) != false;
+		};
+
 		//--- GBuffer描画
 		// レンダーターゲットの設定
 		pCamera->GetGBuffer()->SetUpMultiRenderTarget();
-
 		// 3D描画
-		GBufferDraw();
+		GBufferDraw(true, layerChaeck);
+		
+		// Sceneに描画先を変更
+		pDX->SwitchRender(pDX->GetRenderTargetView(), pDX->GetDepthStencilView());
+		// 3D描画
+		GBufferDraw(false, layerChaeck);
 
 		// 各種ﾃｸｽﾁｬの設定
-		// MEMO:ここで呼び出すても何故かﾃｸｽﾁｬ設定されない
-		pCamera->GetGBuffer()->SetUpTextures();
+		// NOTE:ここで呼び出しても何故かﾃｸｽﾁｬ設定されない
+		//pCamera->GetGBuffer()->SetUpTextures();
+		// ﾃｸｽﾁｬのｺﾋﾟｰ
+		pCamera->GetGBuffer()->CopyTexture();
 
 		//--- ポストプロセス
 		auto aVolume = m_VolumeMgr.GetVolume(pCamera->GetMask());
 		for (auto & vol : aVolume)
 		{
+			auto aID = vol->GetRenderCash();
+			// ラムダ式
+			auto idChaeck = [=](int id)->bool {
+				for (auto & no : aID)
+				{
+					if (no == id)
+						return true;
+				}
+				return false;
+			};
+			//--- GBuffer描画
+			// レンダーターゲットの設定
+			pCamera->GetGBuffer()->SetUpMultiRenderTarget();
+			// 3D描画
+			GBufferDraw(true, idChaeck);
+			// ﾃｸｽﾁｬのｺﾋﾟｰ
+			pCamera->GetGBuffer()->CopyTexture();
+
 			vol->GetEffect()->DrawSprite(pCamera->GetGBuffer());
-			aTex.push_back(vol->GetEffect()->GetResource());
+			aEffectTex.push_back(vol->GetEffect()->GetResource());
 		}
 
 		// 先頭から順にｶﾒﾗを設定
-		if (idx < aCamera.size())
+		if (idxCnt < aCamera.size())
 		{
-			pCamera = aCamera[idx].lock();
-			idx++;
+			pCamera = aCamera[idxCnt].lock();
+			idxCnt++;
 		}
 		else
+		{
 			pCamera.reset();
+		}
 
 	} while (pCamera);
 
-	//--- ﾃｸｽﾁｬ合成
-	auto pDX = Application::Get()->GetSystem<CDXDevice>();
-	
+	//--- レンダーターゲットをデフォルトに戻す
 	//pDX->SwitchRender(pDX->GetRenderTargetView(),pDX->GetDepthStencilView());
 	pDX->SwitchRender(pDX->GetRenderTargetView(), nullptr);
 	
-	if (aTex.size() == 0)
+	// volumeが一切ないので処理しない
+	if (aEffectTex.size() == 0)
 		return;
 
+	//--- ﾃｸｽﾁｬ合成
 	//--- 描画設定
 	pDX->SetZBuffer(false);
 	pDX->SetBlendState(EBlendState::BS_ALPHABLEND);
@@ -244,12 +405,15 @@ void CDrawSystem::Draw3D()
 	CPolygon::SetUV(XMFLOAT2(0,0));
 	CPolygon::SetAngle(0);
 	
-	CPolygon::SetTexture(aTex[0]);
+	CPolygon::SetTexture(aEffectTex[0]);
 
+	// 加算合成必須
 	pDX->SetBlendState(EBlendState::BS_ADDITIVE);
-	for (int cnt = 1; cnt < aTex.size(); ++cnt)
+
+	// ポリゴン描画
+	for (int cnt = 0; cnt < aEffectTex.size(); ++cnt)
 	{
-		CPolygon::SetTexture(aTex[cnt]);
+		CPolygon::SetTexture(aEffectTex[cnt]);
 		CPolygon::Draw(pDX->GetDeviceContext());
 	}
 
@@ -266,14 +430,6 @@ void CDrawSystem::Draw3D()
 //{
 //	
 //}
-
-void CDrawSystem::SetDebugMesh(std::string name, DirectX::XMFLOAT4X4 mtx, CMesh* mesh)
-{
-	if (!m_aDebugMeshMap.count(name))
-		m_aDebugMeshMap[name].pMesh = mesh;
-
-	m_aDebugMeshMap[name].mtx.push_back(mtx);
-}
 
 #endif
 

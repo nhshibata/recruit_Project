@@ -80,6 +80,11 @@ HRESULT ImGuiManager::Init(HWND hWnd, ID3D11Device* device, ID3D11DeviceContext*
 	ImGui::StyleColorsDark();
 	//iniを生成しないように
 	io.IniFilename = NULL;
+	//io.IniFilename = FORDER_DIR(Data / imgui.ini);
+	
+	// docking設定
+	//io.ConfigFlags |= ImGuiConfigFlags_DockingEnable;
+
 	//日本語フォントに対応
 	io.Fonts->AddFontFromFileTTF("C:\\Windows\\Fonts\\meiryo.ttc", 18.0f, nullptr, io.Fonts->GetGlyphRangesJapanese());
 	{
@@ -144,6 +149,7 @@ void ImGuiManager::Uninit()
 //==========================================================
 void ImGuiManager::Update() 
 {
+	
 	// ON/OFF
 	if (CInput::GetKeyTrigger(VK_I) && CInput::GetKeyTrigger(VK_LSHIFT))
 	{
@@ -165,34 +171,39 @@ void ImGuiManager::Update()
 
 	//--- 初期化
 	m_eHover = EMouseHovered::HOVERED_NONE;
-
 	//--- ポーズ処理
 	Pause();
 
 	//--- デバッグ実行
 	m_pInspector->Update(this);
+	
 	m_pHierarchy->Update(this);
 	
 	// 現在シーン取得
 	SceneManager::CScene* scene = CSceneManager::Get()->GetActiveScene();
-	
+
 	//--- SceneView表示
 	if (m_bSceneRender)
 	{
-		ImGui::SetNextWindowPos(ImVec2(CScreen::GetWidth()*0.15f, 0), ImGuiCond_::ImGuiCond_Always);
-		ImGui::SetNextWindowSize(ImVec2(CScreen::GetWidth()*0.65f, CScreen::GetHeight()*0.65f), ImGuiCond_::ImGuiCond_Always);
-		ImGui::Begin("SceneView");
-		ImGui::Image(m_pRT->GetSRV(), ImVec2(CScreen::GetWidth()*0.65f, CScreen::GetHeight()*0.65f));
+		ImGui::SetNextWindowPos(ImVec2(0, 0), ImGuiCond_::ImGuiCond_Once);
+		ImGui::SetNextWindowSize(ImVec2(CScreen::GetWidth(), CScreen::GetHeight()), ImGuiCond_::ImGuiCond_Once);
+		
+		ImGui::Begin("SceneView", nullptr, ImGuiWindowFlags_::ImGuiWindowFlags_MenuBar);
+		ImGui::Image(Application::Get()->GetSystem<CDXDevice>()->GetSRV(), 
+					 ImVec2(CScreen::GetWidth()*0.65f, CScreen::GetHeight()*0.65f));
 		ImGui::End();
 	}
 
 	// 左表示
 	ImGui::PushStyleColor(ImGuiCol_TitleBgActive, ImVec4(0.0f, 0.7f, 0.2f, 1.0f));
-	ImGui::SetNextWindowPos(ImVec2(0, 400), ImGuiCond_Once);
-	ImGui::SetNextWindowSize(ImVec2(350, 300), ImGuiCond_Once);
+	auto screenSize = CScreen::GetSize();
+	screenSize.x *= 0.2f;
+	screenSize.y *= 0.4f;
+	ImGui::SetNextWindowPos(ImVec2(0, CScreen::GetHeight() - screenSize.y), ImGuiCond_Once);
+	ImGui::SetNextWindowSize(ImVec2(screenSize.x, screenSize.y), ImGuiCond_Once);
 	ImGui::Begin(u8"ステータス", &m_bEditFlg, ImGuiWindowFlags_::ImGuiWindowFlags_MenuBar);
-	ImGui::BeginTabBar("##tabs", ImGuiTabBarFlags_None);
-	
+	ImGui::BeginTabBar("tabs", ImGuiTabBarFlags_None);
+
 	//--- 状態取得セット
 	HoverStateSet();
 
@@ -335,8 +346,9 @@ void ImGuiManager::Pause()
 		return;
 
 	//--- 画面位置を外部から取得できるようにする
-	ImGui::SetNextWindowPos(ImVec2((float)CScreen::GetWidth()*0.75f, (float)CScreen::GetHeight()*0.85f));
+	ImGui::SetNextWindowPos(ImVec2((float)CScreen::GetWidth()*0.75f, (float)CScreen::GetHeight()*0.85f), ImGuiCond_Once);
 	ImGui::SetNextWindowSize(ImVec2(320, 120), ImGuiCond_Once);
+	
 	ImGui::Begin(u8"Pause & OneFrame Step", &m_bPause);
 
 	ImGui::Text("stop[L]");

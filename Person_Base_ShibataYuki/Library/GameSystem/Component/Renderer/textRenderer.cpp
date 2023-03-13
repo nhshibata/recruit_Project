@@ -13,6 +13,7 @@
 #include <GraphicsSystem/Manager/assetsManager.h>
 #include <GraphicsSystem/Manager/shaderManager.h>
 #include <GraphicsSystem/Render/polygon.h>
+
 #include <DebugSystem/imGuiPackage.h>
 #include <CoreSystem/Util/stringConvert.h>
 
@@ -180,13 +181,15 @@ void CTextRenderer::SetTextWString(std::wstring text)
 void CTextRenderer::ImGuiDebug()
 {
 	std::string text = WStringToString(m_Text);
-	auto inputStr = MySpace::Debug::InputString(text, "String");
-	
+
+	Debug::SetTextAndAligned("String");
+	auto inputStr = MySpace::Debug::InputString(text, "##String");
 	{
 		m_Text = StringToWString(inputStr);
 	}
 	
-	ImGui::InputFloat("text offset", &m_fOffset);
+	Debug::SetTextAndAligned("Text offset");
+	ImGui::InputFloat("##Text offset", &m_fOffset);
 	ImGui::Checkbox(u8"èc?", &m_bVerticalWrit);
 
 	CRenderer::ImGuiDebug();

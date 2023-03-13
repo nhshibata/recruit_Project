@@ -51,9 +51,12 @@ namespace MySpace
 		private:
 			//--- メンバ関数
 			// *@stackCameraによる描画
-			void GBufferDraw();
+			void GBufferDraw(bool gb, std::function<bool(int)> func = nullptr);
 			// *@3Dインスタンシング描画
-			void Draw3D();
+			void Draw3D()override;
+			// *@描画対象の確認
+			// *@Layer,Stack用
+			void CheckRenderedObjectsIn3D()override;
 
 		public:
 			CDrawSystem();
@@ -66,8 +69,7 @@ namespace MySpace
 
 #if BUILD_MODE
 			//void ImGuiDebug();
-			// *@インスタンシング描画のために情報を格納する
-			void SetDebugMesh(std::string name, DirectX::XMFLOAT4X4 mtx, CMesh* mesh);
+			
 #endif // BUILD_MODE
 
 		};

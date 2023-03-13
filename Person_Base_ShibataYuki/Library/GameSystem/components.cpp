@@ -27,6 +27,7 @@ void CreateComponentType()
 
 	mgr->SetComponentSave<CCamera>();
 	mgr->SetComponentSave<CStackCamera>();
+	mgr->SetComponentSave<CLayerCamera>();
 	mgr->SetComponentSave<CGameCamera>();
 	mgr->SetComponentSave<CDebugCamera>();
 

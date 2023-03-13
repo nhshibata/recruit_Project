@@ -59,6 +59,19 @@ namespace MySpace
 				return;
 			m_nLayer = layer;
 		};
+		
+		//==========================================================
+		// セッター
+		// 上限決め
+		//==========================================================
+		void CLayer::SetLayer(std::string layerName)
+		{
+			int layer = CLayer::GetNumber(layerName);
+			// 拒否
+			if (layer >= 32 || layer < 0)
+				return;
+			m_nLayer = layer;
+		};
 
 		//==========================================================
 		// 静的関数
@@ -68,6 +81,8 @@ namespace MySpace
 		{
 			// 32以上は入れない
 			if (no >= 32 || no < 0)
+				return false;
+			if(m_aLayerMap.count(no))
 				return false;
 
 			m_aLayerMap[no] = registName;
@@ -144,12 +159,15 @@ namespace MySpace
 		// 静的関数
 		// 名前取得
 		//==========================================================
-		std::vector<std::string> CLayer::GetNameList()
+		std::vector<std::string> CLayer::GetNameList(bool bId)
 		{
 			std::vector<std::string> ret;
 			for (auto & layer : m_aLayerMap)
 			{
-				ret.push_back(std::to_string(layer.first) + ":" + layer.second);
+				if(bId)
+					ret.push_back(std::to_string(layer.first) + ":" + layer.second);
+				else
+					ret.push_back(layer.second);
 			}
 			return ret;
 		}
@@ -167,7 +185,7 @@ namespace MySpace
 				return;
 
 			ImGui::SetNextWindowPos(ImGui::GetMousePos(), ImGuiCond_::ImGuiCond_Once);
-			ImGui::SetNextWindowSize(ImVec2(CScreen::GetWidth() / 8, CScreen::GetHeight() / 8), ImGuiCond_::ImGuiCond_Once);
+			ImGui::SetNextWindowSize(ImVec2(CScreen::GetWidth() / 8, CScreen::GetHeight() / 6), ImGuiCond_::ImGuiCond_Once);
 			if (ImGui::Begin("Layer Window", &disp))
 			{
 				// 全て表示
@@ -179,47 +197,53 @@ namespace MySpace
 				}
 
 				//--- 追加する情報
-				ImGui::InputInt("ID", &AddNo);
-				ImGui::SameLine();
+				Debug::SetTextAndAligned("ID");
+				ImGui::InputInt("##ID", &AddNo);
+				// 入力
 				InputLayer = Debug::InputString(InputLayer, "Add Layer");
 
 				// 追加実行
 				if (ImGui::Button("Applay"))
 				{
-					// 初期化
-					AddNo = 0;
-					InputLayer.clear();
-					disp = false;
 					if (CLayer::Regist(AddNo, InputLayer))
+					{
+						// 初期化
+						disp = false;
+						AddNo = 0;
+						InputLayer.clear();
+					}
+					else
 					{
 						ImGui::Text("range error");
 					}
 				}
-
+				ImGui::End();
 			}
 		}
 
 		//==========================================================
 		// 静的関数
 		//==========================================================
-		int CLayer::ImGuiSetLayerList(int bit)
+		int CLayer::ImGuiSetLayerList(int layerBit)
 		{
-			if (ImGui::BeginListBox("LayerMask"))
+			Debug::SetTextAndAligned("LayerMask");
+			if (ImGui::BeginListBox("##LayerMask"))
 			{
 				auto list = m_aLayerMap;
 				for (auto & layer : list)
 				{
+					int bit = CLayer::NumberToBit(layer.first);
 					// 推された/選択された
 					// and確認で選択中
-					if (ImGui::Selectable(layer.second.c_str(), bit & layer.first))
+					if (ImGui::Selectable(layer.second.c_str(), layerBit & bit))
 					{
 						// 数字をビットに変えて、XORで変更(0->1 or 1->0)
-						bit ^= CLayer::NumberToBit(layer.first);
+						layerBit ^= bit;
 					}
 				}
 				ImGui::EndListBox();
 			}
-			return bit;
+			return layerBit;
 		}
 
 #endif // BUILD_MODE

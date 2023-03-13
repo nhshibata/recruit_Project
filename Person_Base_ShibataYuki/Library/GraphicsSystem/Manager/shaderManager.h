@@ -75,6 +75,7 @@ namespace MySpace
 				float tessellationAmount;
 				XMFLOAT3 padding;
 			};
+
 			//--- エイリアス
 			using VertexMap = std::map<std::string, VertexShaderSharedPtr>;
 			using VertexPair = std::pair<std::string, VertexShaderSharedPtr>;
@@ -98,6 +99,7 @@ namespace MySpace
 			HullShaderMap m_aHullMap;
 			DomainShaderMap m_aDomainMap;
 			float m_fTessellationAmount;
+
 			std::map<std::string, std::function<void()>> m_aCallbackFunc; // 名前で登録された関数の呼び出し用
 
 		public:
@@ -177,11 +179,6 @@ namespace MySpace
 			std::string ImGuiGetVertexShader(std::string preview);
 #endif // BUILD_MODE
 
-
-			// *@今使ってない
-			bool SetShaderParameters(XMMATRIX worldMatrix, XMMATRIX viewMatrix, XMMATRIX projectionMatrix, float tessellationAmount);
-			void Render(EShaderType, std::string cb, std::string vs, std::string ps, std::string mb = "");
-			void EndRender();
 			//// *@使っていない
 			//inline void SetTessellation(std::string name, HullShaderSharedPtr hs, DomainShaderSharedPtr ds)
 			//{ 

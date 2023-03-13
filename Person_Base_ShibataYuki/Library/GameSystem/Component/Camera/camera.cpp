@@ -13,7 +13,7 @@
 #include <GameSystem/Component/Renderer/modelRenderer.h>
 #include <GameSystem/Manager/sceneManager.h>
 
-#include <ImGui/imgui.h>
+#include <DebugSystem/imGuiPackage.h>
 #include <CoreSystem/Input/input.h>
 #include <Application/Application.h>
 #include <Application/screen.h>
@@ -374,12 +374,21 @@ void CCamera::ImGuiDebug()
 		CCamera::SetMain(BaseToDerived<CCamera>());
 
 	m_fAspectRatio = CScreen::GetWidth() / CScreen::GetHeight();
-	ImGui::DragFloat("Near", &m_fNearZ, 1.0f, 0.0f);
-	ImGui::SameLine();
-	ImGui::DragFloat("Far", &m_fFarZ, 1.0f, 1.0f);
-	ImGui::DragFloat("Fovy", &m_fFovY);
-	ImGui::DragFloat3("camera Angle", m_vAngle);
-	if(ImGui::DragFloat3("camera Target", m_vTarget))
+
+	Debug::SetTextAndAligned("Near");
+	ImGui::DragFloat("##Near", &m_fNearZ, 1.0f, 0.0f);
+
+	Debug::SetTextAndAligned("Far");
+	ImGui::DragFloat("##Far", &m_fFarZ, 1.0f, 1.0f);
+
+	Debug::SetTextAndAligned("Fovy");
+	ImGui::DragFloat("##Fovy", &m_fFovY);
+
+	Debug::SetTextAndAligned("Camera Angle");
+	ImGui::DragFloat3("##Camera Angle", m_vAngle);
+
+	Debug::SetTextAndAligned("Camera Target");
+	if(ImGui::DragFloat3("##CameraTarget", m_vTarget))
 	{
 		auto vPos = Transform()->GetPos();
 		float fVecX, fVecZ;
@@ -387,8 +396,11 @@ void CCamera::ImGuiDebug()
 		fVecZ = vPos.z - m_vTarget.z;
 		m_fLengthInterval = sqrtf(fVecX * fVecX + fVecZ * fVecZ);
 	}
-	ImGui::Text("Length", &m_fLengthInterval);
-	ImGui::DragFloat3("camera Up", m_vUp);
+
+	ImGui::Text("Length %.5f", &m_fLengthInterval);
+
+	Debug::SetTextAndAligned("Camera Up");
+	ImGui::DragFloat3("##Camera Up", m_vUp);
 
 }
 

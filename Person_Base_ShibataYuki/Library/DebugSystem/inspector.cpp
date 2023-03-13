@@ -55,14 +55,17 @@ void CInspector::Update(ImGuiManager* manager)
 {
 	if (!m_bOpen && !m_spViewObj.lock())
 		return;
+
 	ImGui::PushStyleColor(ImGuiCol_TitleBgActive, ImVec4(0.0f, 0.7f, 0.2f, 1.0f));
 	ImGui::PushStyleColor(ImGuiCol_TitleBg, ImVec4(0.0f, 0.3f, 0.1f, 1.0f));
-	ImGui::SetNextWindowPos(ImVec2(CScreen::GetWidth() * 0.75f, 20), ImGuiCond_Once);
-	ImGui::SetNextWindowSize(ImVec2(300, 500), ImGuiCond_Once);
+	auto screenSize = CScreen::GetSize();
+	screenSize.x *= 0.3f;
+	ImGui::SetNextWindowPos(ImVec2(CScreen::GetWidth() - screenSize.x, 0), ImGuiCond_Once);
+	ImGui::SetNextWindowSize(ImVec2(screenSize.x, screenSize.y * 0.75f), ImGuiCond_Once);
 
 	m_bOpen = m_spViewObj.lock() ? true : false;
-
 	ImGui::Begin("Inspector", &m_bOpen, ImGuiWindowFlags_::ImGuiWindowFlags_MenuBar);
+
 	if (!m_bOpen)
 		m_spViewObj.reset();
 
@@ -82,7 +85,7 @@ void CInspector::Update(ImGuiManager* manager)
 	DispDebugSelectObject();
 
 	//--- メニュー表示
-	DispPopUpMenuObject();
+	//DispPopUpMenuObject();
 	
 	manager->HoverStateSet();
 
@@ -138,7 +141,8 @@ void CInspector::CopyGameObject()
 		com->Init();
 	}*/
 
-	// TODO: シリアライズ化して名前,ﾎﾟｲﾝﾀなどだけ上書きすればできる?
+	// シリアライズ化して名前,ﾎﾟｲﾝﾀなどだけ上書きすればできる?
+	// できた
 	// シリアライズクラス作成
 	CCerealize<std::shared_ptr<CGameObject>> sirial;
 	{
@@ -161,7 +165,7 @@ void CInspector::CopyGameObject()
 		{
 			m_spViewObj.lock()->SetComponent(com);
 			//--- 描画と当たり判定クラスは要請する必要があるため、Initを呼び出す
-			// MEMO: 限定的なもので、正直どうなのか
+			// NOTE: 限定的なもので汎用性に欠ける。正直どうなのか
 			if (com->GetName().find("Renderer") != std::string::npos ||
 				com->GetName().find("Collision") != std::string::npos)
 			{
@@ -215,15 +219,8 @@ void CInspector::DispDebugSelectObject()
 	m_isDeleted = false;
 	// 表示オブジェクトのステータス表示
 	m_spViewObj.lock()->ImGuiDebug();
+	ImGui::Separator();
 	m_spViewObj.lock()->GetTransform()->ImGuiDebug();
-
-	//--- レイヤー
-	{
-		int layer = 0;
-		layer = m_spViewObj.lock()->GetLayerPtr()->GetLayer();
-		ImGui::InputInt("Layer", &layer);
-		m_spViewObj.lock()->GetLayerPtr()->SetLayer(layer);
-	}
 
 	//--- ｺﾝﾎﾟｰﾈﾝﾄ
 	int cnt = 0;
@@ -232,21 +229,10 @@ void CInspector::DispDebugSelectObject()
 	{
 		m_isDrawInfo.resize(components.size());
 	}
-	/*for (auto com : components)
-	{
-		std::string name = typeid(*com).name();
-		if (ImGui::Button(name.substr(6).c_str()))
-		{
-			m_isDrawInfo[cnt] = !m_isDrawInfo[cnt];
-		}
-		cnt++;
-	}*/
 
 	cnt = 0;
 	ImGui::PushStyleColor(ImGuiCol_TitleBgActive, ImVec4(0.0f, 0.7f, 0.2f, 1.0f));
 	ImGui::PushStyleColor(ImGuiCol_TitleBg, ImVec4(0.0f, 0.3f, 0.1f, 1.0f));
-	ImGui::SetNextWindowPos(ImVec2(1000, 20), ImGuiCond_Once);
-	ImGui::SetNextWindowSize(ImVec2(400, 400), ImGuiCond_Once);
 	for (auto com : components)
 	{
 		if (ImGui::CollapsingHeader(com->GetName().c_str(), m_isDrawInfo[cnt]))
@@ -254,7 +240,7 @@ void CInspector::DispDebugSelectObject()
 			// ｺﾝﾎﾟｰﾈﾝﾄのデバッグ表示
 			com->ImGuiDebug();
 
-			if (ImGui::Button(u8"Delete"))
+			if (ImGui::Button("Component Delete"))
 			{
 				if(!dynamic_cast<CTransform*>(com.get()))
 					m_spViewObj.lock()->RemoveComponent(com);
@@ -266,47 +252,6 @@ void CInspector::DispDebugSelectObject()
 	ImGui::PopStyleColor();
 	ImGui::PopStyleColor();
 
-}
-
-//==========================================================
-// ポップアップ表示
-//==========================================================
-void CInspector::DispPopUpMenuObject()
-{
-	static std::vector<std::string> menuVec = {
-		u8"ParentDissolved(親子関係解消)",
-		u8"close",
-	};
-	static bool open = false;
-
-	if (ImGui::IsMouseClicked(ImGuiMouseButton_::ImGuiMouseButton_Right) && ImGui::IsWindowHovered())
-		open = true;
-	if (!m_spViewObj.lock())
-		return;
-
-	int res = Debug::PopupMenu(menuVec, "", open);
-	switch (res)
-	{
-		case 0:
-		{
-			// 親子関係解消
-			auto trans = m_spViewObj.lock()->GetTransform();
-			if (auto parent = trans->GetParent(); parent.lock())
-			{
-				open = false;
-				trans->ParentDissolved();
-			}
-			break;
-		}
-		case -1:
-			if (ImGui::IsMouseClicked(ImGuiMouseButton_::ImGuiMouseButton_Left))
-				open = false;
-			break;
-		default:
-			if (ImGui::IsMouseClicked(ImGuiMouseButton_::ImGuiMouseButton_Left))
-				open = false;
-			break;
-	}
 }
 
 //==========================================================
@@ -327,7 +272,9 @@ void CInspector::AddComponentWindow()
 		//--- 検索入力
 		char input[56] = "\0";
 		strcpy(input, serchWord.c_str());
-		if (ImGui::InputText("Serch Com", input, 56))
+		ImGui::Text("Serch Component");
+		ImGui::SameLine();
+		if (ImGui::InputText("##tag", input, 56))
 			serchWord = input;
 
 		//--- オブジェクトにコンポーネントを追加
@@ -349,7 +296,7 @@ void CInspector::AddComponentWindow()
 
 				// 最後尾に追加されているコンポーネントを取得
 				auto com = m_spViewObj.lock()->GetComponentList().back();
-				// 初期化処理を行う。通常、静的であれば必要ないが、メインループ中の追加のため、ここで行わなければならない
+				// 初期化処理を行う。通常であれば必要ないが、メインループ中の追加のため、ここで行わなければならない
 				com->Init();
 
 				m_isDrawInfo.push_back(false);

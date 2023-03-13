@@ -16,6 +16,7 @@
 #include <DebugSystem/imguiManager.h>
 #include <DebugSystem/inspector.h>
 #include <DebugSystem/imGuiPackage.h>
+#include <DebugSystem/imGuiContextMenu.h>
 
 #include <GameSystem/Scene/scene.h>
 #include <GameSystem/Component/Transform/transform.h>
@@ -62,10 +63,11 @@ void CHierachy::Update(ImGuiManager* manager)
 {
 	ImGui::PushStyleColor(ImGuiCol_TitleBgActive, ImVec4(0.0f, 0.7f, 0.2f, 1.0f));
 	ImGui::PushStyleColor(ImGuiCol_TitleBg, ImVec4(0.0f, 0.3f, 0.1f, 1.0f));
-	ImGui::SetNextWindowPos(ImVec2(20, 20), ImGuiCond_Once);
-	ImGui::SetNextWindowSize(ImVec2(250, 400), ImGuiCond_Once);
+	auto screenSize = CScreen::GetSize();
+	ImGui::SetNextWindowPos(ImVec2(0, 0), ImGuiCond_Once);
+	ImGui::SetNextWindowSize(ImVec2(screenSize.x * 0.2f, screenSize.y * 0.6f), ImGuiCond_Once);
 	bool flg = true;
-	ImGui::Begin(u8"Hierarchy", &flg, ImGuiWindowFlags_MenuBar);
+	ImGui::Begin("Hierarchy", &flg, ImGuiWindowFlags_MenuBar);
 
 	// シーンが存在していなければ処理しない
 	if (!CSceneManager::Get()->GetActiveScene())
@@ -77,7 +79,7 @@ void CHierachy::Update(ImGuiManager* manager)
 	if (ImGui::BeginMenuBar())
 	{
 		//--- シーン
-		if (ImGui::BeginMenu("Scene File"))
+		if (ImGui::BeginMenu("Scene/File"))
 		{
 			if (ImGui::MenuItem("New empty Scene"))
 			{
@@ -101,6 +103,7 @@ void CHierachy::Update(ImGuiManager* manager)
 		//--- オブジェクト生成
 		if (ImGui::BeginMenu("New GameObject"))
 		{
+			// FIXME:マジックナンバー
 			if (ImGui::MenuItem("Empty"))
 				manager->GetInspector()->SetSelectGameObject(CreateObject(0));
 			if (ImGui::MenuItem("Model"))
@@ -134,43 +137,51 @@ void CHierachy::Update(ImGuiManager* manager)
 		CreateObjectsWindow();
 
 	//--- GameObject表示
-	auto objList = CSceneManager::Get()->GetActiveScene()->GetObjManager()->GetList();
-
-	// ゲームオブジェクト名の表示と子要素の表示
-	for (const auto & object : objList)
 	{
-		// 検索がONになっている時
-		if (m_Search.bSearchCriteria)
-		{	// 検索条件と一致するか判定し、一致しないならば次へ
-			if (!DispCheck(object.get()))
+		auto objList = CSceneManager::Get()->GetActiveScene()->GetObjManager()->GetList();
+		int objCnt = 0;
+		// ゲームオブジェクト名の表示と子要素の表示
+		for (const auto & object : objList)
+		{
+			// 検索がONになっている時
+			if (m_Search.bSearchCriteria)
+			{	// 検索条件と一致するか判定し、一致しないならば次へ
+				if (!DispCheck(object.get()))
+					continue;
+			}
+
+			// 親要素の確認、親が子を表示するので次へ
+			if (object->GetTransform()->GetParent().lock())
 				continue;
+
+			// 名前が同一の場合、ImGuiに認識されないので、IDを与える
+			auto name = std::to_string(objCnt) + ":" + object->GetName();
+
+			
+			// 選択ボタン、ウィンドウ表示
+			if (ImGui::Button(name.c_str()))
+			{
+				manager->GetInspector()->SetSelectGameObject(object);
+				break;
+			}
+			Debug::PopUpGameObjectMenu(object.get());
+
+			// ドラッグ設定
+			//if (ImGuiManager::Get()->GetInspector()->GetSelectObject().lock() == object)
+			{
+				DragDropSource<CGameObject::PtrWeak>(CHierachy::DESC_SELECT_OBJ, name.c_str(), object);
+			}
+
+			// ドラッグ&ドロップされたとき
+			if (auto select = DragDropTarget<CGameObject::PtrWeak>(CHierachy::DESC_SELECT_OBJ); select)
+				object->GetTransform()->AddChild(select->lock()->GetComponent<CTransform>());
+
+			//--- 子要素の表示
+			DispChild(manager, object);
+
+			++objCnt;
 		}
-
-		// 親要素の確認、親が子を表示するので次へ
-		if (object->GetTransform()->GetParent().lock())
-			continue;
-		
-		// 選択ボタン、ウィンドウ表示
-		if (ImGui::Button(object->GetName().c_str()))
-		{
-			manager->GetInspector()->SetSelectGameObject(object);
-			break;
-		}
-
-		// ドラッグ設定
-		//if (ImGuiManager::Get()->GetInspector()->GetSelectObject().lock() == object)
-		{
-			DragDropSource<CGameObject::PtrWeak>(CHierachy::DESC_SELECT_OBJ, object->GetName(), object);
-		}
-
-		// ドラッグ&ドロップされたとき
-		if (auto select = DragDropTarget<CGameObject::PtrWeak>(CHierachy::DESC_SELECT_OBJ); select)
-			object->GetTransform()->AddChild(select->lock()->GetComponent<CTransform>());
-
-		//--- 子要素の表示
-		DispChild(manager, object);
 	}
-	
 	ImGui::End();
 
 	//--- セーブロード
@@ -241,13 +252,13 @@ void CHierachy::DispSaveLoadMenu()
 			CSceneManager::Get()->SaveScene(m_strSavePath);
 		}
 		ImGui::Separator();
-		if (ImGui::Button("SaveScene OverWrite"))
-		{
-			CSceneManager::Get()->SaveScene(m_strSavePath);
-		}
 		if (ImGui::Button("LoadScene OverWrite"))
 		{
 			CSceneManager::Get()->SaveScene(m_strLoadPath);
+		}
+		if (ImGui::Button("SaveScene OverWrite"))
+		{
+			CSceneManager::Get()->SaveScene(m_strSavePath);
 		}
 
 		ImGui::End();
@@ -266,8 +277,9 @@ void CHierachy::DispChild(ImGuiManager* manager, std::weak_ptr<MySpace::Game::CG
 	ImGui::SameLine();
 
 	// 子の表示
-	if (ImGui::TreeNode(std::string(object.lock()->GetName() + "-child-").c_str()))
+	if (ImGui::TreeNode(std::string(object.lock()->GetName() + "- child -").c_str()))
 	{
+		// 開いたが、なし
 		if (object.lock()->GetTransform()->GetChildCount() == 0)
 		{
 			ImGui::Text("none");
@@ -280,14 +292,17 @@ void CHierachy::DispChild(ImGuiManager* manager, std::weak_ptr<MySpace::Game::CG
 			// nullptr確認
 			if (auto child = object.lock()->GetTransform()->GetChild(cnt).lock()->GetOwner(0); child.lock())
 			{
+				// NOTE:???よくわからないが、こうするとなぜか表示が綺麗になる
 				std::string ownname = child.lock()->GetName();
 				const char* childName = ownname.c_str();
 
-#pragma region CHILD
+				// inspector選択
 				if (select = ImGui::Button(childName); select)
 				{
 					manager->GetInspector()->SetSelectGameObject(child);
 				}
+				// 右クリック表示
+				Debug::PopUpGameObjectMenu(child.lock().get());
 
 				// ドラッグ設定
 				//if (ImGuiManager::Get()->GetInspector()->GetSelectObject().lock() == object.lock())
@@ -298,14 +313,11 @@ void CHierachy::DispChild(ImGuiManager* manager, std::weak_ptr<MySpace::Game::CG
 				// ドラッグ&ドロップされたとき
 				if (auto selectObj = DragDropTarget<CGameObject::PtrWeak>(CHierachy::DESC_SELECT_OBJ); selectObj)
 					child.lock()->GetTransform()->AddChild(selectObj->lock()->GetComponent<CTransform>());
-#pragma endregion
 
 				//--- 子要素を更に表示(再帰)
-				//if (auto childObj = child.lock()->GetTransform()->GetChild(0); childObj.lock())
 				DispChild(manager, child.lock());
 
-				//ImGui::Separator();
-
+				// 選択されていたら抜ける
 				if (select)
 					break;
 			}
@@ -331,26 +343,23 @@ void CHierachy::DispSearch()
 		static_cast<int>(ESearchTerms::COMPONENT),
 		static_cast<int>(ESearchTerms::STATE_ACTIVE),
 		static_cast<int>(ESearchTerms::STATE_STOP),
-		static_cast<int>(ESearchTerms::STATE_DESTROY),
 	};
 
-	static const char* szDisp[static_cast<int>(ESearchTerms::MAX)] =
-	{
-		"Name","Tag","Component","sActive","sStop","sDestroy"
+	static const char* szDisp[static_cast<int>(ESearchTerms::MAX)] ={
+		"Name","Tag","Component","sActive","sStop"
 	};
 
-	ImGui::Text((m_Search .bSearchCriteria? u8"Search:ON" : u8"Search:OFF"));
-	ImGui::SameLine();
-	if (ImGui::Button(u8"検索"))
+	if (ImGui::Button(m_Search.bSearchCriteria ? "Search:ON" : "Search:OFF"))
 	{
 		m_Search.bSearchCriteria ^= true;
 	}
 	ImGui::SameLine();
 
 	//--- 入力
-	m_Search.inputName = InputString(m_Search.inputName, u8"Search");
+	m_Search.inputName = InputString(m_Search.inputName, "##Search");
 
-	ImGui::Text(u8"Condition");
+	// 条件選択
+	ImGui::Text("Condition");
 	for (int cnt = 0; cnt < static_cast<int>(ESearchTerms::MAX); ++cnt)
 	{
 		ImGui::SameLine();
@@ -388,49 +397,12 @@ bool CHierachy::DispCheck(CGameObject* obj)
 
 	case MySpace::Debug::CHierachy::ESearchTerms::STATE_STOP:
 		return obj->GetState() == CGameObject::E_ObjectState::STOP;
-
-	case MySpace::Debug::CHierachy::ESearchTerms::STATE_DESTROY:
-		return obj->GetState() == CGameObject::E_ObjectState::DESTROY;
-
 	default:
 		break;
 	}
 	return false;
 }
 #pragma endregion
-
-
-//==========================================================
-// list用コンテナ内で挿入入れ替え
-// 受け取ったリストを入れ替え返却 else そのまま返却
-//==========================================================
-template<class T>
-std::list<T> CHierachy::MovingInList(std::list<T> list, T newT, int index)
-{
-	// 範囲チェック
-	if (index >= list.size())
-		return list;
-
-	// 挿入する場所までitを進める
-	auto pos = list.begin();
-	for (int n = 0; n < index; n++)
-	{
-		++pos;
-	}
-	// 探す
-	for (auto it = list.begin(); it != list.end(); ++it)
-	{
-		if (*it == newT)
-		{
-			// 挿入
-			list.insert(pos, *it);
-			// 元のオブジェクトは配列から除外
-			list.erase(it);
-			return list;
-		}
-	}
-	return list;
-}
 
 //==========================================================
 // オブジェクト一括生成

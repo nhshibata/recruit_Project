@@ -8,7 +8,8 @@
 #include <GameSystem/Component/Light/directionalLight.h>
 #include <GameSystem/GameObject/gameObject.h>
 #include <GameSystem/Component/Transform/transform.h>
-#include <ImGui/imgui.h>
+
+#include <DebugSystem/imGuiPackage.h>
 
 using namespace MySpace::Game;
 using namespace MySpace::MyMath;
@@ -84,9 +85,16 @@ void CDirectionalLight::ImGuiDebug()
 {
 	CLight::ImGuiDebug();
 
-	ImGui::DragFloat4("light Ambient", (float*)&m_ambient, 0.01f);
-	ImGui::DragFloat3("light Diffuse", (float*)&m_diffuse, 0.01f);
-	ImGui::DragFloat3("light Specular", (float*)&m_specular, 0.01f);
+	ImGui::Separator();
+
+	Debug::SetTextAndAligned("light Ambient");
+	ImGui::DragFloat4("##light Ambient", (float*)&m_ambient, 0.01f);
+	
+	Debug::SetTextAndAligned("light Diffuse");
+	ImGui::DragFloat3("##light Diffuse", (float*)&m_diffuse, 0.01f);
+	
+	Debug::SetTextAndAligned("light Specular");
+	ImGui::DragFloat3("##light Specular", (float*)&m_specular, 0.01f);
 
 }
 

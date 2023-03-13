@@ -154,6 +154,11 @@ namespace MySpace
 			inline void SetRangeZ(float fNearZ, float fFarZ) { m_fNearZ = fNearZ, m_fFarZ = fFarZ; }
 			inline void SetMain(std::weak_ptr<CCamera> ptr) { m_pMainCamera = ptr; }
 
+			// *@描画対象か確認
+			// *@継承前提(LayerCameraで実装)
+			// *@ビット変換は内部で行うので番号のみ
+			virtual bool IsMask(const int layer)const { return true; }
+
 			// *@視錘台（当たり判定)
 			EFrustumResult CollisionViewFrustum(XMFLOAT3* pCenter, float fRadius);
 			

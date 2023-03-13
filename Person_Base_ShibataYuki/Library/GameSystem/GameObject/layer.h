@@ -58,6 +58,7 @@ namespace MySpace
 			inline int GetLayer() { return m_nLayer; }
 			inline std::string GetName() { return NumberToName(m_nLayer); }
 			void SetLayer(int layer);
+			void SetLayer(std::string layer);
 
 			// *@Ã“Iƒƒ“ƒoŠÖ”
 			// *@V‹K“o˜^
@@ -79,7 +80,7 @@ namespace MySpace
 			static void SaveSystem();
 
 #ifdef BUILD_MODE
-			static std::vector<std::string> GetNameList();
+			static std::vector<std::string> GetNameList(bool bId = false);
 			static void ImGuiLayer(bool& disp);
 			static int ImGuiSetLayerList(int bit);
 #endif // BUILD_MODE

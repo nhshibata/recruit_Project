@@ -20,7 +20,7 @@
 #include <GameSystem/Factory/componentFactory.h>
 
 #include <CoreSystem/File/cerealize.h>
-#include <ImGui/imgui.h>
+#include <DebugSystem/imGuiPackage.h>
 
 using namespace MySpace::SceneManager;
 using namespace MySpace::Game;
@@ -39,7 +39,7 @@ static inline void CheckObj(CGameObject* obj)
 // コンストラクタ
 //==========================================================
 CGameObject::CGameObject()
-	:m_eState(E_ObjectState::ACTIVE)
+	:m_eState(E_ObjectState::ACTIVE), m_bCameraVisible(false)
 {
 	m_pTag = std::make_shared<CTag>();
 	m_pLayer = std::make_shared<CLayer>();
@@ -49,7 +49,7 @@ CGameObject::CGameObject()
 // 引き数付きコンストラクタ
 //==========================================================
 CGameObject::CGameObject(std::string name)
-	:m_eState(E_ObjectState::ACTIVE)
+	:m_eState(E_ObjectState::ACTIVE), m_bCameraVisible(false)
 {
 	SetName(name);
 	m_pTag = std::make_shared<CTag>();
@@ -207,6 +207,78 @@ void CGameObject::FixedUpdate()
 		}
 
 		com->FixedUpdate();
+	}
+}
+
+//==========================================================
+// 見えた瞬間
+//==========================================================
+void CGameObject::CameraTest(const bool test)
+{
+	// 前回写っている時
+	if (m_bCameraVisible && test)
+	{
+		OnWillRenderObject();
+	}
+	// 前回写っていない、かつ、映った時
+	else if(!m_bCameraVisible && test)
+	{
+		OnBecameVisible();
+	}
+	// 写っていない時
+	if (!test)
+	{
+		OnBecameInvisible();
+	}
+
+	m_bCameraVisible = test;
+}
+
+//==========================================================
+// 見えた瞬間
+//==========================================================
+void CGameObject::OnBecameVisible()
+{
+	for (auto & com : m_aComponent)
+	{
+		if (!com->IsActive())
+		{
+			continue;
+		}
+
+		com->OnBecameVisible();
+	}
+}
+
+//==========================================================
+// 見えなくなった瞬間
+//==========================================================
+void CGameObject::OnBecameInvisible()
+{
+	for (auto & com : m_aComponent)
+	{
+		if (!com->IsActive())
+		{
+			continue;
+		}
+
+		com->OnBecameInvisible();
+	}
+}
+
+//==========================================================
+// 見えている時
+//==========================================================
+void CGameObject::OnWillRenderObject()
+{
+	for (auto & com : m_aComponent)
+	{
+		if (!com->IsActive())
+		{
+			continue;
+		}
+
+		com->OnWillRenderObject();
 	}
 }
 
@@ -491,7 +563,7 @@ std::weak_ptr<CGameObject> CGameObject::CopyObject(CGameObject::Ptr pObj)
 		{
 			newObj.lock()->SetComponent(com);
 			//--- 描画と当たり判定クラスは要請する必要があるため、Initを呼び出す
-			// MEMO: 限定的なもので、正直どうなのか
+			// NOTE: 限定的なもので、正直どうなのか
 			if (com->GetName().find("Renderer") != std::string::npos ||
 				com->GetName().find("Collision") != std::string::npos)
 			{
@@ -567,7 +639,7 @@ void CGameObject::DontDestroy(std::weak_ptr<CGameObject> pObj)
 
 void CGameObject::ImGuiDebug()
 {
-	static const char* szState[CGameObject::MAX_OBJECT_STATE] = {
+	static std::vector<std::string> aStateName = {
 		"ACTIVE",			// 更新状態
 		"WAIT",				// 待機
 		"DESTROY",			// 削除
@@ -577,8 +649,6 @@ void CGameObject::ImGuiDebug()
 	static bool isAddTag = false;
 	static bool isAddLayer = false;
 
-	// FIXME: コンボでもよかった?
-
 	//--- 状態変更
 	if (ImGui::BeginMenuBar()) 
 	{
@@ -586,7 +656,7 @@ void CGameObject::ImGuiDebug()
 		{
 			for (int state = 0; state < E_ObjectState::MAX_OBJECT_STATE; ++state)
 			{
-				if (ImGui::MenuItem(szState[state])) 
+				if (ImGui::MenuItem(aStateName[state].c_str())) 
 				{
 					m_eState = (E_ObjectState)state;
 					break;
@@ -597,10 +667,11 @@ void CGameObject::ImGuiDebug()
 		ImGui::EndMenuBar();
 	}
 
+	
 	//--- タグ変更
 	if (ImGui::BeginMenuBar()) 
 	{
-		if (ImGui::BeginMenu(u8"tag"))
+		if (ImGui::BeginMenu(u8"Tag"))
 		{
 			auto tagList = CTag::GetNameList();
 			for (int idx = 0; idx < static_cast<int>(tagList.size()); ++idx)
@@ -627,7 +698,7 @@ void CGameObject::ImGuiDebug()
 	{
 		if (ImGui::BeginMenu(u8"layer"))
 		{
-			auto layerList = CLayer::GetNameList();
+			auto layerList = CLayer::GetNameList(true);
 			for (int idx = 0; idx < static_cast<int>(layerList.size()); ++idx)
 			{
 				auto tagName = layerList[idx].c_str();
@@ -648,22 +719,45 @@ void CGameObject::ImGuiDebug()
 	}
 	CLayer::ImGuiLayer(isAddLayer);
 
-	
+	ImGui::PushItemWidth(200);
+
 	//--- 名前変更
 	char name[56] = "";
 	strcpy_s(name, GetName().c_str());
-	ImGui::Text("Object Name");
-	ImGui::SameLine();
-	if(ImGui::InputText(u8"名前", name, 56))
+	Debug::SetTextAndAligned("Object Name");
+	if(ImGui::InputText("##Name", name, 56))
 		SetName(name);
-	//--- 表示
-	ImGui::Text(u8"State:%s", szState[m_eState]);
-	ImGui::Text(u8"Tag:%s", GetTagPtr()->GetTag().c_str());
-	ImGui::Text(u8"Layer %d:%s", GetLayerPtr()->GetLayer(), GetLayerPtr()->GetName().c_str());
-	ImGui::SameLine();
-	ImGui::Text("bit%b", GetLayerPtr()->GetLayer());
 
-	ImGui::Text(u8"ｺﾝﾎﾟｰﾈﾝﾄ数:%d", GetComponentList().size());
+	//--- 表示
+	ImGui::Text("State:%s", aStateName[m_eState]);
+	ImGui::SameLine();
+	{
+		Debug::SetControlPosX();
+		if (auto select = Debug::DispComboSelect(aStateName, "State", m_eState); select != m_eState)
+			m_eState = (CGameObject::E_ObjectState)select;
+	}
+
+	ImGui::Text("Tag:%s", GetTagPtr()->GetTag().c_str());
+	ImGui::SameLine();
+	{
+		Debug::SetControlPosX();
+		auto tagList = CTag::GetNameList();
+		if (auto select = Debug::DispComboSelect(tagList, "Tag", GetTagPtr()->GetTag().c_str()); !select.empty())
+			GetTagPtr()->SetTag(select);
+	}
+
+	ImGui::Text("Layer:%d", GetLayerPtr()->GetLayer());
+	ImGui::SameLine();
+	{
+		Debug::SetControlPosX();
+		auto layerList = CLayer::GetNameList();
+		if (auto select = Debug::DispComboSelect(layerList, "Layer", GetLayerPtr()->GetName().c_str()); !select.empty())
+			GetLayerPtr()->SetLayer(select);
+	}
+
+	ImGui::Text("Component Num:%d", GetComponentList().size());
+
+	ImGui::PopItemWidth();
 
 }
 

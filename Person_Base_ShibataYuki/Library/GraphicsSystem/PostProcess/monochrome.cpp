@@ -26,8 +26,6 @@ CMonochrome::CMonochrome()
 	auto screenSize = CScreen::GetSize();
 	m_pMainRT.Create(DXGI_FORMAT::DXGI_FORMAT_R8G8B8A8_UNORM, (UINT)screenSize.x, (UINT)screenSize.y);
 
-	auto imgMgr = Application::Get()->GetSystem<CAssetsManager>()->GetImageManager();
-	m_pToon = imgMgr->GetResource(FORDER_DIR(Data/Texture/ramp.png));
 }
 
 //=========================================================
@@ -44,14 +42,20 @@ CMonochrome::~CMonochrome()
 HRESULT CMonochrome::InitShader()
 {
 	HRESULT hr = S_OK;
-	auto pSM = Application::Get()->GetSystem<CAssetsManager>()->GetShaderManager();
 	{
+		auto pSM = Application::Get()->GetSystem<CAssetsManager>()->GetShaderManager();
 		PixelShaderSharedPtr ps = std::make_shared<CPixelShader>();
 		hr = ps->Make(CSO_PATH(PS_Monochrome.cso));
 		if (FAILED(hr))
 			return hr;
 		else
 			pSM->SetPS("PS_Monochrome", ps);
+	}
+
+	// Ã¸½Á¬“Ç‚Ýž‚Ý
+	{
+		auto imgMgr = Application::Get()->GetSystem<CAssetsManager>()->GetImageManager();
+		m_pToon = imgMgr->GetResource(FORDER_DIR(Data/Texture/ramp.png));
 	}
 
 	return hr;

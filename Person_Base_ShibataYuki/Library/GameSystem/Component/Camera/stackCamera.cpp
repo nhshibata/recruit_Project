@@ -19,14 +19,15 @@ using namespace MySpace::Graphics;
 //==========================================================
 CStackCamera::CStackCamera()
 {
-
+	m_pGBuf = std::make_unique<CGBuffer>();	
 }
 
 //==========================================================
 // 引数付きコンストラクタ
 //==========================================================
 CStackCamera::CStackCamera(CGameObject::Ptr owner)
-	:CLayerCamera(owner),m_eMode(EStackMode::BASE)
+	:CLayerCamera(owner),
+	m_eMode(EStackMode::BASE)
 {
 	m_pGBuf = std::make_unique<CGBuffer>();	
 }
@@ -48,6 +49,12 @@ void CStackCamera::Stack(std::weak_ptr<CStackCamera> camera, int idx)
 	if (!camera.lock()->IsStackMode(EStackMode::OVERLAY))
 	{
 		return;
+	}
+
+	for (auto & over : m_aStackCamera)
+	{
+		if (over.lock().get() == camera.lock().get())
+			return;
 	}
 
 	//--- 追加処理
@@ -74,50 +81,91 @@ void CStackCamera::Stack(std::weak_ptr<CStackCamera> camera, int idx)
 	}
 }
 
+//==========================================================
+// マスク対象か確認
+//==========================================================
+bool CStackCamera::IsMask(const int layer)const
+{
+	// この時点で対象なら終了
+	if (CLayerCamera::IsMask(layer))
+		return true;
+
+	for (auto & child : m_aStackCamera)
+	{
+		if (child.lock()->IsMask(layer))
+			return true;
+	}
+
+	return false;
+}
+
+//==========================================================
+// layer対象
+//==========================================================
+const int CStackCamera::GetAllTargetLayer()
+{
+	int layer = m_nLayerMask;
+
+	for (auto & child : m_aStackCamera)
+	{
+		layer |= child.lock()->GetMask();
+	}
+	return layer;
+}
+
+
 #ifdef BUILD_MODE
 
 void CStackCamera::ImGuiDebug()
 {
-	static const char* szSelectName = "Stack Select";
+	static const char* szSelectName = "StackSelect";
 	const std::vector<std::string> aModeName = {
 		"BASE",
 		"OVERLAY",
 	};
 
 	//--- モード設定
-	if (auto select = Debug::DispComboSelect(aModeName, "Mode", int(m_eMode)); select != int(m_eMode))
+	Debug::SetTextAndAligned("Mode");
+	if (auto select = Debug::DispComboSelect(aModeName, "##Mode", int(m_eMode)); select != int(m_eMode))
 	{
 		m_eMode = static_cast<EStackMode>(select);
 	}
 
-	ImGui::BeginListBox("Stack order");
+	Debug::SetTextAndAligned("Stack Order");
+	ImGui::BeginListBox("##Stack Order");
 	for (auto & cameraSource : m_aStackCamera)
 	{
+		std::string name = cameraSource.lock()->GetOwner()->GetName().c_str();
 		// 選択表示
-		ImGui::Selectable(cameraSource.lock()->GetName().c_str());
+		ImGui::Selectable(name.c_str());
 
 		//--- ソース設定
-		Debug::DragDropSource<std::weak_ptr<CStackCamera>>(szSelectName, cameraSource.lock()->GetName(), cameraSource);
+		Debug::DragDropSource<std::weak_ptr<CStackCamera>>(szSelectName, name.c_str(), cameraSource);
 
 		//--- ターゲットアタッチ
 		if (auto select = Debug::DragDropTarget<std::weak_ptr<CStackCamera>>(szSelectName); select)
 		{
-			std::vector<std::weak_ptr<CStackCamera>>::iterator targetIt;
-			std::vector<std::weak_ptr<CStackCamera>>::iterator sourceIt;
+			int targetIt = -1;
+			int sourceIt = -1;
 
-			for (auto it = m_aStackCamera.begin(); it != m_aStackCamera.end() ; ++it)
+			for (int cnt = 0; cnt < m_aStackCamera.size(); ++cnt)
 			{
-				if (select->lock() == (*it).lock())
+				auto pCamera = m_aStackCamera[cnt].lock().get();
+				if (select->lock().get() == pCamera)
 				{
-					targetIt = it;
+					targetIt = cnt;
 				}
-				if (cameraSource.lock() == (*it).lock())
+				if (cameraSource.lock().get() == pCamera)
 				{
-					sourceIt = it;
+					sourceIt = cnt;
 				}
+				if (targetIt != -1 && sourceIt != -1)
+					break;
 			}
 
-			std::swap(targetIt, sourceIt);
+			auto pWork = m_aStackCamera[targetIt];
+			m_aStackCamera[targetIt] = m_aStackCamera[sourceIt];
+			m_aStackCamera[sourceIt] = pWork;
 			break;
 		}
 	}
@@ -129,16 +177,19 @@ void CStackCamera::ImGuiDebug()
 	for (auto camera : aCamera)
 	{
 		// CStackCameraのみ
-		if(camera->BaseToDerived<CStackCamera>())
-			aNameVector.push_back(camera->GetName());
+		if(auto stackCamera = camera->BaseToDerived<CStackCamera>(); stackCamera)
+			if(stackCamera->GetStackMode() == EStackMode::OVERLAY)
+				aNameVector.push_back(camera->GetOwner()->GetName());
 	}
+
 	//--- コンボ表示
-	if (auto addName = Debug::DispComboSelect(aNameVector, "Add Camera", ""); !addName.empty())
+	Debug::SetTextAndAligned("Stack");
+	if (auto addName = Debug::DispComboSelect(aNameVector, "##Stack", ""); !addName.empty())
 	{
 		// 選択時追加
 		for (auto camera : aCamera)
 		{
-			if (camera->GetName() == addName)
+			if (camera->GetOwner()->GetName() == addName)
 			{
 				Stack(camera->BaseToDerived<CStackCamera>());
 				break;
@@ -147,6 +198,8 @@ void CStackCamera::ImGuiDebug()
 	}
 
 	m_pGBuf->ImGuiDebug();
+
+	ImGui::Separator();
 
 	// 基底クラス呼び出し
 	CLayerCamera::ImGuiDebug();
