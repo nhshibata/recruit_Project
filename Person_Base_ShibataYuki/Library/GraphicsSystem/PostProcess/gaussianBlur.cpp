@@ -64,6 +64,31 @@ HRESULT CGaussianBlur::InitShader()
 }
 
 //=========================================================
+// コンストラクタ
+//=========================================================
+CGaussianBlur::CGaussianBlur()
+{
+	
+}
+
+//=========================================================
+// 引数付きコンストラクタ
+//=========================================================
+CGaussianBlur::CGaussianBlur(
+	ID3D11ShaderResourceView* originalTexture, DXGI_FORMAT eFormat,
+	float fWidth, float fHeight)
+{
+	Init(originalTexture, eFormat, fWidth, fHeight);
+}
+
+//=========================================================
+// デストラクタ
+//=========================================================
+CGaussianBlur::~CGaussianBlur()
+{
+}
+
+//=========================================================
 // 初期化
 //=========================================================
 void CGaussianBlur::Init(
@@ -92,15 +117,15 @@ void CGaussianBlur::InitRenderTargets()
 	//Xブラー用のレンダリングターゲットを作成する。
 	m_xBlurRenderTarget.Create(
 		m_eFormat,
-		(UINT)m_fWidth / 2,
-		(UINT)m_fHeight
+		(UINT)fWidth / 2,
+		(UINT)fHeight
 	);
 
 	//Yブラー用のレンダリングターゲットを作成する。
 	m_yBlurRenderTarget.Create(
 		m_eFormat,
-		(UINT)m_fWidth / 2,
-		(UINT)m_fHeight / 2
+		(UINT)fWidth / 2,
+		(UINT)fHeight / 2
 	);
 #else
 	//Xブラー用のレンダリングターゲットを作成する。
@@ -241,7 +266,7 @@ void CGaussianBlur::UpdateWeightsTable(float blurPower)
 	if (blurPower == 0.0f)
 		return;
 
-#if 0
+#if 1
 	float total = 0.0f;
 	for (int i = 0; i < NUM_WEIGHTS; i++)
 	{

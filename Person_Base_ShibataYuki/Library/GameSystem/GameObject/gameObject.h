@@ -96,7 +96,7 @@ namespace MySpace
 			std::shared_ptr<CLayer> m_pLayer;		// レイヤー
 			std::weak_ptr<CTransform> m_pTransform;	// パラメータ
 			std::weak_ptr<CScene> m_pScene;			// 所属シーン
-
+			bool m_bCameraVisible;
 		private:
 			// *@コンポーネントの追加準備			
 			void ComponentAddPreparation(std::shared_ptr<CComponent> com);
@@ -109,13 +109,18 @@ namespace MySpace
 			virtual ~CGameObject();					// *@デストラクタ
 
 			virtual void Awake();					// *@生成時呼び出される(実質Create)
+			void Uninit();							// *@解放
 			virtual void Init();					// *@初期化
 			virtual void Update();					// *@ゲームオブジェクトごと更新
 			virtual void LateUpdate();				// *@ゲームオブジェクトごと最終更新
 			virtual void FixedUpdate();				// *@一定時間更新
 
 			virtual void OnLoad();					// *@ﾃﾞｰﾀ読みこみ時呼び出し
-			void Uninit();							// *@解放
+			
+			void CameraTest(const bool test);		// *@ｶﾒﾗに写ったかどうかが入る
+			void OnBecameVisible();					// *@見えた瞬間
+			void OnBecameInvisible();				// *@見えなくなった瞬間
+			void OnWillRenderObject();				// *@見えている時
 
 			//--- コンポーネント関連
 
@@ -125,12 +130,7 @@ namespace MySpace
 			std::shared_ptr<T> AddComponent() noexcept(false)
 			{
 				std::shared_ptr<T> com = std::make_shared<T>(GetPtr().lock());
-#if 0
-				auto reqName = typeid(std::shared_ptr<T>).name();
-				auto creName = typeid(com).name();
-				if (reqName != creName)
-					return std::shared_ptr<T>();
-#endif // 0
+
 				m_aComponent.push_back(com);	// 配列への追加
 				ComponentAddPreparation(com);	// ｺﾝﾎﾟｰﾈﾝﾄ準備
 				com.get()->Awake();			// 生成時呼び出し
@@ -140,8 +140,10 @@ namespace MySpace
 			// *@コンポーネントの破棄
 			template <class T>
 			bool RemoveComponent(std::string comName);
+			
 			// *@コンポーネントの破棄(引き数:SP)
 			bool RemoveComponent(std::weak_ptr<CComponent> com);
+
 			// *@コンポーネント設定
 			// *@同一コンポーネントがあればfalse
 			bool SetComponent(std::shared_ptr<CComponent> com);

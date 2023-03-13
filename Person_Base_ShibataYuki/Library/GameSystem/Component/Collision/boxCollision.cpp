@@ -14,7 +14,7 @@
 
 #if BUILD_MODE
 
-#include <ImGui/imgui.h>
+#include <DebugSystem/imGuiPackage.h>
 #include <GraphicsSystem/Render/box.h>
 #include <GameSystem/Manager/drawSystem.h>
 #include <GameSystem/Component/Renderer/modelRenderer.h>
@@ -35,6 +35,11 @@ CBoxCollision::CBoxCollision()
 	m_pDebugBox = std::make_shared<CBox>();
 	m_pDebugBox->Init(Vector3(1,1,1));
 	m_pDebugBox->SetDiffuse(Vector4(0, 1, 0, 0.5f));
+	auto sys = SceneManager::CSceneManager::Get()->GetDrawSystem();
+	sys->SetDebugMesh(
+		std::string(std::to_string(m_pDebugBox->GetIndexNum()) + std::to_string(m_pDebugBox->GetMaterial()->GetFloat())),
+		m_pDebugBox.get()
+	);
 #endif // BUILD_MODE
 
 }
@@ -49,6 +54,11 @@ CBoxCollision::CBoxCollision(std::shared_ptr<CGameObject> owner, Vector3 size)
 	m_pDebugBox = std::make_shared<CBox>();
 	m_pDebugBox->Init(size);
 	m_pDebugBox->SetDiffuse(Vector4(0, 1, 0, 0.5f));
+	auto sys = SceneManager::CSceneManager::Get()->GetDrawSystem();
+	sys->SetDebugMesh(
+		std::string(std::to_string(m_pDebugBox->GetIndexNum()) + std::to_string(m_pDebugBox->GetMaterial()->GetFloat())),
+		m_pDebugBox.get()
+	);
 #endif // BUILD_MODE
 }
 
@@ -58,6 +68,8 @@ CBoxCollision::CBoxCollision(std::shared_ptr<CGameObject> owner, Vector3 size)
 CBoxCollision::~CBoxCollision()
 {
 #if BUILD_MODE
+	auto sys = SceneManager::CSceneManager::Get()->GetDrawSystem();
+	sys->ReleaseDebugMesh(m_pDebugBox.get());
 	m_pDebugBox->Fin();
 	m_pDebugBox.reset();
 #endif // BUILD_MODE
@@ -182,8 +194,6 @@ bool CBoxCollision::HitCheckPtr(CCollision* other)
 	// null確認
 	if (!other)
 		return false;
-	// 持ち主の取得
-	CGameObject* otherOwner = other->GetOwner();
 
 	// size調整
 	if (m_vOldScale != Transform()->GetScale())
@@ -193,32 +203,34 @@ bool CBoxCollision::HitCheckPtr(CCollision* other)
 		m_vOldScale = Transform()->GetScale();
 	}
 
-	// size取得
 	Vector3 size;
 	// 派生クラスへのキャスト
 	if (CBoxCollision* com = dynamic_cast<CBoxCollision*>(other); com)
 	{
 		size = com->GetSize();
+		// 当たり判定
+		if (m_bOBBMode)
+		{
+			if (!CollisionOBB(other->Transform(), other->GetCenter(), size))
+				return false;
+		}
+		else
+		{
+			if (!CollisionAABB(other->Transform()->GetPos(), size))
+				return false;
+		}
 	}
 	else if (CSphereCollision* com = dynamic_cast<CSphereCollision*>(other); com)
 	{
 		size = com->GetRadius();
+		if (!this->IsCollidedWithBox(com))
+		{
+			return false;
+		}
 	}
 	else // ここに来ることは想定していない
 	{
 		return false;
-	}
-
-	// 当たり判定
-	if (m_bOBBMode)
-	{
-		if (!CollisionOBB(other->Transform(), other->GetCenter(), size))
-			return false;
-	}
-	else
-	{
-		if (!CollisionAABB(other->Transform()->GetPos(), size))
-			return false;
 	}
 
 	// トリガーがOFFなら押し出し
@@ -236,20 +248,72 @@ bool CBoxCollision::HitCheckPtr(CCollision* other)
 // 押し出し
 // TODO:完全ではない。当たった方向、適切なsizeによる押し出しではない
 //==========================================================
-void CBoxCollision::PosAdjustment(Vector3 pos, Vector3 size)
+void CBoxCollision::PosAdjustment(Vector3 otherPos, Vector3 otherSize)
 {
+#if 1
+	// 現在位置と以前の位置を取得
+	Vector3 currentPos = Transform()->GetPos();
+	Vector3 oldPos = Transform()->GetOldPos();
+
+	// 2つの矩形の距離を計算
+	Vector3 distance = currentPos - otherPos;
+	float totalRadius = (GetSize().GetLargeValue() + otherSize.GetLargeValue());
+	float distanceLength = distance.Length();
+
+	// 矩形同士が重なっている場合
+	if (distanceLength < totalRadius)
+	{
+		// 押し戻し処理
+		if (distanceLength > 0.0f)
+		{
+			Vector3 direction = distance.Normalize();
+			Vector3 displacement = direction * (totalRadius - distanceLength);
+			Vector3 newPosition = currentPos + displacement;
+
+			Transform()->SetPos(newPosition);
+		}
+		else
+		{
+			// 矩形同士が重なっているが、位置が同じ場合
+			// 移動が停止してしまうため、一度前の位置に戻す
+			Transform()->SetPos(oldPos);
+		}
+	}
+#else
+
 	Vector3 checkPos = Transform()->GetPos();
 	Vector3 oldPos = Transform()->GetOldPos();
-	
+
 	//---  押し出し
 	// 2点間と２半径の差
 	Vector3 distance = Transform()->GetPos() - pos;
-	float len = (GetSize().GetLargeValue()*2 + size.GetLargeValue()*2) - distance.Length();
+	float len = (GetSize().GetLargeValue() * 2 + size.GetLargeValue() * 2) - distance.Length();
 	// 押し出す方向
 	distance = distance.Normalize();
 	Vector3 vec = distance * len;
 	// 押し出し
 	Transform()->SetPos(Transform()->GetPos() + vec);
+
+#endif // 1
+
+}
+
+bool CBoxCollision::IsCollidedWithBox(CSphereCollision* sphere)
+{
+	// 球と矩形の中心点の距離
+	Vector3 distance = Transform()->GetPos() - this->Transform()->GetPos();
+	float distLen = distance.Length();
+
+	// 矩形の対角線の長さ
+	float diagonalLen = sqrt(pow(this->GetSize().x, 2) + pow(this->GetSize().y, 2) + pow(this->GetSize().z, 2)) / 2;
+
+	// 球と矩形の中心点の距離が、球の半径と矩形の対角線の長さの半分よりも小さい場合、当たりとみなす
+	if (distLen < sphere->GetRadius() + diagonalLen)
+	{
+		return true;
+	}
+
+	return false;
 }
 
 
@@ -259,12 +323,15 @@ void CBoxCollision::ImGuiDebug()
 {
 	CCollision::ImGuiDebug();
 
+	ImGui::Separator();
+
+	ImGui::Checkbox("OBB", (bool*)&m_bOBBMode);
+	Debug::SetTextAndAligned("box size");
 	// 3次元座標
-	if (ImGui::DragFloat3("box size", (float*)&m_vSize))
+	if (ImGui::DragFloat3("##boxsize", (float*)&m_vSize))
 	{
 		m_pDebugBox->Init(m_vSize);
 	}
-	ImGui::Checkbox(u8"OBB", (bool*)&m_bOBBMode);
 
 	if (ImGui::Button("box resize"))
 	{
@@ -279,9 +346,6 @@ void CBoxCollision::ImGuiDebug()
 // とりあえずここに仮実装
 void CBoxCollision::Update()
 {
-	if (!this->IsActive())
-		return;
-
 	//--- デバッグ表示
 	XMFLOAT4X4 mW;
 	if (m_bOBBMode)
@@ -307,13 +371,6 @@ void CBoxCollision::Update()
 
 		m_pDebugBox->SetWorld(&mW);
 	}
-
-	auto sys = SceneManager::CSceneManager::Get()->GetDrawSystem();
-	sys->SetDebugMesh(
-		std::string(std::to_string(m_pDebugBox->GetIndexNum()) + std::to_string(m_pDebugBox->GetMaterial()->GetFloat())),
-		mW,
-		m_pDebugBox.get()
-	);
 
 }
 

@@ -10,7 +10,7 @@
 #include <CoreSystem/Util/define.h>
 #include <CoreSystem/File/cerealize.h>
 
-#include <ImGui/imgui.h>
+#include <DebugSystem/imGuiPackage.h>
 
 using namespace MySpace::Game;
 using namespace MySpace::System;
@@ -72,13 +72,12 @@ void CTag::ImGuiTag(bool& disp)
 		return;
 	
 	ImGui::SetNextWindowPos(ImGui::GetMousePos(), ImGuiCond_::ImGuiCond_Once);
-	ImGui::SetNextWindowSize(ImVec2(CScreen::GetWidth() / 8, CScreen::GetHeight() / 8), ImGuiCond_::ImGuiCond_Once);
+	ImGui::SetNextWindowSize(ImVec2(CScreen::GetWidth() / 8, CScreen::GetHeight() / 6), ImGuiCond_::ImGuiCond_Once);
 	if (ImGui::Begin("Create Tag", &disp))
 	{
 		char input[52];
 		strcpy_s(input, newTagName.c_str());
-		ImGui::Text("New Tag >>");
-		ImGui::SameLine();
+		Debug::SetTextAndAligned("New Tag >>");
 		if (ImGui::InputText("input", input, 52))
 		{
 			newTagName = input;

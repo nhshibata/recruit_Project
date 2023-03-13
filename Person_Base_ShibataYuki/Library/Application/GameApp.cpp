@@ -132,8 +132,6 @@ HRESULT CGameApp::Init(Application* app)
 		MessageBox(NULL, _T("ImGuiの初期化に失敗しました。"), _T("error"), MB_OK);
 #endif // BUILD_MODE
 
-
-	//app->AddSystem<CTweenManager>();
 	return hr;
 }
 
@@ -142,8 +140,6 @@ HRESULT CGameApp::Init(Application* app)
 //==========================================================
 void CGameApp::Uninit(Application* app)const
 {
-	//_CrtDumpMemoryLeaks();
-
 	{
 		CTag::SaveSystem();
 		CLayer::SaveSystem();
@@ -196,9 +192,6 @@ void CGameApp::Run(Application* app)
 
 	//--- シーン更新
 	CSceneManager::Get()->UpdateScene();
-
-	// Tweenの更新(順番検討)
-	//app->GetSystem<CTweenManager>()->Update();
 
 	app->GetSystem<CAssetsManager>()->Update();
 }
@@ -305,10 +298,6 @@ void CGameApp::BeginRender(Application* app)
 	pDC->ClearRenderTargetView(pDX->GetRenderTargetView(), ClearColor);
 	pDC->ClearDepthStencilView(pDX->GetDepthStencilView(), D3D11_CLEAR_DEPTH | D3D11_CLEAR_STENCIL, 1.0f, 0);
 
-	/*ID3D11RenderTargetView* pViews[] = {
-		pDX->GetRenderTargetView()
-	};
-	pDC->OMSetRenderTargets(1, pViews, pDX->GetDepthStencilView());*/
 }
 
 //==========================================================

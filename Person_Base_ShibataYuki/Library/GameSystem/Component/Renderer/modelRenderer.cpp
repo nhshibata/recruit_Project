@@ -18,6 +18,7 @@
 #include <GraphicsSystem/DirectX/DXDevice.h>
 #include <GraphicsSystem/Manager/assetsManager.h>
 #include <GraphicsSystem/Manager/shaderManager.h>
+
 #include <DebugSystem/imGuiPackage.h>
 #include <CoreSystem/File/filePath.h>
 
@@ -112,6 +113,14 @@ bool CModelRenderer::SetModel(std::string name)
 }
 
 //==========================================================
+// 描画有無
+//==========================================================
+bool CModelRenderer::IsVisible()
+{
+	return GetModel().lock() && CRenderer::IsVisible();
+}
+
+//==========================================================
 // 読み込み時呼び出し
 //==========================================================
 void CModelRenderer::OnLoad()
@@ -153,38 +162,11 @@ bool CModelRenderer::Draw()
 {
 	if (!CMeshRenderer::Draw() || !m_pModel)return false;
 
-	auto pModelMgr = Application::Get()->GetSystem<CAssetsManager>()->GetModelManager();
-	auto pDX = Application::Get()->GetSystem<CDXDevice>();
-	XMFLOAT4X4 mtx = Transform()->GetWorldMatrix();
-
-	//--- インスタンシング描画
-
 	// システム側に依頼を出し、まとめて描画してもらう
-	XMUINT4 vFlags(0, 0, 0, 0);
-	if (auto pMaterial = GetModel().lock()->GetMaterial(); pMaterial)
-	{
-		if (pMaterial->pTexture)
-		{
-			vFlags.x = 1;
-			if (pMaterial->pTexEmmisive)
-				vFlags.y = 1;
-			if (pMaterial->pTexTransparent)
-				vFlags.z = 1;
-			if (pMaterial->pTexSpecular)
-				vFlags.w = 1;
-		}
-	}
-
 	SceneManager::CSceneManager::Get()->GetDrawSystem()->SetInstanchingModel(
-		m_modelName, 
-		m_strPixelShader,
-		m_strVertexShader,
-		RENDER_DATA(mtx, 
-					m_MeshMaterial.m_Ambient, m_MeshMaterial.m_Diffuse, m_MeshMaterial.m_Specular, m_MeshMaterial.m_Emissive,
-					vFlags));
+		m_modelName, m_strPixelShader, m_strVertexShader, m_nDrawIdx);
 
 	return true;
-
 }
 
 //==========================================================
@@ -232,6 +214,35 @@ bool CModelRenderer::Draw(int mode)
 	m_pModel->Draw(pDX->GetDeviceContext(), mtx, EByOpacity(mode));
 
 	return true;
+}
+
+//==========================================================
+// 
+//==========================================================
+RENDER_DATA CModelRenderer::GetShaderData()
+{
+	XMUINT4 vFlags(0, 0, 0, 0);
+	if (auto pMaterial = GetModel().lock()->GetMaterial(); pMaterial)
+	{
+		if (pMaterial->pTexture)
+		{
+			vFlags.x = 1;
+			if (pMaterial->pTexEmmisive)
+				vFlags.y = 1;
+			if (pMaterial->pTexTransparent)
+				vFlags.z = 1;
+			if (pMaterial->pTexSpecular)
+				vFlags.w = 1;
+		}
+	}
+
+	// wはpowerに使われている
+	Vector4 spec(m_MeshMaterial.m_Specular.x, m_MeshMaterial.m_Specular.y, m_MeshMaterial.m_Specular.z, m_MeshMaterial.m_Power);
+	return RENDER_DATA(
+		Transform()->GetWorldMatrix(),
+		m_MeshMaterial.m_Ambient, m_MeshMaterial.m_Diffuse,
+		spec, m_MeshMaterial.m_Emissive,
+		vFlags);
 }
 
 //==========================================================
@@ -589,30 +600,36 @@ void CModelRenderer::ImGuiDebug()
 	//--- モデル選択読み込み
 
 	// xファイル
-	if (auto name = DispComboSelect(m_aXModelList, "x File", m_modelName); !name.empty())
+	Debug::SetTextAndAligned("x File");
+	if (auto name = DispComboSelect(m_aXModelList, "##x File", m_modelName); !name.empty())
 	{
 		// ポインタを受け取る
 		SetModel(name);
 	}
 	
 	// objファイル
-	if (auto name = DispComboSelect(m_aObjModelList, "obj File", m_modelName); !name.empty())
+	Debug::SetTextAndAligned("obj File");
+	if (auto name = DispComboSelect(m_aObjModelList, "##obj File", m_modelName); !name.empty())
 	{
 		// ポインタを受け取る
 		SetModel(name);
 	}
 	
 	// fbxファイル
-	if (auto name = DispComboSelect(m_aFbxModelList, "fbx File", m_modelName); !name.empty())
+	Debug::SetTextAndAligned("fbx File");
+	if (auto name = DispComboSelect(m_aFbxModelList, "##fbx File", m_modelName); !name.empty())
 	{
 		// ポインタを受け取る
 		SetModel(name);
 	}
 
 	// 名前入力
-	m_modelName = InputString(m_modelName, u8"設定モデル");
+	Debug::SetTextAndAligned("LoadModel Name");
+	m_modelName = InputString(m_modelName, "##LoadModel Name");
 	if (ImGui::Button("Load"))
 		SetModel(m_modelName);
+
+	ImGui::Separator();
 
 	// static設定
 	// マテリアル

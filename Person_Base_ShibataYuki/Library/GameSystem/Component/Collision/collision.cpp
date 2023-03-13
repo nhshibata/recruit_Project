@@ -9,7 +9,8 @@
 #include <GameSystem/Manager/collisionSystem.h>
 #include <GameSystem/GameObject/gameObject.h>
 #include <GameSystem/Manager/sceneManager.h>
-#include <ImGui/imgui.h>
+
+#include <DebugSystem/imGuiPackage.h>
 
 using namespace MySpace::Game;
 using namespace MySpace::SceneManager;
@@ -232,13 +233,16 @@ bool CCollision::ExitTell()
 
 void CCollision::ImGuiDebug()
 {
-	ImGui::Text(u8"現在当たり", m_pOldStayList.size());
-	ImGui::Text(u8"Enter:", m_nDebugEnterCnt);
-	ImGui::Text(u8"Stay:", m_nDebugStayCnt);
-	ImGui::Text(u8"Exit:", m_nDebugExitCnt);
+
+	ImGui::Text("current hit", m_pOldStayList.size());
+	ImGui::Text("Enter:", m_nDebugEnterCnt);
+	ImGui::Text("Stay :", m_nDebugStayCnt);
+	ImGui::Text("Exit :", m_nDebugExitCnt);
 	ImGui::Text(u8"当たり判定用過去サイズ [x:%f][y:%f][z:%f]", &m_vOldScale);
-	ImGui::Checkbox(u8"Trigger", (bool*)&m_bIsTrigger);
-	ImGui::DragFloat3(u8"Center", (float*)m_vCenter);
+	ImGui::Checkbox("Is Trigger", (bool*)&m_bIsTrigger);
+	
+	Debug::SetTextAndAligned("Center");
+	ImGui::DragFloat3("##Center", (float*)m_vCenter);
 
 	// 再初期化はここで行う
 	m_nDebugEnterCnt = m_nDebugStayCnt = m_nDebugExitCnt = 0;

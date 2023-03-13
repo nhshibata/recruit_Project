@@ -6,6 +6,7 @@
 
 //--- インクルード部
 #include <GraphicsSystem/Manager/imageResourceManager.h>
+#include <tchar.h>
 
 using namespace MySpace::Graphics;
 
@@ -30,8 +31,7 @@ CImageResourceManager::~CImageResourceManager()
 bool CImageResourceManager::Load(std::string name)
 {
 	//--- 読み込み済みか確認
-	auto it = m_aResourceMap.find(name);
-	if (it != m_aResourceMap.end())
+	if(m_aResourceMap.count(name))
 		return true;
 
 	// メモリ確保
@@ -40,8 +40,10 @@ bool CImageResourceManager::Load(std::string name)
 	// 読み込み
 	if (!tex->Load(name)) 
 	{
+		MessageBox(NULL, _T(name.c_str()), _T("error"), MB_OK);
 		return false;
 	}
+
 	// 格納
 	m_aResourceMap.insert(IMAGE_PAIR(name, tex));
 	return true;
@@ -79,12 +81,13 @@ void CImageResourceManager::UnloadAll()
 //==========================================================
 ImageSharedPtr CImageResourceManager::GetResource(std::string name)
 {
-	auto it = m_aResourceMap.find(name);
 	//--- 存在しない
-	if (it == m_aResourceMap.end())
+	if (m_aResourceMap.count(name))
 	{
 		if (!Load(name))
 		{
+			MessageBox(NULL, _T(name.c_str()), _T("error"), MB_OK);
+
 			// 読み込み失敗
 			return std::shared_ptr<CImageResource>();
 		}

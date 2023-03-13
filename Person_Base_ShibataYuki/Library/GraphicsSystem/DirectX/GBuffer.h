@@ -46,6 +46,10 @@ namespace MySpace
 			// *@各ﾃｸｽﾁｬをPSSet
 			void SetUpTextures();
 
+			// *@ﾃｸｽﾁｬ情報のｺﾋﾟｰ
+			// *@シーン描画されたﾃｸｽﾁｬ情報をGBufferにコピーする
+			void CopyTexture();
+
 			// *@スプライト描画
 			// *@VS,PS設定は呼び出していない
 			void DrawSpriteRender(const ETexture e, float width, float height);

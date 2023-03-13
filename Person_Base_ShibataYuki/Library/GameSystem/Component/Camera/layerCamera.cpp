@@ -17,14 +17,15 @@ using namespace MySpace::Game;
 //==========================================================
 CLayerCamera::CLayerCamera()
 {
-
+	// 初期値として、全てのビットを1にする
+	m_nLayerMask = (1u << 31) - 1;
 }
 
 //==========================================================
 // 引数付きコンストラクタ
 //==========================================================
 CLayerCamera::CLayerCamera(std::shared_ptr<CGameObject> owner)
-	:CCamera(owner)
+	:CCamera(owner), m_nLayerMask(0)
 {
 	// 初期値として、全てのビットを1にする
 	m_nLayerMask = (1u << 31) - 1;
@@ -75,11 +76,13 @@ void CLayerCamera::ReleaseMask(const int layerNo)
 //==========================================================
 void CLayerCamera::ImGuiDebug()
 {
-	CCamera::ImGuiDebug();
 
 	// LayerMask設定
 	m_nLayerMask = CLayer::ImGuiSetLayerList(m_nLayerMask);
 
+	ImGui::Separator();
+
+	CCamera::ImGuiDebug();
 }
 
 #endif // BUILD_MODE

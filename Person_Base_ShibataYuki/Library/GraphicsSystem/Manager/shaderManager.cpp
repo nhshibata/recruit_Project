@@ -12,15 +12,22 @@
 #include <Application/Application.h>
 #include <GraphicsSystem/Manager/shaderManager.h>
 #include <GraphicsSystem/Shader/shaderStruct.h>
+#include <GraphicsSystem/Manager/assetsManager.h>
+#include <GraphicsSystem/Manager/imageResourceManager.h>
+#include <GraphicsSystem/PostProcess/gaussianBlur.h>
+#include <GraphicsSystem/PostProcess/bloom.h>
+#include <GraphicsSystem/PostProcess/negative.h>
+#include <GraphicsSystem/PostProcess/monochrome.h>
+#include <GraphicsSystem/PostProcess/outline.h>
+
 #include <GameSystem/Component/Camera/camera.h>
 #include <GameSystem/Component/Light/directionalLight.h>
 
-#include <d3dcompiler.h>
-#include <DirectXMath.h>
-
-#include <fstream>
 #include <DebugSystem/imGuiPackage.h>
 
+#include <d3dcompiler.h>
+#include <DirectXMath.h>
+#include <fstream>
 
 using namespace MySpace::Graphics;
 
@@ -67,69 +74,126 @@ CShaderManager::CShaderManager()
 HRESULT CShaderManager::Init()
 {
 	HRESULT hr = S_OK;
-	//auto device = Application::Get()->GetDevice();
 
-	//for (int cnt = 0 ; cnt < static_cast<int>(EShaderType::MAX); ++cnt)
-	//{
-	//	/*ID3D10Blob* hullShaderBuffer;
-	//	ID3D10Blob* domainShaderBuffer;
-	//	ID3D10Blob* errorMessage;*/
-	//	std::string hullName = "HS"; 
-	//	std::string domainName = "DS";
-	//	hullName += g_szShaderList[cnt];
-	//	domainName += g_szShaderList[cnt];
-
-	//	// シェーダー読み込み
-	//	//hr = D3DX11CompileFromFile(std::string(g_szCSODir + hullName + ".cso").c_str(), NULL, NULL, hullName.c_str(), "hs_5_0", //D3D10_SHADER_ENABLE_STRICTNESS, 0, NULL,
-	//	//	&hullShaderBuffer, &errorMessage, NULL);
-	//	//if (FAILED(hr)) { return E_FAIL; }
-	//	//hr = D3DX11CompileFromFile(std::string(g_szCSODir + domainName + ".cso").c_str(), NULL, NULL, domainName.c_str(), "ds_5_0", //D3D10_SHADER_ENABLE_STRICTNESS, 0, NULL,
-	//	//	&domainShaderBuffer, &errorMessage, NULL);
-
-	//	std::vector<char> byteCode; /*pOutByteCode ? pOutByteCode :*/
-	//	auto* pTarget = &byteCode;
-	//	if (!loadBinaryFile(pTarget, std::string(g_szCSODir + hullName + ".cso").c_str())) {
-	//		throw std::runtime_error("の読み込みに失敗");
-	//	}
-	//	
-	//	std::vector<char> byteCode2; /*pOutByteCode ? pOutByteCode :*/
-	//	auto* pTarget2 = &byteCode2;
-	//	if (!loadBinaryFile(pTarget2, std::string(g_szCSODir + domainName + ".cso").c_str())) {
-	//		throw std::runtime_error("の読み込みに失敗");
-	//	}
-
-	//	HullShaderSharedPtr pHullShader = std::make_shared<CHullShader>();
-	//	DomainShaderSharedPtr pDomainShader = std::make_shared<CDomainShader>();
-	//	pHullShader->Make(pTarget->data(), static_cast<size_t>(pTarget->size()));
-	//	pDomainShader->Make(pTarget2->data(), static_cast<size_t>(pTarget2->size()));
-	//	// 格納
-	//	//SetTessellation(g_szShaderList[cnt], pHullShader, pDomainShader);
-	//}
-	//
-	//MatrixBufferType param;
-	//TessellationBufferType param2;
-	//D3D11_SUBRESOURCE_DATA initData = {};
-	//initData.pSysMem = &param;
-	//initData.SysMemPitch = sizeof(param);
-	//D3D11_SUBRESOURCE_DATA initData2 = {};
-	//initData2.pSysMem = &param2;
-	//initData2.SysMemPitch = sizeof(param2);
-
-	//CConstantBuffer::Ptr cb = std::make_shared<CConstantBuffer>();
-	//CConstantBuffer::Ptr cb2 = std::make_shared<CConstantBuffer>();
-	//cb->Make(sizeof(MatrixBufferType),0, CConstantBuffer::EType::MAX, &initData);
-	//cb2->Make(sizeof(TessellationBufferType),0, CConstantBuffer::EType::MAX, &initData2);
-	//SetCB("MatrixBufferType", cb);
-	//SetCB("TessellationBufferType", cb2);
-
-	ConstantBufferSharedPtr sunCB = std::make_shared<CConstantBuffer>();
-	hr = sunCB->MakeCPU(sizeof(SHADER_GLOBAL_CAMERA_LIGHT), 1, CConstantBuffer::EType::All);
+	ConstantBufferSharedPtr cameraCB = std::make_shared<CConstantBuffer>();
+	hr = cameraCB->MakeCPU(sizeof(SHADER_GLOBAL_CAMERA_LIGHT), 1, CConstantBuffer::EType::All);
 	if(FAILED(hr))
 	{
 		return hr;
 	}
 	else
-		this->SetCB(NAME_TO(SHADER_GLOBAL_CAMERA_LIGHT), sunCB);
+		this->SetCB(NAME_TO(SHADER_GLOBAL_CAMERA_LIGHT), cameraCB);
+
+	{
+		// Toon用読み込み
+		auto imgMgr = Application::Get()->GetSystem<CAssetsManager>()->GetImageManager();
+		imgMgr->Load(FORDER_DIR(Data/Texture/ramp.png));
+	}
+
+	auto pSM = Application::Get()->GetSystem<CAssetsManager>()->GetShaderManager();
+	{
+		PixelShaderSharedPtr ps = std::make_shared<CPixelShader>();
+		hr = ps->Make(CSO_PATH(PS_AssimpToon.cso));
+		if (FAILED(hr))
+			return hr;
+		else
+			pSM->SetPS("PS_AssimpToon", ps);
+	}
+
+	{
+		PixelShaderSharedPtr ps = std::make_shared<CPixelShader>();
+		hr = ps->Make(CSO_PATH(PS_MeshToon.cso));
+		if (FAILED(hr))
+			return hr;
+		else
+			pSM->SetPS("PS_MeshToon", ps);
+	}
+
+	{
+		PixelShaderSharedPtr ps = std::make_shared<CPixelShader>();
+		hr = ps->Make(CSO_PATH(PS_AssimpNega.cso));
+		if (FAILED(hr))
+			return hr;
+		else
+			pSM->SetPS("PS_AssimpNega", ps);
+	}
+
+	{
+		PixelShaderSharedPtr ps = std::make_shared<CPixelShader>();
+		hr = ps->Make(CSO_PATH(PS_MeshNega.cso));
+		if (FAILED(hr))
+			return hr;
+		else
+			pSM->SetPS("PS_MeshNega", ps);
+	}
+
+	{
+		ConstantBufferSharedPtr cb = std::make_shared<CConstantBuffer>();
+		hr = cb->Make(sizeof(SHADER_RATE), 7, CConstantBuffer::EType::Pixel);
+		if (FAILED(hr))
+			return hr;
+		else
+			pSM->SetCB(NAME_TO(SHADER_RATE), cb);
+	}
+
+	//--- 定数バッファ
+	// 太陽
+	ConstantBufferSharedPtr sunCB = std::make_shared<CConstantBuffer>();
+	hr = sunCB->Make(sizeof(SHADER_SUN), 6, CConstantBuffer::EType::Vertex);
+	if (FAILED(hr))
+		return hr;
+	else
+		pSM->SetCB(NAME_TO(SHADER_SUN), sunCB);
+
+	// PS_DepthWrite
+	{
+		PixelShaderSharedPtr ps = std::make_shared<CPixelShader>();
+		hr = ps->Make(CSO_PATH(PS_DepthWrite.cso));
+		if (FAILED(hr))
+			return hr;
+		else
+			pSM->SetPS("PS_DepthWrite", ps);
+	}
+
+	// VS_DepthWrite
+	const D3D11_INPUT_ELEMENT_DESC layout[] =
+	{	// 第二引数にはセマンティクス名の数字を(あれば)
+		{"POSITION", 0, DXGI_FORMAT_R32G32B32_FLOAT,0, 0,							D3D11_INPUT_PER_VERTEX_DATA,0},
+		{"NORMAL",	 0, DXGI_FORMAT_R32G32B32_FLOAT,0, D3D11_APPEND_ALIGNED_ELEMENT,D3D11_INPUT_PER_VERTEX_DATA,0},
+		{"TEXCOORD", 0, DXGI_FORMAT_R32G32_FLOAT,   0, D3D11_APPEND_ALIGNED_ELEMENT,D3D11_INPUT_PER_VERTEX_DATA,0}
+	};
+	VertexShaderSharedPtr vs = std::make_shared<CVertexShader>();
+	hr = vs->Make(CSO_PATH(VS_DepthWrite.cso), layout, _countof(layout));
+	if (FAILED(hr))
+		return hr;
+	else
+		pSM->SetVS("VS_DepthWrite", vs);
+
+	// PS_GBuffer
+	{
+		PixelShaderSharedPtr ps = std::make_shared<CPixelShader>();
+		hr = ps->Make(CSO_PATH(PS_GBuffer.cso));
+		if (FAILED(hr))
+			return hr;
+		else
+			pSM->SetPS("PS_GBuffer", ps);
+	}
+
+	hr = CGaussianBlur::InitShader();
+	if (FAILED(hr))
+		return hr;
+	hr = CBloom::InitShader();
+	if (FAILED(hr))
+		return hr;
+	hr = CNegative::InitShader();
+	if (FAILED(hr))
+		return hr;
+	hr = CMonochrome::InitShader();
+	if (FAILED(hr))
+		return hr;
+	hr = COutline::InitShader();
+	if (FAILED(hr))
+		return hr;
 
 	return hr;
 }
@@ -316,112 +380,6 @@ void CShaderManager::SetMB(std::string name, MeshBufferSharedPtr mb)
 	if (m_aMeshBuffMap.count(name))
 		return;
 	m_aMeshBuffMap.insert(MeshBufferPair(name, mb));
-}
-
-//==========================================================
-// シェーダ設定
-//==========================================================
-bool CShaderManager::SetShaderParameters(
-	XMMATRIX worldMatrix, 
-	XMMATRIX viewMatrix,
-	XMMATRIX projectionMatrix, 
-	float tessellationAmount)
-{
-	HRESULT hr = S_OK;
-	ID3D11DeviceContext * pDC = Application::Get()->GetDeviceContext();
-	D3D11_MAPPED_SUBRESOURCE mappedResource;
-	//unsigned int bufferNumber;
-	MatrixBufferType* dataPtr;
-	TessellationBufferType* dataPtr2;
-	auto buffer = m_aConstantBufferMap["MatrixBufferType"]->GetBuffer();
-	auto buffer2 = m_aConstantBufferMap["TessellationBufferType"]->GetBuffer();
-
-	// Transpose the matrices to prepare them for the shader.
-	XMMatrixTranspose(worldMatrix);
-	XMMatrixTranspose(viewMatrix);
-	XMMatrixTranspose(projectionMatrix);
-
-	// Lock the matrix constant buffer so it can be written to.
-	hr = pDC->Map(buffer, 0, D3D11_MAP_WRITE_DISCARD, 0, &mappedResource);
-	if (FAILED(hr))return false;
-	// Get a pointer to the data in the matrix constant buffer.
-	dataPtr = (MatrixBufferType*)mappedResource.pData;
-	// Copy the matrices into the constant buffer.
-	dataPtr->world = worldMatrix;
-	dataPtr->view = viewMatrix;
-	dataPtr->projection = projectionMatrix;
-
-	pDC->Unmap(buffer, 0);
-
-	// Set the position of the matrix constant buffer in the domain shader.
-	//bufferNumber = 0;
-
-	// Finally set the matrix constant buffer in the domain shader with the updated values.
-	pDC->DSSetConstantBuffers(0, 1, &buffer);
-
-	// Lock the tessellation constant buffer so it can be written to.
-	hr = pDC->Map(buffer2, 0, D3D11_MAP_WRITE_DISCARD, 0, &mappedResource);
-	if (FAILED(hr))return false;
-
-	// Get a pointer to the data in the tessellation constant buffer.
-	dataPtr2 = (TessellationBufferType*)mappedResource.pData;
-	// Copy the tessellation data into the constant buffer.
-	dataPtr2->tessellationAmount = tessellationAmount;
-	dataPtr2->padding = XMFLOAT3(0.0f, 0.0f, 0.0f);
-	
-	pDC->Unmap(buffer2, 0);
-
-	// Set the position of the tessellation constant buffer in the hull shader.
-	//bufferNumber = 0;
-
-	// Now set the tessellation constant buffer in the hull shader with the updated values.
-	pDC->HSSetConstantBuffers(0, 1, &buffer2);
-
-	return true;
-}
-
-//==========================================================
-// 描画
-//==========================================================
-void CShaderManager::Render(EShaderType etype, std::string cb, std::string vs, std::string ps, std::string mb)
-{
-	//auto pCamera = Game::CCamera::GetMain();
-
-	////MatrixBufferType data1 = { pCamera->GetWorldMatrix(0), pCamera->GetLookAtMatrix(), pCamera->GetProjectionMatrix() };
-	////m_ConstantMap["MatrixBufferType"]->Write(&data1);
-
-	////TessellationBufferType dataPtr2 = {m_fTessellationAmount ,XMFLOAT3(0.0f, 0.0f, 0.0f) };
-	////m_ConstantMap["TessellationBufferType"]->Write(&dataPtr2);
-	////m_ConstantMap["TessellationBufferType"]->Bind();
-
-	//BindCB(cb);
-
-	//if (1/*||GetAsyncKeyState(VK_HOME)*/) {
-	////	m_pHullMap[g_szShaderList[static_cast<int>(etype)]]->Bind();
-	////	m_pDomainMap[g_szShaderList[static_cast<int>(etype)]]->Bind();
-	//}
-
-	//BindVS(vs);
-
-	//SetShaderParameters(pCamera->GetWorldMatrix(0), pCamera->GetLookAtMatrix(), pCamera->GetProjectionMatrix(), m_fTessellationAmount);
-
-	//BindPS(ps);
-	//
-	//BindMB(mb);
-}
-
-//==========================================================
-// 描画後処理
-//==========================================================
-void CShaderManager::EndRender()
-{
-	ID3D11DeviceContext* pDC = Application::Get()->GetDeviceContext();
-	pDC->VSSetConstantBuffers(0, 1, nullptr);
-	//pDC->VSSetShader(nullptr, nullptr, 0);
-	//pDC->IASetInputLayout(nullptr);
-	//pDC->HSSetShader(nullptr, nullptr, 0);
-	//pDC->DSSetShader(nullptr, NULL, 0);
-	//pDC->PSSetShader(nullptr, nullptr, 0);
 }
 
 

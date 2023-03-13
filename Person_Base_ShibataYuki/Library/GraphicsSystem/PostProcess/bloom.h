@@ -20,6 +20,24 @@ namespace MySpace
 	{
 		class CBloom : public CPostProcess
 		{
+#pragma region CEREAL
+			//--- シリアライズ
+			friend class cereal::access;
+			template<class Archive>
+			void save(Archive& archive) const
+			{
+				archive(cereal::make_nvp("bloom", cereal::base_class<CPostProcess>(this)),
+						CEREAL_NVP(m_fBlurPower), CEREAL_NVP(m_fThreshold)
+				);
+			}
+			template<class Archive>
+			void load(Archive& archive)
+			{
+				archive(cereal::make_nvp("bloom", cereal::base_class<CPostProcess>(this)),
+						CEREAL_NVP(m_fBlurPower), CEREAL_NVP(m_fThreshold)
+				);
+			}
+#pragma endregion
 		private:
 			float m_fBlurPower;				// ブラー強さ
 			float m_fThreshold;				// しきい値
@@ -35,9 +53,9 @@ namespace MySpace
 
 			void DrawSprite(CGBuffer* pGBuf);
 
-			ID3D11ShaderResourceView* GetResource()override;
+			_NODISCARD ID3D11ShaderResourceView* GetResource()override;
 
-			const float GetPower()const { return m_fBlurPower; }
+			_NODISCARD const float GetPower()const { return m_fBlurPower; }
 			void SetPower(const float value) { m_fBlurPower = value; }
 
 #if BUILD_MODE
@@ -48,6 +66,8 @@ namespace MySpace
 		
 	}
 }
+
+CEREAL_REGISTER_TYPE(MySpace::Graphics::CBloom)
 
 #endif // !__BLOOM_H__
 

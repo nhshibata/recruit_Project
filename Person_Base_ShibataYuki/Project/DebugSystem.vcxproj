@@ -20,6 +20,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\Library\DebugSystem\hierarchy.cpp" />
+    <ClCompile Include="..\Library\DebugSystem\imGuiContextMenu.cpp" />
     <ClCompile Include="..\Library\DebugSystem\imguiManager.cpp" />
     <ClCompile Include="..\Library\DebugSystem\imGuiPackage.cpp" />
     <ClCompile Include="..\Library\DebugSystem\imGuiSceneGizmo.cpp" />
@@ -40,6 +41,7 @@
   <ItemGroup>
     <ClInclude Include="..\Library\DebugSystem\debug.h" />
     <ClInclude Include="..\Library\DebugSystem\hierarchy.h" />
+    <ClInclude Include="..\Library\DebugSystem\imGuiContextMenu.h" />
     <ClInclude Include="..\Library\DebugSystem\imguiManager.h" />
     <ClInclude Include="..\Library\DebugSystem\imGuiPackage.h" />
     <ClInclude Include="..\Library\DebugSystem\imGuiSceneGizmo.h" />

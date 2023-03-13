@@ -15,6 +15,24 @@ namespace MySpace
 {
 	namespace Debug
 	{
+		//==========================================================
+		// カーソルX位置設定
+		//==========================================================
+		void SetControlPosX(float offset)
+		{
+			ImGui::SetCursorPosX(Debug::CONTROL_POS_X + offset);
+		}
+
+		//==========================================================
+		// Textを表示し、Samelineを呼び出し、Cursor位置を設定する
+		//==========================================================
+		void SetTextAndAligned(std::string text, float offset)
+		{
+			ImGui::Text(text.c_str());
+			ImGui::SameLine();
+			SetControlPosX(offset);
+		}
+
 #pragma region STRING
 		//==========================================================
 		// 文字列入力
@@ -179,14 +197,10 @@ namespace MySpace
 		// ポップアップ表示
 		//==========================================================
 		// -1はなにも選択していない判定
-		int PopupMenu(std::vector<std::string> vec, std::string name, bool open)
-		{
-			if (!open)
-				return -1;
-			
-			ImGui::OpenPopup(name.c_str());
+		int PopupMenu(std::vector<std::string> vec, std::string name)
+		{	
 			int cnt = -1;
-			if (ImGui::BeginPopup(name.c_str(), ImGuiWindowFlags_::ImGuiWindowFlags_MenuBar))
+			if (ImGui::BeginPopupContextItem(name.c_str()))
 			{
 				for (cnt = 0; cnt < vec.size(); cnt++)
 				{
@@ -198,6 +212,7 @@ namespace MySpace
 				}
 				ImGui::EndPopup();
 			}
+			// 入力された番号を返す
 			return cnt == vec.size() ? -1 : cnt;
 		}
 #pragma endregion

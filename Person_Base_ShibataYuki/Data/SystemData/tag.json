@@ -2,6 +2,7 @@
     "tagList": [
         "Default",
         "MainCamera",
-        "light"
+        "light",
+        "Player"
     ]
 }

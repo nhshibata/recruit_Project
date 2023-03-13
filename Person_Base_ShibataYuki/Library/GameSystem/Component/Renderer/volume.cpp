@@ -11,11 +11,6 @@
 #include <GameSystem/Manager/drawSystem.h>
 #include <GameSystem/Manager/volumeManager.h>
 
-#include <GraphicsSystem/PostProcess/bloom.h>
-#include <GraphicsSystem/PostProcess/negative.h>
-#include <GraphicsSystem/PostProcess/monochrome.h>
-#include <GraphicsSystem/PostProcess/outline.h>
-
 #include <DebugSystem/imGuiPackage.h>
 
 using namespace MySpace::Game;
@@ -26,7 +21,10 @@ using namespace MySpace::Graphics;
 //==========================================================
 CVolume::CVolume()
 {
-
+	if (auto mgr = CSceneManager::Get()->GetDrawSystem()->GetVolumeManager(); mgr)
+	{
+		m_nID = mgr->RegistToSystem(this);
+	}
 }
 
 //==========================================================
@@ -73,15 +71,48 @@ void CVolume::Init()
 //==========================================================
 // レイヤー確認
 //==========================================================
-bool CVolume::IsLayer(const int layerNo)
+bool CVolume::IsLayer(const int layerBit)
 {
-	if (GetOwner()->GetLayerPtr()->GetLayer() & layerNo)
+	if (GetOwner()->GetLayerPtr()->GetLayer() & layerBit)
 	{
 		return true;
 	}
 
 	return false;
 }
+
+//==========================================================
+// 追加
+//==========================================================
+void CVolume::AddRendererID(const int nID)
+{
+	const int layer = GetLayer();
+	if (!m_aRenderIDCash.count(layer))
+	{
+		m_aRenderIDCash[layer] = std::vector<int>();
+	}
+
+	m_aRenderIDCash[layer].push_back(nID);
+}
+
+//==========================================================
+// クリア
+//==========================================================
+void CVolume::ResetRenderCash()
+{
+	m_aRenderIDCash.clear();
+}
+
+//==========================================================
+// 取得
+//==========================================================
+std::vector<int> CVolume::GetRenderCash()const
+{
+	if (m_aRenderIDCash.size() == 0)
+		return std::vector<int>();
+	return m_aRenderIDCash.begin()->second;
+}
+
 
 
 #if BUILD_MODE
@@ -95,13 +126,13 @@ void CVolume::ImGuiDebug()
 		"Outline",
 	};
 
+	Debug::SetTextAndAligned("volume 優先度");
 	ImGui::DragInt(u8"volume 優先度", &m_nPriority, 1, 0, 10);
 
-	int n = Debug::DispComboSelect(effList, "Select", -1);
-	if (n != -1)
+	int select = Debug::DispComboSelect(effList, "Select", -1);
+	if (select != -1)
 		m_pPost.reset();
-
-	switch (n)
+	switch (select)
 	{
 		case 0:
 			m_pPost = std::make_unique<CBloom>();
@@ -123,6 +154,7 @@ void CVolume::ImGuiDebug()
 	{
 		// パラメータ表示
 		m_pPost->ImGuiDebug();
+
 		// 画面表示
 		ImGui::Image(m_pPost->GetResource(), ImVec2(100,100));
 	}

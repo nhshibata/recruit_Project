@@ -59,6 +59,7 @@
 
 //#include <gameCentipedeMarch.h>
 //#include <spellComponents.h>
+//#include <gameCentipedeMarch.h>
 
 //--- ライブラリ参照
 // プロパティで指定するか、ここで指定するか悩みどころ
@@ -84,8 +85,6 @@
 
 #pragma endregion
 
-//#include <gameCentipedeMarch.h>
-//#include <spellComponents.h>
 
 //==========================================================
 // エントリーポイント
@@ -93,10 +92,6 @@
 int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine, int nCmdShow)
 {
 	using namespace MySpace::SceneManager;
-
-	//_CrtSetDbgFlag(_CRTDBG_ALLOC_MEM_DF | _CRTDBG_LEAK_CHECK_DF);
-
-	//_CrtDumpMemoryLeaks();
 
 #if 1
 
@@ -112,11 +107,10 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 		~CMyScene()
 		{
 		}
-#pragma warning(push)
-#pragma warning(disable:4100)
+
 		void* Load(CScene* pScene, int mode)
 		{
-			if (1)
+			if (0)
 			{
 				pScene->CreateEmptyScene();
 
@@ -130,13 +124,9 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 			game->GetOwner()->SetName("GameManager");*/
 			//game->Awake();
 
-
 			return nullptr;
 		}
-#pragma warning(pop)
 	};
-
-	//CreateComponentSpell();
 
 	//--- シーン読み込み時呼び出す関数を設定
 	CMyScene my;
@@ -181,32 +171,11 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 
 #endif // 1
 
-	//HRESULT hr = S_OK;
-
-	////--- 生成
-	//Application* Appli = Application::Get();
-	//hr = Appli->Init(hInstance);
-
-	////--- ウィンドウ表示
-	//ShowWindow(Appli->GetHWnd(), nCmdShow);
-	//UpdateWindow(Appli->GetHWnd());
-	//
-	////--- 更新
-	//Appli->MainLoop();
-
-	////--- 終了
-	//Appli->Destroy();
-
-#if !_DEBUG
-#else
-#endif // _DEBUG
-
 	//--- 開始
 	//--- process order 001
 	// ウィンドウの生成などを行う
 	if (StartUp(hInstance, hPrevInstance, lpCmdLine, nCmdShow) != S_OK)
 		return 0;
-	//_CrtDumpMemoryLeaks();
 
 	// ゲームループ
 	MainLoop();

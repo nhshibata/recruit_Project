@@ -78,7 +78,6 @@
     <ClCompile Include="..\Library\GraphicsSystem\PostProcess\monochrome.cpp" />
     <ClCompile Include="..\Library\GraphicsSystem\PostProcess\negative.cpp" />
     <ClCompile Include="..\Library\GraphicsSystem\PostProcess\outline.cpp" />
-    <ClCompile Include="..\Library\GraphicsSystem\PostProcess\postProcess.cpp" />
     <ClCompile Include="..\Library\GraphicsSystem\Render\AssimpModel.cpp" />
     <ClCompile Include="..\Library\GraphicsSystem\Render\billboard.cpp" />
     <ClCompile Include="..\Library\GraphicsSystem\Render\box.cpp" />

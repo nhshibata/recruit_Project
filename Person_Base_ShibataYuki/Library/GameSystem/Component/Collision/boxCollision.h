@@ -16,6 +16,10 @@
 #pragma region ForwardDeclaration
 namespace MySpace
 {
+	namespace Game
+	{
+		class CSphereCollision;
+	}
 	namespace Graphics
 	{
 		class CBox;
@@ -51,6 +55,10 @@ namespace MySpace
 			Vector3 m_vSize;	// 当たり判定サイズ
 			bool m_bOBBMode;	// OBB判定を取るか
 
+		private:
+			void PosAdjustment(Vector3 pos, Vector3 size);
+			bool IsCollidedWithBox(CSphereCollision* sphere);
+
 		public:
 			CBoxCollision();
 			CBoxCollision(std::shared_ptr<CGameObject> owner, Vector3 size = Vector3(1, 1, 1));
@@ -66,7 +74,6 @@ namespace MySpace
 			inline bool IsOBB() { return m_bOBBMode; }
 			inline void SetOBB(bool flg) { m_bOBBMode = flg; }
 
-			void PosAdjustment(Vector3 pos, Vector3 size);
 			bool HitCheckPtr(CCollision* col);		// コリジョンｸﾗｽを引き数にとって、当たり判定を行う
 
 #ifdef BUILD_MODE

@@ -154,13 +154,11 @@ HRESULT CMesh::InitShader()
 	ConstantBufferSharedPtr cb_sgm = std::make_shared<CConstantBuffer>();
 	ConstantBufferSharedPtr cb_im = std::make_shared<CConstantBuffer>();
 	ConstantBufferSharedPtr cb_imtx = std::make_shared<CConstantBuffer>();
-	//cb_sg->Make(sizeof(SHADER_GLOBAL), 0, CConstantBuffer::EType::Vertex);
 	cb_sg0->MakeCPU(sizeof(SHADER_GLOBAL_WVP), 0, CConstantBuffer::EType::Vertex);
 	cb_sg2->Make(sizeof(SHADER_GLOBAL2), 1, CConstantBuffer::EType::Pixel);
 	cb_sgm->Make(sizeof(SHADER_MATERIAL), 2, CConstantBuffer::EType::Pixel);
 	cb_imtx->MakeCPU(sizeof(INSTANCE_MATRIX), 4, CConstantBuffer::EType::Vertex);
 	cb_im->MakeCPU(sizeof(INSTANCHING_MATERIAL), 5, CConstantBuffer::EType::Pixel);
-	//sm->SetCB(typeid(SHADER_GLOBAL).name(), cb_sg);
 	sm->SetCB(NAME_TO(SHADER_GLOBAL_WVP), cb_sg0);
 	sm->SetCB(NAME_TO(SHADER_GLOBAL2), cb_sg2);
 	sm->SetCB(NAME_TO(SHADER_MATERIAL), cb_sgm);
@@ -344,7 +342,6 @@ void CMesh::Draw(ID3D11ShaderResourceView* pTexture, XMFLOAT4X4* mWorld)
 		D3D11_PRIMITIVE_TOPOLOGY_LINELIST,
 		D3D11_PRIMITIVE_TOPOLOGY_LINESTRIP,
 		D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST,
-		D3D11_PRIMITIVE_TOPOLOGY_TRIANGLESTRIP,
 	};
 	pDeviceContext->IASetPrimitiveTopology(pt[0]);
 
@@ -355,8 +352,9 @@ void CMesh::Draw(ID3D11ShaderResourceView* pTexture, XMFLOAT4X4* mWorld)
 //==========================================================
 // 描画インスタンシング
 //==========================================================
-void CMesh::DrawInstancing(std::vector<RENDER_DATA> aData, bool defaultShader,
-						   ID3D11ShaderResourceView* pTexture, XMFLOAT4X4* mWorld)
+void CMesh::DrawInstancing(
+	std::vector<RENDER_DATA> aData, bool defaultShader,
+	ID3D11ShaderResourceView* pTexture, XMFLOAT4X4* mWorld)
 {
 	if (defaultShader)
 	{
@@ -373,15 +371,18 @@ void CMesh::DrawInstancing(std::vector<RENDER_DATA> aData, bool defaultShader,
 
 	// 頂点バッファをセット
 	// インデックスバッファをセット
-	DrawInstancing(aData, m_pVertexBuffer, m_pIndexBuffer, pTexture, mWorld);
+	DrawInstancing(aData, D3D11_PRIMITIVE_TOPOLOGY::D3D11_PRIMITIVE_TOPOLOGY_TRIANGLESTRIP,
+				   m_pVertexBuffer, m_pIndexBuffer, pTexture, mWorld);
 }
 
 //==========================================================
 // 描画インスタンシング
 // mesh使いまわし
 //==========================================================
-void CMesh::DrawInstancing(std::vector<DirectX::XMFLOAT4X4> aData, bool defaultShader,
-						   ID3D11ShaderResourceView* pTexture, XMFLOAT4X4* mWorld)
+void CMesh::DrawInstancing(
+	std::vector<DirectX::XMFLOAT4X4> aData, D3D11_PRIMITIVE_TOPOLOGY eTopology,
+	bool defaultShader,
+	ID3D11ShaderResourceView* pTexture, XMFLOAT4X4* mWorld)
 {
 	if (defaultShader)
 	{
@@ -401,10 +402,11 @@ void CMesh::DrawInstancing(std::vector<DirectX::XMFLOAT4X4> aData, bool defaultS
 
 	// 頂点バッファをセット
 	// インデックスバッファをセット
-	DrawInstancing(setData, m_pVertexBuffer, m_pIndexBuffer, pTexture, mWorld);
+	DrawInstancing(setData, eTopology, m_pVertexBuffer, m_pIndexBuffer, pTexture, mWorld);
 }
 
-void CMesh::DrawInstancing(std::vector<RENDER_DATA> aData, ID3D11Buffer* vertexB, ID3D11Buffer* indexB,
+void CMesh::DrawInstancing(std::vector<RENDER_DATA> aData, D3D11_PRIMITIVE_TOPOLOGY eTopology,
+						   ID3D11Buffer* vertexB, ID3D11Buffer* indexB,
 						   ID3D11ShaderResourceView* pTexture, XMFLOAT4X4* mWorld)
 {
 	auto sm = Application::Get()->GetSystem<CAssetsManager>()->GetShaderManager();
@@ -463,15 +465,14 @@ void CMesh::DrawInstancing(std::vector<RENDER_DATA> aData, ID3D11Buffer* vertexB
 	sm->BindCB(NAME_TO(SHADER_MATERIAL));
 
 	// プリミティブ形状をセット
-	const D3D11_PRIMITIVE_TOPOLOGY pt[] = {
-		D3D11_PRIMITIVE_TOPOLOGY_TRIANGLESTRIP,	// 0なら三角形ストリップ
-		D3D11_PRIMITIVE_TOPOLOGY_POINTLIST,
-		D3D11_PRIMITIVE_TOPOLOGY_LINELIST,
-		D3D11_PRIMITIVE_TOPOLOGY_LINESTRIP,
-		D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST,
-		D3D11_PRIMITIVE_TOPOLOGY_TRIANGLESTRIP,
-	};
-	pDeviceContext->IASetPrimitiveTopology(pt[0]);
+	//const D3D11_PRIMITIVE_TOPOLOGY pt[] = {
+	//	D3D11_PRIMITIVE_TOPOLOGY_TRIANGLESTRIP,	// 0なら三角形ストリップ
+	//	D3D11_PRIMITIVE_TOPOLOGY_POINTLIST,
+	//	D3D11_PRIMITIVE_TOPOLOGY_LINELIST,
+	//	D3D11_PRIMITIVE_TOPOLOGY_LINESTRIP,
+	//	D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST,
+	//};
+	pDeviceContext->IASetPrimitiveTopology(eTopology);
 
 	//--- データセット
 	int cntNum = 0;

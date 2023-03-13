@@ -257,9 +257,6 @@
     <ClCompile Include="..\Library\GraphicsSystem\PostProcess\bloom.cpp">
       <Filter>ソース ファイル\PostProcess</Filter>
     </ClCompile>
-    <ClCompile Include="..\Library\GraphicsSystem\PostProcess\postProcess.cpp">
-      <Filter>ソース ファイル\PostProcess</Filter>
-    </ClCompile>
     <ClCompile Include="..\Library\GraphicsSystem\PostProcess\negative.cpp">
       <Filter>ソース ファイル\PostProcess</Filter>
     </ClCompile>

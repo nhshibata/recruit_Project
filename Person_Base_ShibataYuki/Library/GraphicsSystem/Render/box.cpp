@@ -66,7 +66,9 @@ HRESULT CBox::Init(XMFLOAT3 vBBox)
 		1.0f, 0.0f,
 	};
 
-	VERTEX_3D* pVertexWk = new VERTEX_3D[24];
+	const int vtxNum = _countof(vtx);
+
+	VERTEX_3D* pVertexWk = new VERTEX_3D[vtxNum];
 	int* pIndexWk = new int[36];
 	VERTEX_3D* pVtx = pVertexWk;
 	int nIdx = 0;
@@ -89,7 +91,7 @@ HRESULT CBox::Init(XMFLOAT3 vBBox)
 		pIndexWk[i * 6 + 5] = pIndexWk[i * 6 + 1];
 	}
 
-	hr = CMesh::Init(pVertexWk, 24, pIndexWk, 36);
+	hr = CMesh::Init(pVertexWk, vtxNum, pIndexWk, 36);
 
 	delete[] pIndexWk;
 	delete[] pVertexWk;

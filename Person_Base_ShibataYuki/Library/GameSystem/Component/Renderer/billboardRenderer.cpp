@@ -122,12 +122,12 @@ bool CBillboardRenderer::Draw()
 		m_pBillboard->SetTextureMatrix(mtxTexture);
 
 		m_MeshMaterial.m_Ambient.w = 1.0f;	// ﾃｸｽﾁｬフラグとなっている
-		SetInstancing(m_pBillboard.get(), m_pSprite->GetImageName(), DirectX::XMUINT4(1, 0, 0, 0));
+		SetInstancing(m_pBillboard.get(), m_pSprite->GetImageName());
 	}
 	else
 	{
 		m_MeshMaterial.m_Ambient.w = 0.0f;	// ﾃｸｽﾁｬフラグとなっている
-		SetInstancing(m_pBillboard.get(), std::string(), DirectX::XMUINT4(1, 0, 0, 0));
+		SetInstancing(m_pBillboard.get(), std::string());
 	}
 
 	//CDXDevice::Get()->SetZBuffer(true);			
@@ -137,6 +137,21 @@ bool CBillboardRenderer::Draw()
 	return true;
 }
 
+//=========================================================
+//
+//=========================================================
+RENDER_DATA CBillboardRenderer::GetShaderData()
+{
+	XMUINT4 vFlags(1, 0, 0, 0);
+
+	// wはpowerに使われている
+	Vector4 spec(m_MeshMaterial.m_Specular.x, m_MeshMaterial.m_Specular.y, m_MeshMaterial.m_Specular.z, m_MeshMaterial.m_Power);
+	return RENDER_DATA(
+		Transform()->GetWorldMatrix(),
+		m_MeshMaterial.m_Ambient, m_MeshMaterial.m_Diffuse,
+		spec, m_MeshMaterial.m_Emissive,
+		vFlags);
+}
 
 #ifdef BUILD_MODE
 

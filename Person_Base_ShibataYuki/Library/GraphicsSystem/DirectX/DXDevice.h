@@ -1,7 +1,6 @@
 //=========================================================
 // [DXDevice.h] 
 // 作成:2022/06/19
-// 更新:2023/01/12 RenderTargetとDepthStencilをクラスに変更
 //---------------------------------------------------------
 //=========================================================
 
@@ -17,25 +16,6 @@
 #include <CoreSystem/systemBase.h>
 
 using Microsoft::WRL::ComPtr;
-
-#define RT_DS_TEST		0
-
-#if RT_DS_TEST
-
-#pragma region ForwardDeclaration
-
-namespace MySpace
-{
-	namespace Graphics
-	{
-		class CRenderTarget;
-		class CDepthStencil;
-	}
-}
-
-#pragma endregion
-#endif // RT_DS_TEST
-
 
 namespace MySpace
 {
@@ -82,8 +62,10 @@ namespace MySpace
 			ComPtr<ID3D11SamplerState>		m_SamplerState;
 			
 			ComPtr<ID3D11RenderTargetView>	g_pRenderTargetView;	// フレームバッファ
-			ComPtr<ID3D11Texture2D>			g_pDepthStencilTexture;	// Zバッファ用メモリ
+			ComPtr<ID3D11Texture2D>			g_pRenderTexture;		// フレームバッファ用メモリ
 			ComPtr<ID3D11DepthStencilView>	g_pDepthStencilView;	// Zバッファ
+			ComPtr<ID3D11Texture2D>			g_pDepthStencilTexture;	// Zバッファ用メモリ
+			ComPtr<ID3D11ShaderResourceView> g_pSRV;
 
 		public:
 			//--- メンバ関数
@@ -99,14 +81,20 @@ namespace MySpace
 			inline ID3D11Device* GetDevice() { return g_pDevice.Get(); }
 			
 			// *@デバイス コンテキスト取得
-			inline ID3D11DeviceContext* GetDeviceContext() { return g_pDeviceContext.Get(); }
+			inline ID3D11DeviceContext* GetDeviceContext() const{ return g_pDeviceContext.Get(); }
 
 			// *@スワップチェイン
-			inline IDXGISwapChain* GetSwapChain() { return g_pSwapChain.Get(); }
+			inline IDXGISwapChain* GetSwapChain()const{ return g_pSwapChain.Get(); }
 
 			// *@レンダーターゲット
-			inline ID3D11RenderTargetView* GetRenderTargetView() { return g_pRenderTargetView.Get(); }
+			inline ID3D11RenderTargetView* GetRenderTargetView()const { return g_pRenderTargetView.Get(); }
 			
+			// *@レンダーターゲット用テクスチャ取得
+			ID3D11Texture2D* GetRenderTexture()const { return g_pRenderTexture.Get(); }
+
+			// *@レンダーターゲット用シェーダーリソース取得
+			ID3D11ShaderResourceView* GetSRV() { return g_pSRV.Get(); }
+
 			// *@深度
 			inline ID3D11DepthStencilView* GetDepthStencilView() { return g_pDepthStencilView.Get(); }
 
@@ -124,6 +112,7 @@ namespace MySpace
 
 			// *@ビューポート取得
 			inline D3D11_VIEWPORT* GetViewPort() { return m_viewPort.get(); };
+
 
 			// *@深度バッファ有効無効制御
 			inline void SetZBuffer(bool bEnable)
@@ -146,7 +135,6 @@ namespace MySpace
 					g_pDeviceContext->OMSetBlendState(g_pBlendState[nBlendState].Get(), blendFactor, 0xffffffff);
 				}
 			}
-
 
 			// *@ブレンド ステート設定
 			void SetBlendState(EBlendState eBlendState)

@@ -82,11 +82,15 @@ namespace MySpace
 			bool CollisionLineSegment(XMFLOAT3 vP0, XMFLOAT3 vP1, std::vector<Vector3>* pX);
 
 			//--- ゲッター・セッター
+			inline ModelWeakPtr GetModel() { return m_pModel; }
+			inline std::string GetModelName() { return m_modelName; }
+			Graphics::RENDER_DATA GetShaderData()override;
+
 			inline void SetModel(ModelSharedPtr model) { m_pModel = model; /*m_modelName = model.lock()->GetFileName();*/ }
 			bool SetModel(std::string name);
 			
-			inline ModelWeakPtr GetModel() { return m_pModel; }
-			inline std::string GetModelName() { return m_modelName; }
+
+			bool IsVisible()override;
 
 #ifdef BUILD_MODE
 

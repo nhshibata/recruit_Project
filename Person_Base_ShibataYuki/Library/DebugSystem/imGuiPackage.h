@@ -20,6 +20,15 @@ namespace MySpace
 {
 	namespace Debug
 	{
+		static constexpr int CONTROL_POS_X = 150;
+
+		// *@コントロールの位置設定
+		// *@デフォルトは100
+		void SetControlPosX(float offset = 0.0f);
+
+		// *@Textを表示し、Samelineを呼び出し、Cursor位置を設定する
+		void SetTextAndAligned(std::string text, float offset = 0.0f);
+
 		// *@文字列入力
 		_NODISCARD std::string InputString(std::string text, std::string desc = std::string());
 
@@ -49,7 +58,7 @@ namespace MySpace
 
 		// *@Popメニュー表示and選択
 		// *@-1はなにも選択していない判定
-		_NODISCARD int PopupMenu(std::vector<std::string> vec, std::string name, bool open);
+		_NODISCARD int PopupMenu(std::vector<std::string> vec, std::string name);
 
 		// *@ビットで複数切替ボタン
 		_NODISCARD int CreateSelectableForBit(std::vector<std::string> vec, int current, int newLine = 2, float width = 200);

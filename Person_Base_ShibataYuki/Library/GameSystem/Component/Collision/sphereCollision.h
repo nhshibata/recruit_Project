@@ -12,6 +12,10 @@
 #pragma region ForwardDeclaration
 namespace MySpace
 {
+	namespace Game
+	{
+		class CBoxCollision;
+	}
 	namespace Graphics
 	{
 		class CSphere;
@@ -48,8 +52,13 @@ namespace MySpace
 			//--- メンバ変数
 			float m_fRadius;			// 当たり判定球
 
-		public:
+		private:
 			//--- ﾒﾝﾊﾞ関数
+			// *@押し出し
+			void PushBack(CCollision* other, float radius);
+			bool BoxSphere(CBoxCollision* box, Game::CSphereCollision* sphere);
+
+		public:
 			CSphereCollision();
 			CSphereCollision(std::shared_ptr<CGameObject> owner, float radius = 1.0f);
 			~CSphereCollision();
@@ -60,9 +69,6 @@ namespace MySpace
 
 			// *@コリジョンｸﾗｽを引き数にとって、当たり判定を行う
 			bool HitCheckPtr(CCollision* col);
-			
-			// *@押し出し
-			void PushObject(CCollision* other, float radius);
 
 			//--- ゲッター・セッター
 			inline float GetRadius() { return m_fRadius; };

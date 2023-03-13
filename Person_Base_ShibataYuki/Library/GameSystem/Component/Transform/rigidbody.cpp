@@ -12,7 +12,8 @@
 #include <GameSystem/Component/Transform/rigidbody.h>
 #include <GameSystem/Component/Transform/transform.h>
 #include <GameSystem/GameObject/gameObject.h>
-#include <ImGui/imgui.h>
+
+#include <DebugSystem/imGuiPackage.h>
 
 using namespace MySpace::Game;
 
@@ -132,11 +133,21 @@ void CRigidbody::OnCollisionEnter(CGameObject* obj)
 
 void CRigidbody::ImGuiDebug()
 {
-	ImGui::InputFloat(u8"rigidbody重力", &m_fGravity);
-	ImGui::InputFloat(u8"rigidbody抵抗", &m_fResistance);
-	ImGui::InputFloat3(u8"rigidbody速度", (float*)m_vVel);
-	ImGui::InputFloat3(u8"rigidbody加速度", (float*)m_vAccel);
-	ImGui::InputFloat3(u8"rigidbody目標座標", (float*)m_vTargetPos);
+	Debug::SetTextAndAligned(u8"rigidbody 重力");
+	ImGui::InputFloat("##rigidbody 重力", &m_fGravity);
+
+	Debug::SetTextAndAligned(u8"rigidbody 抵抗");
+	ImGui::InputFloat("##rigidbody 抵抗", &m_fResistance);
+	
+	Debug::SetTextAndAligned("rigidbody 速度");
+	ImGui::InputFloat3("##rigidbody 速度", (float*)m_vVel);
+
+	Debug::SetTextAndAligned(u8"rigidbody 加速度");
+	ImGui::InputFloat3("##rigidbody 加速度", (float*)m_vAccel);
+
+	Debug::SetTextAndAligned(u8"rigidbody 目標座標");
+	ImGui::InputFloat3("##rigidbody 目標座標", (float*)m_vTargetPos);
+
 	ImGui::Checkbox(u8"動", &m_bIsSleep);
 
 	ImGui::Text(u8"pos固定");

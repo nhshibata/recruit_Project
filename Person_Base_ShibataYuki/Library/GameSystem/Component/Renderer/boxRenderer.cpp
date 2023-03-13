@@ -12,7 +12,7 @@
 #include <GameSystem/Manager/sceneManager.h>
 #include <GraphicsSystem/DirectX/DXDevice.h>
 
-#include <ImGui/imgui.h>
+#include <DebugSystem/imGuiPackage.h>
 
 using namespace MySpace::Game;
 using namespace MySpace::Graphics;
@@ -138,7 +138,9 @@ void CBoxRenderer::ImGuiDebug()
 	//ImGui::Button(u8"SphereRenderer")
 
 	m_vSize = Transform()->GetScale();
-	if (ImGui::DragFloat3("BoxSize renderer", (float*)&m_vSize))
+
+	Debug::SetTextAndAligned("Renderer BoxSize");
+	if (ImGui::DragFloat3("##BoxSize renderer", (float*)&m_vSize))
 	{
 		SetBox(m_vSize);
 		//Transform()->SetScale(m_vSize);

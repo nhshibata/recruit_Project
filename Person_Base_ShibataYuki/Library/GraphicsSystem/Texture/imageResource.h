@@ -47,8 +47,10 @@ namespace MySpace
 			~CImageResource();
 
 			// ゲッター・セッター
+			// *@ﾃｸｽﾁｬﾋﾞｭｰ取得
 			inline ID3D11ShaderResourceView* GetSRV() const { return m_pSRV; }
-			//inline ID3D11Resource* GetRES() const { return res; }
+			// *@ﾃｸｽﾁｬ取得
+			inline ID3D11Texture2D* GetTexter() const { return m_pTex; }
 
 			bool Load(std::string _fileName);
 			void Unload();

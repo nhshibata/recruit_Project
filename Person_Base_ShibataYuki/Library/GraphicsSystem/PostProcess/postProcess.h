@@ -12,6 +12,7 @@
 //--- インクルード部
 #include <d3d11.h>
 #include <GraphicsSystem/DirectX/renderTarget.h>
+#include <CoreSystem/Util/cerealCommon.h>
 
 namespace MySpace
 {
@@ -27,6 +28,16 @@ namespace MySpace
 	{
 		class CPostProcess
 		{
+			//--- シリアライズ
+			friend class cereal::access;
+			template<class Archive>
+			void save(Archive& archive) const
+			{
+			}
+			template<class Archive>
+			void load(Archive& archive)
+			{
+			}
 
 		public:
 			// *@スプライト描画
@@ -41,6 +52,8 @@ namespace MySpace
 		};
 	}
 }
+
+CEREAL_REGISTER_TYPE(MySpace::Graphics::CPostProcess)
 
 #endif // !__POST_PROCESS_H__
 

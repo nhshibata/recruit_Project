@@ -55,9 +55,11 @@ namespace MySpace
 			virtual void Update();
 			virtual bool Draw();
 
+			inline CSpriteAnimation* GetSprite() { return m_pSprite.get(); }
+			Graphics::RENDER_DATA GetShaderData()override;
+			
 			inline void SetSprite(std::shared_ptr<CSpriteAnimation> anim) { m_pSprite = anim; }
 			inline void SetSprite(std::string name) { m_pSprite->SetImage(name); }
-			inline CSpriteAnimation* GetSprite() { return m_pSprite.get(); }
 
 #ifdef BUILD_MODE
 

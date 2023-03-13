@@ -17,6 +17,25 @@ namespace MySpace
 	{
 		class CNegative : public CPostProcess
 		{
+#pragma region CEREAL
+			//--- シリアライズ
+			friend class cereal::access;
+			template<class Archive>
+			void save(Archive& archive) const
+			{
+				archive(cereal::make_nvp("negative", cereal::base_class<CPostProcess>(this)),
+						CEREAL_NVP(m_fNega)
+				);
+			}
+			template<class Archive>
+			void load(Archive& archive)
+			{
+				archive(cereal::make_nvp("negative", cereal::base_class<CPostProcess>(this)),
+						CEREAL_NVP(m_fNega)
+				);
+			}
+#pragma endregion
+
 		private:
 			CRenderTarget m_pMainRT;		// 最終描画先
 			float m_fNega;
@@ -39,5 +58,7 @@ namespace MySpace
 
 	}
 }
+
+CEREAL_REGISTER_TYPE(MySpace::Graphics::CNegative)
 
 #endif // !__NEGATIVE_H__

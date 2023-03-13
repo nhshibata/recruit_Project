@@ -100,7 +100,7 @@ void CLight::Set(CLight* pLight)
 
 void CLight::ImGuiDebug()
 {
-	ImGui::Text(u8"*Light");
+	ImGui::Text("Light");
 	ImGui::CheckboxFlags(u8"enable", (unsigned int*)&m_bEnable, 1);
 }
 

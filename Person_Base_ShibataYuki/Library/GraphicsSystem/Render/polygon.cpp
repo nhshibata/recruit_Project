@@ -290,7 +290,6 @@ void CPolygon::Draw(ID3D11DeviceContext* pDeviceContext, std::string ps, std::st
 HRESULT CPolygon::MakeVertex(ID3D11Device* pDevice)
 {
 	// í∏ì_ç¿ïWÇÃê›íË
-	// TODO: à»è„Ç†ÇË
 #if 1
 	m_vertexWk[0].vtx = XMFLOAT3(-0.5f, 0.5f, 0.0f);
 	m_vertexWk[1].vtx = XMFLOAT3(0.5f, 0.5f, 0.0f);

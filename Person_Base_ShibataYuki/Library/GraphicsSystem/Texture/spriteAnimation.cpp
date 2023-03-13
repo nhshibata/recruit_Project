@@ -8,6 +8,7 @@
 #include <GraphicsSystem/Texture/spriteAnimation.h>
 #include <GraphicsSystem/Manager/assetsManager.h>
 #include <GraphicsSystem/Manager/imageResourceManager.h>
+
 #include <DebugSystem/imGuiPackage.h>
 
 using namespace MySpace::Graphics;
@@ -134,19 +135,23 @@ void CSpriteAnimation::ImGuiDebug()
 	{
 		int size = static_cast<int>(m_stParam.size());
 		//--- サイズ調整
-		if (ImGui::InputInt("size", &size) && size >= 0)
+		Debug::SetTextAndAligned("Param Size");
+		if (ImGui::InputInt("##size", &size) && size >= 0)
 		{
 			m_stParam.resize(size);
 			m_stParam.back().nAnimNo = m_stParam[size - 1].nAnimNo + 1;
 			m_stParam.back().nFrame = m_stParam[size - 1].nFrame;
 		}
-		ImGui::InputInt("No:", &m_nAnimNo);
+		Debug::SetTextAndAligned("AnimeNo:");
+		ImGui::InputInt("##No", &m_nAnimNo);
 		if (m_nAnimNo < 0)
 			m_nAnimNo = 0;
 
 		//--- 分割数変更
-		ImGui::InputInt("split x", &m_nSplitX);
-		ImGui::InputInt("split y", &m_nSplitY);
+		Debug::SetTextAndAligned("SplitX:");
+		ImGui::InputInt("##splitX", &m_nSplitX);
+		Debug::SetTextAndAligned("SplitY:");
+		ImGui::InputInt("##splitY", &m_nSplitY);
 		if (m_nSplitX < 0)
 			m_nSplitX = 0;
 		if (m_nSplitY < 0)

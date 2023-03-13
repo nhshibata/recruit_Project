@@ -10,7 +10,8 @@
 #include <GameSystem/GameObject/gameObject.h>
 #include <GameSystem/Manager/sceneManager.h>
 #include <GameSystem/Manager/drawSystem.h>
-#include <ImGui/imgui.h>
+
+#include <DebugSystem/imGuiPackage.h>
 
 using namespace MySpace::Game;
 using namespace MySpace::Graphics;
@@ -84,40 +85,36 @@ float CMeshRenderer::GetBSRadius()
 //==========================================================
 // インスタンシング設定
 //==========================================================
-void CMeshRenderer::SetInstancing(CMesh* mesh, std::string name, DirectX::XMUINT4 vFlag)
+void CMeshRenderer::SetInstancing(CMesh* mesh, std::string name)
 {
 	auto sys = SceneManager::CSceneManager::Get()->GetDrawSystem();
-
-	// wはpowerに使われている
-	Vector4 spec(m_MeshMaterial.m_Specular.x, m_MeshMaterial.m_Specular.y, m_MeshMaterial.m_Specular.z, m_MeshMaterial.m_Power);
-	
-	RENDER_DATA rd = RENDER_DATA(Transform()->GetWorldMatrix(),
-								 m_MeshMaterial.m_Ambient, m_MeshMaterial.m_Diffuse,
-								 spec, m_MeshMaterial.m_Emissive,
-								 vFlag);
 
 	//--- インスタンシング依頼
 	if (!name.empty())
 	{
-		sys->SetInstanchingMesh(
-			name,
-			m_strPixelShader,
-			m_strVertexShader,
-			rd,
-			mesh);
+		sys->SetInstanchingMesh(name, m_strPixelShader, m_strVertexShader, m_nDrawIdx, mesh);
 	}
 	else
 	{
 		sys->SetInstanchingMesh(
 			std::string(std::to_string(mesh->GetIndexNum()) + std::to_string(mesh->GetMaterial()->GetFloat())),
-			m_strPixelShader,
-			m_strVertexShader,
-			rd,
-			mesh);
+			m_strPixelShader, m_strVertexShader, m_nDrawIdx, mesh);
 	}
 
 }
 
+//=========================================================
+// 
+//=========================================================
+RENDER_DATA CMeshRenderer::GetShaderData()
+{
+	// wはpowerに使われている
+	Vector4 spec(m_MeshMaterial.m_Specular.x, m_MeshMaterial.m_Specular.y, m_MeshMaterial.m_Specular.z, m_MeshMaterial.m_Power);
+	return RENDER_DATA(
+		Transform()->GetWorldMatrix(),
+		m_MeshMaterial.m_Ambient, m_MeshMaterial.m_Diffuse,
+		spec, m_MeshMaterial.m_Emissive);
+}
 
 #if BUILD_MODE
 
@@ -125,7 +122,11 @@ void CMeshRenderer::ImGuiDebug()
 {
 	CRenderer::ImGuiDebug();
 
-	ImGui::Text("BSphere:%f", GetBSRadius());
+	ImGui::Separator();
+
+	Debug::SetTextAndAligned("BSphere:");
+	ImGui::Text("%f", GetBSRadius());
+
 	ImGui::Checkbox("Static", (bool*)&m_nStaticMode);
 	ImGui::SameLine();
 	ImGui::Checkbox("Shadow", (bool*)&m_bShadow);

@@ -19,7 +19,7 @@ namespace MySpace
 
 		class CLayerCamera : public CCamera
 		{
-			// シリアライズ
+			//--- シリアライズ
 #pragma region _cereal
 			friend class cereal::access;
 			template<class Archive>
@@ -48,7 +48,7 @@ namespace MySpace
 			// *@所持マスク
 			inline const int GetMask() const{ return m_nLayerMask; }
 			// *@マスク対象か確認
-			bool IsMask(const int layer)const;
+			virtual bool IsMask(const int layer)const override;
 			// *@マスク設定
 			void SetMask(const int mask);
 			// *@マスク設定追加
@@ -64,6 +64,8 @@ namespace MySpace
 
 	}
 }
+
+CEREAL_REGISTER_TYPE(MySpace::Game::CLayerCamera)
 
 #endif // !__LAYER_CAMERA_COMPONENT_H__
 
