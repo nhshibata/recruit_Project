@@ -103,9 +103,6 @@ HRESULT CRenderTarget::Create(DXGI_FORMAT format, UINT width, UINT height)
 	desc.BindFlags |= D3D11_BIND_RENDER_TARGET;
 
 	//--- テクスチャ作成
-	/*D3D11_SUBRESOURCE_DATA data = {};
-	data.pSysMem = nullptr;
-	data.SysMemPitch = desc.Width * 4;*/
 	hr = pApp->GetDevice()->CreateTexture2D(&desc, nullptr, &m_pTex);
 	if (FAILED(hr))
 	{

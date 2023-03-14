@@ -71,6 +71,8 @@ namespace MySpace
 			{
 				if (idx == -1)
 					return T();
+				if (!m_aIntMap.count(idx))
+					return T();
 				T ret = m_aIntMap[idx];
 				m_aIntMap.erase(idx);
 				return ret;

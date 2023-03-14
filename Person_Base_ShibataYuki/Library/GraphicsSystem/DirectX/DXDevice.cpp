@@ -15,6 +15,17 @@
 
 using namespace MySpace::Graphics;
 
+#include <iostream>
+#include <string>
+#include <Windows.h>
+#include <D3D11.h>
+#include <tchar.h>
+
+std::string GetErrorDescription(HRESULT hr) {
+	char buf[512] = { 0 };
+	FormatMessageA(FORMAT_MESSAGE_FROM_SYSTEM, NULL, hr, 0, buf, 511, NULL);
+	return buf;
+}
 
 //=========================================================
 // コンストラクタ
@@ -23,6 +34,7 @@ CDXDevice::CDXDevice()
 	:g_uSyncInterval(0), m_Width(0), m_Height(0), m_DriverType(),
 	m_FeatureLevel()
 {
+	
 }
 
 //==========================================================
@@ -57,9 +69,39 @@ HRESULT CDXDevice::Init(HWND hWnd, unsigned int Width, unsigned int Height, bool
 		D3D_FEATURE_LEVEL_9_1,
 	};
 
-	hr = D3D11CreateDeviceAndSwapChain(nullptr, D3D_DRIVER_TYPE_HARDWARE,
-									   nullptr, 0, featureLevels, _countof(featureLevels), D3D11_SDK_VERSION, &scd,
-									   &g_pSwapChain, &g_pDevice, nullptr, &g_pDeviceContext);
+	hr = D3D11CreateDeviceAndSwapChain(
+		nullptr, D3D_DRIVER_TYPE_HARDWARE,
+		nullptr, 0, featureLevels, _countof(featureLevels), D3D11_SDK_VERSION, &scd,
+		&g_pSwapChain, &g_pDevice, nullptr, &g_pDeviceContext);
+	if (FAILED(hr))
+		return hr;
+
+
+#if 1
+
+	D3D11_TEXTURE2D_DESC desc{};
+	desc.Width = Width;
+	desc.Height = Height;
+	desc.MipLevels = 1;
+	desc.ArraySize = 1;
+	desc.Format = DXGI_FORMAT_R8G8B8A8_UNORM;
+	desc.SampleDesc.Count = 1;
+	desc.Usage = D3D11_USAGE_DEFAULT;
+	desc.BindFlags = D3D11_BIND_RENDER_TARGET | D3D11_BIND_SHADER_RESOURCE;
+	desc.CPUAccessFlags = 0;
+	hr = g_pDevice->CreateTexture2D(&desc, nullptr, g_pRenderTexture.GetAddressOf());
+	if (FAILED(hr))
+		return hr;
+	
+	// ShaderResourceViewの作成
+	//g_pRenderTargetView->GetResource((ID3D11Resource**)g_pRenderTexture.GetAddressOf());
+	D3D11_SHADER_RESOURCE_VIEW_DESC srvDesc;
+	ZeroMemory(&srvDesc, sizeof(srvDesc));
+	srvDesc.Format = desc.Format;
+	srvDesc.ViewDimension = D3D11_SRV_DIMENSION_TEXTURE2D;
+	srvDesc.Texture2D.MostDetailedMip = 0;
+	srvDesc.Texture2D.MipLevels = desc.MipLevels;
+	hr = g_pDevice->CreateShaderResourceView(g_pRenderTexture.Get(), &srvDesc, g_pSRV.GetAddressOf());
 	if (FAILED(hr))
 		return hr;
 
@@ -71,26 +113,53 @@ HRESULT CDXDevice::Init(HWND hWnd, unsigned int Width, unsigned int Height, bool
 	pBackBuffer->Release();
 	pBackBuffer = nullptr;
 
-	D3D11_TEXTURE2D_DESC desc{};
-	desc.Width = 256;
-	desc.Height = 256;
-	desc.MipLevels = 1;
-	desc.ArraySize = 1;
-	desc.Format = DXGI_FORMAT_R8G8B8A8_UNORM;
-	desc.SampleDesc.Count = 1;
-	desc.Usage = D3D11_USAGE_DEFAULT;
-	desc.BindFlags = D3D11_BIND_SHADER_RESOURCE;
-	desc.CPUAccessFlags = 0;
-
-	hr = g_pDevice->CreateTexture2D(&desc, nullptr, &g_pRenderTexture);
+#else
+	// バックバッファ生成
+	// レンダーターゲットビュー生成
+	ID3D11Texture2D* pBackBuffer = nullptr;
+	g_pSwapChain->GetBuffer(0, __uuidof(ID3D11Texture2D), (LPVOID*)&pBackBuffer);
+	hr = g_pDevice->CreateRenderTargetView(pBackBuffer, nullptr, &g_pRenderTargetView);
 	if (FAILED(hr))
 		return hr;
 
-	// ShaderResourceViewの作成
-	//g_pRenderTargetView->GetResource((ID3D11Resource**)g_pRenderTexture.GetAddressOf());
-	hr = g_pDevice->CreateShaderResourceView(g_pRenderTexture.Get(), nullptr, &g_pSRV);
+	// リソース
+	ID3D11Resource* pResource;
+	g_pRenderTargetView->GetResource(&pResource);
+
+	ID3D11Texture2D* pTexture;
+	hr = pResource->QueryInterface(__uuidof(ID3D11Texture2D), reinterpret_cast<void**>(&pTexture));
 	if (FAILED(hr))
 		return hr;
+
+	D3D11_TEXTURE2D_DESC desc;
+	pTexture->GetDesc(&desc);
+
+	D3D11_SHADER_RESOURCE_VIEW_DESC srvDesc;
+	ZeroMemory(&srvDesc, sizeof(srvDesc));
+	srvDesc.Format = DXGI_FORMAT_R8G8B8A8_UNORM;
+	srvDesc.ViewDimension = D3D11_SRV_DIMENSION_TEXTURE2D;
+	srvDesc.Texture2D.MipLevels = desc.MipLevels;
+	srvDesc.Texture2D.MostDetailedMip = 0;
+
+	ID3D11ShaderResourceView* pSRV;
+	hr = g_pDevice->CreateShaderResourceView(pTexture, &srvDesc, &pSRV);
+	g_pSRV = pSRV;
+	g_pRenderTexture = pTexture;
+
+	pBackBuffer->Release();
+	pBackBuffer = nullptr;
+	pTexture->Release();
+	pResource->Release();
+
+	if (FAILED(hr))
+	{
+		auto erro = GetErrorDescription(hr);
+		MessageBox(NULL, _T(erro.c_str()), _T("error"), MB_OK);
+		return hr;
+	}
+
+#endif // 0
+	
 
 	// Zバッファ用テクスチャ生成
 	D3D11_TEXTURE2D_DESC td;

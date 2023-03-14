@@ -31,6 +31,7 @@
     <ClInclude Include="..\Library\GraphicsSystem\Manager\resourceMap.h" />
     <ClInclude Include="..\Library\GraphicsSystem\Manager\shaderManager.h" />
     <ClInclude Include="..\Library\GraphicsSystem\PostProcess\bloom.h" />
+    <ClInclude Include="..\Library\GraphicsSystem\PostProcess\depthOfField.h" />
     <ClInclude Include="..\Library\GraphicsSystem\PostProcess\gaussianBlur.h" />
     <ClInclude Include="..\Library\GraphicsSystem\PostProcess\monochrome.h" />
     <ClInclude Include="..\Library\GraphicsSystem\PostProcess\negative.h" />
@@ -74,6 +75,7 @@
     <ClCompile Include="..\Library\GraphicsSystem\Manager\modelManager.cpp" />
     <ClCompile Include="..\Library\GraphicsSystem\Manager\shaderManager.cpp" />
     <ClCompile Include="..\Library\GraphicsSystem\PostProcess\bloom.cpp" />
+    <ClCompile Include="..\Library\GraphicsSystem\PostProcess\depthOfField.cpp" />
     <ClCompile Include="..\Library\GraphicsSystem\PostProcess\gaussianBlur.cpp" />
     <ClCompile Include="..\Library\GraphicsSystem\PostProcess\monochrome.cpp" />
     <ClCompile Include="..\Library\GraphicsSystem\PostProcess\negative.cpp" />
@@ -177,6 +179,16 @@
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Pixel</ShaderType>
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Pixel</ShaderType>
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Pixel</ShaderType>
+      <ObjectFileOutput Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">$(SolutionDir)Data\shader\%(Filename).cso</ObjectFileOutput>
+      <ObjectFileOutput Condition="'$(Configuration)|$(Platform)'=='Release|x64'">$(SolutionDir)Data\shader\%(Filename).cso</ObjectFileOutput>
+    </FxCompile>
+    <FxCompile Include="..\Library\hlsl\PS_DepthOfField.hlsl">
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Pixel</ShaderType>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Pixel</ShaderType>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Pixel</ShaderType>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Pixel</ShaderType>
+      <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">5.0</ShaderModel>
+      <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Release|x64'">5.0</ShaderModel>
       <ObjectFileOutput Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">$(SolutionDir)Data\shader\%(Filename).cso</ObjectFileOutput>
       <ObjectFileOutput Condition="'$(Configuration)|$(Platform)'=='Release|x64'">$(SolutionDir)Data\shader\%(Filename).cso</ObjectFileOutput>
     </FxCompile>
@@ -318,6 +330,18 @@
       <ObjectFileOutput Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">$(SolutionDir)Data\shader\%(Filename).cso</ObjectFileOutput>
       <ObjectFileOutput Condition="'$(Configuration)|$(Platform)'=='Release|x64'">$(SolutionDir)Data\shader\%(Filename).cso</ObjectFileOutput>
     </FxCompile>
+    <FxCompile Include="..\Library\hlsl\VS_DepthOfField.hlsl">
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Vertex</ShaderType>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Vertex</ShaderType>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Vertex</ShaderType>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Vertex</ShaderType>
+      <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">5.0</ShaderModel>
+      <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Release|x64'">5.0</ShaderModel>
+      <ObjectFileOutput Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">$(SolutionDir)Data\shader\%(Filename).cso</ObjectFileOutput>
+      <ObjectFileOutput Condition="'$(Configuration)|$(Platform)'=='Release|x64'">$(SolutionDir)Data\shader\%(Filename).cso</ObjectFileOutput>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
+    </FxCompile>
     <FxCompile Include="..\Library\hlsl\VS_DepthWrite.hlsl">
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Vertex</ShaderType>
       <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">5.0</ShaderModel>
@@ -453,7 +477,7 @@
       </PrecompiledHeaderFile>
       <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
-      <AdditionalIncludeDirectories>$(SolutionDir)Library\Effekseer;$(SolutionDir)..\..\DirectXTex\x64;$(SolutionDir)..\..\DirectXTex;$(SolutionDir)..\..\Assimp\include;$(SolutionDir)..\..\Assimp;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir)Library\Effekseer;$(SolutionDir)Library\DirectXTex\x64\$(Configuration);$(SolutionDir)Library\DirectXTex;$(SolutionDir)Library\Assimp\include;$(SolutionDir)Library\Assimp;%(AdditionalIncludeDirectories)$(SolutionDir)Library\Effekseer;$(SolutionDir)Library\DirectXTex\x64;$(SolutionDir)Library\DirectXTex;$(SolutionDir)Library\Assimp\include;$(SolutionDir)Library\Assimp;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <AdditionalOptions>/bigobj %(AdditionalOptions)</AdditionalOptions>
       <LanguageStandard>stdcpp17</LanguageStandard>
       <InlineFunctionExpansion>Default</InlineFunctionExpansion>
@@ -517,7 +541,7 @@
       <PrecompiledHeaderFile>
       </PrecompiledHeaderFile>
       <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
-      <AdditionalIncludeDirectories>$(SolutionDir)..\..\DirectXTex;$(SolutionDir)..\..\Assimp\include;$(SolutionDir)..\..\Assimp;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir)Library\Effekseer;$(SolutionDir)Library\DirectXTex\x64\$(Configuration);$(SolutionDir)Library\DirectXTex;$(SolutionDir)Library\Assimp\include;$(SolutionDir)Library\Assimp;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <LanguageStandard>stdcpp17</LanguageStandard>
       <InlineFunctionExpansion>OnlyExplicitInline</InlineFunctionExpansion>
       <WholeProgramOptimization>true</WholeProgramOptimization>

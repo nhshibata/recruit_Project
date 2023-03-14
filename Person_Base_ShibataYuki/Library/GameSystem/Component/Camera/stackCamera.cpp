@@ -132,44 +132,46 @@ void CStackCamera::ImGuiDebug()
 	}
 
 	Debug::SetTextAndAligned("Stack Order");
-	ImGui::BeginListBox("##Stack Order");
-	for (auto & cameraSource : m_aStackCamera)
+	if (ImGui::BeginListBox("##Stack Order"))
 	{
-		std::string name = cameraSource.lock()->GetOwner()->GetName().c_str();
-		// 選択表示
-		ImGui::Selectable(name.c_str());
-
-		//--- ソース設定
-		Debug::DragDropSource<std::weak_ptr<CStackCamera>>(szSelectName, name.c_str(), cameraSource);
-
-		//--- ターゲットアタッチ
-		if (auto select = Debug::DragDropTarget<std::weak_ptr<CStackCamera>>(szSelectName); select)
+		for (auto & cameraSource : m_aStackCamera)
 		{
-			int targetIt = -1;
-			int sourceIt = -1;
+			std::string name = cameraSource.lock()->GetOwner()->GetName().c_str();
+			// 選択表示
+			ImGui::Selectable(name.c_str());
 
-			for (int cnt = 0; cnt < m_aStackCamera.size(); ++cnt)
+			//--- ソース設定
+			Debug::DragDropSource<std::weak_ptr<CStackCamera>>(szSelectName, name.c_str(), cameraSource);
+
+			//--- ターゲットアタッチ
+			if (auto select = Debug::DragDropTarget<std::weak_ptr<CStackCamera>>(szSelectName); select)
 			{
-				auto pCamera = m_aStackCamera[cnt].lock().get();
-				if (select->lock().get() == pCamera)
-				{
-					targetIt = cnt;
-				}
-				if (cameraSource.lock().get() == pCamera)
-				{
-					sourceIt = cnt;
-				}
-				if (targetIt != -1 && sourceIt != -1)
-					break;
-			}
+				int targetIt = -1;
+				int sourceIt = -1;
 
-			auto pWork = m_aStackCamera[targetIt];
-			m_aStackCamera[targetIt] = m_aStackCamera[sourceIt];
-			m_aStackCamera[sourceIt] = pWork;
-			break;
+				for (int cnt = 0; cnt < m_aStackCamera.size(); ++cnt)
+				{
+					auto pCamera = m_aStackCamera[cnt].lock().get();
+					if (select->lock().get() == pCamera)
+					{
+						targetIt = cnt;
+					}
+					if (cameraSource.lock().get() == pCamera)
+					{
+						sourceIt = cnt;
+					}
+					if (targetIt != -1 && sourceIt != -1)
+						break;
+				}
+
+				auto pWork = m_aStackCamera[targetIt];
+				m_aStackCamera[targetIt] = m_aStackCamera[sourceIt];
+				m_aStackCamera[sourceIt] = pWork;
+				break;
+			}
 		}
+		ImGui::EndListBox();
 	}
-	ImGui::EndListBox();
 
 	//--- 追加処理
 	auto aCamera = CCamera::GetAllCamera();

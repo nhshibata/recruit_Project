@@ -10,7 +10,7 @@ struct PS_OUT
     float4 color    : SV_TARGET0;
     float4 normal   : SV_TARGET1;
     float4 wolrd    : SV_TARGET2;
-    float4 depth    : SV_TARGET3;
+    float  depth     : SV_TARGET3;
 };
 
 // 設定された画面表示用のレンダーターゲットに色を渡す
@@ -36,7 +36,9 @@ PS_OUT main(PS_INPUT pin)
     float depthZ = pin.PosForPS.z / pin.PosForPS.w;
     pout.wolrd = float4(depthZ, depthZ, depthZ, depthZ);
     
-    pout.depth = float4(depthZ, depthZ, depthZ, depthZ);
+    float depthSun = pin.sunPos.z / pin.sunPos.w;
+    pout.depth = depthSun; 
+    //pout.depth = pin.Pos.z / pin.Pos.w;
     
     return pout;
 }

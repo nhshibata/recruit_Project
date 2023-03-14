@@ -139,9 +139,13 @@ void CDrawSystem::GBufferDraw(const bool bGbuffer, std::function<bool(int)> func
 		"VS_Assimp",
 		"VS_Mesh",
 	};
-
-	pDX->SetCullMode((int)ECullMode::CULLMODE_CCW);
 	CLight* pLight = CLight::GetMain();
+
+	if (!bGbuffer)
+	{
+		//pLight->SetDisable();
+		pDX->SetCullMode((int)ECullMode::CULLMODE_CCW);
+	}
 
 	//--- 登録されたモデル名別に描画
 	//--- 不透明描画
@@ -182,12 +186,16 @@ void CDrawSystem::GBufferDraw(const bool bGbuffer, std::function<bool(int)> func
 		++m_nInstancingCnt;
 #endif // _DEBUG
 	}
-	// ライティング有効
-	pLight->SetEnable();
 
-	//--- 半透明部分描画
-	pDX->SetBlendState(static_cast<int>(EBlendState::BS_ALPHABLEND));
-	pDX->SetZWrite(false);// Z書き込み
+	if (!bGbuffer)
+	{
+		// ライティング有効
+		pLight->SetEnable();
+
+		//--- 半透明部分描画
+		pDX->SetBlendState(static_cast<int>(EBlendState::BS_ALPHABLEND));
+		pDX->SetZWrite(false);// Z書き込み
+	}
 
 	for (auto & intancingModel : m_aInstancingModelMap)
 	{
@@ -221,8 +229,11 @@ void CDrawSystem::GBufferDraw(const bool bGbuffer, std::function<bool(int)> func
 		model->DrawInstancing(pDX->GetDeviceContext(), data, EByOpacity::eTransparentOnly, false);
 	}
 
-	pDX->SetZWrite(true);	// Z書き込み
-	pDX->SetBlendState(static_cast<int>(EBlendState::BS_NONE));
+	if (!bGbuffer)
+	{
+		pDX->SetZWrite(true);	// Z書き込み
+		pDX->SetBlendState(static_cast<int>(EBlendState::BS_NONE));
+	}
 
 	//--- メッシュインスタンシング描画
 	for (auto & meshObj : m_aInstancingMeshMap)
@@ -283,6 +294,7 @@ void CDrawSystem::GBufferDraw(const bool bGbuffer, std::function<bool(int)> func
 //=========================================================
 void CDrawSystem::Draw3D()
 {
+
 #if BUILD_MODE	// ImGui表示中はDebugCameraがMainなので、hierarchyを探索
 	// ｶﾒﾗを見つける
 	auto pCamera = CCamera::GetMain()->BaseToDerived<CStackCamera>();
@@ -309,12 +321,6 @@ void CDrawSystem::Draw3D()
 
 #endif // BUILD_MODE
 
-	/*
-	0.描画するオブジェクトの選定とVolumeへのキャッシュ
-	1.StackCameraから順に描画を始める
-	2.GBufferの作成
-	*/
-
 	// ｶﾒﾗを順に描画
 	auto pDX = Application::Get()->GetSystem<CDXDevice>();
 	auto aCamera = pCamera->GetStackCameras();
@@ -336,17 +342,19 @@ void CDrawSystem::Draw3D()
 		pCamera->GetGBuffer()->SetUpMultiRenderTarget();
 		// 3D描画
 		GBufferDraw(true, layerChaeck);
-		
+
 		// Sceneに描画先を変更
 		pDX->SwitchRender(pDX->GetRenderTargetView(), pDX->GetDepthStencilView());
 		// 3D描画
+		pCamera->GetGBuffer()->SetSRV(CGBuffer::ETexture::DEPTH);
 		GBufferDraw(false, layerChaeck);
 
 		// 各種ﾃｸｽﾁｬの設定
 		// NOTE:ここで呼び出しても何故かﾃｸｽﾁｬ設定されない
 		//pCamera->GetGBuffer()->SetUpTextures();
 		// ﾃｸｽﾁｬのｺﾋﾟｰ
-		pCamera->GetGBuffer()->CopyTexture();
+		// NOTE:スクリーン用のTextureが上手く設定されていない
+		//pCamera->GetGBuffer()->CopyTexture();
 
 		//--- ポストプロセス
 		auto aVolume = m_VolumeMgr.GetVolume(pCamera->GetMask());
@@ -364,11 +372,11 @@ void CDrawSystem::Draw3D()
 			};
 			//--- GBuffer描画
 			// レンダーターゲットの設定
-			pCamera->GetGBuffer()->SetUpMultiRenderTarget();
+			//pCamera->GetGBuffer()->SetUpMultiRenderTarget();
 			// 3D描画
-			GBufferDraw(true, idChaeck);
+			//GBufferDraw(true, idChaeck);
 			// ﾃｸｽﾁｬのｺﾋﾟｰ
-			pCamera->GetGBuffer()->CopyTexture();
+			//pCamera->GetGBuffer()->CopyTexture();
 
 			vol->GetEffect()->DrawSprite(pCamera->GetGBuffer());
 			aEffectTex.push_back(vol->GetEffect()->GetResource());
@@ -388,8 +396,8 @@ void CDrawSystem::Draw3D()
 	} while (pCamera);
 
 	//--- レンダーターゲットをデフォルトに戻す
-	//pDX->SwitchRender(pDX->GetRenderTargetView(),pDX->GetDepthStencilView());
-	pDX->SwitchRender(pDX->GetRenderTargetView(), nullptr);
+	pDX->SwitchRender(pDX->GetRenderTargetView(),pDX->GetDepthStencilView());
+	//pDX->SwitchRender(pDX->GetRenderTargetView(), nullptr);
 	
 	// volumeが一切ないので処理しない
 	if (aEffectTex.size() == 0)

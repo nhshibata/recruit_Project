@@ -151,7 +151,7 @@ void ImGuiManager::Update()
 {
 	
 	// ON/OFF
-	if (CInput::GetKeyTrigger(VK_I) && CInput::GetKeyTrigger(VK_LSHIFT))
+	if (CInput::GetKeyTrigger(VK_I) && CInput::GetKeyPress(VK_LSHIFT))
 	{
 		m_bEditFlg ^= true;
 		if(m_pDebugCamera.lock())
@@ -160,7 +160,7 @@ void ImGuiManager::Update()
 	if (!m_bEditFlg)
 		return;
 
-	if (CInput::GetKeyTrigger(VK_P) && CInput::GetKeyTrigger(VK_LSHIFT))
+	if (CInput::GetKeyTrigger(VK_P) && CInput::GetKeyPress(VK_LSHIFT))
 		m_bSceneRender ^= true;
 
 	//--- imGuiの更新処理
@@ -267,13 +267,6 @@ void ImGuiManager::Update()
 	if (ImGui::IsDragDropPayloadBeingAccepted())
 		UpHover(EMouseHovered::HOVERED_DRAG);
 
-	//if (ImGui::IsAnyItemHovered())
-	//{
-	//	UpHover(EMouseHovered::HOVERED_ITEM);
-	//}
-	//else
-	//	DownHover(EMouseHovered::HOVERED_ITEM);
-
 	//--- ｶﾒﾗ操作
 	// いずれかが操作中か確認
 	const int e = EMouseHovered::HOVERED_WINDOW | EMouseHovered::HOVERED_GIZMO | EMouseHovered::HOVERED_ITEM | EMouseHovered::HOVERED_DRAG;
@@ -288,13 +281,13 @@ void ImGuiManager::Update()
 	{
 		ImGui::Checkbox("ImGui OFF", &m_bPause);
 
-		int res = 0;
+		/*int res = 0;
 		for (int cnt = 1; cnt < sizeof(EMouseHovered); cnt++)
 		{
 			res += m_eHover & (1 << cnt) ? 1 : 0;
 			res *= 10;
 		}
-		ImGui::Text("Hover->%d", res);
+		ImGui::Text("Hover->%d", res);*/
 		ImGui::Checkbox("Grid", &m_bGridDisp);
 
 		if(ImGui::Button("Camera Reset"))
@@ -303,7 +296,7 @@ void ImGuiManager::Update()
 	}
 
 	//--- ログ表示
-	DispLog();
+	//DispLog();
 	
 	//--- タブを閉じる
 	ImGui::EndTabBar();
@@ -351,13 +344,13 @@ void ImGuiManager::Pause()
 	
 	ImGui::Begin(u8"Pause & OneFrame Step", &m_bPause);
 
-	ImGui::Text("stop[L]");
+	ImGui::Text("LShift + stop[L]");
 	ImGui::SameLine();
-	ImGui::Text("step[O]");
+	ImGui::Text("LShift + step[O]");
 	ImGui::SameLine();
 
 	// デバッグポーズ処理
-	if (ImGui::Button("STOP") || CInput::GetKeyTrigger(VK_L) && CInput::GetKeyTrigger(VK_LSHIFT))
+	if (ImGui::Button("STOP") || CInput::GetKeyTrigger(VK_L) && CInput::GetKeyPress(VK_LSHIFT))
 	{
 		m_bPause ^= true;
 	}
@@ -366,7 +359,7 @@ void ImGuiManager::Pause()
 	if (m_bPause)
 	{
 		ImGui::SameLine();
-		if (ImGui::Button("STEP") || CInput::GetKeyTrigger(VK_O) && CInput::GetKeyTrigger(VK_LSHIFT))
+		if (ImGui::Button("STEP") || CInput::GetKeyTrigger(VK_O) && CInput::GetKeyPress(VK_LSHIFT))
 		{
 			if (!m_bOneFlame)
 			{
@@ -420,35 +413,35 @@ void ImGuiManager::HoverStateSet()
 	if (ImGui::IsWindowHovered())
 	{
 		UpHover(ImGuiManager::EMouseHovered::HOVERED_WINDOW);
-		DebugLog("Window Hover");
+		//DebugLog("Window Hover");
 	}
 
 	if (ImGui::IsAnyItemHovered())
 	{
 		UpHover(ImGuiManager::EMouseHovered::HOVERED_ITEM);
-		DebugLog("Item Hover");
+		//DebugLog("Item Hover");
 	}
 	
 	if (ImGui::IsDragDropPayloadBeingAccepted())
 	{
 		UpHover(ImGuiManager::EMouseHovered::HOVERED_DRAG);
-		DebugLog("Drag");
+		//DebugLog("Drag");
 	}
 	
 	if (ImGui::IsAnyItemActive())
 	{
 		UpHover(ImGuiManager::EMouseHovered::HOVERED_ITEM);
-		DebugLog("Item Active");
+		//DebugLog("Item Active");
 	}
 
 	if (ImGui::IsItemClicked())
 	{
-		DebugLog("Item Click");
+		//DebugLog("Item Click");
 	}
 
 	if (ImGui::IsItemEdited())
 	{
-		DebugLog("Item Edit");
+		//DebugLog("Item Edit");
 	}
 }
 

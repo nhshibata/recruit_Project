@@ -33,14 +33,14 @@ namespace MySpace
 			void save(Archive& archive) const
 			{
 				archive(cereal::make_nvp("VolumeComponent", cereal::base_class<CComponent>(this)),
-						CEREAL_NVP(m_pPost), CEREAL_NVP(m_nPriority), CEREAL_NVP(m_nID)
+						CEREAL_NVP(m_pPost), CEREAL_NVP(m_nPriority)
 				);
 			}
 			template<class Archive>
 			void load(Archive& archive)
 			{
 				archive(cereal::make_nvp("VolumeComponent", cereal::base_class<CComponent>(this)),
-						CEREAL_NVP(m_pPost), CEREAL_NVP(m_nPriority), CEREAL_NVP(m_nID)
+						CEREAL_NVP(m_pPost), CEREAL_NVP(m_nPriority)
 				);
 			}
 #pragma endregion

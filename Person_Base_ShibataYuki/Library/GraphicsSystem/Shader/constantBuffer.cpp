@@ -37,11 +37,11 @@ void CConstantBuffer::Bind(UINT slot)
 {
 	ID3D11DeviceContext* pDC = Application::Get()->GetDeviceContext();
 
-	UINT uSlot = slot;
+	UINT uSlot = m_uSlot;
 	// デフォルト引数でなければ
-	if (m_uSlot != 0)
+	if (slot != 0)
 	{
-		uSlot = m_uSlot;
+		uSlot = slot;
 	}
 
 	switch (m_eType)

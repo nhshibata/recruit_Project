@@ -63,9 +63,12 @@ VS_OUTPUT main(VS_INPUT input)
     // ‘¾—z—p’¸“_ŒvŽZ
     float4 wPos = float4(input.Pos, 1.0f);
     wPos = mul(wPos, g_Instancing[input.id].mWorld);
+    //wPos = mul(wPos, g_world);
     wPos = mul(wPos, g_sunView);
     wPos = mul(wPos, g_sunProj);
     output.SunPos = wPos;
+    
+    //output.SunPos = output.SunPos;
     
     output.Diffuse = float4(0, 0, 0, 0);
     output.id = input.id;

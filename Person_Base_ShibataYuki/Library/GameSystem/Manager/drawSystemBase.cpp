@@ -145,7 +145,7 @@ void CDrawSystemBase::Update()
 		{
 			inMtx.push_back(mesh->GetWorld());
 		}
-		name.second[0]->DrawInstancing(inMtx, D3D11_PRIMITIVE_TOPOLOGY::D3D11_PRIMITIVE_TOPOLOGY_POINTLIST);
+		name.second[0]->DrawInstancing(inMtx, D3D11_PRIMITIVE_TOPOLOGY::D3D11_PRIMITIVE_TOPOLOGY_TRIANGLESTRIP);
 	}
 	pDX->SetBlendState(static_cast<int>(EBlendState::BS_NONE));
 #endif // BUILD_MODE
@@ -549,11 +549,14 @@ void CDrawSystemBase::ImGuiDebug()
 	ImGui::Checkbox(u8"Renderer Sort", &m_bIsSortNecessary);
 
 	//--- shadow レンダーターゲット表示
-	ImGui::SetNextWindowPos(ImVec2(CScreen::GetWidth()*0.3f, CScreen::GetHeight()*0.7f), ImGuiCond_::ImGuiCond_Once);
-	if (ImGui::Begin("Shadow Depth", (bool*)m_bShadowView))
+	if (m_pDepthShadow)
 	{
-		ImGui::Image(m_pDepthShadow->GetResource(), ImVec2(CScreen::GetWidth()*0.25f, CScreen::GetHeight()*0.25f));
-		ImGui::End();
+		ImGui::SetNextWindowPos(ImVec2(CScreen::GetWidth()*0.3f, CScreen::GetHeight()*0.7f), ImGuiCond_::ImGuiCond_Once);
+		if (ImGui::Begin("Shadow Depth", (bool*)m_bShadowView))
+		{
+			ImGui::Image(m_pDepthShadow->GetResource(), ImVec2(CScreen::GetWidth()*0.25f, CScreen::GetHeight()*0.25f));
+			ImGui::End();
+		}
 	}
 
 	CShaderAssets::ImGuiDebug();
