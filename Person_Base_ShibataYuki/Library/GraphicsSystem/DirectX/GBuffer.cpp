@@ -114,7 +114,7 @@ void CGBuffer::SetUpMultiRenderTarget()
 	DirectX::XMStoreFloat4x4(&sunMat.sunProj, DirectX::XMMatrixTranspose(sunProj));
 	// 1,2”Ô–Ú‚ð“n‚·
 	sm->CBWrite(NAME_TO(SHADER_SUN), &sunMat);
-	sm->BindCB(NAME_TO(SHADER_SUN), 6);
+	sm->BindCB(NAME_TO(SHADER_SUN), 10);
 
 	sm->GetPS("PS_GBuffer")->Bind();
 

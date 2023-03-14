@@ -109,7 +109,7 @@ cbuffer InstancingMaterial : register(b5)
 
 // ‘¾—z‚ÌˆÊ’u‚É‚ ‚é¶Ò×‚É•\¦‚·‚é‚½‚ß‚Ìs—ñ
 // meshVS
-cbuffer SunCamera : register(b6)
+cbuffer SunCamera : register(b10)
 {
     float4x4 g_sunView;
     float4x4 g_sunProj;

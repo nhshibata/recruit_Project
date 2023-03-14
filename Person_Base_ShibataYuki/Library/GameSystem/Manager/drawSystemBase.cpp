@@ -261,20 +261,20 @@ std::vector<std::weak_ptr<CRenderer>> CDrawSystemBase::GetList()
 // 0:登録名 1:PS 2:VS
 // FIXME:ラムダ式に変えてもいいかも
 //=========================================================
-const std::vector<std::string> CDrawSystemBase::GetPSVSName(const std::string name)
+const CDrawSystemBase::STSplitName CDrawSystemBase::TextSplitToNamePSVS(const std::string name)
 {
-	std::vector<std::string> ret;
+	STSplitName ret;
 	// ps座標取得
 	auto startIndex = name.find("#");
 	// 名前格納
-	ret.push_back(name.substr(0, startIndex));
+	ret.strName = name.substr(0, startIndex);
 	startIndex += 1;
 	// vs座標取得
 	auto endIndex = name.find("#", startIndex);
 	//--- 文字切り出し格納
-	ret.push_back(name.substr(startIndex, endIndex - startIndex));
+	ret.strPixel = name.substr(startIndex, endIndex - startIndex);
 	endIndex += 1;
-	ret.push_back(name.substr(endIndex, name.size() - (startIndex + endIndex)));
+	ret.strVertex = name.substr(endIndex, name.size() - (startIndex + endIndex));
 	return ret;
 }
 
@@ -331,12 +331,12 @@ void CDrawSystemBase::Draw3DShadow()
 	//--- 登録されたモデル名別に描画
 	for (auto & modelObj : m_aInstancingModelMap)
 	{
-		auto aName = GetPSVSName(modelObj.first);
-		if (aName.size() != 3)
+		auto aName = TextSplitToNamePSVS(modelObj.first);
+		if (aName.IsError())
 			continue;
 
 		//--- 描画するモデルの取得
-		auto pModel = pAssets->GetModelManager()->GetModel(aName[0]);
+		auto pModel = pAssets->GetModelManager()->GetModel(aName.strName);
 		// モデルが解放されていないか一応確認
 		if (!pModel)
 			continue;
@@ -361,12 +361,12 @@ void CDrawSystemBase::Draw3DShadow()
 		// ビルボードか確認
 		if (CBillboard* bill = dynamic_cast<CBillboard*>(meshObj.second.pMesh); bill != nullptr)
 		{
-			auto aName = GetPSVSName(meshObj.first);
-			if (aName.size() != 3)
+			auto aName = TextSplitToNamePSVS(meshObj.first);
+			if (aName.IsError())
 				continue;
 
 			// ﾃｸｽﾁｬ設定
-			auto image = pAssets->GetImageManager()->GetResource(aName[0]);
+			auto image = pAssets->GetImageManager()->GetResource(aName.strName);
 			auto tex = image ? image->GetSRV() : NULL;
 
 			//--- インスタンシングに必要なデータ格納
@@ -422,12 +422,12 @@ void CDrawSystemBase::Draw3D()
 	//--- 不透明描画
 	for (auto & intancingModel : m_aInstancingModelMap)
 	{
-		auto aName = GetPSVSName(intancingModel.first);
-		if (aName.size() != 3)
+		auto aName = TextSplitToNamePSVS(intancingModel.first);
+		if (aName.IsError())
 			continue;
 
 		//--- 描画するモデルの取得
-		auto model = pAssets->GetModelManager()->GetModel(aName[0]);
+		auto model = pAssets->GetModelManager()->GetModel(aName.strName);
 		// モデルが解放されていないか一応確認
 		if (!model)
 			continue;
@@ -441,7 +441,7 @@ void CDrawSystemBase::Draw3D()
 		}
 
 		// shaderBind
-		pSM->CallBackFuncAndBind(aName[1], aName[2]);
+		pSM->CallBackFuncAndBind(aName.strPixel, aName.strVertex);
 		model->DrawInstancing(pDX->GetDeviceContext(), data, EByOpacity::eOpacityOnly, false);
 
 #if BUILD_MODE
@@ -457,12 +457,12 @@ void CDrawSystemBase::Draw3D()
 
 	for (auto & modelObj : m_aInstancingModelMap)
 	{
-		auto aName = GetPSVSName(modelObj.first);
-		if (aName.size() != 3)
+		auto aName = TextSplitToNamePSVS(modelObj.first);
+		if (aName.IsError())
 			continue;
 
 		//--- 描画するモデルの取得
-		auto model = pAssets->GetModelManager()->GetModel(aName[0]);
+		auto model = pAssets->GetModelManager()->GetModel(aName.strName);
 
 		//--- インスタンシングに必要なデータ格納
 		std::vector<RENDER_DATA> data;
@@ -473,7 +473,7 @@ void CDrawSystemBase::Draw3D()
 		}
 
 		// shaderBind
-		pSM->CallBackFuncAndBind(aName[1], aName[2]);
+		pSM->CallBackFuncAndBind(aName.strPixel, aName.strVertex);
 		model->DrawInstancing(pDX->GetDeviceContext(), data, EByOpacity::eTransparentOnly, false);
 	}
 
@@ -486,18 +486,18 @@ void CDrawSystemBase::Draw3D()
 		if (meshObj.second.aID.size() == 0)// 一応確認
 			continue;
 
-		std::vector<std::string> aName = GetPSVSName(meshObj.first);
-		if (aName.size() != 3)
+		auto aName = TextSplitToNamePSVS(meshObj.first);
+		if (aName.IsError())
 			continue;
 
 		// shaderBind
-		pSM->CallBackFuncAndBind(aName[1], aName[2]);
+		pSM->CallBackFuncAndBind(aName.strPixel, aName.strVertex);
 
 		// ビルボードか確認
 		if (CBillboard* bill = dynamic_cast<CBillboard*>(meshObj.second.pMesh); bill != nullptr)
 		{
 			// ﾃｸｽﾁｬ設定
-			auto image = pAssets->GetImageManager()->GetResource(aName[0]);
+			auto image = pAssets->GetImageManager()->GetResource(aName.strName);
 			auto tex = image ? image->GetSRV() : NULL;
 			
 			//--- インスタンシングに必要なデータ格納

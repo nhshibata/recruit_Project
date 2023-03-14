@@ -151,12 +151,12 @@ void CDrawSystem::GBufferDraw(const bool bGbuffer, std::function<bool(int)> func
 	//--- 不透明描画
 	for (auto & intancingModel : m_aInstancingModelMap)
 	{
-		auto aName = GetPSVSName(intancingModel.first);
-		if (aName.size() != 3)
+		auto aName = TextSplitToNamePSVS(intancingModel.first);
+		if (aName.IsError())
 			continue;
 
 		//--- 描画するモデルの取得
-		auto model = pAssets->GetModelManager()->GetModel(aName[0]);
+		auto model = pAssets->GetModelManager()->GetModel(aName.strName);
 		// モデルが解放されていないか一応確認
 		if (!model)
 			continue;
@@ -165,7 +165,7 @@ void CDrawSystem::GBufferDraw(const bool bGbuffer, std::function<bool(int)> func
 		if(bGbuffer)
 			pSM->CallBackFuncAndBind(std::string(), aVSName[0]);
 		else
-			pSM->CallBackFuncAndBind(aName[1], aName[2]);
+			pSM->CallBackFuncAndBind(aName.strPixel, aName.strVertex);
 
 		//--- インスタンシングに必要なデータ格納
 		std::vector<RENDER_DATA> data;
@@ -199,18 +199,18 @@ void CDrawSystem::GBufferDraw(const bool bGbuffer, std::function<bool(int)> func
 
 	for (auto & intancingModel : m_aInstancingModelMap)
 	{
-		auto aName = GetPSVSName(intancingModel.first);
-		if (aName.size() != 3)
+		auto aName = TextSplitToNamePSVS(intancingModel.first);
+		if (aName.IsError())
 			continue;
 
 		//--- 描画するモデルの取得
-		auto model = pAssets->GetModelManager()->GetModel(aName[0]);
+		auto model = pAssets->GetModelManager()->GetModel(aName.strName);
 
 		// shaderBind
 		if(bGbuffer)
 			pSM->CallBackFuncAndBind(std::string(), aVSName[0]);
 		else
-			pSM->CallBackFuncAndBind(aName[1], aName[2]);
+			pSM->CallBackFuncAndBind(aName.strPixel, aName.strVertex);
 
 		//--- インスタンシングに必要なデータ格納
 		std::vector<RENDER_DATA> data;
@@ -241,15 +241,15 @@ void CDrawSystem::GBufferDraw(const bool bGbuffer, std::function<bool(int)> func
 		if (meshObj.second.aID.size() == 0)// 一応確認
 			continue;
 
-		std::vector<std::string> aName = GetPSVSName(meshObj.first);
-		if (aName.size() != 3)
+		auto aName = TextSplitToNamePSVS(meshObj.first);
+		if (aName.IsError())
 			continue;
 
 		// shaderBind
 		if(bGbuffer)
 			pSM->CallBackFuncAndBind(std::string(), aVSName[1]);
 		else
-			pSM->CallBackFuncAndBind(aName[1], aName[2]);
+			pSM->CallBackFuncAndBind(aName.strPixel, aName.strVertex);
 
 		//--- インスタンシングに必要なデータ格納
 		std::vector<RENDER_DATA> data;
@@ -268,7 +268,7 @@ void CDrawSystem::GBufferDraw(const bool bGbuffer, std::function<bool(int)> func
 		if (CBillboard* bill = dynamic_cast<CBillboard*>(meshObj.second.pMesh); bill != nullptr)
 		{
 			// ﾃｸｽﾁｬ設定
-			auto image = pAssets->GetImageManager()->GetResource(aName[0]);
+			auto image = pAssets->GetImageManager()->GetResource(aName.strName);
 			auto tex = image ? image->GetSRV() : NULL;
 			meshObj.second.pMesh->DrawInstancing(data, false, tex, &bill->GetTextureMatrix());
 		}
@@ -294,7 +294,8 @@ void CDrawSystem::GBufferDraw(const bool bGbuffer, std::function<bool(int)> func
 //=========================================================
 void CDrawSystem::Draw3D()
 {
-
+	CDrawSystemBase::Draw3D();
+	return;
 #if BUILD_MODE	// ImGui表示中はDebugCameraがMainなので、hierarchyを探索
 	// ｶﾒﾗを見つける
 	auto pCamera = CCamera::GetMain()->BaseToDerived<CStackCamera>();
@@ -396,8 +397,8 @@ void CDrawSystem::Draw3D()
 	} while (pCamera);
 
 	//--- レンダーターゲットをデフォルトに戻す
-	pDX->SwitchRender(pDX->GetRenderTargetView(),pDX->GetDepthStencilView());
-	//pDX->SwitchRender(pDX->GetRenderTargetView(), nullptr);
+	//pDX->SwitchRender(pDX->GetRenderTargetView(),pDX->GetDepthStencilView());
+	pDX->SwitchRender(pDX->GetRenderTargetView(), nullptr);
 	
 	// volumeが一切ないので処理しない
 	if (aEffectTex.size() == 0)
