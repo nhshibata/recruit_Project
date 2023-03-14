@@ -43,6 +43,10 @@ namespace MySpace
 			// *@描画前設定
 			void SetUpMultiRenderTarget();
 			
+			// *@描画前設定
+			// *@カラーのみ
+			void SetUpColorRenderTarget();
+			
 			// *@各ﾃｸｽﾁｬをPSSet
 			void SetUpTextures();
 

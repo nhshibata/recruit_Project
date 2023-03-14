@@ -635,7 +635,7 @@ void CModelRenderer::ImGuiDebug()
 	// ƒ}ƒeƒŠƒAƒ‹
 	CMeshRenderer::ImGuiDebug();
 
-	ImGui::EndTabBar();
+	//ImGui::EndTabBar();
 }
 
 #endif // BUILD_MODE

@@ -168,6 +168,9 @@
     <ClInclude Include="..\Library\GraphicsSystem\PostProcess\monochrome.h">
       <Filter>ヘッダー ファイル\PostProcess</Filter>
     </ClInclude>
+    <ClInclude Include="..\Library\GraphicsSystem\PostProcess\depthOfField.h">
+      <Filter>ヘッダー ファイル\PostProcess</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\Library\GraphicsSystem\Texture\Texture.cpp">
@@ -266,6 +269,9 @@
     <ClCompile Include="..\Library\GraphicsSystem\PostProcess\outline.cpp">
       <Filter>ソース ファイル\PostProcess</Filter>
     </ClCompile>
+    <ClCompile Include="..\Library\GraphicsSystem\PostProcess\depthOfField.cpp">
+      <Filter>ソース ファイル\PostProcess</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <FxCompile Include="..\Library\hlsl\Vertex.hlsl">
@@ -356,6 +362,12 @@
       <Filter>リソース ファイル</Filter>
     </FxCompile>
     <FxCompile Include="..\Library\hlsl\PS_Negative.hlsl">
+      <Filter>リソース ファイル</Filter>
+    </FxCompile>
+    <FxCompile Include="..\Library\hlsl\PS_DepthOfField.hlsl">
+      <Filter>リソース ファイル</Filter>
+    </FxCompile>
+    <FxCompile Include="..\Library\hlsl\VS_DepthOfField.hlsl">
       <Filter>リソース ファイル</Filter>
     </FxCompile>
   </ItemGroup>

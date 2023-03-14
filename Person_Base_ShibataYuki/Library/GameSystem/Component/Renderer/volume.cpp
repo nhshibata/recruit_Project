@@ -20,6 +20,7 @@ using namespace MySpace::Graphics;
 // コンストラクタ
 //==========================================================
 CVolume::CVolume()
+	:m_nID(-1)
 {
 	if (auto mgr = CSceneManager::Get()->GetDrawSystem()->GetVolumeManager(); mgr)
 	{
@@ -61,6 +62,10 @@ void CVolume::Awake()
 //==========================================================
 void CVolume::Init()
 {
+	// 読み込み時には-1以外になっている
+	if (m_nID != -1)
+		return;
+
 	if (auto mgr = CSceneManager::Get()->GetDrawSystem()->GetVolumeManager(); mgr)
 	{
 		m_nID = mgr->RegistToSystem(this);
@@ -126,10 +131,11 @@ void CVolume::ImGuiDebug()
 		"Outline",
 	};
 
-	Debug::SetTextAndAligned("volume 優先度");
-	ImGui::DragInt(u8"volume 優先度", &m_nPriority, 1, 0, 10);
+	Debug::SetTextAndAligned(u8"volume 優先度");
+	ImGui::DragInt("##volume 優先度", &m_nPriority, 1, 0, 10);
 
-	int select = Debug::DispComboSelect(effList, "Select", -1);
+	Debug::SetTextAndAligned(u8"Select Effect");
+	int select = Debug::DispComboSelect(effList, "##Select", -1);
 	if (select != -1)
 		m_pPost.reset();
 	switch (select)
@@ -156,7 +162,7 @@ void CVolume::ImGuiDebug()
 		m_pPost->ImGuiDebug();
 
 		// 画面表示
-		ImGui::Image(m_pPost->GetResource(), ImVec2(100,100));
+		ImGui::Image(m_pPost->GetResource(), ImVec2(CScreen::GetWidth()/10, CScreen::GetHeight()/10));
 	}
 
 }

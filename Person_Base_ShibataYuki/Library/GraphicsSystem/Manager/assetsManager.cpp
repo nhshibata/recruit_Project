@@ -72,7 +72,7 @@ HRESULT CAssetsManager::Init(Application* app)
 //==========================================================
 void CAssetsManager::Update()
 {
-	m_pShader->Update();
+	//m_pShader->Update();
 	m_pEffekseer->Update();
 }
 

@@ -139,7 +139,7 @@ void CCamera::Init()
 	Transform()->SetPos(XMFLOAT3(CAM_POS_P_X, CAM_POS_P_Y, CAM_POS_P_Z));	// 視点
 	m_vTarget = XMFLOAT3(CAM_POS_R_X, CAM_POS_R_Y, CAM_POS_R_Z);			// 注視点
 	m_vUp = XMFLOAT3(0.0f, 1.0f, 0.0f);										// 上方ベクトル
-
+	
 	auto screen = CScreen::GetSize();
 	m_fAspectRatio = screen.x / screen.y;	// 縦横比
 	m_fFovY = VIEW_ANGLE;					// 視野角(Degree)
@@ -272,6 +272,8 @@ void CCamera::UpdateMatrix()
 	/*XMStoreFloat4x4(&m_mtxProj, 
 					XMMatrixPerspectiveFovLH(XMConvertToRadians(m_fFovY), m_fAspectRatio, m_fNearZ, m_fFarZ)	
 	);*/
+	if (m_fNearZ == m_fFarZ)
+		return;
 	m_mtxProj = CalcProjMatrix(m_fFovY, m_fAspectRatio, m_fNearZ, m_fFarZ);
 }
 

@@ -729,7 +729,7 @@ void CGameObject::ImGuiDebug()
 		SetName(name);
 
 	//--- •\Ž¦
-	ImGui::Text("State:%s", aStateName[m_eState]);
+	ImGui::Text("State:%s", aStateName[m_eState].c_str());
 	ImGui::SameLine();
 	{
 		Debug::SetControlPosX();

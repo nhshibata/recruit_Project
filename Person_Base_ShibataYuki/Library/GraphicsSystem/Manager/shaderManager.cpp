@@ -309,8 +309,8 @@ void CShaderManager::BindVS(std::string name, UINT slot)
 //==========================================================
 void CShaderManager::BindCB(std::string name, UINT slot)
 {
-	if (!m_aConstantBufferMap.count(name))
-		return;
+	/*if (!m_aConstantBufferMap.count(name))
+		return;*/
 	m_aConstantBufferMap[name]->Bind(slot);
 }
 

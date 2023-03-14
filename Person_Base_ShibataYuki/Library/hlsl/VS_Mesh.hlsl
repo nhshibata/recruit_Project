@@ -37,9 +37,12 @@ VS_OUTPUT main(VS_INPUT input)
      // ‘¾—z—p’¸“_ŒvŽZ
     float4 sunPos = float4(input.Position.xyz, 1.0f);
     sunPos = mul(sunPos, g_Instancing[id].mWorld);
+    //sunPos = mul(sunPos, g_world);
     sunPos = mul(sunPos, g_sunView);
     sunPos = mul(sunPos, g_sunProj);
     output.SunPos = sunPos;
+    
+    //output.SunPos = output.Position;
     
     output.id = id;
     
