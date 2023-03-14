@@ -51,6 +51,17 @@ namespace MySpace
 			{
 				CMesh* pMesh;
 			};
+			struct STSplitName
+			{
+				std::string strName;
+				std::string strPixel;
+				std::string strVertex;
+				// いずれかが存在しないエラー
+				bool IsError()const
+				{
+					return (strName.empty() | strPixel.empty() | strVertex.empty());
+				}
+			};
 
 			//--- エイリアス
 			using PolygonRenderWeakList = std::vector<std::weak_ptr<CPolygonRenderer>>;
@@ -90,7 +101,9 @@ namespace MySpace
 			virtual void CheckRenderedObjectsIn3D();
 
 		protected:
-			const std::vector<std::string> GetPSVSName(const std::string name);
+			// *@描画依頼時に連結した文字列を分割
+			// *@0:ﾃｸｽﾁｬやﾓﾃﾞﾙ名 1:pixel 2:vertex
+			const STSplitName TextSplitToNamePSVS(const std::string name);
 
 		public:
 			CDrawSystemBase();
