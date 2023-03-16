@@ -78,12 +78,8 @@ void CVolume::Init()
 //==========================================================
 bool CVolume::IsLayer(const int layerBit)
 {
-	if (GetOwner()->GetLayerPtr()->GetLayer() & layerBit)
-	{
-		return true;
-	}
-
-	return false;
+	return CLayer::NumberToBit(GetOwner()->GetLayerPtr()->GetLayer()) & layerBit;
+	
 }
 
 //==========================================================
@@ -129,6 +125,7 @@ void CVolume::ImGuiDebug()
 		"Monochrome",
 		"Negative",
 		"Outline",
+		"Reset",
 	};
 
 	Debug::SetTextAndAligned(u8"volume 優先度");
@@ -152,12 +149,18 @@ void CVolume::ImGuiDebug()
 		case 3:
 			m_pPost = std::make_unique<COutline>();
 			break;
+		case 4:
+			m_pPost.reset();
+			break;
 		default:
 			break;
 	}
-	
+
 	if (m_pPost)
 	{
+		Debug::SetTextAndAligned("Current Effect");
+		ImGui::Text("%s", m_pPost->GetTypeName().c_str());
+
 		// パラメータ表示
 		m_pPost->ImGuiDebug();
 

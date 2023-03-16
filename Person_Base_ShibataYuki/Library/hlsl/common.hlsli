@@ -29,18 +29,7 @@ struct MaterialData
     float4 fFlags;      // 拡散色テクスチャ有無, 発光色テクスチャ有無, 透過テクスチャ有無
 };
 
-// 3D用
-struct PS_INPUT
-{
-    float4 Pos      : SV_Position;
-    float2 Tex      : TEXCOORD0;
-    float3 Normal   : TEXCOORD1;
-    float4 PosForPS : TEXCOORD2;
-    float4 Diffuse  : COLOR0;
-    float4 sunPos   : TEXCOORD3; // 太陽から見た位置
-    
-    uint id : SV_InstanceID; // インスタンスID
-};
+
 
 //==========================================================
 // 定数バッファ
@@ -109,7 +98,7 @@ cbuffer InstancingMaterial : register(b5)
 
 // 太陽の位置にあるｶﾒﾗに表示するための行列
 // meshVS
-cbuffer SunCamera : register(b10)
+cbuffer SunCamera : register(b6)
 {
     float4x4 g_sunView;
     float4x4 g_sunProj;

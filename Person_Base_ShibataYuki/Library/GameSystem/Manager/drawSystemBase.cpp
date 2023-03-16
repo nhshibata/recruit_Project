@@ -17,7 +17,6 @@
 #include <GameSystem/Component/Camera/stackCamera.h>
 #include <GameSystem/Component/Renderer/polygonRenderer.h>
 #include <GameSystem/Component/Renderer/meshRenderer.h>
-#include <GameSystem/Shader/shaderAssets.h>
 
 #include <GraphicsSystem/Render/billboard.h>
 #include <GraphicsSystem/Shader/constantBuffer.h>
@@ -58,7 +57,6 @@ CDrawSystemBase::~CDrawSystemBase()
 {
 	m_pDepthShadow.reset();
 
-	CShaderAssets::Uninit();
 }
 
 //==========================================================
@@ -68,7 +66,6 @@ void CDrawSystemBase::Init()
 {
 	m_pDepthShadow->InitShader();
 
-	CShaderAssets::Init();
 }
 
 //==========================================================
@@ -558,8 +555,6 @@ void CDrawSystemBase::ImGuiDebug()
 			ImGui::End();
 		}
 	}
-
-	CShaderAssets::ImGuiDebug();
 
 	//--- Ÿ‚ÌƒtƒŒ[ƒ€—p‰Šú‰»
 	m_nDrawCnt = 0;

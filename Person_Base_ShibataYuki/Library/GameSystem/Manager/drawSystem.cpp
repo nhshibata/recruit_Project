@@ -19,7 +19,6 @@
 #include <GameSystem/Component/Light/directionalLight.h>
 #include <GameSystem/Component/Renderer/polygonRenderer.h>
 #include <GameSystem/Component/Renderer/meshRenderer.h>
-#include <GameSystem/Shader/shaderAssets.h>
 
 #include <GraphicsSystem/Render/polygon.h>
 #include <GraphicsSystem/Render/billboard.h>
@@ -123,7 +122,7 @@ void CDrawSystem::CheckRenderedObjectsIn3D()
 		render->GetOwner()->CameraTest(true);
 
 		// 所属LayerとIDを格納
-		m_VolumeMgr.AddRendererCash(render->GetLayer(), it.first);
+		m_VolumeMgr.AddRendererCash(CLayer::NumberToBit(render->GetLayer()), it.first);
 	}
 }
 
@@ -173,7 +172,7 @@ void CDrawSystem::GBufferDraw(const bool bGbuffer, std::function<bool(int)> func
 		{
 			if (func)
 			{
-				if (func(id))
+				if (!func(id))
 					continue;
 			}
 			CMeshRenderer* mesh = dynamic_cast<CMeshRenderer*>(m_aIntMap[id].lock().get());
@@ -218,7 +217,7 @@ void CDrawSystem::GBufferDraw(const bool bGbuffer, std::function<bool(int)> func
 		{
 			if (func)
 			{
-				if (func(id))
+				if (!func(id))
 					continue;
 			}
 
@@ -257,7 +256,7 @@ void CDrawSystem::GBufferDraw(const bool bGbuffer, std::function<bool(int)> func
 		{
 			if (func)
 			{
-				if (func(id))
+				if (!func(id))
 					continue;
 			}
 			CMeshRenderer* mesh = dynamic_cast<CMeshRenderer*>(m_aIntMap[id].lock().get());
@@ -294,8 +293,7 @@ void CDrawSystem::GBufferDraw(const bool bGbuffer, std::function<bool(int)> func
 //=========================================================
 void CDrawSystem::Draw3D()
 {
-	CDrawSystemBase::Draw3D();
-	return;
+
 #if BUILD_MODE	// ImGui表示中はDebugCameraがMainなので、hierarchyを探索
 	// ｶﾒﾗを見つける
 	auto pCamera = CCamera::GetMain()->BaseToDerived<CStackCamera>();
@@ -310,7 +308,10 @@ void CDrawSystem::Draw3D()
 		}
 	}
 	if (!pCamera)
+	{
+		CDrawSystemBase::Draw3D();
 		return;
+	}
 #else
 
 	auto pCamera = CCamera::GetMain()->BaseToDerived<CStackCamera>();
@@ -333,9 +334,14 @@ void CDrawSystem::Draw3D()
 		//--- GBufferが必要なLayerを取得
 		const int layerBit = m_VolumeMgr.GetBit(pCamera->GetMask());
 		// ラムダ式
+		// 描画条件設定を定義
 		auto layerChaeck = [=](int id)->bool {
 			CMeshRenderer* mesh = dynamic_cast<CMeshRenderer*>(m_aIntMap[id].lock().get());
-			return (CLayer::NumberToBit(mesh->GetLayer()) & layerBit) != false;
+			return (CLayer::NumberToBit(mesh->GetLayer()) & layerBit);
+		};
+		auto layerChaeckCamera = [=](int id)->bool {
+			CMeshRenderer* mesh = dynamic_cast<CMeshRenderer*>(m_aIntMap[id].lock().get());
+			return (CLayer::NumberToBit(mesh->GetLayer()) & pCamera->GetMask());
 		};
 
 		//--- GBuffer描画
@@ -348,37 +354,38 @@ void CDrawSystem::Draw3D()
 		pDX->SwitchRender(pDX->GetRenderTargetView(), pDX->GetDepthStencilView());
 		// 3D描画
 		pCamera->GetGBuffer()->SetSRV(CGBuffer::ETexture::DEPTH);
-		GBufferDraw(false, layerChaeck);
+		GBufferDraw(false, layerChaeckCamera);
 
 		// 各種ﾃｸｽﾁｬの設定
 		// NOTE:ここで呼び出しても何故かﾃｸｽﾁｬ設定されない
 		//pCamera->GetGBuffer()->SetUpTextures();
 		// ﾃｸｽﾁｬのｺﾋﾟｰ
-		// NOTE:スクリーン用のTextureが上手く設定されていない
+		// NOTE:スクリーン用のTextureが上手く設定されていない?
 		//pCamera->GetGBuffer()->CopyTexture();
 
 		//--- ポストプロセス
 		auto aVolume = m_VolumeMgr.GetVolume(pCamera->GetMask());
 		for (auto & vol : aVolume)
 		{
-			auto aID = vol->GetRenderCash();
-			// ラムダ式
-			auto idChaeck = [=](int id)->bool {
-				for (auto & no : aID)
-				{
-					if (no == id)
-						return true;
-				}
-				return false;
-			};
-			//--- GBuffer描画
-			// レンダーターゲットの設定
-			//pCamera->GetGBuffer()->SetUpMultiRenderTarget();
-			// 3D描画
-			//GBufferDraw(true, idChaeck);
-			// ﾃｸｽﾁｬのｺﾋﾟｰ
-			//pCamera->GetGBuffer()->CopyTexture();
-
+			if (1)
+			{
+				auto aID = vol->GetRenderCash();
+				// ラムダ式
+				auto idChaeck = [=](int id)->bool {
+					for (auto & no : aID)
+					{
+						if (no == id)
+							return true;
+					}
+					return false;
+				};
+				//--- GBuffer描画
+				// レンダーターゲットの設定
+				pCamera->GetGBuffer()->SetUpColorRenderTarget();
+				//pCamera->GetGBuffer()->SetUpMultiRenderTarget();
+				// 3D描画
+				GBufferDraw(true, idChaeck);
+			}
 			vol->GetEffect()->DrawSprite(pCamera->GetGBuffer());
 			aEffectTex.push_back(vol->GetEffect()->GetResource());
 		}
@@ -397,8 +404,8 @@ void CDrawSystem::Draw3D()
 	} while (pCamera);
 
 	//--- レンダーターゲットをデフォルトに戻す
-	//pDX->SwitchRender(pDX->GetRenderTargetView(),pDX->GetDepthStencilView());
-	pDX->SwitchRender(pDX->GetRenderTargetView(), nullptr);
+	pDX->SwitchRender(pDX->GetRenderTargetView(),pDX->GetDepthStencilView());
+	//pDX->SwitchRender(pDX->GetRenderTargetView(), nullptr);
 	
 	// volumeが一切ないので処理しない
 	if (aEffectTex.size() == 0)
@@ -415,6 +422,7 @@ void CDrawSystem::Draw3D()
 	CPolygon::SetAngle(0);
 	
 	CPolygon::SetTexture(aEffectTex[0]);
+	//CPolygon::Draw(pDX->GetDeviceContext());
 
 	// 加算合成必須
 	pDX->SetBlendState(EBlendState::BS_ADDITIVE);
@@ -429,6 +437,8 @@ void CDrawSystem::Draw3D()
 	CPolygon::SetSize(XMFLOAT2(1,1));
 	pDX->SetBlendState(EBlendState::BS_NONE);
 	pDX->SetZBuffer(true);
+
+	pDX->SwitchRender(pDX->GetRenderTargetView(),pDX->GetDepthStencilView());
 
 }
 

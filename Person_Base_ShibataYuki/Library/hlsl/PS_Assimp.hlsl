@@ -10,7 +10,7 @@
 // g_FlagはAssimpModelの都合でそのまま
 //=========================================================
 
-#include "modelCommon.hlsli"
+#include <modelCommon.hlsli>
 
 //
 // ピクセルシェーダ

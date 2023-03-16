@@ -191,8 +191,11 @@ namespace MySpace
 				// ëSÇƒï\é¶
 				for (auto & layer : m_aLayerMap)
 				{
+					ImGui::Text("ID");
+					ImGui::SameLine();
 					ImGui::Text("%d", layer.first);
 					ImGui::SameLine();
+					Debug::SetControlPosX();
 					ImGui::Text("%s", layer.second);
 				}
 
@@ -200,7 +203,8 @@ namespace MySpace
 				Debug::SetTextAndAligned("ID");
 				ImGui::InputInt("##ID", &AddNo);
 				// ì¸óÕ
-				InputLayer = Debug::InputString(InputLayer, "Add Layer");
+				Debug::SetTextAndAligned("Add Layer");
+				InputLayer = Debug::InputString(InputLayer, "##Add Layer");
 
 				// í«â¡é¿çs
 				if (ImGui::Button("Applay"))

@@ -139,7 +139,7 @@ HRESULT CShaderManager::Init()
 	//--- 定数バッファ
 	// 太陽
 	ConstantBufferSharedPtr sunCB = std::make_shared<CConstantBuffer>();
-	hr = sunCB->Make(sizeof(SHADER_SUN), 10, CConstantBuffer::EType::Vertex);
+	hr = sunCB->Make(sizeof(SHADER_SUN), 6, CConstantBuffer::EType::Vertex);
 	if (FAILED(hr))
 		return hr;
 	else

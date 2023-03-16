@@ -9,6 +9,18 @@
 
 #include <common.hlsli>
 
+// 3D用
+struct PS_INPUT
+{
+    float4 Pos : SV_Position;
+    float2 Tex : TEXCOORD0;
+    float3 Normal : TEXCOORD1;
+    float4 PosForPS : TEXCOORD2;
+    float4 sunPos : TEXCOORD3; // 太陽から見た位置
+    
+    uint id : SV_InstanceID; // インスタンスID
+};
+
 // パラメータ
 struct VS_INPUT
 {

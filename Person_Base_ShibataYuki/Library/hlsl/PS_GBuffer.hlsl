@@ -13,6 +13,18 @@ struct PS_OUT
     float  depth     : SV_TARGET3;
 };
 
+// 3D用
+struct PS_INPUT
+{
+    float4 Pos : SV_Position;
+    float2 Tex : TEXCOORD0;
+    float3 Normal : TEXCOORD1;
+    float4 PosForPS : TEXCOORD2;
+    float4 sunPos : TEXCOORD3; // 太陽から見た位置
+    
+    uint id : SV_InstanceID; // インスタンスID
+};
+
 // 設定された画面表示用のレンダーターゲットに色を渡す
 //PS_OUT main(PS_INPUT pin, out float4 screenColor : SV_Target4)
 PS_OUT main(PS_INPUT pin)
@@ -38,7 +50,7 @@ PS_OUT main(PS_INPUT pin)
     
     float depthSun = pin.sunPos.z / pin.sunPos.w;
     pout.depth = depthSun; 
-    //pout.depth = pin.Pos.z / pin.Pos.w;
+    pout.depth = pin.Pos.z / pin.Pos.w;
     
     return pout;
 }
