@@ -8,7 +8,7 @@
 // インスタンシング前提
 //=========================================================
 
-#include "meshCommon.hlsli"
+#include <meshCommon.hlsli>
 
 struct VS_OUTPUT 
 {
@@ -16,8 +16,8 @@ struct VS_OUTPUT
 	float2	TexCoord	: TEXCOORD0;
 	float3	Normal		: TEXCOORD1;
 	float4	Pos4PS		: TEXCOORD2;
-	float4	Diffuse		: COLOR0;
     float4  SunPos      : TEXCOORD3; // 太陽から見た位置
+	float4	Diffuse		: COLOR0;
     
     uint id : SV_InstanceID; // インスタンスID
 };
@@ -34,7 +34,7 @@ VS_OUTPUT main(VS_INPUT input)
     output.TexCoord = work.TexCoord;
     output.Diffuse = work.Diffuse;
 
-     // 太陽用頂点計算
+    // 太陽用頂点計算
     float4 sunPos = float4(input.Position.xyz, 1.0f);
     sunPos = mul(sunPos, g_Instancing[id].mWorld);
     //sunPos = mul(sunPos, g_world);

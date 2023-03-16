@@ -37,6 +37,9 @@ namespace MySpace
 
 			// *@所持しているVolumeコンポーネントのキャッシュをクリア
 			void ResetRendererCash();
+
+			// *@Volumeコンポーネントが存在するか
+			const bool ExistVolume()const { return m_aIntMap.size() != 0; };
 		};
 
 	}

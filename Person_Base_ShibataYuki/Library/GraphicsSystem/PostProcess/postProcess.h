@@ -45,6 +45,8 @@ namespace MySpace
 
 			virtual ID3D11ShaderResourceView* GetResource() = 0;
 
+			std::string GetTypeName() { return typeid(*this).name(); }
+
 #if BUILD_MODE
 			virtual void ImGuiDebug() {};
 #endif // BIULD_MODE

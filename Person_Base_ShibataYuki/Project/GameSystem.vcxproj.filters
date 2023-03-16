@@ -204,9 +204,6 @@
     <ClInclude Include="..\Library\GameSystem\Shader\depthShadow.h">
       <Filter>ヘッダー ファイル\Shader</Filter>
     </ClInclude>
-    <ClInclude Include="..\Library\GameSystem\Shader\shaderAssets.h">
-      <Filter>ヘッダー ファイル\Shader</Filter>
-    </ClInclude>
     <ClInclude Include="..\Library\GameSystem\Component\Camera\layerCamera.h">
       <Filter>ヘッダー ファイル\Component\Camera</Filter>
     </ClInclude>
@@ -330,9 +327,6 @@
       <Filter>ソース ファイル\GameObject</Filter>
     </ClCompile>
     <ClCompile Include="..\Library\GameSystem\Shader\depthShadow.cpp">
-      <Filter>ソース ファイル\Shader</Filter>
-    </ClCompile>
-    <ClCompile Include="..\Library\GameSystem\Shader\shaderAssets.cpp">
       <Filter>ソース ファイル\Shader</Filter>
     </ClCompile>
     <ClCompile Include="..\Library\GameSystem\Component\Camera\layerCamera.cpp">

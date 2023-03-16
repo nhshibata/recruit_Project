@@ -15,8 +15,8 @@ struct VS_OUTPUT
     float2 Tex      : TEXCOORD0;
     float3 Normal   : TEXCOORD1;
     float4 PosForPS : TEXCOORD2;
-    float4 Diffuse  : COLOR0;
     float4 SunPos   : TEXCOORD3; // 太陽から見た位置
+    //float4 Diffuse  : COLOR0;
     
     uint id : SV_InstanceID; // インスタンスID
 };
@@ -68,9 +68,8 @@ VS_OUTPUT main(VS_INPUT input)
     wPos = mul(wPos, g_sunProj);
     output.SunPos = wPos;
     
-    //output.SunPos = output.SunPos;
     
-    output.Diffuse = float4(0, 0, 0, 0);
+    //output.Diffuse = float4(0, 0, 0, 0);
     output.id = input.id;
     
     return output;

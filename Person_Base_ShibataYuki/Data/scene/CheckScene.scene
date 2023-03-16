@@ -1,5 +1,5 @@
 {
-    "../Data/scene\\CheckScene.scene": {
+    "tttt": {
         "ptr_wrapper": {
             "id": 2147483649,
             "data": {
@@ -128,10 +128,10 @@
                                                             "z": 0.0
                                                         },
                                                         "m_fLengthInterval": 0.0,
-                                                        "m_fAspectRatio": 0.0,
-                                                        "m_fFovY": 0.0,
-                                                        "m_fNearZ": 0.0,
-                                                        "m_fFarZ": 0.0,
+                                                        "m_fAspectRatio": 1.7777777910232545,
+                                                        "m_fFovY": 45.0,
+                                                        "m_fNearZ": 1.0,
+                                                        "m_fFarZ": 1000.0,
                                                         "m_mtxWorld": {
                                                             "_11": 0.9999510049819946,
                                                             "_12": 0.0,
@@ -169,21 +169,21 @@
                                                             "_44": 1.0
                                                         },
                                                         "m_mtxProj": {
-                                                            "_11": Infinity,
+                                                            "_11": 1.3579950332641602,
                                                             "_12": 0.0,
                                                             "_13": 0.0,
                                                             "_14": 0.0,
                                                             "_21": 0.0,
-                                                            "_22": Infinity,
+                                                            "_22": 2.4142134189605715,
                                                             "_23": 0.0,
                                                             "_24": 0.0,
                                                             "_31": 0.0,
                                                             "_32": 0.0,
-                                                            "_33": NaN,
+                                                            "_33": 1.001001000404358,
                                                             "_34": 1.0,
                                                             "_41": 0.0,
                                                             "_42": 0.0,
-                                                            "_43": NaN,
+                                                            "_43": -1.001001000404358,
                                                             "_44": 0.0
                                                         },
                                                         "m_pSky": {
@@ -260,9 +260,186 @@
                                                             }
                                                         }
                                                     },
-                                                    "m_nLayerMask": 2147483647
+                                                    "m_nLayerMask": 2147483645
                                                 },
-                                                "m_eMode": 0
+                                                "m_eMode": 0,
+                                                "m_aStackCamera": [
+                                                    {
+                                                        "locked_ptr": {
+                                                            "polymorphic_id": 1073741824,
+                                                            "ptr_wrapper": {
+                                                                "id": 2147483656,
+                                                                "data": {
+                                                                    "stackCamera": {
+                                                                        "layerCamera": {
+                                                                            "camera": {
+                                                                                "Component": {},
+                                                                                "m_pSelfPtr": {
+                                                                                    "locked_ptr": {
+                                                                                        "polymorphic_id": 2,
+                                                                                        "ptr_wrapper": {
+                                                                                            "id": 8
+                                                                                        }
+                                                                                    }
+                                                                                },
+                                                                                "m_bActive": true
+                                                                            },
+                                                                            "m_vTarget": {
+                                                                                "x": 1.0,
+                                                                                "y": 1.0,
+                                                                                "z": 1.0
+                                                                            },
+                                                                            "m_vUp": {
+                                                                                "x": 0.0,
+                                                                                "y": 1.0,
+                                                                                "z": 0.0
+                                                                            },
+                                                                            "m_vAngle": {
+                                                                                "x": 0.0,
+                                                                                "y": 0.0,
+                                                                                "z": 0.0
+                                                                            },
+                                                                            "m_fLengthInterval": 0.0,
+                                                                            "m_fAspectRatio": 1.7777777910232545,
+                                                                            "m_fFovY": 0.0,
+                                                                            "m_fNearZ": 0.0,
+                                                                            "m_fFarZ": 0.0,
+                                                                            "m_mtxWorld": {
+                                                                                "_11": 0.7071067690849304,
+                                                                                "_12": 0.0,
+                                                                                "_13": -0.7071067690849304,
+                                                                                "_14": 0.0,
+                                                                                "_21": -0.40824830532073977,
+                                                                                "_22": 0.8164966106414795,
+                                                                                "_23": -0.40824830532073977,
+                                                                                "_24": 0.0,
+                                                                                "_31": 0.5773502588272095,
+                                                                                "_32": 0.5773502588272095,
+                                                                                "_33": 0.5773502588272095,
+                                                                                "_34": 0.0,
+                                                                                "_41": 0.0,
+                                                                                "_42": 0.0,
+                                                                                "_43": 0.0,
+                                                                                "_44": 1.0
+                                                                            },
+                                                                            "m_mtxView": {
+                                                                                "_11": 0.7071067690849304,
+                                                                                "_12": -0.40824827551841738,
+                                                                                "_13": 0.5773502588272095,
+                                                                                "_14": 0.0,
+                                                                                "_21": 0.0,
+                                                                                "_22": 0.8164965510368347,
+                                                                                "_23": 0.5773502588272095,
+                                                                                "_24": 0.0,
+                                                                                "_31": -0.7071067690849304,
+                                                                                "_32": -0.40824827551841738,
+                                                                                "_33": 0.5773502588272095,
+                                                                                "_34": 0.0,
+                                                                                "_41": 0.0,
+                                                                                "_42": 0.0,
+                                                                                "_43": 0.0,
+                                                                                "_44": 1.0
+                                                                            },
+                                                                            "m_mtxProj": {
+                                                                                "_11": 1.0,
+                                                                                "_12": 0.0,
+                                                                                "_13": 0.0,
+                                                                                "_14": 0.0,
+                                                                                "_21": 0.0,
+                                                                                "_22": 1.0,
+                                                                                "_23": 0.0,
+                                                                                "_24": 0.0,
+                                                                                "_31": 0.0,
+                                                                                "_32": 0.0,
+                                                                                "_33": 1.0,
+                                                                                "_34": 0.0,
+                                                                                "_41": 0.0,
+                                                                                "_42": 0.0,
+                                                                                "_43": 0.0,
+                                                                                "_44": 1.0
+                                                                            },
+                                                                            "m_pSky": {
+                                                                                "locked_ptr": {
+                                                                                    "polymorphic_id": 1073741824,
+                                                                                    "ptr_wrapper": {
+                                                                                        "id": 2147483657,
+                                                                                        "data": {
+                                                                                            "modelRender": {
+                                                                                                "meshRender": {
+                                                                                                    "baseRender": {
+                                                                                                        "Component": {},
+                                                                                                        "m_pSelfPtr": {
+                                                                                                            "locked_ptr": {
+                                                                                                                "polymorphic_id": 3,
+                                                                                                                "ptr_wrapper": {
+                                                                                                                    "id": 9
+                                                                                                                }
+                                                                                                            }
+                                                                                                        },
+                                                                                                        "m_bActive": true
+                                                                                                    },
+                                                                                                    "m_bVisible": false,
+                                                                                                    "m_vColor": {
+                                                                                                        "r": 1.0,
+                                                                                                        "g": 1.0,
+                                                                                                        "b": 1.0,
+                                                                                                        "a": 1.0
+                                                                                                    },
+                                                                                                    "m_strPixelShader": "PS_Assimp",
+                                                                                                    "m_strVertexShader": "VS_Assimp"
+                                                                                                },
+                                                                                                "m_vCenter": {
+                                                                                                    "x": 0.0,
+                                                                                                    "y": 0.0,
+                                                                                                    "z": 0.0
+                                                                                                },
+                                                                                                "m_bLightEnable": true,
+                                                                                                "m_fBSRadius": 400.0000915527344,
+                                                                                                "m_nStaticMode": 0,
+                                                                                                "m_bShadow": false,
+                                                                                                "m_MeshMaterial": {
+                                                                                                    "m_Diffuse": {
+                                                                                                        "x": 1.0,
+                                                                                                        "y": 1.0,
+                                                                                                        "z": 1.0,
+                                                                                                        "w": 1.0
+                                                                                                    },
+                                                                                                    "m_Ambient": {
+                                                                                                        "x": 1.0,
+                                                                                                        "y": 1.0,
+                                                                                                        "z": 1.0,
+                                                                                                        "w": 1.0
+                                                                                                    },
+                                                                                                    "m_Specular": {
+                                                                                                        "x": 0.0,
+                                                                                                        "y": 0.0,
+                                                                                                        "z": 0.0,
+                                                                                                        "w": 1.0
+                                                                                                    },
+                                                                                                    "m_Emissive": {
+                                                                                                        "x": 0.0,
+                                                                                                        "y": 0.0,
+                                                                                                        "z": 0.0,
+                                                                                                        "w": 0.0
+                                                                                                    },
+                                                                                                    "m_Power": 1.0
+                                                                                                }
+                                                                                            },
+                                                                                            "m_modelName": "../Data/model/SkyDome/sky2.fbx"
+                                                                                        }
+                                                                                    }
+                                                                                }
+                                                                            }
+                                                                        },
+                                                                        "m_nLayerMask": 2147483646
+                                                                    },
+                                                                    "m_eMode": 1,
+                                                                    "m_aStackCamera": []
+                                                                }
+                                                            }
+                                                        }
+                                                    }
+                                                ]
                                             }
                                         }
                                     },
@@ -279,7 +456,7 @@
                     {
                         "polymorphic_id": 1073741824,
                         "ptr_wrapper": {
-                            "id": 2147483656,
+                            "id": 2147483658,
                             "data": {
                                 "gameObject": {
                                     "m_objName": "DirectionalLight",
@@ -287,7 +464,7 @@
                                         "locked_ptr": {
                                             "polymorphic_id": 1073741824,
                                             "ptr_wrapper": {
-                                                "id": 8
+                                                "id": 10
                                             }
                                         }
                                     }
@@ -295,15 +472,15 @@
                                 "m_eState": 0,
                                 "m_pLayer": {
                                     "ptr_wrapper": {
-                                        "id": 2147483657,
+                                        "id": 2147483659,
                                         "data": {
-                                            "m_nLayer": 10
+                                            "m_nLayer": 0
                                         }
                                     }
                                 },
                                 "m_pTag": {
                                     "ptr_wrapper": {
-                                        "id": 2147483658,
+                                        "id": 2147483660,
                                         "data": {
                                             "m_nTagID": 2
                                         }
@@ -313,7 +490,7 @@
                                     {
                                         "polymorphic_id": 1,
                                         "ptr_wrapper": {
-                                            "id": 2147483659,
+                                            "id": 2147483661,
                                             "data": {
                                                 "transform": {
                                                     "Component": {},
@@ -321,20 +498,20 @@
                                                         "locked_ptr": {
                                                             "polymorphic_id": 1,
                                                             "ptr_wrapper": {
-                                                                "id": 11
+                                                                "id": 13
                                                             }
                                                         }
                                                     },
                                                     "m_bActive": true
                                                 },
                                                 "m_vPos": {
-                                                    "x": 0.0,
-                                                    "y": 0.0,
+                                                    "x": -22.0,
+                                                    "y": 393.0,
                                                     "z": 0.0
                                                 },
                                                 "m_vOldPos": {
-                                                    "x": 0.0,
-                                                    "y": 0.0,
+                                                    "x": -22.0,
+                                                    "y": 393.0,
                                                     "z": 0.0
                                                 },
                                                 "m_vRot": {
@@ -365,7 +542,7 @@
                                         "polymorphic_id": 2147483652,
                                         "polymorphic_name": "MySpace::Game::CDirectionalLight",
                                         "ptr_wrapper": {
-                                            "id": 2147483660,
+                                            "id": 2147483662,
                                             "data": {
                                                 "directionalLight": {
                                                     "light": {
@@ -374,7 +551,7 @@
                                                             "locked_ptr": {
                                                                 "polymorphic_id": 4,
                                                                 "ptr_wrapper": {
-                                                                    "id": 12
+                                                                    "id": 14
                                                                 }
                                                             }
                                                         },
@@ -410,7 +587,7 @@
                     {
                         "polymorphic_id": 1073741824,
                         "ptr_wrapper": {
-                            "id": 2147483661,
+                            "id": 2147483663,
                             "data": {
                                 "gameObject": {
                                     "m_objName": "GameObj_3",
@@ -418,7 +595,7 @@
                                         "locked_ptr": {
                                             "polymorphic_id": 1073741824,
                                             "ptr_wrapper": {
-                                                "id": 13
+                                                "id": 15
                                             }
                                         }
                                     }
@@ -426,15 +603,15 @@
                                 "m_eState": 0,
                                 "m_pLayer": {
                                     "ptr_wrapper": {
-                                        "id": 2147483662,
+                                        "id": 2147483664,
                                         "data": {
-                                            "m_nLayer": 10
+                                            "m_nLayer": 0
                                         }
                                     }
                                 },
                                 "m_pTag": {
                                     "ptr_wrapper": {
-                                        "id": 2147483663,
+                                        "id": 2147483665,
                                         "data": {
                                             "m_nTagID": 0
                                         }
@@ -444,7 +621,7 @@
                                     {
                                         "polymorphic_id": 1,
                                         "ptr_wrapper": {
-                                            "id": 2147483664,
+                                            "id": 2147483666,
                                             "data": {
                                                 "transform": {
                                                     "Component": {},
@@ -452,7 +629,7 @@
                                                         "locked_ptr": {
                                                             "polymorphic_id": 1,
                                                             "ptr_wrapper": {
-                                                                "id": 16
+                                                                "id": 18
                                                             }
                                                         }
                                                     },
@@ -495,7 +672,7 @@
                                     {
                                         "polymorphic_id": 3,
                                         "ptr_wrapper": {
-                                            "id": 2147483665,
+                                            "id": 2147483667,
                                             "data": {
                                                 "modelRender": {
                                                     "meshRender": {
@@ -505,7 +682,7 @@
                                                                 "locked_ptr": {
                                                                     "polymorphic_id": 3,
                                                                     "ptr_wrapper": {
-                                                                        "id": 17
+                                                                        "id": 19
                                                                     }
                                                                 }
                                                             },
@@ -518,7 +695,7 @@
                                                             "b": 1.0,
                                                             "a": 1.0
                                                         },
-                                                        "m_strPixelShader": "PS_Assimp",
+                                                        "m_strPixelShader": "PS_AssimpNega",
                                                         "m_strVertexShader": "VS_Assimp"
                                                     },
                                                     "m_vCenter": {
@@ -569,7 +746,7 @@
                     {
                         "polymorphic_id": 1073741824,
                         "ptr_wrapper": {
-                            "id": 2147483666,
+                            "id": 2147483668,
                             "data": {
                                 "gameObject": {
                                     "m_objName": "GameObj_4",
@@ -577,7 +754,7 @@
                                         "locked_ptr": {
                                             "polymorphic_id": 1073741824,
                                             "ptr_wrapper": {
-                                                "id": 18
+                                                "id": 20
                                             }
                                         }
                                     }
@@ -585,15 +762,15 @@
                                 "m_eState": 0,
                                 "m_pLayer": {
                                     "ptr_wrapper": {
-                                        "id": 2147483667,
+                                        "id": 2147483669,
                                         "data": {
-                                            "m_nLayer": 10
+                                            "m_nLayer": 0
                                         }
                                     }
                                 },
                                 "m_pTag": {
                                     "ptr_wrapper": {
-                                        "id": 2147483668,
+                                        "id": 2147483670,
                                         "data": {
                                             "m_nTagID": 0
                                         }
@@ -603,7 +780,7 @@
                                     {
                                         "polymorphic_id": 1,
                                         "ptr_wrapper": {
-                                            "id": 2147483669,
+                                            "id": 2147483671,
                                             "data": {
                                                 "transform": {
                                                     "Component": {},
@@ -611,7 +788,7 @@
                                                         "locked_ptr": {
                                                             "polymorphic_id": 1,
                                                             "ptr_wrapper": {
-                                                                "id": 21
+                                                                "id": 23
                                                             }
                                                         }
                                                     },
@@ -654,7 +831,7 @@
                                     {
                                         "polymorphic_id": 3,
                                         "ptr_wrapper": {
-                                            "id": 2147483670,
+                                            "id": 2147483672,
                                             "data": {
                                                 "modelRender": {
                                                     "meshRender": {
@@ -664,7 +841,7 @@
                                                                 "locked_ptr": {
                                                                     "polymorphic_id": 3,
                                                                     "ptr_wrapper": {
-                                                                        "id": 22
+                                                                        "id": 24
                                                                     }
                                                                 }
                                                             },
@@ -728,7 +905,7 @@
                     {
                         "polymorphic_id": 1073741824,
                         "ptr_wrapper": {
-                            "id": 2147483671,
+                            "id": 2147483673,
                             "data": {
                                 "gameObject": {
                                     "m_objName": "GameObj_5",
@@ -736,7 +913,7 @@
                                         "locked_ptr": {
                                             "polymorphic_id": 1073741824,
                                             "ptr_wrapper": {
-                                                "id": 23
+                                                "id": 25
                                             }
                                         }
                                     }
@@ -744,15 +921,15 @@
                                 "m_eState": 0,
                                 "m_pLayer": {
                                     "ptr_wrapper": {
-                                        "id": 2147483672,
+                                        "id": 2147483674,
                                         "data": {
-                                            "m_nLayer": 10
+                                            "m_nLayer": 0
                                         }
                                     }
                                 },
                                 "m_pTag": {
                                     "ptr_wrapper": {
-                                        "id": 2147483673,
+                                        "id": 2147483675,
                                         "data": {
                                             "m_nTagID": 0
                                         }
@@ -762,7 +939,7 @@
                                     {
                                         "polymorphic_id": 1,
                                         "ptr_wrapper": {
-                                            "id": 2147483674,
+                                            "id": 2147483676,
                                             "data": {
                                                 "transform": {
                                                     "Component": {},
@@ -770,7 +947,7 @@
                                                         "locked_ptr": {
                                                             "polymorphic_id": 1,
                                                             "ptr_wrapper": {
-                                                                "id": 26
+                                                                "id": 28
                                                             }
                                                         }
                                                     },
@@ -813,7 +990,7 @@
                                     {
                                         "polymorphic_id": 3,
                                         "ptr_wrapper": {
-                                            "id": 2147483675,
+                                            "id": 2147483677,
                                             "data": {
                                                 "modelRender": {
                                                     "meshRender": {
@@ -823,7 +1000,7 @@
                                                                 "locked_ptr": {
                                                                     "polymorphic_id": 3,
                                                                     "ptr_wrapper": {
-                                                                        "id": 27
+                                                                        "id": 29
                                                                     }
                                                                 }
                                                             },
@@ -887,7 +1064,7 @@
                     {
                         "polymorphic_id": 1073741824,
                         "ptr_wrapper": {
-                            "id": 2147483676,
+                            "id": 2147483678,
                             "data": {
                                 "gameObject": {
                                     "m_objName": "GameObj_6",
@@ -895,7 +1072,7 @@
                                         "locked_ptr": {
                                             "polymorphic_id": 1073741824,
                                             "ptr_wrapper": {
-                                                "id": 28
+                                                "id": 30
                                             }
                                         }
                                     }
@@ -903,15 +1080,15 @@
                                 "m_eState": 0,
                                 "m_pLayer": {
                                     "ptr_wrapper": {
-                                        "id": 2147483677,
+                                        "id": 2147483679,
                                         "data": {
-                                            "m_nLayer": 10
+                                            "m_nLayer": 0
                                         }
                                     }
                                 },
                                 "m_pTag": {
                                     "ptr_wrapper": {
-                                        "id": 2147483678,
+                                        "id": 2147483680,
                                         "data": {
                                             "m_nTagID": 0
                                         }
@@ -921,7 +1098,7 @@
                                     {
                                         "polymorphic_id": 1,
                                         "ptr_wrapper": {
-                                            "id": 2147483679,
+                                            "id": 2147483681,
                                             "data": {
                                                 "transform": {
                                                     "Component": {},
@@ -929,7 +1106,7 @@
                                                         "locked_ptr": {
                                                             "polymorphic_id": 1,
                                                             "ptr_wrapper": {
-                                                                "id": 31
+                                                                "id": 33
                                                             }
                                                         }
                                                     },
@@ -973,7 +1150,7 @@
                                         "polymorphic_id": 2147483653,
                                         "polymorphic_name": "MySpace::Game::CSphereRenderer",
                                         "ptr_wrapper": {
-                                            "id": 2147483680,
+                                            "id": 2147483682,
                                             "data": {
                                                 "sphereRender": {
                                                     "meshRender": {
@@ -983,7 +1160,7 @@
                                                                 "locked_ptr": {
                                                                     "polymorphic_id": 5,
                                                                     "ptr_wrapper": {
-                                                                        "id": 32
+                                                                        "id": 34
                                                                     }
                                                                 }
                                                             },
@@ -1047,7 +1224,7 @@
                     {
                         "polymorphic_id": 1073741824,
                         "ptr_wrapper": {
-                            "id": 2147483681,
+                            "id": 2147483683,
                             "data": {
                                 "gameObject": {
                                     "m_objName": "GameObj_7",
@@ -1055,7 +1232,7 @@
                                         "locked_ptr": {
                                             "polymorphic_id": 1073741824,
                                             "ptr_wrapper": {
-                                                "id": 33
+                                                "id": 35
                                             }
                                         }
                                     }
@@ -1063,15 +1240,15 @@
                                 "m_eState": 0,
                                 "m_pLayer": {
                                     "ptr_wrapper": {
-                                        "id": 2147483682,
+                                        "id": 2147483684,
                                         "data": {
-                                            "m_nLayer": 10
+                                            "m_nLayer": 0
                                         }
                                     }
                                 },
                                 "m_pTag": {
                                     "ptr_wrapper": {
-                                        "id": 2147483683,
+                                        "id": 2147483685,
                                         "data": {
                                             "m_nTagID": 0
                                         }
@@ -1081,7 +1258,7 @@
                                     {
                                         "polymorphic_id": 1,
                                         "ptr_wrapper": {
-                                            "id": 2147483684,
+                                            "id": 2147483686,
                                             "data": {
                                                 "transform": {
                                                     "Component": {},
@@ -1089,7 +1266,7 @@
                                                         "locked_ptr": {
                                                             "polymorphic_id": 1,
                                                             "ptr_wrapper": {
-                                                                "id": 36
+                                                                "id": 38
                                                             }
                                                         }
                                                     },
@@ -1133,7 +1310,7 @@
                                         "polymorphic_id": 2147483654,
                                         "polymorphic_name": "MySpace::Game::CBoxRenderer",
                                         "ptr_wrapper": {
-                                            "id": 2147483685,
+                                            "id": 2147483687,
                                             "data": {
                                                 "boxRender": {
                                                     "meshRender": {
@@ -1143,7 +1320,7 @@
                                                                 "locked_ptr": {
                                                                     "polymorphic_id": 6,
                                                                     "ptr_wrapper": {
-                                                                        "id": 37
+                                                                        "id": 39
                                                                     }
                                                                 }
                                                             },
@@ -1199,7 +1376,7 @@
                                                 "m_pBBox": {
                                                     "polymorphic_id": 1073741824,
                                                     "ptr_wrapper": {
-                                                        "id": 2147483686,
+                                                        "id": 2147483688,
                                                         "data": {
                                                             "boxMesh": {
                                                                 "m_nNumVertex": 24,
@@ -1268,7 +1445,7 @@
                     {
                         "polymorphic_id": 1073741824,
                         "ptr_wrapper": {
-                            "id": 2147483687,
+                            "id": 2147483689,
                             "data": {
                                 "gameObject": {
                                     "m_objName": "GameObj_8",
@@ -1276,7 +1453,7 @@
                                         "locked_ptr": {
                                             "polymorphic_id": 1073741824,
                                             "ptr_wrapper": {
-                                                "id": 39
+                                                "id": 41
                                             }
                                         }
                                     }
@@ -1284,7 +1461,7 @@
                                 "m_eState": 0,
                                 "m_pLayer": {
                                     "ptr_wrapper": {
-                                        "id": 2147483688,
+                                        "id": 2147483690,
                                         "data": {
                                             "m_nLayer": 0
                                         }
@@ -1292,7 +1469,7 @@
                                 },
                                 "m_pTag": {
                                     "ptr_wrapper": {
-                                        "id": 2147483689,
+                                        "id": 2147483691,
                                         "data": {
                                             "m_nTagID": 0
                                         }
@@ -1302,7 +1479,7 @@
                                     {
                                         "polymorphic_id": 1,
                                         "ptr_wrapper": {
-                                            "id": 2147483690,
+                                            "id": 2147483692,
                                             "data": {
                                                 "transform": {
                                                     "Component": {},
@@ -1310,7 +1487,7 @@
                                                         "locked_ptr": {
                                                             "polymorphic_id": 1,
                                                             "ptr_wrapper": {
-                                                                "id": 42
+                                                                "id": 44
                                                             }
                                                         }
                                                     },
@@ -1353,7 +1530,7 @@
                                     {
                                         "polymorphic_id": 6,
                                         "ptr_wrapper": {
-                                            "id": 2147483691,
+                                            "id": 2147483693,
                                             "data": {
                                                 "boxRender": {
                                                     "meshRender": {
@@ -1363,7 +1540,7 @@
                                                                 "locked_ptr": {
                                                                     "polymorphic_id": 6,
                                                                     "ptr_wrapper": {
-                                                                        "id": 43
+                                                                        "id": 45
                                                                     }
                                                                 }
                                                             },
@@ -1419,7 +1596,7 @@
                                                 "m_pBBox": {
                                                     "polymorphic_id": 1073741824,
                                                     "ptr_wrapper": {
-                                                        "id": 2147483692,
+                                                        "id": 2147483694,
                                                         "data": {
                                                             "boxMesh": {
                                                                 "m_nNumVertex": 24,
@@ -1488,7 +1665,7 @@
                     {
                         "polymorphic_id": 1073741824,
                         "ptr_wrapper": {
-                            "id": 2147483693,
+                            "id": 2147483695,
                             "data": {
                                 "gameObject": {
                                     "m_objName": "GameObj_9",
@@ -1496,7 +1673,7 @@
                                         "locked_ptr": {
                                             "polymorphic_id": 1073741824,
                                             "ptr_wrapper": {
-                                                "id": 45
+                                                "id": 47
                                             }
                                         }
                                     }
@@ -1504,15 +1681,15 @@
                                 "m_eState": 0,
                                 "m_pLayer": {
                                     "ptr_wrapper": {
-                                        "id": 2147483694,
+                                        "id": 2147483696,
                                         "data": {
-                                            "m_nLayer": 10
+                                            "m_nLayer": 0
                                         }
                                     }
                                 },
                                 "m_pTag": {
                                     "ptr_wrapper": {
-                                        "id": 2147483695,
+                                        "id": 2147483697,
                                         "data": {
                                             "m_nTagID": 0
                                         }
@@ -1522,7 +1699,7 @@
                                     {
                                         "polymorphic_id": 1,
                                         "ptr_wrapper": {
-                                            "id": 2147483696,
+                                            "id": 2147483698,
                                             "data": {
                                                 "transform": {
                                                     "Component": {},
@@ -1530,7 +1707,7 @@
                                                         "locked_ptr": {
                                                             "polymorphic_id": 1,
                                                             "ptr_wrapper": {
-                                                                "id": 48
+                                                                "id": 50
                                                             }
                                                         }
                                                     },
@@ -1573,7 +1750,7 @@
                                     {
                                         "polymorphic_id": 3,
                                         "ptr_wrapper": {
-                                            "id": 2147483697,
+                                            "id": 2147483699,
                                             "data": {
                                                 "modelRender": {
                                                     "meshRender": {
@@ -1583,7 +1760,7 @@
                                                                 "locked_ptr": {
                                                                     "polymorphic_id": 3,
                                                                     "ptr_wrapper": {
-                                                                        "id": 49
+                                                                        "id": 51
                                                                     }
                                                                 }
                                                             },
@@ -1647,7 +1824,7 @@
                     {
                         "polymorphic_id": 1073741824,
                         "ptr_wrapper": {
-                            "id": 2147483698,
+                            "id": 2147483700,
                             "data": {
                                 "gameObject": {
                                     "m_objName": "GameObj_10",
@@ -1655,7 +1832,7 @@
                                         "locked_ptr": {
                                             "polymorphic_id": 1073741824,
                                             "ptr_wrapper": {
-                                                "id": 50
+                                                "id": 52
                                             }
                                         }
                                     }
@@ -1663,15 +1840,15 @@
                                 "m_eState": 0,
                                 "m_pLayer": {
                                     "ptr_wrapper": {
-                                        "id": 2147483699,
+                                        "id": 2147483701,
                                         "data": {
-                                            "m_nLayer": 10
+                                            "m_nLayer": 0
                                         }
                                     }
                                 },
                                 "m_pTag": {
                                     "ptr_wrapper": {
-                                        "id": 2147483700,
+                                        "id": 2147483702,
                                         "data": {
                                             "m_nTagID": 0
                                         }
@@ -1681,7 +1858,7 @@
                                     {
                                         "polymorphic_id": 1,
                                         "ptr_wrapper": {
-                                            "id": 2147483701,
+                                            "id": 2147483703,
                                             "data": {
                                                 "transform": {
                                                     "Component": {},
@@ -1689,7 +1866,7 @@
                                                         "locked_ptr": {
                                                             "polymorphic_id": 1,
                                                             "ptr_wrapper": {
-                                                                "id": 53
+                                                                "id": 55
                                                             }
                                                         }
                                                     },
@@ -1732,7 +1909,7 @@
                                     {
                                         "polymorphic_id": 3,
                                         "ptr_wrapper": {
-                                            "id": 2147483702,
+                                            "id": 2147483704,
                                             "data": {
                                                 "modelRender": {
                                                     "meshRender": {
@@ -1742,7 +1919,7 @@
                                                                 "locked_ptr": {
                                                                     "polymorphic_id": 3,
                                                                     "ptr_wrapper": {
-                                                                        "id": 54
+                                                                        "id": 56
                                                                     }
                                                                 }
                                                             },
@@ -1806,7 +1983,7 @@
                     {
                         "polymorphic_id": 1073741824,
                         "ptr_wrapper": {
-                            "id": 2147483703,
+                            "id": 2147483705,
                             "data": {
                                 "gameObject": {
                                     "m_objName": "GameObj_1",
@@ -1814,7 +1991,7 @@
                                         "locked_ptr": {
                                             "polymorphic_id": 1073741824,
                                             "ptr_wrapper": {
-                                                "id": 55
+                                                "id": 57
                                             }
                                         }
                                     }
@@ -1822,15 +1999,15 @@
                                 "m_eState": 0,
                                 "m_pLayer": {
                                     "ptr_wrapper": {
-                                        "id": 2147483704,
+                                        "id": 2147483706,
                                         "data": {
-                                            "m_nLayer": 1
+                                            "m_nLayer": 0
                                         }
                                     }
                                 },
                                 "m_pTag": {
                                     "ptr_wrapper": {
-                                        "id": 2147483705,
+                                        "id": 2147483707,
                                         "data": {
                                             "m_nTagID": 0
                                         }
@@ -1840,7 +2017,7 @@
                                     {
                                         "polymorphic_id": 1,
                                         "ptr_wrapper": {
-                                            "id": 2147483706,
+                                            "id": 2147483708,
                                             "data": {
                                                 "transform": {
                                                     "Component": {},
@@ -1848,7 +2025,7 @@
                                                         "locked_ptr": {
                                                             "polymorphic_id": 1,
                                                             "ptr_wrapper": {
-                                                                "id": 58
+                                                                "id": 60
                                                             }
                                                         }
                                                     },
@@ -1892,7 +2069,7 @@
                                         "polymorphic_id": 2147483655,
                                         "polymorphic_name": "MySpace::Game::CBoxCollision",
                                         "ptr_wrapper": {
-                                            "id": 2147483707,
+                                            "id": 2147483709,
                                             "data": {
                                                 "boxCollision": {
                                                     "collision": {
@@ -1901,7 +2078,7 @@
                                                             "locked_ptr": {
                                                                 "polymorphic_id": 7,
                                                                 "ptr_wrapper": {
-                                                                    "id": 59
+                                                                    "id": 61
                                                                 }
                                                             }
                                                         },
@@ -1930,7 +2107,7 @@
                     {
                         "polymorphic_id": 1073741824,
                         "ptr_wrapper": {
-                            "id": 2147483708,
+                            "id": 2147483710,
                             "data": {
                                 "gameObject": {
                                     "m_objName": "GameObj_1",
@@ -1938,7 +2115,7 @@
                                         "locked_ptr": {
                                             "polymorphic_id": 1073741824,
                                             "ptr_wrapper": {
-                                                "id": 60
+                                                "id": 62
                                             }
                                         }
                                     }
@@ -1946,15 +2123,15 @@
                                 "m_eState": 0,
                                 "m_pLayer": {
                                     "ptr_wrapper": {
-                                        "id": 2147483709,
+                                        "id": 2147483711,
                                         "data": {
-                                            "m_nLayer": 1
+                                            "m_nLayer": 0
                                         }
                                     }
                                 },
                                 "m_pTag": {
                                     "ptr_wrapper": {
-                                        "id": 2147483710,
+                                        "id": 2147483712,
                                         "data": {
                                             "m_nTagID": 0
                                         }
@@ -1964,7 +2141,7 @@
                                     {
                                         "polymorphic_id": 1,
                                         "ptr_wrapper": {
-                                            "id": 2147483711,
+                                            "id": 2147483713,
                                             "data": {
                                                 "transform": {
                                                     "Component": {},
@@ -1972,7 +2149,128 @@
                                                         "locked_ptr": {
                                                             "polymorphic_id": 1,
                                                             "ptr_wrapper": {
-                                                                "id": 63
+                                                                "id": 65
+                                                            }
+                                                        }
+                                                    },
+                                                    "m_bActive": true
+                                                },
+                                                "m_vPos": {
+                                                    "x": -6.0,
+                                                    "y": 0.0,
+                                                    "z": 0.0
+                                                },
+                                                "m_vOldPos": {
+                                                    "x": -6.0,
+                                                    "y": 0.0,
+                                                    "z": 0.0
+                                                },
+                                                "m_vRot": {
+                                                    "x": 0.0,
+                                                    "y": -0.0,
+                                                    "z": 0.0
+                                                },
+                                                "m_vDestRot": {
+                                                    "x": 0.0,
+                                                    "y": 0.0,
+                                                    "z": 0.0
+                                                },
+                                                "m_vScale": {
+                                                    "x": 1.0,
+                                                    "y": 1.0,
+                                                    "z": 1.0
+                                                },
+                                                "m_Rot": {
+                                                    "x": 0.0,
+                                                    "y": 0.0,
+                                                    "z": 0.0,
+                                                    "w": 0.0
+                                                }
+                                            }
+                                        }
+                                    },
+                                    {
+                                        "polymorphic_id": 2147483656,
+                                        "polymorphic_name": "MySpace::Game::CVolume",
+                                        "ptr_wrapper": {
+                                            "id": 2147483714,
+                                            "data": {
+                                                "VolumeComponent": {
+                                                    "Component": {},
+                                                    "m_pSelfPtr": {
+                                                        "locked_ptr": {
+                                                            "polymorphic_id": 8,
+                                                            "ptr_wrapper": {
+                                                                "id": 66
+                                                            }
+                                                        }
+                                                    },
+                                                    "m_bActive": true
+                                                },
+                                                "m_pPost": {
+                                                    "polymorphic_id": 2147483657,
+                                                    "polymorphic_name": "MySpace::Graphics::COutline",
+                                                    "ptr_wrapper": {
+                                                        "valid": 1,
+                                                        "data": {
+                                                            "outline": {}
+                                                        }
+                                                    }
+                                                },
+                                                "m_nPriority": 0
+                                            }
+                                        }
+                                    }
+                                ]
+                            }
+                        }
+                    },
+                    {
+                        "polymorphic_id": 1073741824,
+                        "ptr_wrapper": {
+                            "id": 2147483715,
+                            "data": {
+                                "gameObject": {
+                                    "m_objName": "GameObj_1",
+                                    "m_spThisPtr": {
+                                        "locked_ptr": {
+                                            "polymorphic_id": 1073741824,
+                                            "ptr_wrapper": {
+                                                "id": 67
+                                            }
+                                        }
+                                    }
+                                },
+                                "m_eState": 0,
+                                "m_pLayer": {
+                                    "ptr_wrapper": {
+                                        "id": 2147483716,
+                                        "data": {
+                                            "m_nLayer": 1
+                                        }
+                                    }
+                                },
+                                "m_pTag": {
+                                    "ptr_wrapper": {
+                                        "id": 2147483717,
+                                        "data": {
+                                            "m_nTagID": 1
+                                        }
+                                    }
+                                },
+                                "m_aComponent": [
+                                    {
+                                        "polymorphic_id": 1,
+                                        "ptr_wrapper": {
+                                            "id": 2147483718,
+                                            "data": {
+                                                "transform": {
+                                                    "Component": {},
+                                                    "m_pSelfPtr": {
+                                                        "locked_ptr": {
+                                                            "polymorphic_id": 1,
+                                                            "ptr_wrapper": {
+                                                                "id": 70
                                                             }
                                                         }
                                                     },
@@ -1999,9 +2297,9 @@
                                                     "z": 0.0
                                                 },
                                                 "m_vScale": {
-                                                    "x": 1.0,
-                                                    "y": 1.0,
-                                                    "z": 1.0
+                                                    "x": 10.0,
+                                                    "y": 10.0,
+                                                    "z": 10.0
                                                 },
                                                 "m_Rot": {
                                                     "x": 0.0,
@@ -2013,35 +2311,15 @@
                                         }
                                     },
                                     {
-                                        "polymorphic_id": 2147483656,
-                                        "polymorphic_name": "MySpace::Game::CVolume",
+                                        "polymorphic_id": 2,
                                         "ptr_wrapper": {
-                                            "id": 2147483712,
-                                            "data": {
-                                                "VolumeComponent": {
-                                                    "Component": {},
-                                                    "m_pSelfPtr": {
-                                                        "locked_ptr": {
-                                                            "polymorphic_id": 8,
-                                                            "ptr_wrapper": {
-                                                                "id": 64
-                                                            }
-                                                        }
-                                                    },
-                                                    "m_bActive": true
-                                                },
-                                                "m_pPost": {
-                                                    "polymorphic_id": 2147483657,
-                                                    "polymorphic_name": "MySpace::Graphics::CMonochrome",
-                                                    "ptr_wrapper": {
-                                                        "valid": 1,
-                                                        "data": {
-                                                            "monochorme": {}
-                                                        }
-                                                    }
-                                                },
-                                                "m_nPriority": 0
-                                            }
+                                            "id": 8
+                                        }
+                                    },
+                                    {
+                                        "polymorphic_id": 3,
+                                        "ptr_wrapper": {
+                                            "id": 9
                                         }
                                     }
                                 ]
@@ -2051,7 +2329,7 @@
                     {
                         "polymorphic_id": 1073741824,
                         "ptr_wrapper": {
-                            "id": 2147483713,
+                            "id": 2147483719,
                             "data": {
                                 "gameObject": {
                                     "m_objName": "GameObj_2",
@@ -2059,7 +2337,7 @@
                                         "locked_ptr": {
                                             "polymorphic_id": 1073741824,
                                             "ptr_wrapper": {
-                                                "id": 65
+                                                "id": 71
                                             }
                                         }
                                     }
@@ -2067,7 +2345,7 @@
                                 "m_eState": 0,
                                 "m_pLayer": {
                                     "ptr_wrapper": {
-                                        "id": 2147483714,
+                                        "id": 2147483720,
                                         "data": {
                                             "m_nLayer": 1
                                         }
@@ -2075,7 +2353,7 @@
                                 },
                                 "m_pTag": {
                                     "ptr_wrapper": {
-                                        "id": 2147483715,
+                                        "id": 2147483721,
                                         "data": {
                                             "m_nTagID": 0
                                         }
@@ -2085,7 +2363,7 @@
                                     {
                                         "polymorphic_id": 1,
                                         "ptr_wrapper": {
-                                            "id": 2147483716,
+                                            "id": 2147483722,
                                             "data": {
                                                 "transform": {
                                                     "Component": {},
@@ -2093,7 +2371,7 @@
                                                         "locked_ptr": {
                                                             "polymorphic_id": 1,
                                                             "ptr_wrapper": {
-                                                                "id": 68
+                                                                "id": 74
                                                             }
                                                         }
                                                     },
@@ -2136,7 +2414,7 @@
                                     {
                                         "polymorphic_id": 8,
                                         "ptr_wrapper": {
-                                            "id": 2147483717,
+                                            "id": 2147483723,
                                             "data": {
                                                 "VolumeComponent": {
                                                     "Component": {},
@@ -2144,7 +2422,7 @@
                                                         "locked_ptr": {
                                                             "polymorphic_id": 8,
                                                             "ptr_wrapper": {
-                                                                "id": 69
+                                                                "id": 75
                                                             }
                                                         }
                                                     },
@@ -2152,15 +2430,334 @@
                                                 },
                                                 "m_pPost": {
                                                     "polymorphic_id": 2147483658,
-                                                    "polymorphic_name": "MySpace::Graphics::COutline",
+                                                    "polymorphic_name": "MySpace::Graphics::CNegative",
                                                     "ptr_wrapper": {
                                                         "valid": 1,
                                                         "data": {
-                                                            "outline": {}
+                                                            "negative": {},
+                                                            "m_fNega": 2.0
                                                         }
                                                     }
                                                 },
                                                 "m_nPriority": 0
+                                            }
+                                        }
+                                    }
+                                ]
+                            }
+                        }
+                    },
+                    {
+                        "polymorphic_id": 1073741824,
+                        "ptr_wrapper": {
+                            "id": 2147483724,
+                            "data": {
+                                "gameObject": {
+                                    "m_objName": "GameObj_3",
+                                    "m_spThisPtr": {
+                                        "locked_ptr": {
+                                            "polymorphic_id": 1073741824,
+                                            "ptr_wrapper": {
+                                                "id": 76
+                                            }
+                                        }
+                                    }
+                                },
+                                "m_eState": 0,
+                                "m_pLayer": {
+                                    "ptr_wrapper": {
+                                        "id": 2147483725,
+                                        "data": {
+                                            "m_nLayer": 1
+                                        }
+                                    }
+                                },
+                                "m_pTag": {
+                                    "ptr_wrapper": {
+                                        "id": 2147483726,
+                                        "data": {
+                                            "m_nTagID": 0
+                                        }
+                                    }
+                                },
+                                "m_aComponent": [
+                                    {
+                                        "polymorphic_id": 1,
+                                        "ptr_wrapper": {
+                                            "id": 2147483727,
+                                            "data": {
+                                                "transform": {
+                                                    "Component": {},
+                                                    "m_pSelfPtr": {
+                                                        "locked_ptr": {
+                                                            "polymorphic_id": 1,
+                                                            "ptr_wrapper": {
+                                                                "id": 79
+                                                            }
+                                                        }
+                                                    },
+                                                    "m_bActive": true
+                                                },
+                                                "m_vPos": {
+                                                    "x": -582.0,
+                                                    "y": 0.0,
+                                                    "z": 0.0
+                                                },
+                                                "m_vOldPos": {
+                                                    "x": -582.0,
+                                                    "y": 0.0,
+                                                    "z": 0.0
+                                                },
+                                                "m_vRot": {
+                                                    "x": 0.0,
+                                                    "y": -0.0,
+                                                    "z": 0.0
+                                                },
+                                                "m_vDestRot": {
+                                                    "x": 0.0,
+                                                    "y": 0.0,
+                                                    "z": 0.0
+                                                },
+                                                "m_vScale": {
+                                                    "x": 17.0,
+                                                    "y": 13.0,
+                                                    "z": 12.0
+                                                },
+                                                "m_Rot": {
+                                                    "x": 0.0,
+                                                    "y": 0.0,
+                                                    "z": 0.0,
+                                                    "w": 0.0
+                                                }
+                                            }
+                                        }
+                                    },
+                                    {
+                                        "polymorphic_id": 3,
+                                        "ptr_wrapper": {
+                                            "id": 2147483728,
+                                            "data": {
+                                                "modelRender": {
+                                                    "meshRender": {
+                                                        "baseRender": {
+                                                            "Component": {},
+                                                            "m_pSelfPtr": {
+                                                                "locked_ptr": {
+                                                                    "polymorphic_id": 3,
+                                                                    "ptr_wrapper": {
+                                                                        "id": 80
+                                                                    }
+                                                                }
+                                                            },
+                                                            "m_bActive": true
+                                                        },
+                                                        "m_bVisible": true,
+                                                        "m_vColor": {
+                                                            "r": 1.0,
+                                                            "g": 1.0,
+                                                            "b": 1.0,
+                                                            "a": 1.0
+                                                        },
+                                                        "m_strPixelShader": "PS_Assimp",
+                                                        "m_strVertexShader": "VS_Assimp"
+                                                    },
+                                                    "m_vCenter": {
+                                                        "x": 0.0,
+                                                        "y": 0.0,
+                                                        "z": 0.0
+                                                    },
+                                                    "m_bLightEnable": true,
+                                                    "m_fBSRadius": 13.45362377166748,
+                                                    "m_nStaticMode": 0,
+                                                    "m_bShadow": false,
+                                                    "m_MeshMaterial": {
+                                                        "m_Diffuse": {
+                                                            "x": 1.0,
+                                                            "y": 1.0,
+                                                            "z": 1.0,
+                                                            "w": 1.0
+                                                        },
+                                                        "m_Ambient": {
+                                                            "x": 1.0,
+                                                            "y": 1.0,
+                                                            "z": 1.0,
+                                                            "w": 1.0
+                                                        },
+                                                        "m_Specular": {
+                                                            "x": 0.0,
+                                                            "y": 0.0,
+                                                            "z": 0.0,
+                                                            "w": 1.0
+                                                        },
+                                                        "m_Emissive": {
+                                                            "x": 0.0,
+                                                            "y": 0.0,
+                                                            "z": 0.0,
+                                                            "w": 0.0
+                                                        },
+                                                        "m_Power": 1.0
+                                                    }
+                                                },
+                                                "m_modelName": "../Data/model/VoxelStage\\Treasure_A.fbx"
+                                            }
+                                        }
+                                    }
+                                ]
+                            }
+                        }
+                    },
+                    {
+                        "polymorphic_id": 1073741824,
+                        "ptr_wrapper": {
+                            "id": 2147483729,
+                            "data": {
+                                "gameObject": {
+                                    "m_objName": "GameObj_4",
+                                    "m_spThisPtr": {
+                                        "locked_ptr": {
+                                            "polymorphic_id": 1073741824,
+                                            "ptr_wrapper": {
+                                                "id": 81
+                                            }
+                                        }
+                                    }
+                                },
+                                "m_eState": 0,
+                                "m_pLayer": {
+                                    "ptr_wrapper": {
+                                        "id": 2147483730,
+                                        "data": {
+                                            "m_nLayer": 1
+                                        }
+                                    }
+                                },
+                                "m_pTag": {
+                                    "ptr_wrapper": {
+                                        "id": 2147483731,
+                                        "data": {
+                                            "m_nTagID": 0
+                                        }
+                                    }
+                                },
+                                "m_aComponent": [
+                                    {
+                                        "polymorphic_id": 1,
+                                        "ptr_wrapper": {
+                                            "id": 2147483732,
+                                            "data": {
+                                                "transform": {
+                                                    "Component": {},
+                                                    "m_pSelfPtr": {
+                                                        "locked_ptr": {
+                                                            "polymorphic_id": 1,
+                                                            "ptr_wrapper": {
+                                                                "id": 84
+                                                            }
+                                                        }
+                                                    },
+                                                    "m_bActive": true
+                                                },
+                                                "m_vPos": {
+                                                    "x": -100.0,
+                                                    "y": 141.0,
+                                                    "z": 142.0
+                                                },
+                                                "m_vOldPos": {
+                                                    "x": -100.0,
+                                                    "y": 141.0,
+                                                    "z": 142.0
+                                                },
+                                                "m_vRot": {
+                                                    "x": 0.0,
+                                                    "y": -0.0,
+                                                    "z": 0.0
+                                                },
+                                                "m_vDestRot": {
+                                                    "x": 0.0,
+                                                    "y": 0.0,
+                                                    "z": 0.0
+                                                },
+                                                "m_vScale": {
+                                                    "x": 1.0,
+                                                    "y": 1.0,
+                                                    "z": 1.0
+                                                },
+                                                "m_Rot": {
+                                                    "x": 0.0,
+                                                    "y": 0.0,
+                                                    "z": 0.0,
+                                                    "w": 0.0
+                                                }
+                                            }
+                                        }
+                                    },
+                                    {
+                                        "polymorphic_id": 3,
+                                        "ptr_wrapper": {
+                                            "id": 2147483733,
+                                            "data": {
+                                                "modelRender": {
+                                                    "meshRender": {
+                                                        "baseRender": {
+                                                            "Component": {},
+                                                            "m_pSelfPtr": {
+                                                                "locked_ptr": {
+                                                                    "polymorphic_id": 3,
+                                                                    "ptr_wrapper": {
+                                                                        "id": 85
+                                                                    }
+                                                                }
+                                                            },
+                                                            "m_bActive": true
+                                                        },
+                                                        "m_bVisible": true,
+                                                        "m_vColor": {
+                                                            "r": 1.0,
+                                                            "g": 1.0,
+                                                            "b": 1.0,
+                                                            "a": 1.0
+                                                        },
+                                                        "m_strPixelShader": "PS_Assimp",
+                                                        "m_strVertexShader": "VS_Assimp"
+                                                    },
+                                                    "m_vCenter": {
+                                                        "x": 0.0,
+                                                        "y": 0.0,
+                                                        "z": 0.0
+                                                    },
+                                                    "m_bLightEnable": true,
+                                                    "m_fBSRadius": 37.11729431152344,
+                                                    "m_nStaticMode": 0,
+                                                    "m_bShadow": false,
+                                                    "m_MeshMaterial": {
+                                                        "m_Diffuse": {
+                                                            "x": 1.0,
+                                                            "y": 1.0,
+                                                            "z": 1.0,
+                                                            "w": 1.0
+                                                        },
+                                                        "m_Ambient": {
+                                                            "x": 1.0,
+                                                            "y": 1.0,
+                                                            "z": 1.0,
+                                                            "w": 1.0
+                                                        },
+                                                        "m_Specular": {
+                                                            "x": 0.0,
+                                                            "y": 0.0,
+                                                            "z": 0.0,
+                                                            "w": 1.0
+                                                        },
+                                                        "m_Emissive": {
+                                                            "x": 0.0,
+                                                            "y": 0.0,
+                                                            "z": 0.0,
+                                                            "w": 0.0
+                                                        },
+                                                        "m_Power": 1.0
+                                                    }
+                                                },
+                                                "m_modelName": "../Data/model/hover.fbx"
                                             }
                                         }
                                     }
@@ -2172,10 +2769,12 @@
                 "m_resource": {
                     "cereal_class_version": 0,
                     "m_aTexList": [
+                        "../Data/Texture/bullet.png",
                         "../Data/Texture/ramp.png"
                     ],
                     "m_aModelList": [
                         "../Data/model/SkyDome/sky2.fbx",
+                        "../Data/model/VoxelStage\\Treasure_A.fbx",
                         "../Data/model/character/mukade_head.obj",
                         "../Data/model/hover.fbx",
                         "../Data/model/land.fbx"

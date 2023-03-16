@@ -114,12 +114,11 @@ void CGBuffer::SetUpMultiRenderTarget()
 	DirectX::XMStoreFloat4x4(&sunMat.sunProj, DirectX::XMMatrixTranspose(sunProj));
 	// 1,2”Ô–Ú‚ð“n‚·
 	sm->CBWrite(NAME_TO(SHADER_SUN), &sunMat);
-	sm->BindCB(NAME_TO(SHADER_SUN), 10);
+	sm->BindCB(NAME_TO(SHADER_SUN));
 
 	sm->GetPS("PS_GBuffer")->Bind();
 
 }
-
 
 //==========================================================
 // •`‰æ‘OÝ’è
@@ -135,7 +134,8 @@ void CGBuffer::SetUpColorRenderTarget()
 	ID3D11RenderTargetView* aView[] = {
 		m_aRenderTaget[int(ETexture::COLOR)]->GetView(),
 	};
-	pDC->OMSetRenderTargets(1, aView, pDX->GetDepthStencilView());
+	//pDC->OMSetRenderTargets(1, aView, pDX->GetDepthStencilView());
+	pDC->OMSetRenderTargets(1, aView, m_pDepthStencil->GetView());
 }
 
 //==========================================================

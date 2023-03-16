@@ -26,14 +26,14 @@ namespace MySpace
 			void save(Archive& archive) const
 			{
 				archive(cereal::make_nvp("stackCamera", cereal::base_class<CLayerCamera>(this)),
-						CEREAL_NVP(m_eMode)/*, CEREAL_NVP(m_aStackCamera)*/
+						CEREAL_NVP(m_eMode), CEREAL_NVP(m_aStackCamera)
 				); 
 			}
 			template<class Archive>
 			void load(Archive& archive)
 			{
 				archive(cereal::make_nvp("stackCamera", cereal::base_class<CLayerCamera>(this)),
-						CEREAL_NVP(m_eMode)/*, CEREAL_NVP(m_aStackCamera)*/
+						CEREAL_NVP(m_eMode), CEREAL_NVP(m_aStackCamera)
 				);
 			}
 #pragma endregion

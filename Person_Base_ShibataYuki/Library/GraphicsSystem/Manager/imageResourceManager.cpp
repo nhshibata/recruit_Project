@@ -40,7 +40,7 @@ bool CImageResourceManager::Load(std::string name)
 	// “Ç‚Ýž‚Ý
 	if (!tex->Load(name)) 
 	{
-		MessageBox(NULL, _T(name.c_str()), _T("error"), MB_OK);
+		MessageBox(NULL, _T(name.c_str()), _T("texture load error"), MB_OK);
 		return false;
 	}
 

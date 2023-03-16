@@ -131,72 +131,78 @@ void CStackCamera::ImGuiDebug()
 		m_eMode = static_cast<EStackMode>(select);
 	}
 
-	Debug::SetTextAndAligned("Stack Order");
-	if (ImGui::BeginListBox("##Stack Order"))
+	// baseのみ
+	// FIXME:ネストが深い
+	if (m_eMode == EStackMode::BASE)
 	{
-		for (auto & cameraSource : m_aStackCamera)
+		Debug::SetTextAndAligned("Stack Order");
+		if (ImGui::BeginListBox("##Stack Order"))
 		{
-			std::string name = cameraSource.lock()->GetOwner()->GetName().c_str();
-			// 選択表示
-			ImGui::Selectable(name.c_str());
-
-			//--- ソース設定
-			Debug::DragDropSource<std::weak_ptr<CStackCamera>>(szSelectName, name.c_str(), cameraSource);
-
-			//--- ターゲットアタッチ
-			if (auto select = Debug::DragDropTarget<std::weak_ptr<CStackCamera>>(szSelectName); select)
+			for (auto & cameraSource : m_aStackCamera)
 			{
-				int targetIt = -1;
-				int sourceIt = -1;
+				std::string name = cameraSource.lock()->GetOwner()->GetName().c_str();
+				// 選択表示
+				ImGui::Selectable(name.c_str());
 
-				for (int cnt = 0; cnt < m_aStackCamera.size(); ++cnt)
+				//--- ソース設定
+				Debug::DragDropSource<std::weak_ptr<CStackCamera>>(szSelectName, name.c_str(), cameraSource);
+
+				//--- ターゲットアタッチ
+				if (auto select = Debug::DragDropTarget<std::weak_ptr<CStackCamera>>(szSelectName); select)
 				{
-					auto pCamera = m_aStackCamera[cnt].lock().get();
-					if (select->lock().get() == pCamera)
+					int targetIt = -1;
+					int sourceIt = -1;
+
+					for (int cnt = 0; cnt < m_aStackCamera.size(); ++cnt)
 					{
-						targetIt = cnt;
+						auto pCamera = m_aStackCamera[cnt].lock().get();
+						if (select->lock().get() == pCamera)
+						{
+							targetIt = cnt;
+						}
+						if (cameraSource.lock().get() == pCamera)
+						{
+							sourceIt = cnt;
+						}
+						if (targetIt != -1 && sourceIt != -1)
+							break;
 					}
-					if (cameraSource.lock().get() == pCamera)
-					{
-						sourceIt = cnt;
-					}
-					if (targetIt != -1 && sourceIt != -1)
-						break;
+
+					auto pWork = m_aStackCamera[targetIt];
+					m_aStackCamera[targetIt] = m_aStackCamera[sourceIt];
+					m_aStackCamera[sourceIt] = pWork;
+					break;
 				}
-
-				auto pWork = m_aStackCamera[targetIt];
-				m_aStackCamera[targetIt] = m_aStackCamera[sourceIt];
-				m_aStackCamera[sourceIt] = pWork;
-				break;
 			}
+			ImGui::EndListBox();
 		}
-		ImGui::EndListBox();
-	}
 
-	//--- 追加処理
-	auto aCamera = CCamera::GetAllCamera();
-	std::vector<std::string> aNameVector;
-	for (auto camera : aCamera)
-	{
-		// CStackCameraのみ
-		if(auto stackCamera = camera->BaseToDerived<CStackCamera>(); stackCamera)
-			if(stackCamera->GetStackMode() == EStackMode::OVERLAY)
-				aNameVector.push_back(camera->GetOwner()->GetName());
-	}
-
-	//--- コンボ表示
-	Debug::SetTextAndAligned("Stack");
-	if (auto addName = Debug::DispComboSelect(aNameVector, "##Stack", ""); !addName.empty())
-	{
-		// 選択時追加
+		//--- 追加処理
+		auto aCamera = CCamera::GetAllCamera();
+		std::vector<std::string> aNameVector;
 		for (auto camera : aCamera)
 		{
-			if (camera->GetOwner()->GetName() == addName)
-			{
-				Stack(camera->BaseToDerived<CStackCamera>());
-				break;
-			}
+			// CStackCameraのみ
+			if (auto stackCamera = camera->BaseToDerived<CStackCamera>(); stackCamera)
+				if (stackCamera->GetStackMode() == EStackMode::OVERLAY)
+					aNameVector.push_back(camera->GetOwner()->GetName());
 		}
+
+		//--- コンボ表示
+		Debug::SetTextAndAligned("Stack");
+		if (auto addName = Debug::DispComboSelect(aNameVector, "##Stack", ""); !addName.empty())
+		{
+			// 選択時追加
+			for (auto camera : aCamera)
+			{
+				if (camera->GetOwner()->GetName() == addName)
+				{
+					Stack(camera->BaseToDerived<CStackCamera>());
+					break;
+				}
+			}
+		}//combo
+
 	}
 
 	m_pGBuf->ImGuiDebug();

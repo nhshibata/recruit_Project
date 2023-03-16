@@ -77,7 +77,7 @@ HRESULT CDXDevice::Init(HWND hWnd, unsigned int Width, unsigned int Height, bool
 		return hr;
 
 
-#if 1
+#if 0
 
 	D3D11_TEXTURE2D_DESC desc{};
 	desc.Width = Width;
@@ -122,41 +122,49 @@ HRESULT CDXDevice::Init(HWND hWnd, unsigned int Width, unsigned int Height, bool
 	if (FAILED(hr))
 		return hr;
 
-	// リソース
-	ID3D11Resource* pResource;
-	g_pRenderTargetView->GetResource(&pResource);
+	ID3D11Texture2D* pRenderTargetTexture = nullptr;
+	g_pRenderTargetView->GetResource(reinterpret_cast<ID3D11Resource**>(&pRenderTargetTexture));
 
-	ID3D11Texture2D* pTexture;
-	hr = pResource->QueryInterface(__uuidof(ID3D11Texture2D), reinterpret_cast<void**>(&pTexture));
-	if (FAILED(hr))
-		return hr;
+	D3D11_TEXTURE2D_DESC textureDesc{};
+	textureDesc.Width = Width;
+	textureDesc.Height = Height;
+	textureDesc.MipLevels = 1;
+	textureDesc.ArraySize = 1;
+	textureDesc.Format = DXGI_FORMAT_R8G8B8A8_UNORM;
+	textureDesc.SampleDesc.Count = 1;
+	textureDesc.Usage = D3D11_USAGE_DEFAULT;
+	textureDesc.BindFlags = D3D11_BIND_SHADER_RESOURCE | D3D11_BIND_RENDER_TARGET;
+	textureDesc.CPUAccessFlags = 0;
+	textureDesc.MiscFlags = 0;
 
-	D3D11_TEXTURE2D_DESC desc;
-	pTexture->GetDesc(&desc);
-
-	D3D11_SHADER_RESOURCE_VIEW_DESC srvDesc;
-	ZeroMemory(&srvDesc, sizeof(srvDesc));
-	srvDesc.Format = DXGI_FORMAT_R8G8B8A8_UNORM;
-	srvDesc.ViewDimension = D3D11_SRV_DIMENSION_TEXTURE2D;
-	srvDesc.Texture2D.MipLevels = desc.MipLevels;
-	srvDesc.Texture2D.MostDetailedMip = 0;
-
-	ID3D11ShaderResourceView* pSRV;
-	hr = g_pDevice->CreateShaderResourceView(pTexture, &srvDesc, &pSRV);
-	g_pSRV = pSRV;
-	g_pRenderTexture = pTexture;
-
-	pBackBuffer->Release();
-	pBackBuffer = nullptr;
-	pTexture->Release();
-	pResource->Release();
-
+	// レンダーターゲットからTexture2Dを作成
+	hr = g_pDevice->CreateTexture2D(&textureDesc, nullptr, g_pRenderTexture.GetAddressOf());
 	if (FAILED(hr))
 	{
 		auto erro = GetErrorDescription(hr);
 		MessageBox(NULL, _T(erro.c_str()), _T("error"), MB_OK);
 		return hr;
 	}
+
+	D3D11_SHADER_RESOURCE_VIEW_DESC srvDesc{};
+	srvDesc.Format = textureDesc.Format;
+	srvDesc.ViewDimension = D3D11_SRV_DIMENSION_TEXTURE2D;
+	srvDesc.Texture2D.MipLevels = textureDesc.MipLevels;
+	srvDesc.Texture2D.MostDetailedMip = 0;
+
+	// レンダーターゲットからShaderResourceViewを作成
+	ID3D11ShaderResourceView* pSRV = nullptr;
+	hr = g_pDevice->CreateShaderResourceView(g_pRenderTexture.Get(), &srvDesc, g_pSRV.GetAddressOf());
+	if (FAILED(hr))
+	{
+		auto erro = GetErrorDescription(hr);
+		MessageBox(NULL, _T(erro.c_str()), _T("error"), MB_OK);
+		return hr;
+	}
+	//g_pRenderTexture = pTexture;
+	g_pSRV = pSRV;
+	pRenderTargetTexture->Release();
+
 
 #endif // 0
 	
