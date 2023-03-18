@@ -71,7 +71,7 @@
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <LinkIncremental>true</LinkIncremental>
-    <IncludePath>$(SolutionDir)Source;$(SolutionDir)Library\Effekseer;$(SolutionDir)Library\Source\common;$(SolutionDir)Library\Source\spel;$(SolutionDir)Library\Source;$(SolutionDir)Library;$(IncludePath)</IncludePath>
+    <IncludePath>$(SolutionDir)Source;$(SolutionDir)Library;$(SolutionDir)Library\Effekseer;$(SolutionDir)Library\ImGui;$(IncludePath)</IncludePath>
     <LibraryPath>$(SolutionDir)exe\$(Configuration);$(SolutionDir)Library\Assimp\lib\x64;$(SolutionDir)Library\DirectXTex\x64\$(Configuration);$(SolutionDir)Library\Effekseer;$(DXSDK_DIR)lib¥x64;$(LibraryPath)</LibraryPath>
     <OutDir>$(SolutionDir)exe\$(Configuration)\</OutDir>
     <IntDir>$(SolutionDir)Binary\$(ProjectName)\$(Platform)\$(Configuration)\</IntDir>
@@ -79,7 +79,7 @@
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <LinkIncremental>false</LinkIncremental>
-    <IncludePath>$(SolutionDir)Source;$(SolutionDir)Library\Effekseer;$(SolutionDir)Library\Source\common;$(SolutionDir)Library\Source\spel;$(SolutionDir)Library\Source;$(SolutionDir)Library;$(IncludePath)</IncludePath>
+    <IncludePath>$(SolutionDir)Source;$(SolutionDir)Library;$(SolutionDir)Library\Effekseer;$(SolutionDir)Library\ImGui;$(IncludePath)</IncludePath>
     <LibraryPath>$(SolutionDir)exe\$(Configuration);$(SolutionDir)Library\Assimp\lib\x64;$(SolutionDir)Library\DirectXTex\x64\$(Configuration);$(SolutionDir)Library\Effekseer;$(DXSDK_DIR)lib¥x64;$(LibraryPath)</LibraryPath>
     <OutDir>$(SolutionDir)exe\$(Configuration)\</OutDir>
     <IntDir>$(SolutionDir)Binary\$(ProjectName)\$(Platform)\$(Configuration)\</IntDir>
@@ -157,7 +157,7 @@
       <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
       <LanguageStandard>stdcpp17</LanguageStandard>
       <ShowIncludes>false</ShowIncludes>
-      <InlineFunctionExpansion>OnlyExplicitInline</InlineFunctionExpansion>
+      <InlineFunctionExpansion>AnySuitable</InlineFunctionExpansion>
       <PreprocessorDefinitions>_NDEBUG;_LIB;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <WholeProgramOptimization>true</WholeProgramOptimization>
       <AdditionalOptions>/bigobj %(AdditionalOptions)</AdditionalOptions>
@@ -190,11 +190,11 @@
     </ClCompile>
     <ClCompile Include="..\Source\spellComponents.cpp">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">false</ExcludedFromBuild>
     </ClCompile>
     <ClCompile Include="..\Source\spellPlayer.cpp">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">false</ExcludedFromBuild>
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">false</ExcludedFromBuild>
     </ClCompile>
     <ClCompile Include="..\Source\stageBuild.cpp">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
@@ -231,7 +231,7 @@
     </ClInclude>
     <ClInclude Include="..\Source\spellComponents.h">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">false</ExcludedFromBuild>
     </ClInclude>
     <ClInclude Include="..\Source\spellDefine.h">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
@@ -239,7 +239,7 @@
     </ClInclude>
     <ClInclude Include="..\Source\spellPlayer.h">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">false</ExcludedFromBuild>
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">false</ExcludedFromBuild>
     </ClInclude>
     <ClInclude Include="..\Source\stageBuild.h">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>

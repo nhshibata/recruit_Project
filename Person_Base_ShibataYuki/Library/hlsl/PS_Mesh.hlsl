@@ -27,7 +27,7 @@ float4 main(PS_INPUT input) : SV_Target0
 
     // 影
     // 奥行き情報を書き込んだﾃｸｽﾁｬから、距離を取得
-    float sunDepth = g_depthTexture.Sample(g_sampler, GetSunUV(input.sunPos)).r;
+    float sunDepth = g_texSunView.Sample(g_sampler, GetSunUV(input.sunPos)).r;
     // シャドウアクネ(マッハバンド)対策
     // 描画するピクセルの奥行きと、ﾃｸｽﾁｬの奥行きが一致していた場合、
     // ﾃｸｽﾁｬに書き込まれたデータとの差異が発生して影が出来ない部分に

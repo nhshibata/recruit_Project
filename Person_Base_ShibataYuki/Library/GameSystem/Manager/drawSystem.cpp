@@ -134,6 +134,7 @@ void CDrawSystem::GBufferDraw(const bool bGbuffer, std::function<bool(int)> func
 	auto pAssets = Application::Get()->GetSystem<CAssetsManager>();
 	auto pDX = Application::Get()->GetSystem<CDXDevice>();
 	auto pSM = Application::Get()->GetSystem<CAssetsManager>()->GetShaderManager();
+	// model. mesh
 	LPCSTR aVSName[] = {
 		"VS_Assimp",
 		"VS_Mesh",
@@ -150,12 +151,14 @@ void CDrawSystem::GBufferDraw(const bool bGbuffer, std::function<bool(int)> func
 	//--- 不透明描画
 	for (auto & intancingModel : m_aInstancingModelMap)
 	{
-		auto aName = TextSplitToNamePSVS(intancingModel.first);
-		if (aName.IsError())
+		// 一時変数
+		auto info = &intancingModel.first;
+
+		if (info->IsError())
 			continue;
 
 		//--- 描画するモデルの取得
-		auto model = pAssets->GetModelManager()->GetModel(aName.strName);
+		auto model = pAssets->GetModelManager()->GetModel(info->strName);
 		// モデルが解放されていないか一応確認
 		if (!model)
 			continue;
@@ -164,7 +167,7 @@ void CDrawSystem::GBufferDraw(const bool bGbuffer, std::function<bool(int)> func
 		if(bGbuffer)
 			pSM->CallBackFuncAndBind(std::string(), aVSName[0]);
 		else
-			pSM->CallBackFuncAndBind(aName.strPixel, aName.strVertex);
+			pSM->CallBackFuncAndBind(info->strPixel, info->strVertex);
 
 		//--- インスタンシングに必要なデータ格納
 		std::vector<RENDER_DATA> data;
@@ -198,18 +201,20 @@ void CDrawSystem::GBufferDraw(const bool bGbuffer, std::function<bool(int)> func
 
 	for (auto & intancingModel : m_aInstancingModelMap)
 	{
-		auto aName = TextSplitToNamePSVS(intancingModel.first);
-		if (aName.IsError())
+		// 一時変数
+		auto info = &intancingModel.first;
+
+		if (info->IsError())
 			continue;
 
 		//--- 描画するモデルの取得
-		auto model = pAssets->GetModelManager()->GetModel(aName.strName);
+		auto model = pAssets->GetModelManager()->GetModel(info->strName);
 
 		// shaderBind
 		if(bGbuffer)
 			pSM->CallBackFuncAndBind(std::string(), aVSName[0]);
 		else
-			pSM->CallBackFuncAndBind(aName.strPixel, aName.strVertex);
+			pSM->CallBackFuncAndBind(info->strPixel, info->strVertex);
 
 		//--- インスタンシングに必要なデータ格納
 		std::vector<RENDER_DATA> data;
@@ -235,24 +240,23 @@ void CDrawSystem::GBufferDraw(const bool bGbuffer, std::function<bool(int)> func
 	}
 
 	//--- メッシュインスタンシング描画
-	for (auto & meshObj : m_aInstancingMeshMap)
+	for (auto & instancingMesh : m_aInstancingMeshMap)
 	{
-		if (meshObj.second.aID.size() == 0)// 一応確認
-			continue;
+		// 一時変数
+		auto info = &instancingMesh.first;
 
-		auto aName = TextSplitToNamePSVS(meshObj.first);
-		if (aName.IsError())
+		if (info->IsError())
 			continue;
 
 		// shaderBind
 		if(bGbuffer)
 			pSM->CallBackFuncAndBind(std::string(), aVSName[1]);
 		else
-			pSM->CallBackFuncAndBind(aName.strPixel, aName.strVertex);
+			pSM->CallBackFuncAndBind(info->strPixel, info->strVertex);
 
 		//--- インスタンシングに必要なデータ格納
 		std::vector<RENDER_DATA> data;
-		for (auto & id : meshObj.second.aID)
+		for (auto & id : instancingMesh.second.aID)
 		{
 			if (func)
 			{
@@ -264,16 +268,16 @@ void CDrawSystem::GBufferDraw(const bool bGbuffer, std::function<bool(int)> func
 		}
 
 		// ビルボードか確認
-		if (CBillboard* bill = dynamic_cast<CBillboard*>(meshObj.second.pMesh); bill != nullptr)
+		if (CBillboard* bill = dynamic_cast<CBillboard*>(instancingMesh.second.pMesh); bill != nullptr)
 		{
 			// ﾃｸｽﾁｬ設定
-			auto image = pAssets->GetImageManager()->GetResource(aName.strName);
+			auto image = pAssets->GetImageManager()->GetResource(info->strName);
 			auto tex = image ? image->GetSRV() : NULL;
-			meshObj.second.pMesh->DrawInstancing(data, false, tex, &bill->GetTextureMatrix());
+			instancingMesh.second.pMesh->DrawInstancing(data, false, tex, &bill->GetTextureMatrix());
 		}
 		else
 		{
-			meshObj.second.pMesh->DrawInstancing(data, false);
+			instancingMesh.second.pMesh->DrawInstancing(data, false);
 		}
 #if BUILD_MODE
 		++m_nInstancingCnt;
@@ -293,6 +297,9 @@ void CDrawSystem::GBufferDraw(const bool bGbuffer, std::function<bool(int)> func
 //=========================================================
 void CDrawSystem::Draw3D()
 {
+	/*m_aInstancingMeshMap.clear();
+	m_aInstancingModelMap.clear();
+	return;*/
 
 #if BUILD_MODE	// ImGui表示中はDebugCameraがMainなので、hierarchyを探索
 	// ｶﾒﾗを見つける
@@ -323,8 +330,16 @@ void CDrawSystem::Draw3D()
 
 #endif // BUILD_MODE
 
-	// ｶﾒﾗを順に描画
+	//--- シャドウマップ生成
 	auto pDX = Application::Get()->GetSystem<CDXDevice>();
+	CLight* pLight = CLight::GetMain();
+	//--- 半透明部分描画
+	pDX->SetBlendState(static_cast<int>(EBlendState::BS_ALPHABLEND));
+	pDX->SetZWrite(true);// Z書き込み	// ライティング有効
+	pLight->SetEnable();
+	Draw3DShadow();
+
+	// ｶﾒﾗを順に描画実行
 	auto aCamera = pCamera->GetStackCameras();
 	int idxCnt = 0;
 	std::vector<ID3D11ShaderResourceView*> aEffectTex;
@@ -420,9 +435,6 @@ void CDrawSystem::Draw3D()
 	CPolygon::SetFrameSize(XMFLOAT2(1,1));
 	CPolygon::SetUV(XMFLOAT2(0,0));
 	CPolygon::SetAngle(0);
-	
-	CPolygon::SetTexture(aEffectTex[0]);
-	//CPolygon::Draw(pDX->GetDeviceContext());
 
 	// 加算合成必須
 	pDX->SetBlendState(EBlendState::BS_ADDITIVE);

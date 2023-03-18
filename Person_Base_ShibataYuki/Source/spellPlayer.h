@@ -1,8 +1,8 @@
 //========================================================
 // [spellPlayer.h]
-//------------------------
+//--------------------------------------------------------
 // 作成:2023/01/02
-//------------------------
+//--------------------------------------------------------
 //
 //========================================================
 
@@ -12,13 +12,39 @@
 //--- インクルード部
 #include <GameSystem/Component/component.h>
 
+//--- 前方宣言
+namespace MySpace
+{
+	namespace Game
+	{
+		class CGameObject;
+	}
+}
+
 namespace Spell
 {
 	using namespace MySpace::Game;
 
-
 	class CSpellPlayer : public CComponent
 	{
+#pragma region Serealize
+		//--- シリアライズ
+		friend class cereal::access;
+		template<class Archive>
+		void save(Archive& archive) const
+		{
+			archive(cereal::make_nvp("SpellPlayer", cereal::base_class<CComponent>(this)),
+					CEREAL_NVP(m_fSpeed), CEREAL_NVP(m_fJump), CEREAL_NVP(m_bLand)
+			);
+		}
+		template<class Archive>
+		void load(Archive& archive)
+		{
+			archive(cereal::make_nvp("SpellPlayer", cereal::base_class<CComponent>(this)),
+					CEREAL_NVP(m_fSpeed), CEREAL_NVP(m_fJump), CEREAL_NVP(m_bLand)
+			);
+		}
+#pragma endregion
 	private:
 		float m_fSpeed;
 		float m_fJump;
@@ -39,6 +65,8 @@ namespace Spell
 	};
 
 }
+
+CEREAL_REGISTER_TYPE(Spell::CSpellPlayer);
 
 #endif // !__SPELL_PLAYER_H__
 

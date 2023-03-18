@@ -36,8 +36,7 @@ bool CModelManager::Load(std::string name)
 	ModelSharedPtr addModel = std::make_shared<CAssimpModel>();
 
 	// ƒ‚ƒfƒ‹“Ç‚Ýž‚Ý
-	if (!addModel->Load(Application::Get()->GetDevice(), Application::Get()->GetDeviceContext(),
-		name))
+	if (!addModel->Load(Application::Get()->GetDevice(), Application::Get()->GetDeviceContext(), name))
 	{
 		return false;
 	}

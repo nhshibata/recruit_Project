@@ -51,6 +51,8 @@ void CCollision::OnLoad()
 //==========================================================
 void CCollision::Awake()
 {
+	// “–‚½‚è”»’è‚Ì—v¿
+	RequestCollision();
 }
 
 //==========================================================
@@ -58,8 +60,7 @@ void CCollision::Awake()
 //==========================================================
 void CCollision::Init()
 {
-	// “–‚½‚è”»’è‚Ì—v¿
-	RequestCollision();
+	
 
 	// ‰ß‹ŽÀ•W
 	m_vOldPos = Transform()->GetPos();

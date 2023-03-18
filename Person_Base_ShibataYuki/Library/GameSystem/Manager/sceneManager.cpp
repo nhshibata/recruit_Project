@@ -6,6 +6,7 @@
 
 //--- インクルード部
 #include <GameSystem/Manager/sceneManager.h>
+#include <GameSystem/Scene/sceneSerealize.h>
 #include <GameSystem/GameObject/gameObject.h>
 #include <GameSystem/Component/Transform/transform.h>
 #include <GameSystem/components.h>
@@ -40,7 +41,10 @@ CSceneManager::CSceneManager()
 //========================================================
 CSceneManager::~CSceneManager()
 {
-	
+	delete m_sceneDetection;
+	delete m_pCollisionSystem;
+	delete m_pDrawSystem;
+	delete m_pNavMesh;
 }
 
 //========================================================
@@ -281,19 +285,13 @@ void CSceneManager::SaveScene(const std::string filename)
 	if(name.find("Data/scene") != std::string::npos)
 		filePathName = name;
 	{
-		CCerealize<std::shared_ptr<CSceneData>> sirial;
+		CCerealize<std::shared_ptr<CSceneSerealizeData>> sirial;
 
 		//--- 保存用のｼｰﾝﾃﾞｰﾀを作成
-		std::shared_ptr<CSceneData> saveData = std::make_shared<CSceneData>();
-		saveData->m_resource.Save();						// Resourceを格納
-		saveData->m_SceneName = scene->GetSceneName();		// 名前格納
-		auto objs = scene->GetObjManager()->GetList();		// オブジェクトを格納
-		for (auto & obj : objs)
-		{
-			if (obj->GetTransform()->GetParent().lock())continue;	// 親が居れば
-			saveData->m_aGameObjectManager.emplace_back(obj);
-			//saveData->m_aGameObjectManager.push_back(obj);
-		}
+		std::shared_ptr<CSceneSerealizeData> saveData = std::make_shared<CSceneSerealizeData>();
+		
+		saveData->SaveStorage(scene.get());
+
 		// シリアライズ
 		sirial.OutputFile(filename, filePathName, saveData);
 	}
@@ -305,7 +303,7 @@ void CSceneManager::SaveScene(const std::string filename)
 bool CSceneManager::LoadScene(std::string path)
 {
 	// セーブ情報受け取り用変数
-	std::shared_ptr<CSceneData> sceneData = std::make_shared<CSceneData>();
+	std::shared_ptr<CSceneSerealizeData> sceneData = std::make_shared<CSceneSerealizeData>();
 	/*std::ifstream ifs(path, std::ios::in);
 
 	if (!ifs)return false;
@@ -315,7 +313,7 @@ bool CSceneManager::LoadScene(std::string path)
 	}
 	ifs.close();*/
 	{
-		CCerealize<std::shared_ptr<CSceneData>> sirial;
+		CCerealize<std::shared_ptr<CSceneSerealizeData>> sirial;
 		sceneData = sirial.InputFile(path);
 	}
 	if (!sceneData)
@@ -328,33 +326,8 @@ bool CSceneManager::LoadScene(std::string path)
 	std::shared_ptr<CScene> newScene = std::make_shared<CScene>(sceneData->m_SceneName);
 	// Scene切替
 	RemoveScene(m_pCurrentScene.lock(), newScene);
-	if (newScene != m_pCurrentScene.lock()) { 
-	
-	}
 
-	// 読み込みと代入
-	sceneData->m_resource.Load();											// ロードしたResourceを読み込み
-	newScene->Init(newScene);
-	newScene->SetSceneName(sceneData->m_SceneName);							// 名前設定
-	// ロード時処理
-	for (auto & obj : sceneData->m_aGameObjectManager)
-	{
-		obj->SetPtr(obj);
-		obj->SetScene(newScene);
-
-		auto coms = obj->GetComponentList();
-		for (auto & com : coms)
-		{
-			com->SetOwner(obj);
-		}
-	}
-	newScene->GetObjManager()->SetObjList(sceneData->m_aGameObjectManager);	// オブジェクト設定
-
-	// ロード時処理
-	for (auto & obj : sceneData->m_aGameObjectManager)
-	{
-		obj->OnLoad();
-	}
+	sceneData->ReadDataPass(newScene);
 
 	return true;
 }
@@ -403,10 +376,6 @@ void CSceneManager::ImGuiDebug()
 	ImGui::SameLine();
 	ImGui::InputText("Change Scene", m_cDebugSceneName, 256);
 
-	//if (ImGui::Button("add scene"))
-	//{
-	//	CScene* newScene = AddScene<CScene>();
-	//}
 
 }
 

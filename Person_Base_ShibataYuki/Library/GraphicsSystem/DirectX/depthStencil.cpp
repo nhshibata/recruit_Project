@@ -8,6 +8,7 @@
 //--- インクルード部
 #include <GraphicsSystem/DirectX/depthStencil.h>
 #include <Application/Application.h>
+#include <DebugSystem/errorMessage.h>
 
 using namespace MySpace::Graphics;
 
@@ -18,6 +19,8 @@ CDepthStencil::CDepthStencil(CDXDevice* dx)
 	:m_pDSV(nullptr)
 {
 	HRESULT hr = Create(dx);
+	if (FAILED(hr))
+		Debug::CErrorMessage::DispErrorHandle(hr);
 }
 
 //==========================================================
@@ -27,6 +30,8 @@ CDepthStencil::CDepthStencil(UINT width, UINT height, bool useStencil)
 	:m_pDSV(nullptr)
 {
 	HRESULT hr = Create(nullptr, width, height, useStencil);
+	if (FAILED(hr))
+		Debug::CErrorMessage::DispErrorHandle(hr);
 }
 
 //==========================================================
@@ -44,7 +49,10 @@ CDepthStencil::CDepthStencil(const CDepthStencil& copy)
 //==========================================================
 CDepthStencil::~CDepthStencil()
 {
-
+	m_pDSV->Release();
+	m_pDSV = nullptr;
+	/*m_pDSV->Release();
+	m_pTex->Release();*/
 }
 
 //==========================================================

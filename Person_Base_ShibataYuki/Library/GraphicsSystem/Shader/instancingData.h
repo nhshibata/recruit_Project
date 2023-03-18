@@ -58,6 +58,7 @@ namespace MySpace
 			RENDER_DATA(MyMath::Matrix4x4 world, MyMath::Vector4 vAmbi, MyMath::Vector4 vDiff,
 					 MyMath::Vector4 vSpec, MyMath::Vector4 vEmi, DirectX::XMUINT4 vFlag = DirectX::XMUINT4(0, 0, 0, 0))
 			{
+				// シェーダーに引き渡すため、転置する
 				this->mWorld = XMMatrixTranspose(XMLoadFloat4x4(&world));
 				this->vAmbient = XMLoadFloat4(&vAmbi);
 				this->vDiffuse = XMLoadFloat4(&vDiff);

@@ -10,6 +10,7 @@
 //--- インクルード部
 #include <GraphicsSystem/Shader/pixelShader.h>
 #include <Application/Application.h>
+#include <DebugSystem/errorMessage.h>
 
 using namespace MySpace::Graphics;
 
@@ -68,6 +69,7 @@ HRESULT CPixelShader::Make(std::string fileName)
 	hr = pDevice->CreatePixelShader(pData, fileSize, nullptr, &m_pShader);
 	if (FAILED(hr)) {
 		if (pData) delete[] pData;
+		Debug::CErrorMessage::DispErrorHandle(hr);
 		return hr;
 	}
 

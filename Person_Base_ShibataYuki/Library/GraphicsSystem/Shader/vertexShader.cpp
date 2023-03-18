@@ -10,6 +10,7 @@
 //--- インクルード部
 #include <GraphicsSystem/Shader/vertexShader.h>
 #include <Application/Application.h>
+#include <DebugSystem/errorMessage.h>
 
 using namespace MySpace::Graphics;
 
@@ -84,6 +85,7 @@ HRESULT CVertexShader::Make(std::string fileName, const D3D11_INPUT_ELEMENT_DESC
 	if (FAILED(hr))
 	{
 		if (pData) delete[] pData;
+		Debug::CErrorMessage::DispErrorHandle(hr);
 		return hr;
 	}
 

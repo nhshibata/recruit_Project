@@ -20,6 +20,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\Library\GameSystem\components.h" />
+    <ClInclude Include="..\Library\GameSystem\Component\actionPlayer.h" />
     <ClInclude Include="..\Library\GameSystem\Component\BaseComponent.h" />
     <ClInclude Include="..\Library\GameSystem\Component\Camera\camera.h" />
     <ClInclude Include="..\Library\GameSystem\Component\Camera\debugCamera.h" />
@@ -63,11 +64,13 @@
     <ClInclude Include="..\Library\GameSystem\Manager\volumeManager.h" />
     <ClInclude Include="..\Library\GameSystem\propertyCereal.h" />
     <ClInclude Include="..\Library\GameSystem\Scene\scene.h" />
+    <ClInclude Include="..\Library\GameSystem\Scene\sceneSerealize.h" />
     <ClInclude Include="..\Library\GameSystem\Scene\sceneTransitionDetection.h" />
     <ClInclude Include="..\Library\GameSystem\Shader\depthShadow.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\Library\GameSystem\components.cpp" />
+    <ClCompile Include="..\Library\GameSystem\Component\actionPlayer.cpp" />
     <ClCompile Include="..\Library\GameSystem\Component\Camera\camera.cpp" />
     <ClCompile Include="..\Library\GameSystem\Component\Camera\debugCamera.cpp" />
     <ClCompile Include="..\Library\GameSystem\Component\Camera\gameCamera.cpp" />
@@ -110,6 +113,7 @@
     <ClCompile Include="..\Library\GameSystem\Manager\sceneManager.cpp" />
     <ClCompile Include="..\Library\GameSystem\Manager\volumeManager.cpp" />
     <ClCompile Include="..\Library\GameSystem\Scene\scene.cpp" />
+    <ClCompile Include="..\Library\GameSystem\Scene\sceneSerealize.cpp" />
     <ClCompile Include="..\Library\GameSystem\Scene\sceneTransitionDetection.cpp" />
     <ClCompile Include="..\Library\GameSystem\Shader\depthShadow.cpp" />
   </ItemGroup>
@@ -168,7 +172,7 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <LinkIncremental>true</LinkIncremental>
     <OutDir>$(SolutionDir)exe\$(Configuration)\</OutDir>
-    <IncludePath>$(SolutionDir)Library\ImGui;$(SolutionDir)Library\Effekseer;$(SolutionDir)Library;$(IncludePath)</IncludePath>
+    <IncludePath>$(SolutionDir)Source;$(SolutionDir)Library;$(SolutionDir)Library\Effekseer;$(SolutionDir)Library\ImGui;$(IncludePath)</IncludePath>
     <LibraryPath>$(SolutionDir)exe\$(Configuration)\;$(SolutionDir)..\..\DirectXTex\x64\$(Configuration);$(SolutionDir)Library\Assimp\lib\x64;$(SolutionDir)Library\DirectXTex;$(SolutionDir)Library\Effekseer;$(DXSDK_DIR)lib¥x64;$(LibraryPath)</LibraryPath>
     <IntDir>$(SolutionDir)Binary\$(ProjectName)\$(Platform)\$(Configuration)\</IntDir>
   </PropertyGroup>
@@ -181,7 +185,7 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <LinkIncremental>false</LinkIncremental>
     <OutDir>$(SolutionDir)exe\$(Configuration)\</OutDir>
-    <IncludePath>$(SolutionDir)Library\ImGui;$(SolutionDir)Library\Effekseer;$(SolutionDir)Library;$(IncludePath)</IncludePath>
+    <IncludePath>$(SolutionDir)Source;$(SolutionDir)Library;$(SolutionDir)Library\Effekseer;$(SolutionDir)Library\ImGui;$(IncludePath)</IncludePath>
     <LibraryPath>$(SolutionDir)exe\$(Configuration)\;$(SolutionDir)..\..\DirectXTex\x64\$(Configuration);$(SolutionDir)Library\Assimp\lib\x64;$(SolutionDir)Library\DirectXTex;$(SolutionDir)Library\Effekseer;$(DXSDK_DIR)lib¥x64;$(LibraryPath)</LibraryPath>
     <IntDir>$(SolutionDir)Binary\$(ProjectName)\$(Platform)\$(Configuration)\</IntDir>
   </PropertyGroup>
@@ -255,7 +259,7 @@
       <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
       <AdditionalIncludeDirectories>$(SolutionDir)Library\Effekseer;$(SolutionDir)Library\DirectXTex\x64\$(Configuration);$(SolutionDir)Library\DirectXTex;$(SolutionDir)Library\Assimp\include;$(SolutionDir)Library\Assimp;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <LanguageStandard>stdcpp17</LanguageStandard>
-      <InlineFunctionExpansion>OnlyExplicitInline</InlineFunctionExpansion>
+      <InlineFunctionExpansion>AnySuitable</InlineFunctionExpansion>
       <PrecompiledHeaderFile />
       <WholeProgramOptimization>true</WholeProgramOptimization>
       <AdditionalOptions>/bigobj %(AdditionalOptions)</AdditionalOptions>

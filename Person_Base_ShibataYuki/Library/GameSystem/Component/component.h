@@ -44,6 +44,7 @@ namespace MySpace
 		protected:
 			friend CGameObject;
 		private:
+#pragma region Serealize
 			//--- シリアライズ
 			friend class cereal::access;
 			template<class Archive>
@@ -60,6 +61,7 @@ namespace MySpace
 					CEREAL_NVP(m_pSelfPtr),/* CEREAL_NVP(m_pOwner),*/ CEREAL_NVP(m_bActive)
 				);
 			}
+#pragma endregion
 		public:
 			//--- エイリアス
 			using Ptr = std::weak_ptr<CComponent>;

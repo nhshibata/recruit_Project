@@ -1,9 +1,11 @@
 //=========================================================
 // [drawSystem.h]
+//---------------------------------------------------------
+// 作成:2023/03/??
+// 更新:2023/03/15 シェーダー情報を構造体に変更
+//---------------------------------------------------------
 // 派生クラス
-//---------------------------------------------------------
-// 
-//---------------------------------------------------------
+// 影描画や通常描画、基本部分の定義、実装
 //=========================================================
 
 //--- インクルードガード
@@ -43,30 +45,60 @@ namespace MySpace
 			friend class CRenderer;
 			friend class CPolygonRenderer;
 		protected:
+#pragma region Struct
+			//--- 構造体定義
+			// IDをキャッシュする
 			struct ST3DData
 			{
 				std::vector<int> aID;
 			};
+			// 継承し、描画のためのﾎﾟｲﾝﾀを保持
+			// 処理の関係で、nullptrやdeleteの心配はしない
 			struct STMeshData : public ST3DData
 			{
 				CMesh* pMesh;
 			};
-			struct STSplitName
+
+			// ゲームオブジェクトから渡される描画情報格納
+			// シェーダー切替に対応するため
+			// mapのKeyとして使う
+			struct STDrawInfo
 			{
 				std::string strName;
 				std::string strPixel;
 				std::string strVertex;
-				// いずれかが存在しないエラー
+
+				// *@コンストラクタ
+				STDrawInfo() 
+				{}
+				// *@コンストラクタ
+				STDrawInfo(std::string name, std::string ps, std::string vs)
+					:strName(name),strPixel(ps), strVertex(vs)
+				{}
+
+				// *@演算子のオーバーロード
+				// *@mapは挿入位置を参照するために比較するため、作成しなければならない
+				bool operator <(const STDrawInfo& other)const
+				{
+					if (strName != other.strName)
+						return strName < other.strName;
+					else if (strPixel != other.strPixel)
+						return strPixel < other.strPixel;
+					else
+						return strVertex < other.strVertex;
+				}
+				// *@いずれかが存在しないエラー
 				bool IsError()const
 				{
 					return (strName.empty() | strPixel.empty() | strVertex.empty());
 				}
 			};
+#pragma endregion
 
 			//--- エイリアス
 			using PolygonRenderWeakList = std::vector<std::weak_ptr<CPolygonRenderer>>;
-			using InstancingMap = std::map<std::string, ST3DData>;
-			using InstancingMeshMap = std::map<std::string, STMeshData>;
+			using InstancingMap = std::map<STDrawInfo, ST3DData>;
+			using InstancingMeshMap = std::map<STDrawInfo, STMeshData>;
 
 		protected:
 			//--- メンバ変数
@@ -103,7 +135,7 @@ namespace MySpace
 		protected:
 			// *@描画依頼時に連結した文字列を分割
 			// *@0:ﾃｸｽﾁｬやﾓﾃﾞﾙ名 1:pixel 2:vertex
-			const STSplitName TextSplitToNamePSVS(const std::string name);
+			const STDrawInfo TextSplitToNamePSVS(const std::string name);
 
 		public:
 			CDrawSystemBase();
@@ -112,7 +144,6 @@ namespace MySpace
 			void Init();
 			virtual void Update();
 
-			//--- 描画するコンポーネント
 			// *@登録 override
 			_NODISCARD int RegistToSystem(std::weak_ptr<CRenderer> render)
 			{
@@ -124,7 +155,7 @@ namespace MySpace
 			_NODISCARD int PolygonRegist(std::weak_ptr<CPolygonRenderer> render);
 
 			// *@破棄 overlide
-			std::weak_ptr<CRenderer> ExecutSystem(const int idx);
+			bool ExecutSystem(const int idx);
 
 			// *@インスタンシング描画のために情報を格納する
 			void SetInstanchingModel(std::string name, std::string ps, std::string vs, const int id);
@@ -139,7 +170,7 @@ namespace MySpace
 			virtual void ImGuiDebug();
 			// *@インスタンシング描画のために情報を格納する
 			void SetDebugMesh(std::string name, CMesh* mesh);
-			void ReleaseDebugMesh(CMesh* mesh);
+			void ReleaseDebugMesh(const CMesh* mesh);
 #endif // BUILD_MODE
 
 		};

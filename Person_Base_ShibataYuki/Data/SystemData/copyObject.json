@@ -1,11 +1,11 @@
 {
-    "GameObj_3": {
+    "GameObj_1": {
         "polymorphic_id": 1073741824,
         "ptr_wrapper": {
             "id": 2147483649,
             "data": {
                 "gameObject": {
-                    "m_objName": "GameObj_3",
+                    "m_objName": "GameObj_1",
                     "m_spThisPtr": {
                         "locked_ptr": {
                             "polymorphic_id": 1073741824,
@@ -20,7 +20,7 @@
                     "ptr_wrapper": {
                         "id": 2147483650,
                         "data": {
-                            "m_nLayer": 10
+                            "m_nLayer": 1
                         }
                     }
                 },
@@ -82,77 +82,6 @@
                                     "z": 0.0,
                                     "w": 0.0
                                 }
-                            }
-                        }
-                    },
-                    {
-                        "polymorphic_id": 2147483650,
-                        "polymorphic_name": "MySpace::Game::CModelRenderer",
-                        "ptr_wrapper": {
-                            "id": 2147483653,
-                            "data": {
-                                "modelRender": {
-                                    "meshRender": {
-                                        "baseRender": {
-                                            "Component": {},
-                                            "m_pSelfPtr": {
-                                                "locked_ptr": {
-                                                    "polymorphic_id": 2,
-                                                    "ptr_wrapper": {
-                                                        "id": 5
-                                                    }
-                                                }
-                                            },
-                                            "m_bActive": true
-                                        },
-                                        "m_bVisible": true,
-                                        "m_vColor": {
-                                            "r": 1.0,
-                                            "g": 1.0,
-                                            "b": 1.0,
-                                            "a": 1.0
-                                        },
-                                        "m_strPixelShader": "PS_Assimp",
-                                        "m_strVertexShader": "VS_Assimp"
-                                    },
-                                    "m_vCenter": {
-                                        "x": 0.0,
-                                        "y": 0.0,
-                                        "z": 0.0
-                                    },
-                                    "m_bLightEnable": true,
-                                    "m_fBSRadius": 2828.427490234375,
-                                    "m_nStaticMode": 0,
-                                    "m_bShadow": false,
-                                    "m_MeshMaterial": {
-                                        "m_Diffuse": {
-                                            "x": 1.0,
-                                            "y": 1.0,
-                                            "z": 1.0,
-                                            "w": 1.0
-                                        },
-                                        "m_Ambient": {
-                                            "x": 1.0,
-                                            "y": 1.0,
-                                            "z": 1.0,
-                                            "w": 0.0
-                                        },
-                                        "m_Specular": {
-                                            "x": 0.0,
-                                            "y": 0.0,
-                                            "z": 0.0,
-                                            "w": 1.0
-                                        },
-                                        "m_Emissive": {
-                                            "x": 0.0,
-                                            "y": 0.0,
-                                            "z": 0.0,
-                                            "w": 0.0
-                                        },
-                                        "m_Power": 1.0
-                                    }
-                                },
-                                "m_modelName": "../Data/model/land.fbx"
                             }
                         }
                     }

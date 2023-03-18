@@ -67,15 +67,15 @@ namespace MySpace
 			}
 
 			// *@破棄(mapのため、整列はさせない)
-			virtual inline T ExecutSystem(int idx)
+			virtual bool ExecutSystem(const int idx)
 			{
 				if (idx == -1)
-					return T();
+					return false;
 				if (!m_aIntMap.count(idx))
-					return T();
-				T ret = m_aIntMap[idx];
+					return false;
+
 				m_aIntMap.erase(idx);
-				return ret;
+				return true;
 			}
 
 			// *@データ取得

@@ -289,8 +289,6 @@ void CShaderManager::CallBackFuncAndBind(std::string ps, std::string vs)
 //==========================================================
 void CShaderManager::BindPS(std::string name, UINT slot)
 {
-	/*if (!m_aPixelMap.count(name))
-		return;*/
 	m_aPixelMap[name]->Bind(slot);
 }
 
@@ -299,8 +297,6 @@ void CShaderManager::BindPS(std::string name, UINT slot)
 //==========================================================
 void CShaderManager::BindVS(std::string name, UINT slot)
 {
-	if (!m_aVtxMap.count(name))
-		return;
 	m_aVtxMap[name]->Bind(slot);
 }
 
@@ -309,8 +305,6 @@ void CShaderManager::BindVS(std::string name, UINT slot)
 //==========================================================
 void CShaderManager::BindCB(std::string name, UINT slot)
 {
-	/*if (!m_aConstantBufferMap.count(name))
-		return;*/
 	m_aConstantBufferMap[name]->Bind(slot);
 }
 
@@ -319,8 +313,6 @@ void CShaderManager::BindCB(std::string name, UINT slot)
 //==========================================================
 void CShaderManager::BindMB(std::string name, UINT slot) 
 {
-	if (!Find<MeshBufferSharedPtr>(name, m_aMeshBuffMap))
-		return;
 	m_aMeshBuffMap[name]->Bind(slot);
 }
 

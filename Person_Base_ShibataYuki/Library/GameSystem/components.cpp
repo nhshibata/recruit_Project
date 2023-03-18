@@ -48,6 +48,10 @@ void CreateComponentType()
 	mgr->SetComponentSave<AI::CAISystem>();
 	mgr->SetComponentSave<AI::CAIAgent>();
 
+	mgr->SetComponentSave<Spell::CSpellPlayer>();
+
+	mgr->SetComponentSave<CActionPlayer>();
+
 	mgr->SetComponentSave<CRenderer>();
 	mgr->SetComponentSave<CLight>();
 	mgr->SetComponentSave<CCollision>();

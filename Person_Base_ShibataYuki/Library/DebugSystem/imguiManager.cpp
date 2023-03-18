@@ -26,16 +26,18 @@
 #include <Application/screen.h>
 #include <CoreSystem/Time/fps.h>
 #include <CoreSystem/FuncPtr/funcPtrManager.h>
+
 #include <GameSystem/Component/Transform/transform.h>
+#include <GameSystem/Component/Camera/camera.h>
+#include <GameSystem/Component/Camera/debugCamera.h>
 #include <GameSystem/Manager/sceneManager.h>
 #include <GameSystem/Manager/gameObjectManager.h>
 #include <GameSystem/Manager/drawSystem.h>
+
 #include <GraphicsSystem/Manager/imageResourceManager.h>
 #include <GraphicsSystem/DirectX/renderTarget.h>
 #include <GraphicsSystem/DirectX/depthStencil.h>
 
-#include <GameSystem/Component/Camera/camera.h>
-#include <GameSystem/Component/Camera/debugCamera.h>
 #include <AISystem/Nav/navMeshBake.h>
 
 using namespace MySpace::System;

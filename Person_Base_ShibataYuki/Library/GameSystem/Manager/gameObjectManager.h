@@ -60,11 +60,11 @@ namespace MySpace
 			GameObjList m_aAddObjList;					// ↑ に追加するオブジェクト格納用
 			GameObjList m_aDontDestroyList;				// shared_ptrの性質を利用して、シーン遷移時に渡す非破棄リスト
 			TagObjMap m_aTagMap;						// tag検索用
-			std::weak_ptr<CScene> m_pAffiliationScene;
+			std::weak_ptr<CScene> m_pAffiliationScene;  // 所属シーン
 
 		private:
 			// *@追加待ちリストを配列に追加
-			bool ObjectListUpdate();
+			bool ObjectListAddUpdate();
 
 			// *@配列へ追加
 			void SetGameObject(std::shared_ptr<CGameObject> obj);
@@ -86,12 +86,8 @@ namespace MySpace
 			void Update();
 			void UpdateInDebug();
 			void FixedUpdate();
-			void AllUninit()
-			{
-				m_aGameObjList.clear();
-				m_aAddObjList.clear();
-				m_aDontDestroyList.clear();
-			}
+			void AllUninit();
+			
 
 			// *@必要最低限のゲームオブジェクト作成
 			void CreateBasicObject();
@@ -116,14 +112,6 @@ namespace MySpace
 			{
 				return m_aGameObjList; 
 			}
-			// *@所持リスト(weak用)
-			WeakList GetList(int)
-			{ 
-				WeakList ret;
-				for (auto & obj : m_aGameObjList)
-					ret.push_back(obj);
-				return ret;
-			}
 
 			// *@オブジェクト上書き
 			void SetObjList(std::list<std::shared_ptr<CGameObject>> list, bool addDrive = false);
@@ -147,15 +135,8 @@ namespace MySpace
 			}
 
 			// *@非破壊リストの引き渡し
-			void PassDontDestroyList(CGameObjectManager* mgr) 
-			{
-				for (auto & obj : m_aDontDestroyList)
-				{
-					mgr->SetGameObject(obj);		// 直接追加
-					mgr->DontDestroy(obj);			// 登録
-					obj->SetScene(mgr->GetScene());	// TODO: DontDestroySceneを作る?
-				}
-			}
+			void PassDontDestroyList(CGameObjectManager* mgr);
+			
 		};
 	}
 }

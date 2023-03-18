@@ -32,7 +32,7 @@ namespace MySpace
 		{
 		private:
 			//--- エイリアス
-			using COLLISION_VEC = std::vector<std::weak_ptr<CCollision>>;				// 途中破棄された場合、参照しないためweak
+			using COLLISION_VEC = std::vector<std::weak_ptr<CCollision>>;	// 途中破棄された場合、参照しないためweak
 		
 		public:
 			//--- メンバ関数
@@ -43,7 +43,7 @@ namespace MySpace
 			void CollisionCheck();
 
 			// *@破棄(mapのため、整列はさせない)
-			inline std::weak_ptr<CCollision> ExecutSystem(int idx)
+			inline bool ExecutSystem(int idx)
 			{
 				return CMapSystemBase::ExecutSystem(idx);
 			}
