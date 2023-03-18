@@ -50,31 +50,6 @@ namespace MySpace
 		class CSceneManager
 		{
 		private:
-			// シリアライズ用ｸﾗｽ
-#pragma region Cereal
-			// 一時的に退避させるMementoパターン?
-			class CSceneData
-			{
-			private:
-				friend cereal::access;
-				template <typename Archive>
-				void save(Archive & archive, std::uint32_t const version) const
-				{
-					archive(CEREAL_NVP(m_SceneName), CEREAL_NVP(m_aGameObjectManager), CEREAL_NVP(m_resource));
-				}
-				template <typename Archive>
-				void load(Archive & archive, std::uint32_t const version)
-				{
-					archive(CEREAL_NVP(m_SceneName), CEREAL_NVP(m_aGameObjectManager), CEREAL_NVP(m_resource));
-				}
-			public:
-				std::string m_SceneName;
-				std::list<std::shared_ptr<CGameObject>> m_aGameObjectManager;
-				CInstantResourceManager m_resource;
-			};
-#pragma endregion
-
-		private:
 			//--- エイリアス
 			using SceneList = std::vector<std::shared_ptr<CScene>>;
 

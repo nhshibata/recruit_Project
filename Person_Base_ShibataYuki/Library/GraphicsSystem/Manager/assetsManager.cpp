@@ -14,6 +14,7 @@
 #include <GraphicsSystem/Manager/modelManager.h>
 #include <GraphicsSystem/Manager/effectManager.h>
 #include <GraphicsSystem/Manager/shaderManager.h>
+#include <DebugSystem/errorMessage.h>
 
 using namespace MySpace::Graphics;
 
@@ -59,10 +60,16 @@ HRESULT CAssetsManager::Init(Application* app)
 	//--- シェーダーなどの初期化
 	hr = m_pShader->Init();
 	if (FAILED(hr))
+	{
+		Debug::CErrorMessage::DispErrorHandle(hr);
 		return hr;
+	}
 	hr = m_pFont->Init();
 	if (FAILED(hr))
+	{
+		Debug::CErrorMessage::DispErrorHandle(hr);
 		return hr;
+	}
 
 	return hr;
 }

@@ -219,6 +219,12 @@
     <ClInclude Include="..\Library\GameSystem\Manager\drawSystemBase.h">
       <Filter>ヘッダー ファイル\Manager</Filter>
     </ClInclude>
+    <ClInclude Include="..\Library\GameSystem\Scene\sceneSerealize.h">
+      <Filter>ヘッダー ファイル\Scene</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Library\GameSystem\Component\actionPlayer.h">
+      <Filter>ヘッダー ファイル\Component</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\Library\GameSystem\components.cpp">
@@ -343,6 +349,12 @@
     </ClCompile>
     <ClCompile Include="..\Library\GameSystem\Manager\drawSystemBase.cpp">
       <Filter>ソース ファイル\Manager</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Library\GameSystem\Scene\sceneSerealize.cpp">
+      <Filter>ソース ファイル\Scene</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Library\GameSystem\Component\actionPlayer.cpp">
+      <Filter>ソース ファイル\Component</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

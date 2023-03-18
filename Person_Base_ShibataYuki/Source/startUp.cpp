@@ -58,7 +58,7 @@
 #include <GameSystem/Manager/sceneManager.h>
 
 //#include <gameCentipedeMarch.h>
-//#include <spellComponents.h>
+#include <spellComponents.h>
 //#include <gameCentipedeMarch.h>
 
 //--- ƒ‰ƒCƒuƒ‰ƒŠQÆ

@@ -61,68 +61,44 @@ void CGameObjectManager::Uninit()
 }
 
 //==========================================================
+// 解放
+//==========================================================
+void CGameObjectManager::AllUninit()
+{
+	m_aGameObjList.clear();
+	m_aAddObjList.clear();
+	m_aDontDestroyList.clear();
+}
+
+//==========================================================
 // 更新
 //==========================================================
 void CGameObjectManager::Update()
 {
-	WeakList pActiveObj(0);		// アクティブなオブジェクトを格納
-	WeakList pDestoroyObj(0);	// 破棄オブジェクトを格納
-
+	WeakList aActiveObj(0);		// アクティブなオブジェクトを格納
+	WeakList aDestoroyObj(0);	// 破棄オブジェクトを格納
+	
 	//--- オブジェクト更新
-	// 状態確認（問題は次のフレームまでは破棄されないオブジェクトがあること?)
-	for (auto & obj : m_aGameObjList)
-	{
-		// 状態により分岐
-		switch (obj->GetState())
-		{
-		case CGameObject::ACTIVE:				// 通常の更新
-			// トランスフォームの更新
-			//(*it).get()->GetTransform()->Update();
-
-			// アクティブなオブジェクトを格納
-			pActiveObj.push_back(obj);
-			break;
-		case CGameObject::WAIT:					// 待機
-			break;
-		case CGameObject::DESTROY:				// 削除オブジェクト
-			// 格納
-			pDestoroyObj.push_back(obj);
-			break;
-		case CGameObject::TAKEOVER:				// 引き継ぎ待ち
-			break;
-		case CGameObject::MAX_OBJECT_STATE:		// 最大数
-			break;
-		default:
-			break;
-		}
-	}
-
-	//--- オブジェクトの破棄
-	for (auto & obj : pDestoroyObj)
-	{
-		DestroyObject(obj);
-		obj.reset();
-	}
-	// 配列のリセット
-	pDestoroyObj.clear();
-
-	//--- アクティブだけ
 	// コンポーネントの更新
-	for (auto & obj : pActiveObj)
+	for (auto & obj : m_aGameObjList)
 	{
 		//--- component内でシーンが破棄された場合、処理を抜ける
 		if (MySpace::SceneManager::CSceneManager::Get()->Escape())
 			return;
 
-#ifdef _DEBUG
-		[[maybe_unused]]auto name = obj.lock()->GetName();
-#endif // _DEBUG
+		// 状態確認
+		if (obj->GetState() == CGameObject::E_ObjectState::DESTROY)
+			aDestoroyObj.push_back(obj);
+		if (obj->GetState() != CGameObject::E_ObjectState::ACTIVE)
+			continue;
 
-		obj.lock()->Update();
+		//--- 更新と格納
+		obj->Update();
+		aActiveObj.push_back(obj);
 	}
 	
-	// 最後の方に更新したいものを更新
-	for (auto & obj : pActiveObj)
+	// 最後に更新したいものを更新
+	for (auto & obj : aActiveObj)
 	{
 		//--- component内でシーンが破棄された場合、処理を抜ける
 		if (MySpace::SceneManager::CSceneManager::Get()->Escape())
@@ -130,16 +106,25 @@ void CGameObjectManager::Update()
 		obj.lock()->LateUpdate();
 	}
 	// 配列のリセット
-	pActiveObj.clear();
+	aActiveObj.clear();
+
+	//--- オブジェクトの破棄
+	for (auto & obj : aDestoroyObj)
+	{
+		DestroyObject(obj);
+		obj.reset();
+	}
+	// 配列のリセット
+	aDestoroyObj.clear();
 
 	// 追加オブジェクトの確認、追加
 	if (m_aAddObjList.size() != 0)
-		ObjectListUpdate();
+		ObjectListAddUpdate();
 	
 }
 
 //==========================================================
-// 更新
+// デバッグ用更新
 //==========================================================
 void CGameObjectManager::UpdateInDebug()
 {
@@ -182,7 +167,7 @@ void CGameObjectManager::UpdateInDebug()
 
 	// 追加オブジェクトの確認、追加
 	if(m_aAddObjList.size() != 0)
-		ObjectListUpdate();	
+		ObjectListAddUpdate();	
 }
 
 //==========================================================
@@ -208,7 +193,7 @@ void CGameObjectManager::FixedUpdate()
 //==========================================================
 // オブジェクト追加
 //==========================================================
-bool CGameObjectManager::ObjectListUpdate()
+bool CGameObjectManager::ObjectListAddUpdate()
 {
 	// 追加オブジェクトが空でない時
 	// 途中追加のオブジェがある場合のためwhile
@@ -325,33 +310,33 @@ std::shared_ptr<CGameObject> CGameObjectManager::CreateGameObject(CGameObject* p
 {
 	static int nCreateObjNum = 0;
 
-	std::shared_ptr<CGameObject> spObj;
+	std::shared_ptr<CGameObject> pNewObj;
 	//--- ｺﾋﾟｰ確認
 	if (pObj)
 	{
-		spObj = std::make_shared<CGameObject>(*pObj);
+		pNewObj = std::make_shared<CGameObject>(*pObj);
 	}
 	else
 	{
-		spObj = std::make_shared<CGameObject>();
+		pNewObj = std::make_shared<CGameObject>();
 		// 初期名
-		spObj->SetName(std::string("GameObj_" + std::to_string(++nCreateObjNum)));
+		pNewObj->SetName(std::string("GameObj_" + std::to_string(++nCreateObjNum)));
 	}
 	
 	// 自分の所属シーンを教える
-	spObj.get()->SetScene(m_pAffiliationScene);
+	pNewObj.get()->SetScene(m_pAffiliationScene);
 
 	// 自身のweakPtrを渡す
-	spObj.get()->SetPtr(spObj);
+	pNewObj.get()->SetPtr(pNewObj);
 	if (!pObj)
-		TagMove(CTagDefault::DEFAULT, spObj);
+		TagMove(CTagDefault::DEFAULT, pNewObj);
 	else
-		TagMove(pObj->GetTag(), spObj);
+		TagMove(pObj->GetTag(), pNewObj);
 
-	spObj.get()->Awake();	// 実質OnCreateな気がする
-	AddGameObject(spObj);	// 追加待ちリストに追加
+	pNewObj.get()->Awake();	// 実質OnCreateな気がする
+	AddGameObject(pNewObj);	// 追加待ちリストに追加
 
-	return spObj;
+	return pNewObj;
 };
 
 //==========================================================
@@ -433,9 +418,9 @@ std::weak_ptr<CGameObject> CGameObjectManager::FindGameObj(std::string name)
 //=========================================================
 std::weak_ptr<CGameObject> CGameObjectManager::FindGameObjWithTag(std::string tag)
 {
+	// なし
 	if (m_aTagMap.count(tag) == 0)
 	{
-		//m_aTagMap[tag] = gameObjWeakList();
 		return std::weak_ptr<CGameObject>();
 	}
 	return m_aTagMap[tag].list.begin()->lock();
@@ -462,10 +447,24 @@ std::weak_ptr<CGameObject> CGameObjectManager::FindGameObjWithTag(CTag tag)
 //=========================================================
 std::list<std::weak_ptr<CGameObject>> CGameObjectManager::FindGameObjctsWithTag(std::string tag)
 {
+	// なし
 	if (m_aTagMap.count(tag) == 0)
 	{
 		m_aTagMap[tag] = STGameObjWeakList();
 		return std::list<std::weak_ptr<CGameObject>>();
 	}
 	return m_aTagMap[tag].list;
+}
+
+//=========================================================
+// 非破壊オブジェクトの移動
+//=========================================================
+void CGameObjectManager::PassDontDestroyList(CGameObjectManager* mgr)
+{
+	for (auto & obj : m_aDontDestroyList)
+	{
+		mgr->SetGameObject(obj);		// 直接追加
+		mgr->DontDestroy(obj);			// 登録
+		obj->SetScene(mgr->GetScene());	// TODO: DontDestroySceneを作る?
+	}
 }

@@ -80,15 +80,6 @@ void CGBuffer::SetUpMultiRenderTarget()
 	//--- 定数バッファ書き込み
 	auto sm = Application::Get()->GetSystem<CAssetsManager>()->GetShaderManager();
 
-	//--- ｶﾒﾗ
-	//XMFLOAT4X4 mat[4];
-	//auto pCam = CCamera::GetMain();
-	//mat[0] = pCam->Transform()->GetLocalMatrix().Transpose();
-	//mat[1] = pCam->GetViewMatrix().Transpose();
-	////mat[2] = pCam->GetProjMatrix().Transpose();
-	//mat[2] = CCamera::CalcProjMatrix(45.0f, CScreen::GetWidth() / CScreen::GetHeight(), 10.2f, 100.0f).Transpose();
-	//XMStoreFloat4x4(&mat[3], XMMatrixIdentity()); // 使わないdummy
-
 	//--- ライト
 	CDirectionalLight* light = dynamic_cast<CDirectionalLight*>(CLight::GetMain());
 	if (!light)

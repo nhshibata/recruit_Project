@@ -224,8 +224,8 @@ int CDrawSystemBase::PolygonRegist(std::weak_ptr<CPolygonRenderer> render)
 //==========================================================
 void CDrawSystemBase::SetInstanchingModel(std::string name, std::string ps, std::string vs, const int id)
 {
-	const auto pushName = name + "#" + ps + "#" + vs;
-	m_aInstancingModelMap[pushName].aID.push_back(id);
+	CDrawSystemBase::STDrawInfo add = STDrawInfo(name, ps, vs);
+	m_aInstancingModelMap[add].aID.push_back(id);
 }
 
 //==========================================================
@@ -233,11 +233,11 @@ void CDrawSystemBase::SetInstanchingModel(std::string name, std::string ps, std:
 //==========================================================
 void CDrawSystemBase::SetInstanchingMesh(std::string name, std::string ps, std::string vs, const int id, CMesh* mesh)
 {
-	const auto pushName = name + "#" + ps + "#" + vs;
-	if (!m_aInstancingMeshMap.count(pushName))
-		m_aInstancingMeshMap[pushName].pMesh = mesh;
+	CDrawSystemBase::STDrawInfo add = STDrawInfo(name, ps, vs);
+	if (!m_aInstancingMeshMap.count(add))
+		m_aInstancingMeshMap[add].pMesh = mesh;
 
-	m_aInstancingMeshMap[pushName].aID.push_back(id);
+	m_aInstancingMeshMap[add].aID.push_back(id);
 }
 
 //==========================================================
@@ -258,9 +258,9 @@ std::vector<std::weak_ptr<CRenderer>> CDrawSystemBase::GetList()
 // 0:登録名 1:PS 2:VS
 // FIXME:ラムダ式に変えてもいいかも
 //=========================================================
-const CDrawSystemBase::STSplitName CDrawSystemBase::TextSplitToNamePSVS(const std::string name)
+const CDrawSystemBase::STDrawInfo CDrawSystemBase::TextSplitToNamePSVS(const std::string name)
 {
-	STSplitName ret;
+	CDrawSystemBase::STDrawInfo ret;
 	// ps座標取得
 	auto startIndex = name.find("#");
 	// 名前格納
@@ -278,7 +278,7 @@ const CDrawSystemBase::STSplitName CDrawSystemBase::TextSplitToNamePSVS(const st
 //==========================================================
 // 除外
 //==========================================================
-std::weak_ptr<CRenderer> CDrawSystemBase::ExecutSystem(int idx)
+bool CDrawSystemBase::ExecutSystem(const int idx)
 {
 	auto release = IDToData(idx);
 
@@ -328,12 +328,14 @@ void CDrawSystemBase::Draw3DShadow()
 	//--- 登録されたモデル名別に描画
 	for (auto & modelObj : m_aInstancingModelMap)
 	{
-		auto aName = TextSplitToNamePSVS(modelObj.first);
-		if (aName.IsError())
+		// 一時変数
+		auto info = &modelObj.first;
+
+		if (info->IsError())
 			continue;
 
 		//--- 描画するモデルの取得
-		auto pModel = pAssets->GetModelManager()->GetModel(aName.strName);
+		auto pModel = pAssets->GetModelManager()->GetModel(info->strName);
 		// モデルが解放されていないか一応確認
 		if (!pModel)
 			continue;
@@ -355,37 +357,30 @@ void CDrawSystemBase::Draw3DShadow()
 		if (meshObj.second.aID.size() == 0)// 一応確認
 			continue;
 
+		//--- インスタンシングに必要なデータ格納
+		std::vector<RENDER_DATA> data;
+		for (auto & id : meshObj.second.aID)
+		{
+			CMeshRenderer* mesh = dynamic_cast<CMeshRenderer*>(m_aIntMap[id].lock().get());
+			data.push_back(mesh->GetShaderData());
+		}
+
 		// ビルボードか確認
 		if (CBillboard* bill = dynamic_cast<CBillboard*>(meshObj.second.pMesh); bill != nullptr)
 		{
-			auto aName = TextSplitToNamePSVS(meshObj.first);
-			if (aName.IsError())
+			// 一時変数
+			auto info = &meshObj.first;
+			if (info->IsError())
 				continue;
 
 			// ﾃｸｽﾁｬ設定
-			auto image = pAssets->GetImageManager()->GetResource(aName.strName);
+			auto image = pAssets->GetImageManager()->GetResource(info->strName);
 			auto tex = image ? image->GetSRV() : NULL;
-
-			//--- インスタンシングに必要なデータ格納
-			std::vector<RENDER_DATA> data;
-			for (auto & id : meshObj.second.aID)
-			{
-				CMeshRenderer* mesh = dynamic_cast<CMeshRenderer*>(m_aIntMap[id].lock().get());
-				data.push_back(mesh->GetShaderData());
-			}
 
 			meshObj.second.pMesh->DrawInstancing(data, false, tex, &bill->GetTextureMatrix());
 		}
 		else
 		{
-			//--- インスタンシングに必要なデータ格納
-			std::vector<RENDER_DATA> data;
-			for (auto & id : meshObj.second.aID)
-			{
-				CMeshRenderer* mesh = dynamic_cast<CMeshRenderer*>(m_aIntMap[id].lock().get());
-				data.push_back(mesh->GetShaderData());
-			}
-
 			meshObj.second.pMesh->DrawInstancing(data, false);
 		}
 	}
@@ -419,12 +414,14 @@ void CDrawSystemBase::Draw3D()
 	//--- 不透明描画
 	for (auto & intancingModel : m_aInstancingModelMap)
 	{
-		auto aName = TextSplitToNamePSVS(intancingModel.first);
-		if (aName.IsError())
+		// 一時変数
+		auto info = &intancingModel.first;
+
+		if (info->IsError())
 			continue;
 
 		//--- 描画するモデルの取得
-		auto model = pAssets->GetModelManager()->GetModel(aName.strName);
+		auto model = pAssets->GetModelManager()->GetModel(info->strName);
 		// モデルが解放されていないか一応確認
 		if (!model)
 			continue;
@@ -438,7 +435,7 @@ void CDrawSystemBase::Draw3D()
 		}
 
 		// shaderBind
-		pSM->CallBackFuncAndBind(aName.strPixel, aName.strVertex);
+		pSM->CallBackFuncAndBind(info->strPixel, info->strVertex);
 		model->DrawInstancing(pDX->GetDeviceContext(), data, EByOpacity::eOpacityOnly, false);
 
 #if BUILD_MODE
@@ -454,12 +451,13 @@ void CDrawSystemBase::Draw3D()
 
 	for (auto & modelObj : m_aInstancingModelMap)
 	{
-		auto aName = TextSplitToNamePSVS(modelObj.first);
-		if (aName.IsError())
+		// 一時変数
+		auto info = &modelObj.first;
+		if (info->IsError())
 			continue;
 
 		//--- 描画するモデルの取得
-		auto model = pAssets->GetModelManager()->GetModel(aName.strName);
+		auto model = pAssets->GetModelManager()->GetModel(info->strName);
 
 		//--- インスタンシングに必要なデータ格納
 		std::vector<RENDER_DATA> data;
@@ -470,7 +468,7 @@ void CDrawSystemBase::Draw3D()
 		}
 
 		// shaderBind
-		pSM->CallBackFuncAndBind(aName.strPixel, aName.strVertex);
+		pSM->CallBackFuncAndBind(info->strPixel, info->strVertex);
 		model->DrawInstancing(pDX->GetDeviceContext(), data, EByOpacity::eTransparentOnly, false);
 	}
 
@@ -480,21 +478,19 @@ void CDrawSystemBase::Draw3D()
 	//--- メッシュインスタンシング描画
 	for (auto & meshObj : m_aInstancingMeshMap)
 	{
-		if (meshObj.second.aID.size() == 0)// 一応確認
-			continue;
-
-		auto aName = TextSplitToNamePSVS(meshObj.first);
-		if (aName.IsError())
+		// 一時変数
+		auto info = &meshObj.first;
+		if (info->IsError())
 			continue;
 
 		// shaderBind
-		pSM->CallBackFuncAndBind(aName.strPixel, aName.strVertex);
+		pSM->CallBackFuncAndBind(info->strPixel, info->strVertex);
 
 		// ビルボードか確認
 		if (CBillboard* bill = dynamic_cast<CBillboard*>(meshObj.second.pMesh); bill != nullptr)
 		{
 			// ﾃｸｽﾁｬ設定
-			auto image = pAssets->GetImageManager()->GetResource(aName.strName);
+			auto image = pAssets->GetImageManager()->GetResource(info->strName);
 			auto tex = image ? image->GetSRV() : NULL;
 			
 			//--- インスタンシングに必要なデータ格納
@@ -567,19 +563,25 @@ void CDrawSystemBase::SetDebugMesh(std::string name, CMesh* mesh)
 	m_aDebugMeshMap[name].push_back(mesh);
 }
 
-void CDrawSystemBase::ReleaseDebugMesh(CMesh* pMesh)
+void CDrawSystemBase::ReleaseDebugMesh(const CMesh* pMesh)
 {
 	for (auto & name : m_aDebugMeshMap)
 	{
 		for (auto & mesh : name.second)
 		{
+			if (pMesh != mesh)
+				continue;
+
 			// 同一のメッシュﾎﾟｲﾝﾀを見つけたので除外
-			if (pMesh == mesh)
+			auto it = std::find(name.second.begin(), name.second.end(), mesh);
+			name.second.erase(it);
+
+			// 0になってもmapは残るので、除外
+			if (name.second.size() == 0)
 			{
-				auto it = std::find(name.second.begin(), name.second.end(), mesh);
-				name.second.erase(it);
-				return;
+				m_aDebugMeshMap.erase(name.first);
 			}
+			return;
 		}
 	}
 }

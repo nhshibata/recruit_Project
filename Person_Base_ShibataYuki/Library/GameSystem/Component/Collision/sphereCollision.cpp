@@ -166,15 +166,44 @@ void CSphereCollision::PushBack(CCollision* other, float radius)
 	CTransform* otherTransform = other->Transform();
 
 	// 2点間と２半径の差
-	Vector3 distance = transform->GetPos() - otherTransform->GetPos();
-	float len = (GetRadius() + radius) - distance.Length();
+	Vector3 distance = otherTransform->GetPos() - transform->GetPos();
+	float Length = distance.Length();
 
-	// 押し出す方向
-	distance = distance.Normalize();
-	Vector3 pushVec = distance * len;
+	if (Length < (GetRadius() + radius))
+	{
+		auto len = (GetRadius() + radius) - Length;
+		
+		// 押し出す方向
+		distance = distance.Normalize();
+		Vector3 pushVec = distance * len;
+		
+		// 押し戻し
+		transform->SetPos(transform->GetPos() - pushVec);
+	}
 
-	// 押し戻し
-	transform->SetPos(transform->GetPos() + pushVec);
+#elif 0
+	// sphere1: 当たり判定を行う球1
+	// sphere2: 当たり判定を行う球2
+	// penetrationDepth: 2つの球がめり込んでいる深さ
+
+	// 衝突した方向を求める
+	XMVECTOR direction = XMVectorSubtract(sphere1.center, sphere2.center);
+	direction = XMVector3Normalize(direction);
+
+	// 衝突した点を求める
+	XMVECTOR collisionPoint = XMVectorAdd(sphere2.center, XMVectorScale(direction, sphere2.radius - penetrationDepth));
+
+	// 衝突した点から球1の中心点までの距離を求める
+	XMVECTOR collisionToCenter = XMVectorSubtract(collisionPoint, sphere1.center);
+	float collisionToCenterLength = XMVectorGetX(XMVector3Length(collisionToCenter));
+
+	// 球1が押し出される距離を求める
+	float pushLength = sphere1.radius - collisionToCenterLength;
+
+	// 球1を押し出す
+	XMVECTOR pushDirection = XMVectorNegate(XMVector3Normalize(collisionToCenter));
+	sphere1.center = XMVectorAdd(sphere1.center, XMVectorScale(pushDirection, pushLength));
+
 #else
 	//---  押し出し
 		// 二点間と２半径の差

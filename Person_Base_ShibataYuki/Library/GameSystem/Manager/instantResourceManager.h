@@ -58,4 +58,5 @@ namespace MySpace
 		};
 	}
 }
+
 #endif // !__RESOURCE_MANAGER_H__

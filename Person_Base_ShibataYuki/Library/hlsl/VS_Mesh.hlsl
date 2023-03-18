@@ -40,9 +40,7 @@ VS_OUTPUT main(VS_INPUT input)
     //sunPos = mul(sunPos, g_world);
     sunPos = mul(sunPos, g_sunView);
     sunPos = mul(sunPos, g_sunProj);
-    output.SunPos = sunPos;
-    
-    //output.SunPos = output.Position;
+    output.SunPos = sunPos;    
     
     output.id = id;
     

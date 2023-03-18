@@ -254,7 +254,7 @@ void CBoxCollision::PosAdjustment(Vector3 otherPos, Vector3 otherSize)
 	// 現在位置と以前の位置を取得
 	Vector3 currentPos = Transform()->GetPos();
 	Vector3 oldPos = Transform()->GetOldPos();
-
+	
 	// 2つの矩形の距離を計算
 	Vector3 distance = currentPos - otherPos;
 	float totalRadius = (GetSize().GetLargeValue() + otherSize.GetLargeValue());
@@ -271,6 +271,11 @@ void CBoxCollision::PosAdjustment(Vector3 otherPos, Vector3 otherSize)
 			Vector3 newPosition = currentPos + displacement;
 
 			Transform()->SetPos(newPosition);
+
+			if (CBoxCollision::Box(newPosition, this->m_vSize, otherPos, otherSize))
+			{
+				Transform()->SetPos(oldPos);
+			}
 		}
 		else
 		{
@@ -286,8 +291,8 @@ void CBoxCollision::PosAdjustment(Vector3 otherPos, Vector3 otherSize)
 
 	//---  押し出し
 	// 2点間と２半径の差
-	Vector3 distance = Transform()->GetPos() - pos;
-	float len = (GetSize().GetLargeValue() * 2 + size.GetLargeValue() * 2) - distance.Length();
+	Vector3 distance = Transform()->GetPos() - otherPos;
+	float len = (GetSize().GetLargeValue() * 2 + otherSize.GetLargeValue() * 2) - distance.Length();
 	// 押し出す方向
 	distance = distance.Normalize();
 	Vector3 vec = distance * len;

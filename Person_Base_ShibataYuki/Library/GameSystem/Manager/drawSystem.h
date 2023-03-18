@@ -64,7 +64,7 @@ namespace MySpace
 
 			void Update();
 
-			// *@Volume‚Ìæ“¾
+			// *@VolumeŠÇ—ƒNƒ‰ƒX‚Ìæ“¾
 			inline CVolumeManager* GetVolumeManager() { return &m_VolumeMgr; }
 
 #if BUILD_MODE

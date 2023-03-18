@@ -5,6 +5,7 @@
 //--- インクルード部
 // GameSystem
 #include <GameSystem/Component/cursor.h>
+#include <GameSystem/Component/actionPlayer.h>
 
 #include <GameSystem/Component/Transform/transform.h>
 #include <GameSystem/Component/Transform/rectTransform.h>
@@ -37,5 +38,7 @@
 #include <AISystem/System/aiSystem.h>
 #include <AISystem/System/aiAgent.h>
 
+#include <spellComponents.h>
+#include <spellPlayer.h>
 
 void CreateComponentType();

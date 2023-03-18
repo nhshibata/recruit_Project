@@ -10,7 +10,7 @@
 // InstancingVertex(model,mesh)‚É‚»‚ÌŒã“n‚³‚ê‚é
 //==========================================================
 
-#include "common.hlsli"
+#include <Common.hlsli>
 
 struct VS_IN_Depth
 {

@@ -7,6 +7,7 @@
 //--- インクルード部
 #include <GraphicsSystem/Shader/meshBuffer.h>
 #include <Application/Application.h>
+#include <DebugSystem/errorMessage.h>
 
 using namespace MySpace::Graphics;
 
@@ -103,6 +104,11 @@ HRESULT CMeshBuffer::Make(Description desc)
 	m_stDesc = desc;
 	hr = CreateVertex();
 	if(m_stDesc.pIdx)hr = CreateIndex();
+	if (FAILED(hr))
+	{
+		Debug::CErrorMessage::DispErrorHandle(hr);
+		return hr;
+	}
 	return hr;
 }
 
@@ -121,8 +127,7 @@ HRESULT CMeshBuffer::CreateIndex()
 	subResource.pSysMem = m_stDesc.pIdx;
 
 	// インデックスバッファ生成
-	return Application::Get()->GetDevice()->CreateBuffer(&bufDesc, &subResource, &m_pIdxBuffer);
-	
+	return Application::Get()->GetDevice()->CreateBuffer(&bufDesc, &subResource, &m_pIdxBuffer);	
 }
 
 //==========================================================

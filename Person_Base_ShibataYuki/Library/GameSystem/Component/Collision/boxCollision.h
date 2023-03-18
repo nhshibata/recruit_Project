@@ -37,6 +37,7 @@ namespace MySpace
 		class CBoxCollision : public CCollision
 		{
 		private:
+#pragma region Serealize
 			// シリアライズ
 			friend cereal::access;
 			template<class Archive>
@@ -51,6 +52,7 @@ namespace MySpace
 				archive(cereal::make_nvp("boxCollision", cereal::base_class<CCollision>(this)),
 					CEREAL_NVP(m_vSize), CEREAL_NVP(m_bOBBMode));
 			}
+#pragma endregion
 		private:
 			Vector3 m_vSize;	// 当たり判定サイズ
 			bool m_bOBBMode;	// OBB判定を取るか

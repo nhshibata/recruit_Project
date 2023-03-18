@@ -68,8 +68,6 @@ VS_OUTPUT main(VS_INPUT input)
     wPos = mul(wPos, g_sunProj);
     output.SunPos = wPos;
     
-    
-    //output.Diffuse = float4(0, 0, 0, 0);
     output.id = input.id;
     
     return output;

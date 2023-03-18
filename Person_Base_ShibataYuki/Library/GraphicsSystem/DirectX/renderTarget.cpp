@@ -8,6 +8,7 @@
 //--- インクルード部
 #include <GraphicsSystem/DirectX/renderTarget.h>
 #include <Application/Application.h>
+#include <DebugSystem/errorMessage.h>
 
 using namespace MySpace::Graphics;
 
@@ -27,6 +28,8 @@ CRenderTarget::CRenderTarget(DXGI_FORMAT format, UINT width, UINT height)
 	:m_pRTV(nullptr)
 {
 	HRESULT hr = Create(format, width, height);
+	if (FAILED(hr))
+		Debug::CErrorMessage::DispErrorHandle(hr);
 }
 
 //==========================================================

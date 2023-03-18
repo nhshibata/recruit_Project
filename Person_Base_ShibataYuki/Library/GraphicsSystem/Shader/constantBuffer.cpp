@@ -7,6 +7,7 @@
 //--- インクルード部
 #include <GraphicsSystem/Shader/constantBuffer.h>
 #include <Application/Application.h>
+#include <DebugSystem/errorMessage.h>
 
 using namespace MySpace::Graphics;
 	
@@ -119,7 +120,10 @@ HRESULT CConstantBuffer::Make(UINT size, UINT slot, EType type, D3D11_SUBRESOURC
 
 	hr = pD->CreateBuffer(&bd, nullptr, &m_pBuffer);
 	if (FAILED(hr))
+	{
+		Debug::CErrorMessage::DispErrorHandle(hr);
 		return hr;
+	}
 	return hr;
 }
 
@@ -152,7 +156,11 @@ HRESULT CConstantBuffer::MakeCPU(UINT size, UINT slot, EType type, D3D11_SUBRESO
 
 	hr = pD->CreateBuffer(&bd, nullptr, &m_pBuffer);
 	if (FAILED(hr))
+	{
+		Debug::CErrorMessage::DispErrorHandle(hr);
 		return hr;
+	}
+
 	return hr;
 }
 

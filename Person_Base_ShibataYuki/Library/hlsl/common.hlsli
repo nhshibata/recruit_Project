@@ -152,15 +152,15 @@ float IsNear(float4 pixelPos, float sunDepth)
 //==========================================================
 // ﾃｸｽﾁｬ/ｻﾝﾌﾟﾗ
 //==========================================================
-Texture2D g_texture : register(t0);         // テクスチャ
-Texture2D g_texEmissive : register(t1);     // 発光テクスチャ
-Texture2D g_texTransparent : register(t2);  // 透過テクスチャ
-Texture2D g_texSpecular : register(t3);     // 鏡面反射テクスチャ
-Texture2D g_texSunView : register(t4);      // 影ﾃｸｽﾁｬ
-Texture2D g_rampTexture : register(t5);     // Toon用
-Texture2D g_ColorTexture : register(t6);    // GBuffer:Color用
-Texture2D g_NormalTexture : register(t7);   // GBuffer:Normal用
-Texture2D g_worldTexture : register(t8);    // GBuffer:World用
-Texture2D g_depthTexture : register(t9);    // GBuffer:Depth用
+Texture2D g_texture         : register(t0);     // テクスチャ
+Texture2D g_texEmissive     : register(t1);     // 発光テクスチャ
+Texture2D g_texTransparent  : register(t2);     // 透過テクスチャ
+Texture2D g_texSpecular     : register(t3);     // 鏡面反射テクスチャ
+Texture2D g_texSunView      : register(t4);     // 影ﾃｸｽﾁｬ
+Texture2D g_rampTexture     : register(t5);     // Toon用
+Texture2D g_ColorTexture    : register(t6);     // GBuffer:Color用
+Texture2D g_NormalTexture   : register(t7);     // GBuffer:Normal用
+Texture2D g_worldTexture    : register(t8);     // GBuffer:World用
+Texture2D g_depthTexture    : register(t9);     // GBuffer:Depth用
 
 SamplerState g_sampler : register(s0);      // サンプラ

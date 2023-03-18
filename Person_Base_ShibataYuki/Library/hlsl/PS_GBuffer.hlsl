@@ -10,17 +10,17 @@ struct PS_OUT
     float4 color    : SV_TARGET0;
     float4 normal   : SV_TARGET1;
     float4 wolrd    : SV_TARGET2;
-    float  depth     : SV_TARGET3;
+    float  depth    : SV_TARGET3;
 };
 
 // 3D用
 struct PS_INPUT
 {
-    float4 Pos : SV_Position;
-    float2 Tex : TEXCOORD0;
-    float3 Normal : TEXCOORD1;
+    float4 Pos      : SV_Position;
+    float2 Tex      : TEXCOORD0;
+    float3 Normal   : TEXCOORD1;
     float4 PosForPS : TEXCOORD2;
-    float4 sunPos : TEXCOORD3; // 太陽から見た位置
+    float4 sunPos   : TEXCOORD3; // 太陽から見た位置
     
     uint id : SV_InstanceID; // インスタンスID
 };
@@ -50,7 +50,6 @@ PS_OUT main(PS_INPUT pin)
     
     float depthSun = pin.sunPos.z / pin.sunPos.w;
     pout.depth = depthSun; 
-    pout.depth = pin.Pos.z / pin.Pos.w;
     
     return pout;
 }

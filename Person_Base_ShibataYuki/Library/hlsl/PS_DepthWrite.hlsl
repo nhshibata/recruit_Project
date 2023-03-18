@@ -17,6 +17,5 @@ float main(PS_IN pin) : SV_TARGET
 {
     // スクリーン座標
     float depth = pin.screenPos.z / pin.screenPos.w;
-
     return depth;
 }

@@ -9,23 +9,13 @@
 #include <GraphicsSystem/DirectX/DXDevice.h>
 #include <GraphicsSystem/DirectX/renderTarget.h>
 #include <GraphicsSystem/DirectX/depthStencil.h>
+#include <DebugSystem/errorMessage.h>
 
 #include <ImGui/imgui_impl_win32.h>
 #include <ImGui/imgui_impl_dx11.h>
 
 using namespace MySpace::Graphics;
 
-#include <iostream>
-#include <string>
-#include <Windows.h>
-#include <D3D11.h>
-#include <tchar.h>
-
-std::string GetErrorDescription(HRESULT hr) {
-	char buf[512] = { 0 };
-	FormatMessageA(FORMAT_MESSAGE_FROM_SYSTEM, NULL, hr, 0, buf, 511, NULL);
-	return buf;
-}
 
 //=========================================================
 // コンストラクタ
@@ -141,8 +131,7 @@ HRESULT CDXDevice::Init(HWND hWnd, unsigned int Width, unsigned int Height, bool
 	hr = g_pDevice->CreateTexture2D(&textureDesc, nullptr, g_pRenderTexture.GetAddressOf());
 	if (FAILED(hr))
 	{
-		auto erro = GetErrorDescription(hr);
-		MessageBox(NULL, _T(erro.c_str()), _T("error"), MB_OK);
+		Debug::CErrorMessage::DispErrorHandle(hr);
 		return hr;
 	}
 
@@ -157,8 +146,7 @@ HRESULT CDXDevice::Init(HWND hWnd, unsigned int Width, unsigned int Height, bool
 	hr = g_pDevice->CreateShaderResourceView(g_pRenderTexture.Get(), &srvDesc, g_pSRV.GetAddressOf());
 	if (FAILED(hr))
 	{
-		auto erro = GetErrorDescription(hr);
-		MessageBox(NULL, _T(erro.c_str()), _T("error"), MB_OK);
+		Debug::CErrorMessage::DispErrorHandle(hr);
 		return hr;
 	}
 	//g_pRenderTexture = pTexture;
