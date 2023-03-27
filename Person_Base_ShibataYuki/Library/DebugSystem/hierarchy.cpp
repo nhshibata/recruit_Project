@@ -38,6 +38,21 @@ using namespace MySpace::Debug;
 using namespace MySpace::SceneManager;
 using namespace MySpace::Game;
 
+//--- 列挙体宣言
+// このソース内でしか使われない、マジックナンバー解消用
+enum class ECreateObjType
+{
+	EMPTY,
+	MODEL,
+	STATIC_MODEL,
+	BILLBOARD,
+	SPHERE,
+	BOX,
+	POLYGON,
+	TEXT,
+	MAX
+};
+
 //==========================================================
 // コンストラクタ
 //==========================================================
@@ -103,26 +118,25 @@ void CHierachy::Update(ImGuiManager* manager)
 		//--- オブジェクト生成
 		if (ImGui::BeginMenu("New GameObject"))
 		{
-			// FIXME:マジックナンバー
 			if (ImGui::MenuItem("Empty"))
-				manager->GetInspector()->SetSelectGameObject(CreateObject(0));
+				manager->GetInspector()->SetSelectGameObject(CreateObject((int)ECreateObjType::EMPTY));
 			if (ImGui::MenuItem("Model"))
-				manager->GetInspector()->SetSelectGameObject(CreateObject(1));
+				manager->GetInspector()->SetSelectGameObject(CreateObject((int)ECreateObjType::MODEL));
 			if (ImGui::MenuItem("StaticModel"))
-				manager->GetInspector()->SetSelectGameObject(CreateObject(2));
+				manager->GetInspector()->SetSelectGameObject(CreateObject((int)ECreateObjType::STATIC_MODEL));
 			if (ImGui::MenuItem("Billboard"))
-				manager->GetInspector()->SetSelectGameObject(CreateObject(3));
+				manager->GetInspector()->SetSelectGameObject(CreateObject((int)ECreateObjType::BILLBOARD));
 			if (ImGui::MenuItem("Sphere"))
-				manager->GetInspector()->SetSelectGameObject(CreateObject(4));
+				manager->GetInspector()->SetSelectGameObject(CreateObject((int)ECreateObjType::SPHERE));
 			if (ImGui::MenuItem("Box"))
-				manager->GetInspector()->SetSelectGameObject(CreateObject(5));
+				manager->GetInspector()->SetSelectGameObject(CreateObject((int)ECreateObjType::BOX));
 			if (ImGui::MenuItem("Polygon"))
-				manager->GetInspector()->SetSelectGameObject(CreateObject(6));			
+				manager->GetInspector()->SetSelectGameObject(CreateObject((int)ECreateObjType::POLYGON));
 			if (ImGui::MenuItem("Text"))
-				manager->GetInspector()->SetSelectGameObject(CreateObject(7));
-			if (ImGui::MenuItem("Objects"))
+				manager->GetInspector()->SetSelectGameObject(CreateObject((int)ECreateObjType::TEXT));
+			if (ImGui::MenuItem("Objects "))
 			{
-				m_CreateValue.bDisp ^= true;
+				m_CreateParam.bDisp ^= true;
 			}
 			ImGui::EndMenu();
 		}
@@ -133,8 +147,7 @@ void CHierachy::Update(ImGuiManager* manager)
 	DispSearch();
 
 	// オブジェクトウィンドウ
-	if(m_CreateValue.bDisp)
-		CreateObjectsWindow();
+	CreateObjectsWindow();
 
 	//--- GameObject表示
 	{
@@ -157,7 +170,7 @@ void CHierachy::Update(ImGuiManager* manager)
 			// 名前が同一の場合、ImGuiに認識されないので、IDを与える
 			auto name = std::to_string(objCnt) + ":" + object->GetName();
 
-			
+
 			// 選択ボタン、ウィンドウ表示
 			if (ImGui::Button(name.c_str()))
 			{
@@ -185,9 +198,9 @@ void CHierachy::Update(ImGuiManager* manager)
 	ImGui::End();
 
 	//--- セーブロード
-	if(m_bLoadSaveWindow)
+	if (m_bLoadSaveWindow)
 		DispSaveLoadMenu();
-	
+
 
 	ImGui::PopStyleColor();
 	ImGui::PopStyleColor();
@@ -276,8 +289,14 @@ void CHierachy::DispChild(ImGuiManager* manager, std::weak_ptr<MySpace::Game::CG
 
 	ImGui::SameLine();
 
+	// 位置設定
+	SetControlPosX(20);
+	ImGui::Text("- child -");
+	ImGui::SameLine();
+	SetControlPosX(60);
+
 	// 子の表示
-	if (ImGui::TreeNode(std::string(object.lock()->GetName() + "- child -").c_str()))
+	if (ImGui::TreeNode(std::string(object.lock()->GetName() + "##- child -").c_str()))
 	{
 		// 開いたが、なし
 		if (object.lock()->GetTransform()->GetChildCount() == 0)
@@ -286,7 +305,7 @@ void CHierachy::DispChild(ImGuiManager* manager, std::weak_ptr<MySpace::Game::CG
 			ImGui::TreePop();
 			return;
 		}
-		
+
 		for (auto cnt = 0; cnt < object.lock()->GetTransform()->GetChildCount(); ++cnt)
 		{
 			// nullptr確認
@@ -336,17 +355,12 @@ void CHierachy::DispChild(ImGuiManager* manager, std::weak_ptr<MySpace::Game::CG
 void CHierachy::DispSearch()
 {
 	// for文変数
-	static const int nSearch[static_cast<int>(ESearchTerms::MAX)] =
-	{
-		static_cast<int>(ESearchTerms::OBJ_NAME),
-		static_cast<int>(ESearchTerms::TAG),
-		static_cast<int>(ESearchTerms::COMPONENT),
-		static_cast<int>(ESearchTerms::STATE_ACTIVE),
-		static_cast<int>(ESearchTerms::STATE_STOP),
-	};
-
-	static const char* szDisp[static_cast<int>(ESearchTerms::MAX)] ={
-		"Name","Tag","Component","sActive","sStop"
+	static const char* szDisp[static_cast<int>(ESearchTerms::MAX)] = {
+		"Name",
+		"Tag",
+		"Component",
+		"sActive",
+		"sStop"
 	};
 
 	if (ImGui::Button(m_Search.bSearchCriteria ? "Search:ON" : "Search:OFF"))
@@ -363,7 +377,7 @@ void CHierachy::DispSearch()
 	for (int cnt = 0; cnt < static_cast<int>(ESearchTerms::MAX); ++cnt)
 	{
 		ImGui::SameLine();
-		ImGui::RadioButton(szDisp[cnt], (int*)&m_Search.eTerms, nSearch[cnt]);
+		ImGui::RadioButton(szDisp[cnt], (int*)&m_Search.eTerms, cnt);
 	}
 	ImGui::Separator();
 }
@@ -375,30 +389,31 @@ bool CHierachy::DispCheck(CGameObject* obj)
 {
 	switch (m_Search.eTerms)
 	{
-	case MySpace::Debug::CHierachy::ESearchTerms::OBJ_NAME:		// 文字列一部一致でも可
-		if (obj->GetName().find(m_Search.inputName) != std::string::npos)
-			return true;
-		break;
-	case MySpace::Debug::CHierachy::ESearchTerms::TAG:			// tag比較
-		return obj->GetTagPtr()->Compare(m_Search.inputName);
-
-	case MySpace::Debug::CHierachy::ESearchTerms::COMPONENT:
-	{
-		auto comList = obj->GetComponentList();					// 文字列一部一致でも可
-		for (const auto & com : comList)
-		{
-			if (com->GetName().find(m_Search.inputName) != std::string::npos)
+		case MySpace::Debug::CHierachy::ESearchTerms::OBJ_NAME:		// 文字列一部一致でも可
+			if (obj->GetName().find(m_Search.inputName) != std::string::npos)
 				return true;
-		}
-		break;
-	}
-	case MySpace::Debug::CHierachy::ESearchTerms::STATE_ACTIVE:
-		return obj->GetState() == CGameObject::E_ObjectState::ACTIVE;
+			break;
+		case MySpace::Debug::CHierachy::ESearchTerms::TAG:			// tag比較
+			return obj->GetTagPtr()->Compare(m_Search.inputName);
 
-	case MySpace::Debug::CHierachy::ESearchTerms::STATE_STOP:
-		return obj->GetState() == CGameObject::E_ObjectState::STOP;
-	default:
-		break;
+		case MySpace::Debug::CHierachy::ESearchTerms::COMPONENT:
+		{
+			auto comList = obj->GetComponentList();					// 文字列一部一致でも可
+			for (const auto & com : comList)
+			{
+				if (com->GetName().find(m_Search.inputName) != std::string::npos)
+					return true;
+			}
+			break;
+		}
+		case MySpace::Debug::CHierachy::ESearchTerms::STATE_ACTIVE:
+			return obj->GetState() == CGameObject::E_ObjectState::ACTIVE;
+
+		case MySpace::Debug::CHierachy::ESearchTerms::STATE_STOP:
+			return obj->GetState() == CGameObject::E_ObjectState::STOP;
+		
+		default:
+			break;
 	}
 	return false;
 }
@@ -409,92 +424,114 @@ bool CHierachy::DispCheck(CGameObject* obj)
 //==========================================================
 void CHierachy::CreateObjectsWindow()
 {
-	static const char* aSelectType[] ={
-		"empty", 
+	static std::vector<std::string> aSelectType = {
+		"Empty",
 		"Model",
 		"StaticModel",
 		"Billboard",
 		"Sphere",
 		"Box",
 		"Polygon",
-		"Text"
+		"Text",
 	};
-	ImGui::Begin("Objects Create", &m_CreateValue.bDisp);
+	if (!m_CreateParam.bDisp)
+		return;
+	ImGui::SetNextWindowSize(ImVec2(CScreen::GetWidth()/3, CScreen::GetHeight()/3), ImGuiCond_::ImGuiCond_Once);
+	ImGui::Begin("Objects Create", &m_CreateParam.bDisp);
 
 	// type選択
-	for (auto cnt = 0; cnt < _countof(aSelectType); ++cnt)
-	{
-		if (ImGui::Selectable(aSelectType[cnt], m_CreateValue.nObjType))
-		{
-			m_CreateValue.nObjType = cnt;
-			break;
-		}
-	}
+	m_CreateParam.nObjType = Debug::DispComboSelect(aSelectType, "Type", m_CreateParam.nObjType);
 
-	ImGui::DragInt("Grid", &m_CreateValue.nGrid);
-	ImGui::DragFloat("Margin", &m_CreateValue.fMargin);
-	ImGui::DragFloat3("Center", (float*)&m_CreateValue.vCenter);
+	Debug::SetTextAndAligned("Duplicate");
+	ImGui::Checkbox("##Duplicate", &m_CreateParam.bCopy);
+
+	Debug::SetTextAndAligned(u8"Grid (? × ?)");
+	ImGui::DragInt("##Grid", &m_CreateParam.nGrid);
+
+	Debug::SetTextAndAligned("Margin");
+	ImGui::DragFloat("##Margin", &m_CreateParam.fMargin);
+
+	Debug::SetTextAndAligned("Center");
+	ImGui::DragFloat3("##Center", (float*)&m_CreateParam.vCenter);
+
 	// 実行
-	if (ImGui::Button("Create"))
+	Debug::SetTextAndAligned("Create");
+	if (ImGui::Button("Generate"))
 	{
-		for (int grid = 0; grid < m_CreateValue.nGrid * m_CreateValue.nGrid; ++grid)
+		for (int gridCnt = 0; gridCnt < m_CreateParam.nGrid * m_CreateParam.nGrid; ++gridCnt)
 		{
-			float col = float(grid % m_CreateValue.nGrid);
-			float row = float(grid / m_CreateValue.nGrid);
-			auto pObj = CreateObject(m_CreateValue.nObjType);
-			auto newPos = m_CreateValue.vCenter;
-			newPos.x = (m_CreateValue.vCenter.x - (m_CreateValue.nGrid - 1 * m_CreateValue.fMargin * 0.5f)) + col * m_CreateValue.fMargin;
-			newPos.z = (m_CreateValue.vCenter.z - (m_CreateValue.nGrid - 1 * m_CreateValue.fMargin * 0.5f)) + row * m_CreateValue.fMargin;
+			CGameObject::Ptr pObj;
+			//--- オブジェクトｺﾋﾟｰか
+			if (m_CreateParam.bCopy)
+			{
+				pObj = Debug::CopyGameObject();
+				pObj->SetName(pObj->GetName() + std::to_string(gridCnt));
+			}
+			else
+				pObj = CreateObject(m_CreateParam.nObjType);
+
+			//--- 座標設定
+			float col = float(gridCnt % m_CreateParam.nGrid);
+			float row = float(gridCnt / m_CreateParam.nGrid);
+			auto newPos = m_CreateParam.vCenter;
+			newPos.x = (m_CreateParam.vCenter.x - (m_CreateParam.nGrid - 1 * m_CreateParam.fMargin * 0.5f)) + col * m_CreateParam.fMargin;
+			newPos.z = (m_CreateParam.vCenter.z - (m_CreateParam.nGrid - 1 * m_CreateParam.fMargin * 0.5f)) + row * m_CreateParam.fMargin;
 			pObj->GetTransform()->SetPos(newPos);
 		}
 	}
 
 	ImGui::End();
-
 }
 
 //==========================================================
 // オブジェクト生成
 //==========================================================
-CGameObject::Ptr CHierachy::CreateObject(int No, std::shared_ptr<MySpace::Game::CGameObject> copy)
+CGameObject::Ptr CHierachy::CreateObject(const int No, std::shared_ptr<MySpace::Game::CGameObject> copy)
 {
 	CGameObject::Ptr obj;
+
+	//--- ｺﾋﾟｰするか確認
 	if (copy)
 		obj = CGameObject::CopyObject(copy).lock();
 	else
 		obj = CGameObject::CreateObject().lock();
 
-	switch (No)
+	//--- 列挙体に変換
+	ECreateObjType eType = (ECreateObjType)No;
+
+	switch (eType)
 	{
-	case 0:
-		break;
-	case 1:
-		obj->AddComponent<CModelRenderer>();
-		break;
-	case 2:
-	{
-		auto render = obj->AddComponent<CModelRenderer>();
-		render->SetStatic(CMeshRenderer::EStaticMode::STATIC);
-		break;
+		case ECreateObjType::EMPTY:
+			break;
+		case ECreateObjType::MODEL:
+			obj->AddComponent<CModelRenderer>();
+			break;
+		case ECreateObjType::STATIC_MODEL:
+		{
+			auto render = obj->AddComponent<CModelRenderer>();
+			render->SetStatic(CMeshRenderer::EStaticMode::STATIC);
+			break;
+		}
+		case ECreateObjType::BILLBOARD:
+			obj->AddComponent<Game::CBillboardRenderer>();
+			break;
+		case ECreateObjType::SPHERE:
+			obj->AddComponent<Game::CSphereRenderer>();
+			break;
+		case ECreateObjType::BOX:
+			obj->AddComponent<Game::CBoxRenderer>();
+			break;
+		case ECreateObjType::POLYGON:
+			obj->AddComponent<Game::CPolygonRenderer>();
+			break;
+		case ECreateObjType::TEXT:
+			obj->AddComponent<Game::CTextRenderer>();
+			break;
+		case ECreateObjType::MAX:
+			break;
+		default:
+			break;
 	}
-	case 3:
-		obj->AddComponent<Game::CBillboardRenderer>();
-		break;
-	case 4:
-		obj->AddComponent<Game::CSphereRenderer>();
-		break;
-	case 5:
-		obj->AddComponent<Game::CBoxRenderer>();
-		break;
-	case 6:
-		obj->AddComponent<Game::CPolygonRenderer>();
-		break;
-	case 7:
-		obj->AddComponent<Game::CTextRenderer>();
-		break;
-	default:
-		break;
-	};
 
 	return obj;
 }

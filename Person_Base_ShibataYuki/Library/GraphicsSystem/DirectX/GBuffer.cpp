@@ -76,38 +76,39 @@ void CGBuffer::SetUpMultiRenderTarget()
 		m_aRenderTaget[int(ETexture::DEPTH)]->GetView(),
 	};
 	pDC->OMSetRenderTargets(int(ETexture::MAX), aView, m_pDepthStencil->GetView());
+	//pDC->OMSetRenderTargets(int(ETexture::MAX), aView, Application::Get()->GetSystem<CDXDevice>()->GetDepthStencilView());
 
 	//--- 定数バッファ書き込み
 	auto sm = Application::Get()->GetSystem<CAssetsManager>()->GetShaderManager();
+	sm->GetPS("PS_GBuffer")->Bind();
 
 	//--- ライト
-	CDirectionalLight* light = dynamic_cast<CDirectionalLight*>(CLight::GetMain());
-	if (!light)
-		return;
+	//CDirectionalLight* light = dynamic_cast<CDirectionalLight*>(CLight::GetMain());
+	//if (!light)
+	//	return;
 
-	auto sunDir = light->GetDir();
-	// ビュー
-	DirectX::XMMATRIX sunView = DirectX::XMMatrixLookAtLH(
-		DirectX::XMVectorSet(50, 300, -3, 0),
-		DirectX::XMVectorSet(sunDir.x, sunDir.y, sunDir.z, 0),
-		DirectX::XMVectorSet(0, 1, 0, 0)
-	);
-	// 平行投影
-	DirectX::XMMATRIX sunProj = XMMatrixPerspectiveFovLH(
-		XMConvertToRadians(45), CScreen::GetWidth() / CScreen::GetHeight(), 0.2f, 1000.0f);
-	// Orthographic Projection行列を作成する
-	//float nearPlane = 0.1f;
-	//float farPlane = 1000.0f;
-	//sunProj = XMMatrixOrthographicOffCenterLH(0, CScreen::GetWidth(), 0, CScreen::GetHeight(), nearPlane, farPlane);
+	//auto sunDir = light->GetDir();
+	//// ビュー
+	//DirectX::XMMATRIX sunView = DirectX::XMMatrixLookAtLH(
+	//	DirectX::XMVectorSet(50, 300, -3, 0),
+	//	DirectX::XMVectorSet(sunDir.x, sunDir.y, sunDir.z, 0),
+	//	DirectX::XMVectorSet(0, 1, 0, 0)
+	//);
+	//// 平行投影
+	//DirectX::XMMATRIX sunProj = XMMatrixPerspectiveFovLH(
+	//	XMConvertToRadians(45), CScreen::GetWidth() / CScreen::GetHeight(), 0.2f, 1000.0f);
+	//// Orthographic Projection行列を作成する
+	////float nearPlane = 0.1f;
+	////float farPlane = 1000.0f;
+	////sunProj = XMMatrixOrthographicOffCenterLH(0, CScreen::GetWidth(), 0, CScreen::GetHeight(), nearPlane, farPlane);
 
-	SHADER_SUN sunMat;
-	DirectX::XMStoreFloat4x4(&sunMat.sunView, DirectX::XMMatrixTranspose(sunView));
-	DirectX::XMStoreFloat4x4(&sunMat.sunProj, DirectX::XMMatrixTranspose(sunProj));
-	// 1,2番目を渡す
-	sm->CBWrite(NAME_TO(SHADER_SUN), &sunMat);
-	sm->BindCB(NAME_TO(SHADER_SUN));
+	//SHADER_SUN sunMat;
+	//DirectX::XMStoreFloat4x4(&sunMat.sunView, DirectX::XMMatrixTranspose(sunView));
+	//DirectX::XMStoreFloat4x4(&sunMat.sunProj, DirectX::XMMatrixTranspose(sunProj));
+	//// 1,2番目を渡す
+	//sm->CBWrite(NAME_TO(SHADER_SUN), &sunMat);
+	//sm->BindCB(NAME_TO(SHADER_SUN));
 
-	sm->GetPS("PS_GBuffer")->Bind();
 
 }
 
@@ -213,16 +214,16 @@ void CGBuffer::SetSRV(const ETexture e)
 	switch (e)
 	{
 		case ETexture::COLOR:
-			pDC->PSSetShaderResources(6, 1, &aTex[int(ETexture::COLOR)]);
+			pDC->PSSetShaderResources(Slot::ETextureSlot::TS_COLOR, 1, &aTex[int(ETexture::COLOR)]);
 			break;
 		case ETexture::NORMAL:
-			pDC->PSSetShaderResources(7, 1, &aTex[int(ETexture::NORMAL)]);
+			pDC->PSSetShaderResources(Slot::ETextureSlot::TS_NORMAL, 1, &aTex[int(ETexture::NORMAL)]);
 			break;
 		case ETexture::WORLD:
-			pDC->PSSetShaderResources(8, 1, &aTex[int(ETexture::WORLD)]);
+			pDC->PSSetShaderResources(Slot::ETextureSlot::TS_WORLD, 1, &aTex[int(ETexture::WORLD)]);
 			break;
 		case ETexture::DEPTH:
-			pDC->PSSetShaderResources(9, 1, &aTex[int(ETexture::DEPTH)]);
+			pDC->PSSetShaderResources(Slot::ETextureSlot::TS_DEPTH, 1, &aTex[int(ETexture::DEPTH)]);
 			break;
 		default:
 			break;
@@ -237,7 +238,8 @@ void CGBuffer::ImGuiDebug()
 	static bool disp = true;
 	static ImVec2 size = ImVec2(CScreen::GetWidth() / 10, CScreen::GetHeight() / 10);
 
-	ImGui::Checkbox("GBuffer View", &disp);
+	Debug::SetTextAndAligned("GBuffer View");
+	ImGui::Checkbox("##GBuffer View", &disp);
 	
 	if (!disp)
 		return;

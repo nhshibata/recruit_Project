@@ -52,14 +52,15 @@ namespace MySpace
 				bool bSearchCriteria = false;
 				std::string inputName;
 			};
-			struct CreateWindowSet
+			struct STCreateWindowSet
 			{
 				bool bDisp;
+				bool bCopy;
 				float fMargin;
 				int nGrid;
 				int nObjType;
 				MyMath::Vector3 vCenter;
-				CreateWindowSet():bDisp(false),fMargin(1),nGrid(3),nObjType(0) {}
+				STCreateWindowSet():bDisp(false),bCopy(true),fMargin(1),nGrid(3),nObjType(0) {}
 			};
 		private:
 			static constexpr const char* DESC_SELECT_OBJ = u8"selectGameObjcet";	// *@ドラッグ＆ドロップ認識用文字列
@@ -69,7 +70,7 @@ namespace MySpace
 			std::string m_strLoadPath;
 			std::vector<std::string> m_aScenePathList;
 			SearchSet m_Search;
-			CreateWindowSet m_CreateValue;
+			STCreateWindowSet m_CreateParam;
 
 		private:
 			//--- メンバ関数
@@ -88,7 +89,7 @@ namespace MySpace
 
 			// *@オブジェクト一括生成
 			void CreateObjectsWindow();
-			std::shared_ptr<MySpace::Game::CGameObject> CreateObject(int No, std::shared_ptr<MySpace::Game::CGameObject> = std::shared_ptr<MySpace::Game::CGameObject>());
+			std::shared_ptr<MySpace::Game::CGameObject> CreateObject(const int No, std::shared_ptr<MySpace::Game::CGameObject> = std::shared_ptr<MySpace::Game::CGameObject>());
 
 
 		public:

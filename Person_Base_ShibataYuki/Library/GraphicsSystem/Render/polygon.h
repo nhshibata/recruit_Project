@@ -68,6 +68,7 @@ namespace MySpace
 				m_pTexture = pTexture;
 				m_mTex._44 = (m_pTexture) ? 1.0f : 0.0f;
 			}
+
 			// *@表示座標の設定
 			static inline  void SetPos(float fX, float fY) { m_vPos.x = fX; m_vPos.y = fY; }
 			// *@表示座標の設定
@@ -86,15 +87,20 @@ namespace MySpace
 			static inline void SetUV(XMFLOAT2 uv) { m_vPosTexFrame = uv; }
 
 			// *@テクスチャフレームサイズの設定 (0.0＜fWidth≦1.0, 0.0＜fHeight≦1.0)
-			static inline void SetFrameSize(float fWidth, float fHeight) { m_vSizeTexFrame.x = fWidth; m_vSizeTexFrame.y = fHeight; }
+			static inline void SetFrameSize(float fWidth, float fHeight) 
+			{
+				m_vSizeTexFrame.x = fWidth; 
+				m_vSizeTexFrame.y = fHeight; 
+			}
+
 			// *@テクスチャフレームサイズの設定 (0.0＜fWidth≦1.0, 0.0＜fHeight≦1.0)
 			static inline void SetFrameSize(XMFLOAT2 size) { m_vSizeTexFrame = size; }
 
 			// *@頂点カラーの設定
 			static inline void SetColor(float fRed, float fGreen, float fBlue) { SetColor(XMFLOAT3(fRed, fGreen, fBlue)); }
-			// *@頂点カラーの設定
 			
-			static inline void SetColor(XMFLOAT3 vColor)
+			// *@頂点カラーの設定
+			static void SetColor(XMFLOAT3 vColor)
 			{
 				if (m_vColor != vColor)
 				{
@@ -104,7 +110,7 @@ namespace MySpace
 			}
 
 			// *@不透明度の設定
-			static inline void SetAlpha(float fAlpha)
+			static void SetAlpha(float fAlpha)
 			{
 				if (fAlpha == m_vColor.a)
 					return;
@@ -113,12 +119,12 @@ namespace MySpace
 			}
 
 			// *@頂点カラーの設定
-			static inline void SetColor(float fRed, float fGreen, float fBlue, float fAlpha)
+			static void SetColor(float fRed, float fGreen, float fBlue, float fAlpha)
 			{
 				SetColor(XMFLOAT4(fRed, fGreen, fBlue, fAlpha));
 			}
 			// *@頂点カラーの設定
-			static inline void SetColor(XMFLOAT4 vColor)
+			static void SetColor(XMFLOAT4 vColor)
 			{
 				if (m_vColor != vColor)
 				{

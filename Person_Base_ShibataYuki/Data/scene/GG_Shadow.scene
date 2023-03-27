@@ -1,5 +1,5 @@
 {
-    "PostProcess": {
+    "../Data/scene\\GG_Shadow.scene": {
         "ptr_wrapper": {
             "id": 2147483649,
             "data": {
@@ -88,6 +88,12 @@
                                                     "y": 0.0,
                                                     "z": 0.0,
                                                     "w": 0.0
+                                                },
+                                                "m_pChilds": [],
+                                                "m_pParent": {
+                                                    "locked_ptr": {
+                                                        "polymorphic_id": 0
+                                                    }
                                                 }
                                             }
                                         }
@@ -709,6 +715,12 @@
                                                     "y": 0.0,
                                                     "z": 0.0,
                                                     "w": 0.0
+                                                },
+                                                "m_pChilds": [],
+                                                "m_pParent": {
+                                                    "locked_ptr": {
+                                                        "polymorphic_id": 0
+                                                    }
                                                 }
                                             }
                                         }
@@ -840,6 +852,12 @@
                                                     "y": 0.0,
                                                     "z": 0.0,
                                                     "w": 0.0
+                                                },
+                                                "m_pChilds": [],
+                                                "m_pParent": {
+                                                    "locked_ptr": {
+                                                        "polymorphic_id": 0
+                                                    }
                                                 }
                                             }
                                         }
@@ -870,7 +888,7 @@
                                                             "b": 1.0,
                                                             "a": 1.0
                                                         },
-                                                        "m_strPixelShader": "PS_AssimpNega",
+                                                        "m_strPixelShader": "PS_Assimp",
                                                         "m_strVertexShader": "VS_Assimp"
                                                     },
                                                     "m_vCenter": {
@@ -999,6 +1017,12 @@
                                                     "y": 0.0,
                                                     "z": 0.0,
                                                     "w": 0.0
+                                                },
+                                                "m_pChilds": [],
+                                                "m_pParent": {
+                                                    "locked_ptr": {
+                                                        "polymorphic_id": 0
+                                                    }
                                                 }
                                             }
                                         }
@@ -1158,6 +1182,12 @@
                                                     "y": 0.0,
                                                     "z": 0.0,
                                                     "w": 0.0
+                                                },
+                                                "m_pChilds": [],
+                                                "m_pParent": {
+                                                    "locked_ptr": {
+                                                        "polymorphic_id": 0
+                                                    }
                                                 }
                                             }
                                         }
@@ -1317,6 +1347,12 @@
                                                     "y": 0.0,
                                                     "z": 0.0,
                                                     "w": 0.0
+                                                },
+                                                "m_pChilds": [],
+                                                "m_pParent": {
+                                                    "locked_ptr": {
+                                                        "polymorphic_id": 0
+                                                    }
                                                 }
                                             }
                                         }
@@ -1477,6 +1513,12 @@
                                                     "y": 0.0,
                                                     "z": 0.0,
                                                     "w": 0.0
+                                                },
+                                                "m_pChilds": [],
+                                                "m_pParent": {
+                                                    "locked_ptr": {
+                                                        "polymorphic_id": 0
+                                                    }
                                                 }
                                             }
                                         }
@@ -1576,21 +1618,21 @@
                                                                 },
                                                                 "m_material": {
                                                                     "m_Diffuse": {
-                                                                        "x": 0.0,
+                                                                        "x": 1.0,
                                                                         "y": 1.0,
-                                                                        "z": 0.0,
+                                                                        "z": 1.0,
                                                                         "w": 0.30000001192092898
                                                                     },
                                                                     "m_Ambient": {
-                                                                        "x": 0.0,
+                                                                        "x": 1.0,
                                                                         "y": 1.0,
-                                                                        "z": 0.0,
+                                                                        "z": 1.0,
                                                                         "w": 0.0
                                                                     },
                                                                     "m_Specular": {
-                                                                        "x": 0.0,
-                                                                        "y": 0.0,
-                                                                        "z": 0.0,
+                                                                        "x": 0.10000000149011612,
+                                                                        "y": 0.10000000149011612,
+                                                                        "z": 0.10000000149011612,
                                                                         "w": 1.0
                                                                     },
                                                                     "m_Emissive": {
@@ -1599,7 +1641,7 @@
                                                                         "z": 0.0,
                                                                         "w": 1.0
                                                                     },
-                                                                    "m_Power": 1.0
+                                                                    "m_Power": 0.0
                                                                 }
                                                             }
                                                         }
@@ -1698,6 +1740,12 @@
                                                     "y": 0.0,
                                                     "z": 0.0,
                                                     "w": 0.0
+                                                },
+                                                "m_pChilds": [],
+                                                "m_pParent": {
+                                                    "locked_ptr": {
+                                                        "polymorphic_id": 0
+                                                    }
                                                 }
                                             }
                                         }
@@ -1796,21 +1844,21 @@
                                                                 },
                                                                 "m_material": {
                                                                     "m_Diffuse": {
-                                                                        "x": 0.0,
+                                                                        "x": 1.0,
                                                                         "y": 1.0,
-                                                                        "z": 0.0,
+                                                                        "z": 1.0,
                                                                         "w": 0.30000001192092898
                                                                     },
                                                                     "m_Ambient": {
-                                                                        "x": 0.0,
+                                                                        "x": 1.0,
                                                                         "y": 1.0,
-                                                                        "z": 0.0,
+                                                                        "z": 1.0,
                                                                         "w": 0.0
                                                                     },
                                                                     "m_Specular": {
-                                                                        "x": 0.0,
-                                                                        "y": 0.0,
-                                                                        "z": 0.0,
+                                                                        "x": 0.10000000149011612,
+                                                                        "y": 0.10000000149011612,
+                                                                        "z": 0.10000000149011612,
                                                                         "w": 1.0
                                                                     },
                                                                     "m_Emissive": {
@@ -1819,7 +1867,7 @@
                                                                         "z": 0.0,
                                                                         "w": 1.0
                                                                     },
-                                                                    "m_Power": 1.0
+                                                                    "m_Power": 0.0
                                                                 }
                                                             }
                                                         }
@@ -1918,6 +1966,12 @@
                                                     "y": 0.0,
                                                     "z": 0.0,
                                                     "w": 0.0
+                                                },
+                                                "m_pChilds": [],
+                                                "m_pParent": {
+                                                    "locked_ptr": {
+                                                        "polymorphic_id": 0
+                                                    }
                                                 }
                                             }
                                         }
@@ -2077,6 +2131,12 @@
                                                     "y": 0.0,
                                                     "z": 0.0,
                                                     "w": 0.0
+                                                },
+                                                "m_pChilds": [],
+                                                "m_pParent": {
+                                                    "locked_ptr": {
+                                                        "polymorphic_id": 0
+                                                    }
                                                 }
                                             }
                                         }
@@ -2236,6 +2296,12 @@
                                                     "y": 0.0,
                                                     "z": 0.0,
                                                     "w": 0.0
+                                                },
+                                                "m_pChilds": [],
+                                                "m_pParent": {
+                                                    "locked_ptr": {
+                                                        "polymorphic_id": 0
+                                                    }
                                                 }
                                             }
                                         }
@@ -2360,6 +2426,12 @@
                                                     "y": 0.0,
                                                     "z": 0.0,
                                                     "w": 0.0
+                                                },
+                                                "m_pChilds": [],
+                                                "m_pParent": {
+                                                    "locked_ptr": {
+                                                        "polymorphic_id": 0
+                                                    }
                                                 }
                                             }
                                         }
@@ -2481,6 +2553,12 @@
                                                     "y": 0.0,
                                                     "z": 0.0,
                                                     "w": 0.0
+                                                },
+                                                "m_pChilds": [],
+                                                "m_pParent": {
+                                                    "locked_ptr": {
+                                                        "polymorphic_id": 0
+                                                    }
                                                 }
                                             }
                                         }
@@ -2582,6 +2660,12 @@
                                                     "y": 0.0,
                                                     "z": 0.0,
                                                     "w": 0.0
+                                                },
+                                                "m_pChilds": [],
+                                                "m_pParent": {
+                                                    "locked_ptr": {
+                                                        "polymorphic_id": 0
+                                                    }
                                                 }
                                             }
                                         }
@@ -2703,6 +2787,12 @@
                                                     "y": 0.0,
                                                     "z": 0.0,
                                                     "w": 0.0
+                                                },
+                                                "m_pChilds": [],
+                                                "m_pParent": {
+                                                    "locked_ptr": {
+                                                        "polymorphic_id": 0
+                                                    }
                                                 }
                                             }
                                         }
@@ -2862,6 +2952,12 @@
                                                     "y": 0.0,
                                                     "z": 0.0,
                                                     "w": 0.0
+                                                },
+                                                "m_pChilds": [],
+                                                "m_pParent": {
+                                                    "locked_ptr": {
+                                                        "polymorphic_id": 0
+                                                    }
                                                 }
                                             }
                                         }
@@ -3021,6 +3117,12 @@
                                                     "y": 0.0,
                                                     "z": 0.0,
                                                     "w": 0.0
+                                                },
+                                                "m_pChilds": [],
+                                                "m_pParent": {
+                                                    "locked_ptr": {
+                                                        "polymorphic_id": 0
+                                                    }
                                                 }
                                             }
                                         }
@@ -3143,6 +3245,12 @@
                                                     "y": 0.0,
                                                     "z": 0.0,
                                                     "w": 0.0
+                                                },
+                                                "m_pChilds": [],
+                                                "m_pParent": {
+                                                    "locked_ptr": {
+                                                        "polymorphic_id": 0
+                                                    }
                                                 }
                                             }
                                         }
@@ -3244,6 +3352,12 @@
                                                     "y": 0.0,
                                                     "z": 0.0,
                                                     "w": 0.0
+                                                },
+                                                "m_pChilds": [],
+                                                "m_pParent": {
+                                                    "locked_ptr": {
+                                                        "polymorphic_id": 0
+                                                    }
                                                 }
                                             }
                                         }
@@ -3403,6 +3517,12 @@
                                                     "y": 0.0,
                                                     "z": 0.0,
                                                     "w": 0.0
+                                                },
+                                                "m_pChilds": [],
+                                                "m_pParent": {
+                                                    "locked_ptr": {
+                                                        "polymorphic_id": 0
+                                                    }
                                                 }
                                             }
                                         }

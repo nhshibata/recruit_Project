@@ -43,7 +43,7 @@ namespace MySpace
 			}
 		private:
 			//--- メンバ変数
-			int m_nLayer = 0;
+			int m_nLayer;
 
 			// 登録用静的メンバ変数
 			static std::map<int, std::string> m_aLayerMap;

@@ -14,7 +14,7 @@
 
 //--- インクルード部
 #include <GameSystem/Manager/mapSystemBase.h>
-#include <GameSystem/Shader/depthShadow.h>
+#include <GraphicsSystem/DirectX/depthShadow.h>
 #include <GraphicsSystem/Shader/instancingData.h>
 
 #include <DirectXMath.h>
@@ -106,7 +106,7 @@ namespace MySpace
 			PolygonRenderWeakList m_aPolygonList;				// 管理しているmapをソートした結果を入れる
 			InstancingMap m_aInstancingModelMap;				// インスタンシング描画格納用
 			InstancingMeshMap m_aInstancingMeshMap;				// インスタンシング描画格納用
-			std::unique_ptr<Game::CDepthShadow> m_pDepthShadow;	// 深度書き込み用
+			std::unique_ptr<Graphics::CDepthShadow> m_pDepthShadow;	// 深度書き込み用
 
 #if BUILD_MODE
 			// 確認用変数

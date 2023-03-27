@@ -33,8 +33,8 @@ void CreateComponentSpell()
 	mgr->SetComponentSave<Spell::CGameSceneManager>();
 	mgr->SetComponentSave<Spell::CStageManager>();
 	mgr->SetComponentSave<Spell::CTitleMove>();
+	mgr->SetComponentSave<Spell::CSpellPlayer>();
 	mgr->SetComponentSave<Spell::CTitleSceneManager>();
 	mgr->SetComponentSave<Spell::CGameCamera>();*/
-	mgr->SetComponentSave<Spell::CSpellPlayer>();
 
 }

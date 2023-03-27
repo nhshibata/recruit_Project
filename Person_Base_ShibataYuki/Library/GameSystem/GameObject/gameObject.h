@@ -22,7 +22,7 @@ namespace MySpace
 {
 	namespace Game
 	{
-		//--- ‘O•ûQÆ
+		//--- ‘O•ûéŒ¾
 		class CComponent;
 		class CTransform;
 		class CRenderer;

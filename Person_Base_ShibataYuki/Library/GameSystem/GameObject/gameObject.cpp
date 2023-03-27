@@ -41,8 +41,10 @@ static inline void CheckObj(CGameObject* obj)
 CGameObject::CGameObject()
 	:m_eState(E_ObjectState::ACTIVE), m_bCameraVisible(false)
 {
-	m_pTag = std::make_shared<CTag>();
-	m_pLayer = std::make_shared<CLayer>();
+	if(!m_pTag)
+		m_pTag = std::make_shared<CTag>();
+	if(!m_pLayer)
+		m_pLayer = std::make_shared<CLayer>();
 }
 
 //==========================================================
@@ -546,14 +548,14 @@ std::weak_ptr<CGameObject> CGameObject::CopyObject(CGameObject::Ptr pObj)
 	{
 		// ﾃﾞｰﾀを外部保存
 		auto obj = pObj;
-		sirial.OutputFile(obj->GetName(), GAME_COPY, obj);
+		sirial.OutputFile(obj->GetName(), COPY_DATA_GAME_OBJECT_PATH, obj);
 	}
 
 	// 一時的なオブジェクト生成
 	if (auto work = std::make_shared<CGameObject>(); work)
 	{
 		// ﾃﾞｰﾀ読み込み
-		work = sirial.InputFile(GAME_COPY);
+		work = sirial.InputFile(COPY_DATA_GAME_OBJECT_PATH);
 
 		// 新しいオブジェクト生成
 		auto newObj = CGameObject::CreateObject();

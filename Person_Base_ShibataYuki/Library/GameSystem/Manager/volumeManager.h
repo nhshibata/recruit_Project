@@ -33,10 +33,10 @@ namespace MySpace
 			const int GetBit(const int layer);
 
 			// *@レイヤーと一致したvolumeへIDを追加する
-			void AddRendererCash(const int nLayer, const int nID);
+			void AddRendererCache(const int nLayer, const int nID);
 
 			// *@所持しているVolumeコンポーネントのキャッシュをクリア
-			void ResetRendererCash();
+			void ResetRendererCache();
 
 			// *@Volumeコンポーネントが存在するか
 			const bool ExistVolume()const { return m_aIntMap.size() != 0; };

@@ -10,11 +10,13 @@
 //--- インクルード部
 #include <math.h>
 #include <d3d11.h>
+
 #include <Application/Application.h>
 #include <GraphicsSystem/Render/polygon.h>
 #include <GraphicsSystem/Manager/assetsManager.h>
 #include <GraphicsSystem/Manager/shaderManager.h>
 #include <GraphicsSystem/PostProcess/gaussianBlur.h>
+#include <GraphicsSystem/Shader/shaderStruct.h>
 
 using namespace MySpace::Graphics;
 
@@ -34,10 +36,10 @@ HRESULT CGaussianBlur::InitShader()
 	VertexShaderSharedPtr vsX = std::make_shared<CVertexShader>();
 	ConstantBufferSharedPtr cb = std::make_shared<CConstantBuffer>();
 
-	hr = ps->Make(CSO_PATH(PS_Blur.cso));
+	hr = ps->Make(CPixelName::GetCSO(CPixelName::szBlur));
 	if (FAILED(hr))
 		return hr;
-	pSM->SetPS(NAME_TO(PS_Blur), ps);
+	pSM->SetPS(CPixelName::szBlur, ps);
 
 	const D3D11_INPUT_ELEMENT_DESC layout[] = {
 		{"POSITION", 0, DXGI_FORMAT_R32G32B32_FLOAT,    0, 0,D3D11_INPUT_PER_VERTEX_DATA, 0},
@@ -45,17 +47,17 @@ HRESULT CGaussianBlur::InitShader()
 		{"TEXCOORD", 0, DXGI_FORMAT_R32G32_FLOAT,       0, D3D11_APPEND_ALIGNED_ELEMENT, D3D11_INPUT_PER_VERTEX_DATA, 0},
 	};
 
-	hr = vsX->Make(CSO_PATH(VS_XBlur.cso), layout, _countof(layout));
+	hr = vsX->Make(CVertexName::GetCSO(CVertexName::szXBlur), layout, _countof(layout));
 	if (FAILED(hr))
 		return hr;
-	pSM->SetVS(NAME_TO(VS_XBlur), vsX);
+	pSM->SetVS(CVertexName::szXBlur, vsX);
 
-	hr = vsY->Make(CSO_PATH(VS_YBlur.cso), layout, _countof(layout));
+	hr = vsY->Make(CVertexName::GetCSO(CVertexName::szYBlur), layout, _countof(layout));
 	if (FAILED(hr))
 		return hr;
-	pSM->SetVS(NAME_TO(VS_YBlur), vsY);
+	pSM->SetVS(CVertexName::szYBlur, vsY);
 
-	hr = cb->Make(sizeof(WEIGHT_TABLE), 9, CConstantBuffer::EType::Pixel);
+	hr = cb->Make(sizeof(WEIGHT_TABLE), Slot::CB_BLUR, CConstantBuffer::EType::Pixel);
 	if (FAILED(hr))
 		return hr;
 	pSM->SetCB(NAME_TO(WEIGHT_TABLE), cb);
@@ -218,7 +220,7 @@ void CGaussianBlur::DrawSpriteXBlur()
 	// 0番目
 	CPolygon::SetTexture(m_originalTexture);
 	//--- 描画
-	CPolygon::Draw(pDC, "PS_Blur", "VS_XBlur");
+	CPolygon::Draw(pDC, CPixelName::szBlur, CVertexName::szXBlur);
 
 	//--- 設定の初期化
 	CPolygon::SetSize(1, 1);
@@ -252,7 +254,7 @@ void CGaussianBlur::DrawSpriteYBlur()
 	// 0番目
 	CPolygon::SetTexture(m_xBlurRenderTarget.GetSRV());
 	//--- 描画
-	CPolygon::Draw(pDC, "PS_Blur", "VS_YBlur");
+	CPolygon::Draw(pDC, CPixelName::szBlur, CVertexName::szYBlur);
 
 	//--- 設定の初期化
 	CPolygon::SetSize(1, 1);

@@ -26,7 +26,7 @@
 #include <GraphicsSystem/Manager/modelManager.h>
 #include <GraphicsSystem/Manager/shaderManager.h>
 
-#include <ImGui/imgui.h>
+#include <DebugSystem/imGuiPackage.h>
 
 using namespace MySpace::Game;
 using namespace MySpace::Graphics;
@@ -532,22 +532,34 @@ void CDrawSystemBase::Draw3D()
 
 void CDrawSystemBase::ImGuiDebug()
 {
-	ImGui::Text("Renderer MAX : %d", m_aPolygonList.size());
-	ImGui::Text(u8"Draw OK : %d", m_nDrawCnt);
-	ImGui::SameLine();
-	ImGui::Text(u8"Draw Skip : %d", m_nSkipCnt);
-	ImGui::SameLine();
-	ImGui::Checkbox("Culling ON/OFF", (bool*)&m_bFrustum);
-	ImGui::Text("Instancing Num : %d", m_nInstancingCnt);
-	ImGui::Checkbox(u8"Renderer Sort", &m_bIsSortNecessary);
+	Debug::SetTextAndAligned("Renderer MAX");
+	ImGui::Text("%d", m_aPolygonList.size());
+
+	Debug::SetTextAndAligned("Visible ON");
+	ImGui::Text("%d", m_nDrawCnt);
+
+	Debug::SetTextAndAligned("Draw Skip");
+	ImGui::Text("%d", m_nSkipCnt);
+	
+	Debug::SetTextAndAligned("Instancing Num");
+	ImGui::Text("%d", m_nInstancingCnt);
+
+	Debug::SetTextAndAligned("Polygon Renderer Sort");
+	ImGui::Checkbox("##Renderer Sort", &m_bIsSortNecessary);
+
+	Debug::SetTextAndAligned("Culling ON/OFF");
+	ImGui::Checkbox("##Culling ON/OFF", (bool*)&m_bFrustum);
+
+	Debug::SetTextAndAligned("Shadow Window");
+	ImGui::Checkbox("##Shadow Window", &m_bShadowView);
 
 	//--- shadow レンダーターゲット表示
-	if (m_pDepthShadow)
+	if (m_pDepthShadow != nullptr && m_bShadowView)
 	{
 		ImGui::SetNextWindowPos(ImVec2(CScreen::GetWidth()*0.3f, CScreen::GetHeight()*0.7f), ImGuiCond_::ImGuiCond_Once);
-		if (ImGui::Begin("Shadow Depth", (bool*)m_bShadowView))
+		if (ImGui::Begin("Shadow Depth", &m_bShadowView))
 		{
-			ImGui::Image(m_pDepthShadow->GetResource(), ImVec2(CScreen::GetWidth()*0.25f, CScreen::GetHeight()*0.25f));
+			m_pDepthShadow->ImGuiDebug();
 			ImGui::End();
 		}
 	}

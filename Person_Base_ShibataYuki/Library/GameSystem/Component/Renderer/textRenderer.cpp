@@ -190,7 +190,7 @@ void CTextRenderer::ImGuiDebug()
 	
 	Debug::SetTextAndAligned("Text offset");
 	ImGui::InputFloat("##Text offset", &m_fOffset);
-	ImGui::Checkbox(u8"èc?", &m_bVerticalWrit);
+	ImGui::Checkbox("Vertical", &m_bVerticalWrit);
 
 	CRenderer::ImGuiDebug();
 }

@@ -56,15 +56,15 @@ HRESULT CBloom::InitShader()
 	PixelShaderSharedPtr psLumi = std::make_shared<CPixelShader>();
 	PixelShaderSharedPtr psColor = std::make_shared<CPixelShader>();
 
-	hr = psLumi->Make(CSO_PATH(PS_Luminance.cso));
+	hr = psLumi->Make(CPixelName::GetCSO(CPixelName::szLuminance));
 	if (FAILED(hr))
 		return hr;
-	hr = psColor->Make(CSO_PATH(PS_ColorTexture.cso));
+	hr = psColor->Make(CPixelName::GetCSO(CPixelName::szColorTexture));
 	if (FAILED(hr))
 		return hr;
 
-	pSM->SetPS("PS_Luminance", psLumi);
-	pSM->SetPS("PS_ColorTexture", psColor);
+	pSM->SetPS(CPixelName::szLuminance, psLumi);
+	pSM->SetPS(CPixelName::szColorTexture, psColor);
 	
 	return hr;
 }
@@ -100,7 +100,7 @@ void CBloom::DrawSprite(CGBuffer* pGBuf)
 	pSM->CBWrite(NAME_TO(SHADER_RATE), &rate);
 	pSM->BindCB(NAME_TO(SHADER_RATE));
 	pGBuf->SetSRV(CGBuffer::ETexture::COLOR);
-	CPolygon::Draw(pDX->GetDeviceContext(), "PS_Luminance", "VS_2D");
+	CPolygon::Draw(pDX->GetDeviceContext(), CPixelName::szLuminance, CVertexName::sz2D);
 
 	//--- ‹P“xÃ¸½Á¬‚©‚ç‚Ú‚¯‰æ‘œ¶¬
 	m_Gauss.ExecuteOnGPU(m_fBlurPower, m_pLuminnceRT.GetSRV());
@@ -120,7 +120,7 @@ void CBloom::DrawSprite(CGBuffer* pGBuf)
 		pDX->GetDeviceContext()->OMSetRenderTargets(1, pView, nullptr);
 	}
 	//--- •`‰æ
-	CPolygon::Draw(pDX->GetDeviceContext(), "PS_ColorTexture", "VS_2D");
+	CPolygon::Draw(pDX->GetDeviceContext(), CPixelName::szColorTexture, CVertexName::sz2D);
 
 	// ‹P“x’ŠoŒã‚ÌÃ¸½Á¬‚ğİ’è
 	CPolygon::SetTexture(m_Gauss.GetBokeTexture());

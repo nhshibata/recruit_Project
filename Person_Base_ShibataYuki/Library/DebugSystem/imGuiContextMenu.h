@@ -35,6 +35,8 @@ namespace MySpace
 	namespace Debug
 	{
 		void PopUpGameObjectMenu(MySpace::Game::CGameObject* pObj);
+
+		std::shared_ptr<MySpace::Game::CGameObject> CopyGameObject();
 	}
 }
 

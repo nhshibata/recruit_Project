@@ -35,11 +35,7 @@ namespace MySpace
 		class CGameObject;
 		class CDebugCamera;
 	}
-	namespace Graphics
-	{
-		class CRenderTarget;
-		class CDepthStencil;
-	}
+
 }
 #pragma endregion
 
@@ -50,8 +46,6 @@ namespace MySpace
 		using MySpace::Game::CGameObject;
 		using MySpace::Game::CDebugCamera;
 		using MySpace::Debug::CMyGizmo;
-		using MySpace::Graphics::CRenderTarget;
-		using MySpace::Graphics::CDepthStencil;
 
 		// ImGui管理クラス
 		class ImGuiManager : public MySpace::System::CSystemBase
@@ -90,7 +84,6 @@ namespace MySpace
 			bool m_bGridDisp;
 
 			EMouseHovered m_eHover;						// マウス等選択中か列挙体(bit)
-			bool m_bSceneRender;						// シーンレンダーフラグ
 			MapString m_aDebugMap;						// デバッグログ用map
 			
 			std::shared_ptr<CGameObject> m_pDebugObj;	// デバッグ用ｶﾒﾗﾎﾟｲﾝﾀを保持するオブジェクト(ここで保持しないと破棄される)
@@ -99,8 +92,6 @@ namespace MySpace
 			std::shared_ptr<CInspector> m_pInspector;	// インスペクター
 			std::shared_ptr<CHierachy> m_pHierarchy;	// ヒエラルキー
 			std::shared_ptr<CMyGizmo> m_pGizmo;			// ギズモ
-			std::shared_ptr<CRenderTarget> m_pRT;		// レンダーターゲット
-			std::shared_ptr<CDepthStencil> m_pDS;		// デプスステンシル
 
 		private:
 			//--- メンバ関数
@@ -111,14 +102,14 @@ namespace MySpace
 
 		public:
 			ImGuiManager();
-			~ImGuiManager() = default;
+			~ImGuiManager();
 
-			static ImGuiManager* Get();
+			//static ImGuiManager* Get();
 
 			HRESULT Init(HWND hWnd, ID3D11Device* device, ID3D11DeviceContext* context);
 			void Update();
-			void Render();
 			void Uninit();
+			void Render();
 
 			// *@確認
 			bool CheckPlayMode();											
@@ -129,7 +120,7 @@ namespace MySpace
 
 			//--- ゲッター・セッター
 			// *@フラグ管理クラスの返す
-			inline bool GetFlg() { return m_bEditFlg; }						
+			inline bool IsEdit() { return m_bEditFlg; }						
 			// *@ポーズの有無
 			inline bool GetPause() { return m_bPause; }						
 			// *@ポーズ切替
@@ -177,13 +168,8 @@ namespace MySpace
 				m_aDebugMap.insert(MapStringPair(log, 0));
 			};
 
-			//--- レンダーターゲット関連
-			ID3D11RenderTargetView* GetRTV();
-			ID3D11DepthStencilView* GetDSV();
-			void SceneRender();
-			void SceneRenderClear();
+			// ギズモ描画
 			void SceneGizmo();
-			bool IsSceneRender() { return m_bSceneRender; }
 
 		};
 	}

@@ -28,7 +28,6 @@ using namespace MySpace::Game;
 // コンストラクタ
 //==========================================================
 CBoxCollision::CBoxCollision()
-	:m_bOBBMode(true)
 {
 
 #if BUILD_MODE
@@ -47,7 +46,7 @@ CBoxCollision::CBoxCollision()
 // 引き数付きコンストラクタ
 //==========================================================
 CBoxCollision::CBoxCollision(std::shared_ptr<CGameObject> owner, Vector3 size)
-	: CCollision(owner),m_vSize(size), m_bOBBMode(true)
+	: CCollision(owner), m_vSize(size), m_bOBBMode(true)
 {
 
 #if BUILD_MODE
@@ -60,6 +59,7 @@ CBoxCollision::CBoxCollision(std::shared_ptr<CGameObject> owner, Vector3 size)
 		m_pDebugBox.get()
 	);
 #endif // BUILD_MODE
+
 }
 
 //==========================================================
@@ -196,12 +196,12 @@ bool CBoxCollision::HitCheckPtr(CCollision* other)
 		return false;
 
 	// size調整
-	if (m_vOldScale != Transform()->GetScale())
+	/*if (m_vOldScale != Transform()->GetScale())
 	{
 		auto scl = Transform()->GetScale() / m_vOldScale;
 		SetSize(GetSize()* scl.GetLargeValue());
 		m_vOldScale = Transform()->GetScale();
-	}
+	}*/
 
 	Vector3 size;
 	// 派生クラスへのキャスト
@@ -253,12 +253,12 @@ void CBoxCollision::PosAdjustment(Vector3 otherPos, Vector3 otherSize)
 #if 1
 	// 現在位置と以前の位置を取得
 	Vector3 currentPos = Transform()->GetPos();
-	Vector3 oldPos = Transform()->GetOldPos();
+	const Vector3 oldPos = Transform()->GetOldPos();
 	
 	// 2つの矩形の距離を計算
-	Vector3 distance = currentPos - otherPos;
-	float totalRadius = (GetSize().GetLargeValue() + otherSize.GetLargeValue());
-	float distanceLength = distance.Length();
+	Vector3 distance = otherPos - currentPos;
+	const float totalRadius = (GetSize().GetLargeValue() + otherSize.GetLargeValue());
+	const float distanceLength = distance.Length();
 
 	// 矩形同士が重なっている場合
 	if (distanceLength < totalRadius)
@@ -268,7 +268,7 @@ void CBoxCollision::PosAdjustment(Vector3 otherPos, Vector3 otherSize)
 		{
 			Vector3 direction = distance.Normalize();
 			Vector3 displacement = direction * (totalRadius - distanceLength);
-			Vector3 newPosition = currentPos + displacement;
+			Vector3 newPosition = currentPos - displacement;
 
 			Transform()->SetPos(newPosition);
 

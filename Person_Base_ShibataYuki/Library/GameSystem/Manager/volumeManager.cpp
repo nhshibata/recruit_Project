@@ -83,7 +83,7 @@ const int CVolumeManager::GetBit(const int layer)
 //==========================================================
 // レイヤーと一致したvolumeへIDを追加する
 //==========================================================
-void CVolumeManager::AddRendererCash(const int nLayer, const int nID)
+void CVolumeManager::AddRendererCache(const int nLayer, const int nID)
 {
 	//--- 一致するものを格納
 	for (auto & vol : m_aIntMap)
@@ -101,10 +101,10 @@ void CVolumeManager::AddRendererCash(const int nLayer, const int nID)
 //==========================================================
 // 所持しているVolumeコンポーネントのキャッシュをクリア
 //==========================================================
-void CVolumeManager::ResetRendererCash()
+void CVolumeManager::ResetRendererCache()
 {
 	for (auto & vol : m_aIntMap)
 	{
-		vol.second->ResetRenderCash();
+		vol.second->ResetRenderCache();
 	}
 }

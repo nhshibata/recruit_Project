@@ -128,8 +128,12 @@ void CSpriteAnimation::ImGuiDebug()
 		ImGui::EndTabItem();
 	}
 
+	//--- ƒCƒ[ƒW‚ª‚È‚¢‚È‚çˆ—‚µ‚È‚¢
 	if (!GetImage().lock())
+	{
+		ImGui::EndTabBar();
 		return;
+	}
 
 	if (ImGui::BeginTabItem("param"))
 	{

@@ -111,7 +111,7 @@ void CDepthOfField::DrawSprite(CGBuffer* pGBuf)
 		pDX->GetDeviceContext()->OMSetRenderTargets(1, pView, nullptr);
 	}
 	//--- •`‰æ
-	CPolygon::Draw(pDX->GetDeviceContext(), "PS_ColorTexture", "VS_2D");
+	CPolygon::Draw(pDX->GetDeviceContext(), CPixelName::szColorTexture, CVertexName::sz2D);
 
 	// ‹P“x’ŠoŒã‚ÌÃ¸½Á¬‚ğİ’è
 	CPolygon::SetTexture(m_Gauss.GetBokeTexture());

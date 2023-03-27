@@ -125,6 +125,7 @@ void CGameObjectManager::Update()
 
 //==========================================================
 // デバッグ用更新
+// 追加と破棄、ﾄﾗﾝｽﾌｫｰﾑの更新を行う
 //==========================================================
 void CGameObjectManager::UpdateInDebug()
 {
@@ -157,7 +158,7 @@ void CGameObjectManager::UpdateInDebug()
 
 	// オブジェクトの破棄
 	for (auto & obj : pDestoroyObj)
-	{	// FIXME: 削除されるのか?
+	{
 		DestroyObject(obj);
 		obj.reset();
 	}

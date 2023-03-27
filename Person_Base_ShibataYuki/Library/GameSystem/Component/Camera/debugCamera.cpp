@@ -46,9 +46,8 @@ void CDebugCamera::Awake()
 	CCamera::Awake();
 
 	// ƒƒCƒ“¶Ò×‚ðŽ©•ª‚ÉÝ’è
-	//GetOwner()->GetTagPtr()->CreateTag("DebugCamera");
-	//GetOwner()->SetTag("DebugCamera");
-	//SetMain(BaseToDerived<CCamera>());
+	CTag::CreateTag("DebugCamera");
+	GetOwner()->SetObjTag("DebugCamera");
 
 #if BUILD_MODE
 	ResumeCamera(true);

@@ -20,10 +20,8 @@ using namespace MySpace::System;
 // コンストラクタ
 //==========================================================
 CTag::CTag()
-	:m_nTagID(0)
 {
 	CreateTag(CTagDefault::DEFAULT);
-	SetTag(CTagDefault::DEFAULT);
 }
 
 //==========================================================
@@ -49,7 +47,7 @@ CTag::~CTag()
 void CTag::SaveSystem()
 {
 	CCerealize<std::vector<std::string>> sirial;
-	sirial.OutputFile("tagList", TAG_PATH, m_aTagName);
+	sirial.OutputFile("tagList", TAG_DATA_PATH, m_aTagName);
 }
 
 //==========================================================
@@ -58,7 +56,7 @@ void CTag::SaveSystem()
 void CTag::LoadSystem()
 {
 	CCerealize<std::vector<std::string>> sirial;
-	m_aTagName = sirial.InputFile(TAG_PATH);
+	m_aTagName = sirial.InputFile(TAG_DATA_PATH);
 }
 
 //==========================================================
@@ -72,7 +70,7 @@ void CTag::ImGuiTag(bool& disp)
 		return;
 	
 	ImGui::SetNextWindowPos(ImGui::GetMousePos(), ImGuiCond_::ImGuiCond_Once);
-	ImGui::SetNextWindowSize(ImVec2(CScreen::GetWidth() / 8, CScreen::GetHeight() / 6), ImGuiCond_::ImGuiCond_Once);
+	ImGui::SetNextWindowSize(ImVec2(CScreen::GetWidth() / 6, CScreen::GetHeight() / 6), ImGuiCond_::ImGuiCond_Once);
 	if (ImGui::Begin("Create Tag", &disp))
 	{
 		char input[52];

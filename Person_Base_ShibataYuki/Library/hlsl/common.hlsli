@@ -29,8 +29,6 @@ struct MaterialData
     float4 fFlags;      // 拡散色テクスチャ有無, 発光色テクスチャ有無, 透過テクスチャ有無
 };
 
-
-
 //==========================================================
 // 定数バッファ
 //---------------------------------------------------------
@@ -96,16 +94,16 @@ cbuffer InstancingMaterial : register(b5)
     MaterialData g_material[MAX_WORLD_MATRIX];
 };
 
+// VS用
 // 太陽の位置にあるｶﾒﾗに表示するための行列
-// meshVS
 cbuffer SunCamera : register(b6)
 {
     float4x4 g_sunView;
     float4x4 g_sunProj;
 };
 
-// レート
 // PS用
+// レート
 cbuffer Rate : register(b7)
 {
     float4 g_rate;

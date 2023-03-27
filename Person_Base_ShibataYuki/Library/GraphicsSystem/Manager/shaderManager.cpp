@@ -24,6 +24,7 @@
 #include <GameSystem/Component/Light/directionalLight.h>
 
 #include <DebugSystem/imGuiPackage.h>
+#include <DebugSystem/errorMessage.h>
 
 #include <d3dcompiler.h>
 #include <DirectXMath.h>
@@ -41,24 +42,24 @@ const char* g_szShaderList[] = {
 	"Triangle",
 };
 
-inline bool loadBinaryFile(std::vector<char>* pOut, const char* filepath)
-{
-	std::ifstream file(filepath, std::ifstream::binary);
-	if (!file.good()) {
-		return false;
-	}
-	file.seekg(0, file.end);
-	size_t fileLength = file.tellg();
-	file.seekg(0, file.beg);
-
-	if (-1 == fileLength) {
-		return false;
-	}
-
-	pOut->resize(fileLength);
-	file.read(pOut->data(), fileLength);
-	return true;
-}
+//inline bool loadBinaryFile(std::vector<char>* pOut, const char* filepath)
+//{
+//	std::ifstream file(filepath, std::ifstream::binary);
+//	if (!file.good()) {
+//		return false;
+//	}
+//	file.seekg(0, file.end);
+//	size_t fileLength = file.tellg();
+//	file.seekg(0, file.beg);
+//
+//	if (-1 == fileLength) {
+//		return false;
+//	}
+//
+//	pOut->resize(fileLength);
+//	file.read(pOut->data(), fileLength);
+//	return true;
+//}
 
 //==========================================================
 // コンストラクタ
@@ -76,7 +77,7 @@ HRESULT CShaderManager::Init()
 	HRESULT hr = S_OK;
 
 	ConstantBufferSharedPtr cameraCB = std::make_shared<CConstantBuffer>();
-	hr = cameraCB->MakeCPU(sizeof(SHADER_GLOBAL_CAMERA_LIGHT), 1, CConstantBuffer::EType::All);
+	hr = cameraCB->MakeCPU(sizeof(SHADER_GLOBAL_CAMERA_LIGHT), Slot::CB_CAMERA_LIGHT, CConstantBuffer::EType::All);
 	if(FAILED(hr))
 	{
 		return hr;
@@ -93,43 +94,43 @@ HRESULT CShaderManager::Init()
 	auto pSM = Application::Get()->GetSystem<CAssetsManager>()->GetShaderManager();
 	{
 		PixelShaderSharedPtr ps = std::make_shared<CPixelShader>();
-		hr = ps->Make(CSO_PATH(PS_AssimpToon.cso));
+		hr = ps->Make(CPixelName::GetCSO(CPixelName::szAssimpToon));
 		if (FAILED(hr))
 			return hr;
 		else
-			pSM->SetPS("PS_AssimpToon", ps);
+			pSM->SetPS(CPixelName::szAssimpToon, ps);
 	}
 
 	{
 		PixelShaderSharedPtr ps = std::make_shared<CPixelShader>();
-		hr = ps->Make(CSO_PATH(PS_MeshToon.cso));
+		hr = ps->Make(CPixelName::GetCSO(CPixelName::szMeshToon));
 		if (FAILED(hr))
 			return hr;
 		else
-			pSM->SetPS("PS_MeshToon", ps);
+			pSM->SetPS(CPixelName::szMeshToon, ps);
 	}
 
 	{
 		PixelShaderSharedPtr ps = std::make_shared<CPixelShader>();
-		hr = ps->Make(CSO_PATH(PS_AssimpNega.cso));
+		hr = ps->Make(CPixelName::GetCSO(CPixelName::szAssimoNega));
 		if (FAILED(hr))
 			return hr;
 		else
-			pSM->SetPS("PS_AssimpNega", ps);
+			pSM->SetPS(CPixelName::szAssimoNega, ps);
 	}
 
 	{
 		PixelShaderSharedPtr ps = std::make_shared<CPixelShader>();
-		hr = ps->Make(CSO_PATH(PS_MeshNega.cso));
+		hr = ps->Make(CPixelName::GetCSO(CPixelName::szMeshNega));
 		if (FAILED(hr))
 			return hr;
 		else
-			pSM->SetPS("PS_MeshNega", ps);
+			pSM->SetPS(CPixelName::szMeshNega, ps);
 	}
 
 	{
 		ConstantBufferSharedPtr cb = std::make_shared<CConstantBuffer>();
-		hr = cb->Make(sizeof(SHADER_RATE), 7, CConstantBuffer::EType::Pixel);
+		hr = cb->Make(sizeof(SHADER_RATE), Slot::CB_RATE, CConstantBuffer::EType::Pixel);
 		if (FAILED(hr))
 			return hr;
 		else
@@ -139,7 +140,7 @@ HRESULT CShaderManager::Init()
 	//--- 定数バッファ
 	// 太陽
 	ConstantBufferSharedPtr sunCB = std::make_shared<CConstantBuffer>();
-	hr = sunCB->Make(sizeof(SHADER_SUN), 6, CConstantBuffer::EType::Vertex);
+	hr = sunCB->Make(sizeof(SHADER_SUN), Slot::CB_SUN_VP, CConstantBuffer::EType::Vertex);
 	if (FAILED(hr))
 		return hr;
 	else
@@ -148,11 +149,11 @@ HRESULT CShaderManager::Init()
 	// PS_DepthWrite
 	{
 		PixelShaderSharedPtr ps = std::make_shared<CPixelShader>();
-		hr = ps->Make(CSO_PATH(PS_DepthWrite.cso));
+		hr = ps->Make(CPixelName::GetCSO(CPixelName::szDepthWrite));
 		if (FAILED(hr))
 			return hr;
 		else
-			pSM->SetPS("PS_DepthWrite", ps);
+			pSM->SetPS(CPixelName::szDepthWrite, ps);
 	}
 
 	// VS_DepthWrite
@@ -163,20 +164,20 @@ HRESULT CShaderManager::Init()
 		{"TEXCOORD", 0, DXGI_FORMAT_R32G32_FLOAT,   0, D3D11_APPEND_ALIGNED_ELEMENT,D3D11_INPUT_PER_VERTEX_DATA,0}
 	};
 	VertexShaderSharedPtr vs = std::make_shared<CVertexShader>();
-	hr = vs->Make(CSO_PATH(VS_DepthWrite.cso), layout, _countof(layout));
+	hr = vs->Make(CVertexName::GetCSO(CVertexName::szDepthWrite), layout, _countof(layout));
 	if (FAILED(hr))
 		return hr;
 	else
-		pSM->SetVS("VS_DepthWrite", vs);
+		pSM->SetVS(CVertexName::szDepthWrite, vs);
 
 	// PS_GBuffer
 	{
 		PixelShaderSharedPtr ps = std::make_shared<CPixelShader>();
-		hr = ps->Make(CSO_PATH(PS_GBuffer.cso));
+		hr = ps->Make(CPixelName::GetCSO(CPixelName::szGBuffer));
 		if (FAILED(hr))
 			return hr;
 		else
-			pSM->SetPS("PS_GBuffer", ps);
+			pSM->SetPS(CPixelName::szGBuffer, ps);
 	}
 
 	hr = CGaussianBlur::InitShader();
@@ -203,11 +204,11 @@ HRESULT CShaderManager::Init()
 //==========================================================
 void CShaderManager::Uninit()
 {
-	/*for (auto & func : m_aCallbackFunc)
+	for (auto & func : m_aCallbackFunc)
 	{
 		func.second = nullptr;
 	}
-	m_aCallbackFunc.clear();*/
+	m_aCallbackFunc.clear();
 
 	for (auto & pixel : m_aPixelMap)
 	{
@@ -280,6 +281,7 @@ void CShaderManager::CallBackFuncAndBind(std::string ps, std::string vs)
 	
 	if(!ps.empty())
 		BindPS(ps);
+
 	if(!vs.empty())
 		BindVS(vs);
 }
@@ -289,6 +291,12 @@ void CShaderManager::CallBackFuncAndBind(std::string ps, std::string vs)
 //==========================================================
 void CShaderManager::BindPS(std::string name, UINT slot)
 {
+
+#if BUILD_MODE
+	if(!m_aPixelMap.count(name))
+		Debug::CErrorMessage::DispMessage(name, "PixelShader No Data");
+#endif // BUILD_MODE
+
 	m_aPixelMap[name]->Bind(slot);
 }
 
@@ -297,6 +305,12 @@ void CShaderManager::BindPS(std::string name, UINT slot)
 //==========================================================
 void CShaderManager::BindVS(std::string name, UINT slot)
 {
+
+#if BUILD_MODE
+	if (!m_aVtxMap.count(name))
+		Debug::CErrorMessage::DispMessage(name, "VertexShader No Data");
+#endif // BUILD_MODE
+
 	m_aVtxMap[name]->Bind(slot);
 }
 
@@ -305,6 +319,12 @@ void CShaderManager::BindVS(std::string name, UINT slot)
 //==========================================================
 void CShaderManager::BindCB(std::string name, UINT slot)
 {
+
+#if BUILD_MODE
+	if (!m_aConstantBufferMap.count(name))
+		Debug::CErrorMessage::DispMessage(name, "ConstantBuffer No Data");
+#endif // BUILD_MODE
+
 	m_aConstantBufferMap[name]->Bind(slot);
 }
 
@@ -321,6 +341,11 @@ void CShaderManager::BindMB(std::string name, UINT slot)
 //==========================================================
 void CShaderManager::CBWrite(std::string name, void* data)
 {
+#if BUILD_MODE
+	if (!m_aConstantBufferMap.count(name))
+		Debug::CErrorMessage::DispMessage(name, "ConstantBuffer No Data");
+#endif // BUILD_MODE
+
 	m_aConstantBufferMap[name]->Write(data);
 }
 
@@ -329,8 +354,11 @@ void CShaderManager::CBWrite(std::string name, void* data)
 //==========================================================
 void CShaderManager::CBWrite(std::string name, void* data, UINT size)
 {
+#if BUILD_MODE
 	if (!m_aConstantBufferMap.count(name))
-		return;
+		Debug::CErrorMessage::DispMessage(name, "ConstantBuffer No Data");
+#endif // BUILD_MODE
+
 	m_aConstantBufferMap[name]->DynamicWrite(data, size);
 }
 
@@ -382,13 +410,17 @@ void CShaderManager::SetMB(std::string name, MeshBufferSharedPtr mb)
 //=========================================================
 std::string CShaderManager::ImGuiGetVertexShader(std::string preview)
 {
-	static std::vector<std::string> ver;
-	if (ver.size() != m_aVtxMap.size())
+	static std::vector<std::string> cachePSName;
+	// 取得した数と管理されsizeに違いがあれば取得
+	if (cachePSName.size() != m_aVtxMap.size())
 	{
+		cachePSName.clear();
 		for (auto vertex : m_aVtxMap)
-			ver.push_back(vertex.first);
+			cachePSName.push_back(vertex.first);
 	}
-	return MySpace::Debug::DispComboSelect(ver, "VertexShader", preview);
+	// GUI表示
+	Debug::SetTextAndAligned("VertexShader");
+	return MySpace::Debug::DispComboSelect(cachePSName, "##VertexShader", preview);
 }
 
 //=========================================================
@@ -396,13 +428,17 @@ std::string CShaderManager::ImGuiGetVertexShader(std::string preview)
 //=========================================================
 std::string CShaderManager::ImGuiGetPixelShader(std::string preview)
 {
-	static std::vector<std::string> ver;
-	if (ver.size() != m_aPixelMap.size())
+	static std::vector<std::string> cacheVSName;
+	// 取得した数と管理されsizeに違いがあれば取得
+	if (cacheVSName.size() != m_aPixelMap.size())
 	{
+		cacheVSName.clear();
 		for (auto pixel : m_aPixelMap)
-			ver.push_back(pixel.first);
+			cacheVSName.push_back(pixel.first);
 	}
-	return MySpace::Debug::DispComboSelect(ver, "PixelShader", preview);
+	// GUI表示
+	Debug::SetTextAndAligned("PixelShader");
+	return MySpace::Debug::DispComboSelect(cacheVSName, "##PixelShader", preview);
 }
 
 #endif // BUILD_MODE

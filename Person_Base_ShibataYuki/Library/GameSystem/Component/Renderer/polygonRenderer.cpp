@@ -18,6 +18,7 @@
 #include <GraphicsSystem/Manager/imageResourceManager.h>
 #include <GraphicsSystem/Manager/assetsManager.h>
 #include <GraphicsSystem/Manager/shaderManager.h>
+#include <GraphicsSystem/Shader/shaderStruct.h>
 
 #include <GraphicsSystem/Render/polygon.h>
 #include <DebugSystem/imGuiPackage.h>
@@ -46,8 +47,8 @@ CPolygonRenderer::CPolygonRenderer(std::shared_ptr<CGameObject> owner)
 	auto rect = GetOwner()->AddComponent<CRectTransform>();
 	m_pRectTransform = rect;
 	rect->SetSize(100, 100);
-	m_strPixelShader = "PS_2D";
-	m_strVertexShader = "VS_2D";
+	m_strPixelShader = CPixelName::sz2D;
+	m_strVertexShader = CVertexName::sz2D;
 }
 
 //==========================================================
@@ -231,20 +232,21 @@ void CPolygonRenderer::ImGuiDebug()
 	}
 
 	Debug::SetTextAndAligned("BG");
-	if(ImGui::Button("##bg"))
+	if(ImGui::Button("BG"))
 		SetZ((int)EZValue::BG);
 	ImGui::SameLine();
 
 	Debug::SetTextAndAligned("Default");
-	if(ImGui::Button("##Default"))
+	if(ImGui::Button("Default"))
 		SetZ((int)EZValue::DEFAULT);
 
 	Debug::SetTextAndAligned("FOG");
-	if(ImGui::Button("##fog"))
+	if(ImGui::Button("Fog"))
 		SetZ((int)EZValue::FOG);
 	
 	//--- ÉtÉ@ÉCÉãì‡åüçı
-	if (s_FileList.empty() || ImGui::Button("2D Image reload"))
+	Debug::SetTextAndAligned("Image Reload");
+	if (s_FileList.empty() || ImGui::Button("##Image Reload"))
 	{
 		MySpace::System::CFilePath file;
 		s_FileList = file.GetAllFileName(TEXTURE_PATH);

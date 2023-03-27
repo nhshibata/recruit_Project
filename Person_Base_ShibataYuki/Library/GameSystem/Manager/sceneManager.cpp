@@ -41,10 +41,7 @@ CSceneManager::CSceneManager()
 //========================================================
 CSceneManager::~CSceneManager()
 {
-	delete m_sceneDetection;
-	delete m_pCollisionSystem;
-	delete m_pDrawSystem;
-	delete m_pNavMesh;
+
 }
 
 //========================================================

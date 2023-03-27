@@ -20,8 +20,9 @@ namespace MySpace
 		//--- クラス定義
 		class CRigidbody : public CComponent
 		{
+#pragma region Serialize
 		private:
-			// シリアライズ
+			//--- シリアライズ
 			friend class cereal::access;
 			template<class Archive>
 			void save(Archive& archive) const
@@ -43,11 +44,12 @@ namespace MySpace
 						CEREAL_NVP(m_pFreezPos),CEREAL_NVP(m_pFreezRot)
 				);
 			}
+#pragma endregion
 		private:
 			//--- 軸固定構造体
 			struct FixedVector3
 			{
-				// シリアライズ
+				//--- シリアライズ
 				friend class cereal::access;
 				template<class Archive>
 				void serialize(Archive & archive)
@@ -57,8 +59,8 @@ namespace MySpace
 					);
 				}
 				//--- メンバ変数
-				float x, y, z;
-				bool bX, bY, bZ;
+				float x, y, z;		// 保存用変数
+				bool bX, bY, bZ;	// 固定管理用
 
 				//--- メンバ関数
 				FixedVector3()
@@ -72,12 +74,14 @@ namespace MySpace
 					if (pY) { bY = true; y = vec.y; }
 					if (pZ) { bZ = true; z = vec.z; }
 				}
+				// *@固定設定されている値を保存
 				void Fixed(Vector3 vec)
 				{
 					if (bX) { x = vec.x; }
 					if (bX) { y = vec.y; }
 					if (bX) { z = vec.z; }
 				}
+				// *@固定設定されていた場合は、保存された値を反映
 				void Fix(Vector3 vec)
 				{
 					if (bX) vec.x = x; 
@@ -113,15 +117,23 @@ namespace MySpace
 			void FixedUpdate();
 
 			void OnCollisionEnter(CGameObject * obj);
+			void OnCollisionStay(CGameObject * obj);
 
 			//--- ゲッター・セッター
 			_NODISCARD inline Vector3 GetVel() { return m_vVel; };
 			_NODISCARD inline Vector3 GetAccel() { return m_vAccel; };
+			inline float GetResist()const { return m_fResistance; }
+			inline float GetGravityValue()const { return m_fGravity; }
+			inline float GetMass()const { return m_fMass; }
 
 			inline void SetGravity(const bool value) { m_bGravity = value; }
 			inline void SetTargetPos(Vector3 value) { m_vTargetPos = value; };
 			inline void SetVel(Vector3 value) { m_vVel = value; };
 			inline void SetAccel(Vector3 value) { m_vAccel = value; };
+			inline void SetResist(const float value) { m_fResistance = value; }
+			inline void SetGravityValue(const float value) { m_fGravity = value; }
+			inline void SetMass(const float value) { m_fMass = value; }
+
 			// 位置・角度固定
 			void SetFreezPos(const bool x, const bool y, const bool z);
 			void SetFreezRot(const bool x, const bool y, const bool z);

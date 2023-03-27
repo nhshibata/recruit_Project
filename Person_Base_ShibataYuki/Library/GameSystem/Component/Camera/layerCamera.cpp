@@ -38,7 +38,7 @@ CLayerCamera::~CLayerCamera()
 //==========================================================
 // マスク対象か確認
 //==========================================================
-bool CLayerCamera::IsMask(const int layer)const
+bool CLayerCamera::IsMask(const int layer)
 {
 	return m_nLayerMask & (1 << layer);
 }
@@ -76,7 +76,6 @@ void CLayerCamera::ReleaseMask(const int layerNo)
 //==========================================================
 void CLayerCamera::ImGuiDebug()
 {
-
 	// LayerMask設定
 	m_nLayerMask = CLayer::ImGuiSetLayerList(m_nLayerMask);
 

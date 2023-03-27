@@ -5,6 +5,7 @@
 //---------------------------------------------------------
 //==========================================================
 
+//--- インクルード部
 #include <Application/Application.h>
 #include <Application/screen.h>
 
@@ -14,7 +15,7 @@
 #include <GraphicsSystem/Manager/imageResourceManager.h>
 #include <GraphicsSystem/DirectX/GBuffer.h>
 #include <GraphicsSystem/Render/polygon.h>
-
+#include <GraphicsSystem/Shader/shaderStruct.h>
 
 using namespace MySpace::Graphics;
 
@@ -45,11 +46,11 @@ HRESULT CMonochrome::InitShader()
 	{
 		auto pSM = Application::Get()->GetSystem<CAssetsManager>()->GetShaderManager();
 		PixelShaderSharedPtr ps = std::make_shared<CPixelShader>();
-		hr = ps->Make(CSO_PATH(PS_Monochrome.cso));
+		hr = ps->Make(CPixelName::GetCSO(CPixelName::szMonochrome));
 		if (FAILED(hr))
 			return hr;
 		else
-			pSM->SetPS("PS_Monochrome", ps);
+			pSM->SetPS(CPixelName::szMonochrome, ps);
 	}
 
 	// ﾃｸｽﾁｬ読み込み
@@ -90,7 +91,7 @@ void CMonochrome::DrawSprite(CGBuffer* pGBuf)
 	pGBuf->SetSRV(CGBuffer::ETexture::NORMAL);
 	auto pTex = m_pToon->GetSRV();
 	pDX->GetDeviceContext()->PSSetShaderResources(5, 1, &pTex);
-	CPolygon::Draw(pDX->GetDeviceContext(), "PS_Monochrome", "VS_2D");
+	CPolygon::Draw(pDX->GetDeviceContext(), CPixelName::szMonochrome, CVertexName::sz2D);
 
 	//--- 設定の初期化
 	CPolygon::SetColor(1, 1, 1, 1);

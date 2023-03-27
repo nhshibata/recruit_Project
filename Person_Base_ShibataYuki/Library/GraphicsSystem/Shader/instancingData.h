@@ -15,7 +15,7 @@
 #include <CoreSystem/Math/MyMath.h>
 #include <vector>
 
-#define MAX_WORLD_MATRIX	200
+#define MAX_WORLD_MATRIX	400
 
 namespace MySpace
 {
