@@ -48,7 +48,7 @@ namespace MySpace
 			// *@所持マスク
 			inline const int GetMask() const{ return m_nLayerMask; }
 			// *@マスク対象か確認
-			virtual bool IsMask(const int layer)const override;
+			virtual bool IsMask(const int layer)override;
 			// *@マスク設定
 			void SetMask(const int mask);
 			// *@マスク設定追加

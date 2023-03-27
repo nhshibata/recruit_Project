@@ -41,16 +41,18 @@ float4 main(PS_INPUT input) : SV_Target0
     // シャドウマップ
     float2 shadowUV = GetSunUV(input.sunPos);
     float result = 1.0f;
-    // 0以上
-    result *= step(0.0f, shadowUV.x);
-    result *= step(0.0f, shadowUV.y);
-    // 1以下
-    result *= step(shadowUV.x, 1.0f + 0.0001f);
-    result *= step(shadowUV.y, 1.0f + 0.0001f);
+    //// 0以上
+    //result *= step(0.0f, shadowUV.x);
+    //result *= step(0.0f, shadowUV.y);
+    //// 1以下
+    //result *= step(shadowUV.x, 1.0f + 0.0001f);
+    //result *= step(shadowUV.y, 1.0f + 0.0001f);
+    result *= step(0.0f, shadowUV.x) * (1.0f - step(1.0f, shadowUV.x));
+    result *= step(0.0f, shadowUV.y) * (1.0f - step(1.0f, shadowUV.y));
     shadowRes *= result;
     // 0なら色変更なし、1なら影を影響反映
     shadowRes = 1.0f - shadowRes;
-    shadowRes = saturate(shadowRes + 0.3f);
+    shadowRes = saturate(shadowRes + 0.3f * shadowRes);
     
     //--- 影結果反映
     // 影なら全て黒

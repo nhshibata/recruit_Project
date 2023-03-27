@@ -769,34 +769,34 @@ bool CAssimpModel::InitShader(ID3D11Device* pDevice)
 	//--- PS,VSの生成と登録
 	{
 		PixelShaderSharedPtr ps = std::make_shared<CPixelShader>();
-		hr = ps->Make(FORDER_DIR(Data/shader/AssimpPixel.cso));
+		hr = ps->Make(CPixelName::GetCSO(CPixelName::szAssimpPixel));
 		if (FAILED(hr))
 			return hr;
 		else
-			sm->SetPS(NAME_TO(AssimpPixel), ps);
+			sm->SetPS(CPixelName::szAssimpPixel, ps);
 
 		VertexShaderSharedPtr vs = std::make_shared<CVertexShader>();
-		hr = vs->Make(FORDER_DIR(Data/shader/AssimpVertex.cso), layout, _countof(layout));
+		hr = vs->Make(CVertexName::GetCSO(CVertexName::szAssimpVertex), layout, _countof(layout));
 		if (FAILED(hr))
 			return hr;
 		else
-			sm->SetVS(NAME_TO(AssimpVertex), vs);
+			sm->SetVS(CVertexName::szAssimpVertex, vs);
 	}
 
 	{	// インスタンシング
 		PixelShaderSharedPtr ps = std::make_shared<CPixelShader>();
-		hr = ps->Make(FORDER_DIR(Data/shader/PS_Assimp.cso));
+		hr = ps->Make(CPixelName::GetCSO(CPixelName::szDefaultAssimp));
 		if (FAILED(hr))
 			return hr;
 		else
-			sm->SetPS(NAME_TO(PS_Assimp), ps);
+			sm->SetPS(CPixelName::szDefaultAssimp, ps);
 
 		VertexShaderSharedPtr vs = std::make_shared<CVertexShader>();
-		hr = vs->Make(FORDER_DIR(Data/shader/VS_Assimp.cso), layout, _countof(layout));
+		hr = vs->Make(CVertexName::GetCSO(CVertexName::szDefaultAssimp), layout, _countof(layout));
 		if (FAILED(hr))
 			return hr;
 		else
-			sm->SetVS(NAME_TO(VS_Assimp), vs);
+			sm->SetVS(CVertexName::szDefaultAssimp, vs);
 	}
 
 #endif // 1
@@ -804,13 +804,13 @@ bool CAssimpModel::InitShader(ID3D11Device* pDevice)
 	//--- インスタンシング用コンスタントバッファ 作成
 	ConstantBufferSharedPtr cb_matrix = std::make_shared<CConstantBuffer>();
 	ConstantBufferSharedPtr cb_material = std::make_shared<CConstantBuffer>();
-	cb_matrix->MakeCPU(sizeof(INSTANCE_MATRIX), 4, CConstantBuffer::EType::Vertex);
-	cb_material->MakeCPU(sizeof(INSTANCHING_MATERIAL), 5, CConstantBuffer::EType::Pixel);
+	cb_matrix->MakeCPU(sizeof(INSTANCE_MATRIX), Slot::CB_INSTANCE_MATRIX, CConstantBuffer::EType::Vertex);
+	cb_material->MakeCPU(sizeof(INSTANCHING_MATERIAL), Slot::CB_INSTANCE_MATERIAL, CConstantBuffer::EType::Pixel);
 	sm->SetCB(NAME_TO(INSTANCE_MATRIX), cb_matrix);
 	sm->SetCB(NAME_TO(INSTANCHING_MATERIAL), cb_material);
 
 	ConstantBufferSharedPtr cb_camLight = std::make_shared<CConstantBuffer>();
-	cb_camLight->MakeCPU(sizeof(SHADER_GLOBAL_CAMERA_LIGHT), 1, CConstantBuffer::EType::All);
+	cb_camLight->MakeCPU(sizeof(SHADER_GLOBAL_CAMERA_LIGHT), Slot::CB_CAMERA_LIGHT, CConstantBuffer::EType::All);
 	sm->SetCB(NAME_TO(SHADER_GLOBAL_CAMERA_LIGHT), cb_camLight);
 
 	// テクスチャ用サンプラ作成
@@ -928,8 +928,8 @@ void CAssimpModel::Draw(ID3D11DeviceContext* pDC, XMFLOAT4X4& mtxWorld, EByOpaci
 
 	//--- シェーダー設定
 	auto sm = Application::Get()->GetSystem<CAssetsManager>()->GetShaderManager();
-	sm->BindPS(NAME_TO(AssimpPixel));
-	sm->BindVS(NAME_TO(AssimpVertex));
+	sm->BindPS(CPixelName::szAssimpPixel);
+	sm->BindVS(CVertexName::szAssimpVertex);
 
 	// プリミティブ形状をセット
 	pDC->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
@@ -959,8 +959,8 @@ void CAssimpModel::DrawInstancing(ID3D11DeviceContext* pDC, std::vector<RENDER_D
 	{
 		//--- シェーダー設定
 		auto sm = Application::Get()->GetSystem<CAssetsManager>()->GetShaderManager();
-		sm->BindPS(NAME_TO(PS_Assimp));
-		sm->BindVS(NAME_TO(VS_Assimp));
+		sm->BindPS(CPixelName::szDefaultAssimp);
+		sm->BindVS(CVertexName::szDefaultAssimp);
 	}
 
 	// プリミティブ形状をセット

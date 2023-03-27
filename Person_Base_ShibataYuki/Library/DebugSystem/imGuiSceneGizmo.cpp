@@ -67,13 +67,14 @@ void CMyGizmo::Init()
 void CMyGizmo::ViewGizmo(ImGuiManager* manager, const CCamera& camera, CTransform* editTransform)
 {
 	//ImGuizmo::SetDrawlist();
-	
+	bool input = manager->IsEdit();//GetAsyncKeyState(VK_LSHIFT) & 
+
 	//--- èÛë‘ïœçX
-	if (GetAsyncKeyState('W') && GetAsyncKeyState(VK_LSHIFT))
+	if (GetAsyncKeyState('W') && input)
 		m_CurrentGizmoOperation = ImGuizmo::TRANSLATE;
-	if (GetAsyncKeyState('E') && GetAsyncKeyState(VK_LSHIFT))
+	if (GetAsyncKeyState('E') && input)
 		m_CurrentGizmoOperation = ImGuizmo::ROTATE;
-	if (GetAsyncKeyState('R') && GetAsyncKeyState(VK_LSHIFT)) // r Key
+	if (GetAsyncKeyState('R') && input)
 		m_CurrentGizmoOperation = ImGuizmo::SCALE;
 
 	XMFLOAT4X4 oldMatrix = editTransform->GetWorldMatrix();
@@ -89,7 +90,7 @@ void CMyGizmo::ViewGizmo(ImGuiManager* manager, const CCamera& camera, CTransfor
 	}
 
 	//--- €∞∂ŸÅE‹∞Ÿƒﬁ
-	if (ImGui::IsKeyPressed(83) || ImGui::IsKeyPressed(ImGuiKey_::ImGuiKey_Enter) || GetAsyncKeyState(VK_LSHIFT))
+	if (ImGui::IsKeyPressed(83) || ImGui::IsKeyPressed(ImGuiKey_::ImGuiKey_Enter) || GetAsyncKeyState(VK_MENU))
 		m_bUseSnap = !m_bUseSnap;
 
 	{

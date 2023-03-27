@@ -109,12 +109,13 @@ bool CSphereCollision::HitCheckPtr(CCollision* other)
 	auto name = GetOwner()->GetName();
 	auto flg = IsActive();
 #endif // _DEBUG
-	if (m_vOldScale != Transform()->GetScale())
+
+	/*if (m_vOldScale != Transform()->GetScale())
 	{
 		auto scl = Transform()->GetScale() / m_vOldScale;
 		SetRadius(GetRadius()* scl.GetLargeValue());
 		m_vOldScale = Transform()->GetScale();
-	}
+	}*/
 
 	// ºÝÎß°ÈÝÄ‚ÌŠm”F
 	if (CSphereCollision* com = other->GetComponent<CSphereCollision>(); com)
@@ -163,10 +164,10 @@ void CSphereCollision::PushBack(CCollision* other, float radius)
 {
 #if 1
 	CTransform* transform = Transform();
-	CTransform* otherTransform = other->Transform();
+	Vector3 otherPos = other->Transform()->GetPos();
 
-	// 2“_ŠÔ‚Æ‚Q”¼Œa‚Ì·
-	Vector3 distance = otherTransform->GetPos() - transform->GetPos();
+	// 2“_ŠÔ‚Æ2”¼Œa‚Ì·
+	Vector3 distance = otherPos - transform->GetPos();
 	float Length = distance.Length();
 
 	if (Length < (GetRadius() + radius))
@@ -176,9 +177,16 @@ void CSphereCollision::PushBack(CCollision* other, float radius)
 		// ‰Ÿ‚µo‚·•ûŒü
 		distance = distance.Normalize();
 		Vector3 pushVec = distance * len;
-		
+		Vector3 newPos = transform->GetPos() - pushVec;
+		Vector3 oldPos = transform->GetPos();
+
 		// ‰Ÿ‚µ–ß‚µ
-		transform->SetPos(transform->GetPos() - pushVec);
+		transform->SetPos(newPos);
+
+		if (CSphereCollision::Sphere(newPos, GetRadius(), otherPos, radius))
+		{
+			transform->SetPos(oldPos);
+		}
 	}
 
 #elif 0

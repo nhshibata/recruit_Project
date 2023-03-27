@@ -5,12 +5,14 @@
 //---------------------------------------------------------
 //==========================================================
 
+//--- インクルード部
 #include <Application/Application.h>
 
 #include <GraphicsSystem/PostProcess/outline.h>
 #include <GraphicsSystem/Manager/assetsManager.h>
 #include <GraphicsSystem/Manager/shaderManager.h>
 #include <GraphicsSystem/DirectX/GBuffer.h>
+#include <GraphicsSystem/Shader/shaderStruct.h>
 
 #include <GraphicsSystem/Render/polygon.h>
 #include <Application/screen.h>
@@ -43,11 +45,11 @@ HRESULT COutline::InitShader()
 	auto pSM = Application::Get()->GetSystem<CAssetsManager>()->GetShaderManager();
 	{
 		PixelShaderSharedPtr ps = std::make_shared<CPixelShader>();
-		hr = ps->Make(CSO_PATH(PS_Outline.cso));
+		hr = ps->Make(CPixelName::GetCSO(CPixelName::szOutline));
 		if (FAILED(hr))
 			return hr;
 		else
-			pSM->SetPS("PS_Outline", ps);
+			pSM->SetPS(CPixelName::szOutline, ps);
 	}
 
 	return hr;
@@ -79,7 +81,7 @@ void COutline::DrawSprite(CGBuffer* pGBuf)
 
 	pDX->GetDeviceContext()->OMSetRenderTargets(1, pView, nullptr);
 	pGBuf->SetSRV(CGBuffer::ETexture::COLOR);
-	CPolygon::Draw(pDX->GetDeviceContext(), "PS_Outline", "VS_2D");
+	CPolygon::Draw(pDX->GetDeviceContext(), CPixelName::szOutline, CVertexName::sz2D);
 
 	//--- 設定の初期化
 	CPolygon::SetColor(1, 1, 1, 1);
@@ -98,6 +100,7 @@ ID3D11ShaderResourceView* COutline::GetResource()
 {
 	return m_pMainRT.GetSRV();
 }
+
 
 #if BUILD_MODE
 

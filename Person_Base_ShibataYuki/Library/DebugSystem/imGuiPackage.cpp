@@ -6,6 +6,7 @@
 //--- インクルード部
 #include <DebugSystem/imGuiPackage.h>
 #include <CoreSystem/File/filePath.h>
+
 #if BUILD_MODE
 
 using namespace MySpace::System;
@@ -15,6 +16,8 @@ namespace MySpace
 {
 	namespace Debug
 	{
+
+#pragma region Aligned
 		//==========================================================
 		// カーソルX位置設定
 		//==========================================================
@@ -32,6 +35,7 @@ namespace MySpace
 			ImGui::SameLine();
 			SetControlPosX(offset);
 		}
+#pragma endregion
 
 #pragma region STRING
 		//==========================================================
@@ -233,7 +237,6 @@ namespace MySpace
 			}
 			return current;
 		}
-
 
 		//==========================================================
 		// ラジオボタン表示

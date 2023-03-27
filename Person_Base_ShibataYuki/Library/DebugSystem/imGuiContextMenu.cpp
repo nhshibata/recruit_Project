@@ -3,6 +3,7 @@
 // 作成:2023/03/13
 //---------------------------------------------------------
 // コンテキストメニュー用
+// ファイル名ミスったかも
 //=========================================================
 
 //--- インクルード部
@@ -17,6 +18,10 @@ namespace MySpace
 
 	namespace Debug
 	{
+		//=========================================================
+		// コンテキストメニュー表示
+		// FIXME:ネストが深い
+		//=========================================================
 		void PopUpGameObjectMenu(MySpace::Game::CGameObject* pObj)
 		{
 			static std::vector<std::string> menuVec = {
@@ -48,43 +53,56 @@ namespace MySpace
 					{
 						// ﾃﾞｰﾀを外部保存
 						auto obj = pObj->GetPtr().lock();
-						sirial.OutputFile(pObj->GetName(), GAME_COPY, obj);
+						sirial.OutputFile(pObj->GetName(), COPY_DATA_GAME_OBJECT_PATH, obj);
 					}
 					break;
 				}
 				case 2:
 				{
-					// 一時的なオブジェクト生成
-					if (auto work = std::make_shared<CGameObject>(); work)
-					{
-						CCerealize<std::shared_ptr<CGameObject>> sirial;
-						// ﾃﾞｰﾀ読み込み
-						work = sirial.InputFile(GAME_COPY);
-
-						// 新しいオブジェクト生成
-						auto newObj = CGameObject::CreateObject();
-						// 読みこまれたコンポーネントの受け渡し
-						auto comList = work->GetComponentList();
-						newObj.lock()->SetName(newObj.lock()->GetName() + "_Clone");
-						for (auto & com : comList)
-						{
-							newObj.lock()->SetComponent(com);
-							//--- 描画と当たり判定クラスは要請する必要があるため、Initを呼び出す
-							// NOTE: 限定的なもので汎用性に欠ける。正直どうなのか
-							if (com->GetName().find("Renderer") != std::string::npos ||
-								com->GetName().find("Collision") != std::string::npos)
-							{
-								com->Awake();
-								com->Init();
-							}
-						}
-						// オブジェクト破棄
-						work.reset();
-					}
+					CopyGameObject();
 					break;
 				}
 			}
+		}
 
+		//=========================================================
+		// オブジェクトのｺﾋﾟｰ
+		//=========================================================
+		std::shared_ptr<MySpace::Game::CGameObject> CopyGameObject()
+		{
+			// 一時的なオブジェクト生成
+			auto work = std::make_shared<CGameObject>();
+			
+			CCerealize<std::shared_ptr<CGameObject>> sirial;
+			// ﾃﾞｰﾀ読み込み
+			work = sirial.InputFile(COPY_DATA_GAME_OBJECT_PATH);
+			if (!work)
+				return work;
+
+			// 新しいオブジェクト生成
+			auto newObj = CGameObject::CreateObject();
+			// 情報設定
+			newObj.lock()->SetName(work->GetName() + "_Clone");
+			newObj.lock()->SetObjTag(work->GetTag());
+			newObj.lock()->SetLayer(work->GetLayer());
+			// 読みこまれたコンポーネントの受け渡し
+			auto comList = work->GetComponentList();
+			for (auto & com : comList)
+			{
+				newObj.lock()->SetComponent(com);
+				//--- 描画と当たり判定クラスは要請する必要があるため、Initを呼び出す
+				// NOTE: 限定的なもので汎用性に欠ける。正直どうなのか
+				if (com->GetName().find("Renderer") != std::string::npos ||
+					com->GetName().find("Collision") != std::string::npos)
+				{
+					com->Awake();
+					com->Init();
+				}
+			}
+			// オブジェクト破棄
+			work.reset();
+
+			return newObj.lock();
 		}
 
 	}

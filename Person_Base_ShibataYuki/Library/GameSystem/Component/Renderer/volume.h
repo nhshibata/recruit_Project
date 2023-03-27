@@ -49,7 +49,7 @@ namespace MySpace
 			std::unique_ptr<MySpace::Graphics::CPostProcess> m_pPost;
 			int m_nPriority;
 			int m_nID;
-			std::unordered_map<int, std::vector<int>> m_aRenderIDCash;  // キャッシュ用
+			std::unordered_map<int, std::vector<int>> m_aRenderIDCache;  // キャッシュ用
 
 		public:
 			CVolume();
@@ -62,9 +62,9 @@ namespace MySpace
 			// *@描画ID追加
 			void AddRendererID(const int nID);
 
-			void ResetRenderCash();
+			void ResetRenderCache();
 
-			std::vector<int> GetRenderCash()const;
+			std::vector<int> GetRenderCache()const;
 
 			// *@所持PostProcess取得
 			MySpace::Graphics::CPostProcess* GetEffect()const { return m_pPost.get(); }

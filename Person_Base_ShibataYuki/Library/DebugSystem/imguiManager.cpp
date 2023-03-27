@@ -36,7 +36,6 @@
 
 #include <GraphicsSystem/Manager/imageResourceManager.h>
 #include <GraphicsSystem/DirectX/renderTarget.h>
-#include <GraphicsSystem/DirectX/depthStencil.h>
 
 #include <AISystem/Nav/navMeshBake.h>
 
@@ -56,9 +55,16 @@ ImGuiManager::ImGuiManager()
 	m_bPause = false;
 	m_bOneFlame = false;
 	m_bEditFlg = true;
-	m_bSceneRender = false;
 	m_bGridDisp = false;
 
+}
+
+//==========================================================
+// デストラクタ
+//==========================================================
+ImGuiManager::~ImGuiManager()
+{
+	Uninit();
 }
 
 //==========================================================
@@ -104,8 +110,6 @@ HRESULT ImGuiManager::Init(HWND hWnd, ID3D11Device* device, ID3D11DeviceContext*
 	m_pHierarchy = std::make_shared<CHierachy>();
 	m_pGizmo = std::make_shared<CMyGizmo>();
 	m_pGizmo->Init();
-	m_pDS = std::make_shared<CDepthStencil>();
-	m_pRT = std::make_shared<CRenderTarget>();
 	
 	//--- デバッグカメラの生成
 	if(1)
@@ -137,8 +141,6 @@ void ImGuiManager::Uninit()
 
 	m_pInspector.reset();
 	m_pHierarchy.reset();
-	m_pDS.reset();
-	m_pRT.reset();
 
 	ImGui_ImplDX11_Shutdown();
 	ImGui_ImplWin32_Shutdown();
@@ -153,7 +155,7 @@ void ImGuiManager::Update()
 {
 	
 	// ON/OFF
-	if (CInput::GetKeyTrigger(VK_I) && CInput::GetKeyPress(VK_LSHIFT))
+	if (CInput::GetKeyTrigger(VK_HOME) && CInput::GetKeyPress(VK_LSHIFT))
 	{
 		m_bEditFlg ^= true;
 		if(m_pDebugCamera.lock())
@@ -161,9 +163,6 @@ void ImGuiManager::Update()
 	}
 	if (!m_bEditFlg)
 		return;
-
-	if (CInput::GetKeyTrigger(VK_P) && CInput::GetKeyPress(VK_LSHIFT))
-		m_bSceneRender ^= true;
 
 	//--- imGuiの更新処理
 	ImGui_ImplDX11_NewFrame();
@@ -184,18 +183,6 @@ void ImGuiManager::Update()
 	// 現在シーン取得
 	SceneManager::CScene* scene = CSceneManager::Get()->GetActiveScene();
 
-	//--- SceneView表示
-	if (m_bSceneRender)
-	{
-		ImGui::SetNextWindowPos(ImVec2(0, 0), ImGuiCond_::ImGuiCond_Once);
-		ImGui::SetNextWindowSize(ImVec2(CScreen::GetWidth(), CScreen::GetHeight()), ImGuiCond_::ImGuiCond_Once);
-		
-		ImGui::Begin("SceneView", nullptr, ImGuiWindowFlags_::ImGuiWindowFlags_MenuBar);
-		ImGui::Image(Application::Get()->GetSystem<CDXDevice>()->GetSRV(), 
-					 ImVec2(CScreen::GetWidth()*0.65f, CScreen::GetHeight()*0.65f));
-		ImGui::End();
-	}
-
 	// 左表示
 	ImGui::PushStyleColor(ImGuiCol_TitleBgActive, ImVec4(0.0f, 0.7f, 0.2f, 1.0f));
 	auto screenSize = CScreen::GetSize();
@@ -212,7 +199,7 @@ void ImGuiManager::Update()
 	//--- 基本
 	if (ImGui::BeginTabItem("Base"))
 	{
-		ImGui::Checkbox("RenderSwitch", &m_bSceneRender);
+		ImGui::Text("Edit Mode -> LShift + [HOME]");
 
 		// シーン名表示
 		ImGui::Text(u8"現在のシーン名 : %s", scene->GetSceneName().c_str());
@@ -344,12 +331,10 @@ void ImGuiManager::Pause()
 	ImGui::SetNextWindowPos(ImVec2((float)CScreen::GetWidth()*0.75f, (float)CScreen::GetHeight()*0.85f), ImGuiCond_Once);
 	ImGui::SetNextWindowSize(ImVec2(320, 120), ImGuiCond_Once);
 	
-	ImGui::Begin(u8"Pause & OneFrame Step", &m_bPause);
+	ImGui::Begin(u8"Pause / 1Frame Step", &m_bPause);
 
-	ImGui::Text("LShift + stop[L]");
-	ImGui::SameLine();
-	ImGui::Text("LShift + step[O]");
-	ImGui::SameLine();
+	ImGui::Text("stop -> LShift + [L]");
+	ImGui::Text("step -> LShift + [O]");
 
 	// デバッグポーズ処理
 	if (ImGui::Button("STOP") || CInput::GetKeyTrigger(VK_L) && CInput::GetKeyPress(VK_LSHIFT))
@@ -380,6 +365,7 @@ void ImGuiManager::Pause()
 		m_bOneFlame = false;
 		m_bPause = true;
 	}
+
 
 	ImGui::End();
 }
@@ -448,43 +434,6 @@ void ImGuiManager::HoverStateSet()
 }
 
 //==========================================================
-// ImGui表示のレンダーターゲット
-//==========================================================
-ID3D11RenderTargetView* ImGuiManager::GetRTV()
-{
-	return m_pRT->GetView();
-}
-
-//==========================================================
-// ImGui表示の深度
-//==========================================================
-ID3D11DepthStencilView* ImGuiManager::GetDSV()
-{
-	return m_pDS->GetView();
-}
-
-//==========================================================
-// ImGuiの描画先切替
-//==========================================================
-void ImGuiManager::SceneRender()
-{
-	//--- 描画先の変更
-	Application::Get()->GetSystem<CDXDevice>()->SwitchRender(m_pRT->GetView(), m_pDS->GetView());
-}
-
-//==========================================================
-// レンダーターゲットと深度のクリア
-//==========================================================
-void ImGuiManager::SceneRenderClear()
-{
-	float ClearColor[4] = { 0.117647f, 0.254902f, 0.352941f, 1.0f };
-
-	//--- 情報をリセット
-	m_pRT->Clear(ClearColor);
-	m_pDS->Clear();
-}
-
-//==========================================================
 // ギズモ表示
 //==========================================================
 void ImGuiManager::SceneGizmo()
@@ -496,10 +445,10 @@ void ImGuiManager::SceneGizmo()
 }
 
 
-ImGuiManager* ImGuiManager::Get()
-{
-	static ImGuiManager instance;
-	return &instance;
-}
+//ImGuiManager* ImGuiManager::Get()
+//{
+//	static ImGuiManager instance;
+//	return &instance;
+//}
 
 #endif

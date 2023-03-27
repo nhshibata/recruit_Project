@@ -10,16 +10,14 @@
 #include <GameSystem/GameObject/gameObject.h>
 #include <GameSystem/Manager/sceneManager.h>
 
-#include <ImGui/imgui.h>
+#include <DebugSystem/imGuiPackage.h>
 
 using namespace MySpace::Game;
-
 
 //==========================================================
 // コンストラクタ
 //==========================================================
 CLight::CLight()
-	:m_bEnable(true)
 {
 }
 
@@ -41,9 +39,8 @@ CLight::~CLight()
 {
 	if (m_pMainLight == this)
 	{
-		Set(nullptr);
+		m_pMainLight = nullptr;
 	}
-
 }
 
 //==========================================================
@@ -55,7 +52,6 @@ void CLight::OnLoad()
 	{
 		m_pMainLight = this;
 	}
-	
 }
 
 //==========================================================
@@ -90,9 +86,11 @@ CLight* CLight::GetMain()
 // ﾒｲﾝﾗｲﾄ設定
 //==========================================================
 void CLight::Set(CLight* pLight)
-{
-	//m_pLight = (pLight) ? pLight : &g_Light;
-	m_pMainLight = (pLight);
+{	
+	if (m_pMainLight)
+		return;
+
+	m_pMainLight = pLight;
 }
 
 
@@ -100,8 +98,14 @@ void CLight::Set(CLight* pLight)
 
 void CLight::ImGuiDebug()
 {
-	ImGui::Text("Light");
-	ImGui::CheckboxFlags(u8"enable", (unsigned int*)&m_bEnable, 1);
+	Debug::SetTextAndAligned("Main Light");
+	if (ImGui::Button("ON"))
+	{
+		m_pMainLight = this;
+	}
+
+	Debug::SetTextAndAligned("Light Enable");
+	ImGui::CheckboxFlags("##Light Enable", (unsigned int*)&m_bEnable, 1);
 }
 
 #endif // BUILD_MODE

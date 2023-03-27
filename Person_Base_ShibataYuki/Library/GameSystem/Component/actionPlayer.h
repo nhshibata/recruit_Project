@@ -16,6 +16,14 @@ namespace MySpace
 {
 	namespace Game
 	{
+		class CRigidbody;
+	}
+}
+
+namespace MySpace
+{
+	namespace Game
+	{
 
 		class CActionPlayer : public CComponent
 		{
@@ -41,18 +49,28 @@ namespace MySpace
 			float m_fSpeed;
 			float m_fJump;
 			bool m_bLand;
+			CRigidbody* m_rb;
 
 		public:
 			CActionPlayer();
 			CActionPlayer(CGameObject::Ptr);
 			~CActionPlayer();
 
+			void OnLoad();
 			void Awake();
 			void Init();
 			void Update();
 
-			void OnCollisionEnter(CGameObject * obj);
-			void OnCollisionStay(CGameObject * obj);
+			void OnCollisionEnter(CGameObject* obj);
+			void OnCollisionStay(CGameObject* obj);
+			void OnCollisionExit(CGameObject* obj);
+
+#if BUILD_MODE
+
+			void ImGuiDebug();
+
+#endif // BUILD_MODE
+
 
 		};
 

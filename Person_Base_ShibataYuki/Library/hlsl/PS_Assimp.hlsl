@@ -31,7 +31,7 @@ float4 main(PS_INPUT input) : SV_Target0
     // 描画するピクセルの奥行きと、ﾃｸｽﾁｬの奥行きが一致していた場合、
     // ﾃｸｽﾁｬに書き込まれたデータとの差異が発生して影が出来ない部分に
     // 影が出来てしまう。ﾃｸｽﾁｬに書き込まれた距離は実際は少し遠い、と置くことで回避できる
-    sunDepth += 0.005f; // 数字は適時調整
+    sunDepth += 0.0005f; // 数字は適時調整
 
     // 奥行き確認
     // pixelの方が奥なら1.0f、つまり影
@@ -40,20 +40,17 @@ float4 main(PS_INPUT input) : SV_Target0
     // シャドウマップ
     float2 shadowUV = GetSunUV(input.sunPos);
     float result = 1.0f;
-    // 0以上
-    result *= step(0.0f, shadowUV.x);
-    result *= step(0.0f, shadowUV.y);
-    // 1以下
-    result *= step(shadowUV.x, 1.0f);
-    result *= step(shadowUV.y, 1.0f);
+    // 0<x && x<1
+    result *= step(0.0f, shadowUV.x) * (1.0f - step(1.0f, shadowUV.x));
+    result *= step(0.0f, shadowUV.y) * (1.0f - step(1.0f, shadowUV.y));
     shadowRes *= result;
     // 0なら色変更なし、1なら影を影響反映
     shadowRes = 1.0f - shadowRes;
-    shadowRes = saturate(shadowRes + 0.3f);
+    shadowRes = saturate(shadowRes + 0.3f * shadowRes);
     
     //--- 影結果反映
     // 影なら全て黒
-    Diff.rgb *= shadowRes;
+    Diff *= shadowRes;
     
     // 影ならば描画
     //Alpha = shadowRes;

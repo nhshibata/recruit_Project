@@ -16,18 +16,11 @@
 using namespace MySpace::Game;
 using namespace MySpace::MyMath;
 
-// 名前空間
-namespace
-{
-	const float RATE_ROTATE = 0.2f;
-}
-
 //==========================================================
 // コンストラクタ
 //==========================================================
 CTransform::CTransform()
 {
-	m_pChilds = std::vector<std::weak_ptr<CTransform>>();
 	XMStoreFloat4x4(&m_mLocalMtx, XMMatrixIdentity());
 	XMStoreFloat4x4(&m_mWorldMtx, XMMatrixIdentity());
 }
@@ -48,6 +41,8 @@ CTransform::CTransform(std::shared_ptr<CGameObject> owner)
 //==========================================================
 CTransform::~CTransform()
 {
+	// 親子関係解除
+	ParentDissolved();
 }
 
 //==========================================================
@@ -55,6 +50,10 @@ CTransform::~CTransform()
 //==========================================================
 void CTransform::Uninit()
 {
+	if (GetOwner()->GetState() != CGameObject::E_ObjectState::DESTROY)
+		return;
+	// 削除状態で消されたとき(Uninitは削除状態以外、読み込みなどでも呼ばれる)
+	// 子も削除
 	std::vector<std::weak_ptr<CTransform>>::iterator it = m_pChilds.begin();
 	for (; it != m_pChilds.end(); ++it)
 	{
@@ -84,6 +83,7 @@ void CTransform::Update()
 	{
 		m_vOldPos = m_vPos;
 	}
+
 	//--- マトリックスの更新
 	UpdateWorldMatrix();
 }
@@ -95,6 +95,7 @@ Quaternion CTransform::GetWorldQuaternion()
 {
 	return m_Rot;
 }
+
 // 未実装
 Quaternion CTransform::GetLocalQuaternion()
 {
@@ -124,11 +125,11 @@ void CTransform::UpdateWorldMatrix()
 
 	// ワールドマトリックスを反映
 	// 親が居る場合、親が更新する
-	if (auto parent = GetParent(); !parent.lock())
+	if (!GetParent().lock())
 		XMStoreFloat4x4(&m_mWorldMtx, mtx);
 	XMStoreFloat4x4(&m_mLocalMtx, mtx);
 
-	// 子が居たら
+	// 子が居るか確認
 	if (GetChildCount() == 0)
 		return;
 
@@ -195,13 +196,15 @@ void CTransform::UpdateChildMatrix(CTransform* child, Matrix4x4 mtx)
 	child->UpdateWorldMatrix();
 
 	Matrix4x4 childMtx;
+	// 子オブジェクトのローカル行列と親オブジェクトのワールド行列を乗算する
+	// ワールド行列を求める
 	XMStoreFloat4x4(&childMtx, XMMatrixMultiply(
 		XMLoadFloat4x4(&child->GetLocalMatrix()),
 		XMLoadFloat4x4(&mtx)
 	));
 	child->SetWorldMatrix(childMtx);
 
-	// 孫の更新
+	// 更に子の更新
 	int size = child->GetChildCount();
 	std::weak_ptr<CTransform> childT;
 
@@ -209,8 +212,9 @@ void CTransform::UpdateChildMatrix(CTransform* child, Matrix4x4 mtx)
 	{
 		childT = child->GetChild(cnt);
 		if (childT.lock())
-		{	// 再帰
-			// 子のマトリックスから孫のマトリックスを更新する
+		{	
+			// 再帰
+			// 子のマトリックスから更に子のマトリックスを更新する
 			UpdateChildMatrix(childT.lock().get(), childMtx);
 		}
 	}
@@ -222,9 +226,10 @@ void CTransform::UpdateChildMatrix(CTransform* child, Matrix4x4 mtx)
 //==========================================================
 void CTransform::AddChild(std::weak_ptr<CTransform> child)
 {
-	// ﾎﾟｲﾝﾀ
+	// 自分自身ではないか確認
 	if (child.lock() == GetPtr().lock())
 		return;
+
 	// 格納済みか
 	for (const auto & com : m_pChilds)
 	{
@@ -237,9 +242,15 @@ void CTransform::AddChild(std::weak_ptr<CTransform> child)
 		parent.lock()->RemoveChild(this->BaseToDerived<CTransform>());
 	}
 
+	// 子に加える
 	m_pChilds.push_back(child);
+	// 親を教える
 	child.lock()->SetParent(this->BaseToDerived<CTransform>());
+
+	//--- ﾜｰﾙﾄﾞ座標系での子オブジェクトの位置設定
 	Matrix4x4 childMtx;
+	// 自身のワールドマトリックスの逆行列を子オブジェクトの行列とかけ、親の座標系とする
+	// これにより、子オブジェクトの座標系が親と相対的な座標になる
 	XMStoreFloat4x4(&childMtx, XMMatrixMultiply(
 		XMLoadFloat4x4(&child.lock()->GetWorldMatrix()),
 		XMMatrixInverse(nullptr, XMLoadFloat4x4(&m_mWorldMtx))
@@ -249,9 +260,35 @@ void CTransform::AddChild(std::weak_ptr<CTransform> child)
 }
 
 //==========================================================
+// 子要素除外
+//==========================================================
+void CTransform::RemoveChild(std::weak_ptr<CTransform> child)
+{
+	for (auto it = m_pChilds.begin(); it != m_pChilds.end(); ++it)
+	{
+		if ((*it).lock() == child.lock())
+		{
+			m_pChilds.erase(it);
+			break;
+		}
+	}
+}
+
+//==========================================================
+// 親子関係解消
+//==========================================================
+void CTransform::ParentDissolved()
+{
+	if (!m_pParent.lock())
+		return;
+	m_pParent.lock()->RemoveChild(BaseToDerived<CTransform>());
+	m_pParent.reset();
+}
+
+//==========================================================
 // 子の取得
 //==========================================================
-std::weak_ptr<CTransform> CTransform::GetChild(int no)
+std::weak_ptr<CTransform> CTransform::GetChild(const int& no)
 {
 	if (no >= m_pChilds.size())
 		return std::shared_ptr<CTransform>();
@@ -265,7 +302,7 @@ void CTransform::ImGuiDebug()
 {
 	// 3次元座標
 	Debug::SetTextAndAligned("Transform:OldPos");
-	ImGui::Text("%f %f %f", m_vOldPos.x, m_vOldPos.y, m_vOldPos.z);
+	ImGui::Text("[x:%.5f][y:%.5f][z:%.5f]", m_vOldPos.x, m_vOldPos.y, m_vOldPos.z);
 
 	Debug::SetTextAndAligned("Transform:Pos");
 	ImGui::DragFloat3("##T:Pos", (float*)&m_vPos);

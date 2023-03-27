@@ -38,7 +38,4 @@
 #include <AISystem/System/aiSystem.h>
 #include <AISystem/System/aiAgent.h>
 
-#include <spellComponents.h>
-#include <spellPlayer.h>
-
 void CreateComponentType();

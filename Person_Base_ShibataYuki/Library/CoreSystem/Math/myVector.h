@@ -1,12 +1,15 @@
-
-
+//=========================================================
+// [myVector.h]
+//---------------------------------------------------------
+// DirectXの構造体を継承したAdapterパターン
+// ※Colorを除く
+//=========================================================
 
 #ifndef __MY_VECTOR_H__
 #define __MY_VECTOR_H__
 
 #include <CoreSystem/Util/cerealCommon.h>
 
-//#include <DirectXTex.h>
 #include <DirectXMath.h>
 #include <math.h>
 
@@ -20,8 +23,9 @@ namespace MySpace
 		// 構造体XMFLOAT型を継承したAdapterパターン
 		class Vector2 : public XMFLOAT2
 		{
+#pragma region Serialize
 		private:
-			// シリアライズ
+			//--- シリアライズ
 			friend class cereal::access;
 			template<class Archive>
 			void save(Archive & archive) const
@@ -33,14 +37,13 @@ namespace MySpace
 			{
 				archive(CEREAL_NVP(x), CEREAL_NVP(y));
 			}
+#pragma endregion
 		public:
-			/*	float x;
-				float y;*/
 			Vector2() { x = y = 0; }
 			Vector2(float x1, float y1) { x = x1; y = y1; }
 			Vector2(XMFLOAT2 f) { x = f.x; y = f.y; }
 
-			// 演算子のオーバーロード
+			//--- 演算子のオーバーロード
 			const XMFLOAT2 operator= (const Vector2& vec)  { x = vec.x; y = vec.y;   return *this; }
 			const XMFLOAT2 operator+= (const Vector2& vec) { x += vec.x; y += vec.y; return *this; }
 			const Vector2 operator-= (const XMFLOAT2& vec) { x -= vec.x; y -= vec.y; return *this; }
@@ -48,21 +51,22 @@ namespace MySpace
 			const Vector2 operator/= (const XMFLOAT2& vec) { x /= vec.x; y /= vec.y; return *this; }
 			const Vector2 operator*= (const float f) { x *= f; y *= f; return *this; }
 			const Vector2 operator/= (const float f) { x /= f; y /= f; return *this; }
-			Vector2 operator+(const XMFLOAT2& vec) { return Vector2(x + vec.x, y + vec.y); }
-			Vector2 operator-(const XMFLOAT2& vec) { return Vector2(x - vec.x, y - vec.y); }
-			Vector2 operator*(const XMFLOAT2& vec) { return Vector2(x * vec.x, y * vec.y); }
-			Vector2 operator/(const XMFLOAT2& vec) { return Vector2(x / vec.x, y / vec.y); }
-			Vector2 operator* (const float & f) const { return Vector2(x * f, y * f); }
-			Vector2 operator/ (const float & f) const { return Vector2(x / f, y / f); }
+
+			Vector2 operator+(const Vector2 vec) { return Vector2(x + vec.x, y + vec.y); }
+			Vector2 operator-(const Vector2 vec) { return Vector2(x - vec.x, y - vec.y); }
+			Vector2 operator*(const Vector2 vec) { return Vector2(x * vec.x, y * vec.y); }
+			Vector2 operator/(const Vector2 vec) { return Vector2(x / vec.x, y / vec.y); }
+			Vector2 operator* (const float f) const { return Vector2(x * f, y * f); }
+			Vector2 operator/ (const float f) const { return Vector2(x / f, y / f); }
+
 			bool operator== (const Vector2& vec)const { return (x == vec.x) && (y == vec.y); }
 			bool operator!= (const Vector2& vec)const { return !(*this == vec); }
 			Vector2 operator-() const { return Vector2(-x, -y); }
-			Vector2 operator+() const { return Vector2(x, y); }
 			operator float* () const { return (float *)&x; }
 			operator const float* () const { return (const float *)&x; }
 
-
 			float Length()const { return sqrtf(x * x + y * y); }
+
 			Vector2 Normalize()
 			{
 				float length = Length();
@@ -73,9 +77,10 @@ namespace MySpace
 			}
 
 			// 静的メンバ関数
-			static Vector2 Lerp(const Vector2& from, const Vector2& to, float value) {
-				value = 0;
-				return from * (1.0f - value) + to * value;
+			static Vector2 Lerp(Vector2 from, const Vector2 to, float t) 
+			{
+				auto n = (from - to);
+				return from * (from - to) * t;
 			}
 
 			// 正規化した値を返す
@@ -101,6 +106,7 @@ namespace MySpace
 
 		class Vector3 : public XMFLOAT3
 		{
+#pragma region Serialize
 		private:
 			// シリアライズ
 			friend class cereal::access;
@@ -114,6 +120,7 @@ namespace MySpace
 			{
 				archive(CEREAL_NVP(x), CEREAL_NVP(y), CEREAL_NVP(z));
 			}
+#pragma endregion
 		public:
 			// コンストラクタ
 			Vector3() { x = 0; y = 0; z = 0; };
@@ -126,10 +133,7 @@ namespace MySpace
 			XMFLOAT3 operator+= (const Vector3 vec) { (x += vec.x, y += vec.y, z += vec.z); return *this; }
 			XMFLOAT3 operator-= (const Vector3 vec) { (x -= vec.x, y -= vec.y, z -= vec.z); return *this; }
 			XMFLOAT3 operator*= (const Vector3 vec) { (x *= vec.x, y *= vec.y, z *= vec.z); return *this; }
-			Vector3 operator+ (const XMFLOAT3 vec) { return Vector3(x + vec.x, y + vec.y, z + vec.z); }
-			Vector3 operator- (const XMFLOAT3 vec) { return Vector3(x - vec.x, y - vec.y, z - vec.z); }
-			Vector3 operator* (const XMFLOAT3 vec) { return Vector3(x * vec.x, y * vec.y, z * vec.z); }
-			Vector3 operator/ (const XMFLOAT3 vec) { return Vector3(x / vec.x, y / vec.y, z / vec.z); }
+			
 			void operator+= (const XMFLOAT3 vec) { x += vec.x; y += vec.y; z += vec.z; }
 			void operator-= (const XMFLOAT3 vec) { x -= vec.x; y -= vec.y; z -= vec.z; }
 			void operator*= (const XMFLOAT3 vec) { x *= vec.x; y *= vec.y; z *= vec.z; }
@@ -137,10 +141,10 @@ namespace MySpace
 
 			void operator*= (const float f) { x *= f; y *= f; z *= f; }
 			void operator/= (const float f) { x /= f; y /= f; z /= f; }
-			Vector3 operator+(const Vector3& vec) { return Vector3(x + vec.x, y + vec.y, z + vec.z); }
-			Vector3 operator-(const Vector3& vec) { return Vector3(x - vec.x, y - vec.y, z - vec.z); }
-			Vector3 operator*(const Vector3& vec) { return Vector3(x * vec.x, y * vec.y, z * vec.z); }
-			Vector3 operator/(const Vector3& vec) { return Vector3(x / vec.x, y / vec.y, z / vec.z); }
+			Vector3 operator+(const Vector3 vec) { return Vector3(x + vec.x, y + vec.y, z + vec.z); }
+			Vector3 operator-(const Vector3 vec) { return Vector3(x - vec.x, y - vec.y, z - vec.z); }
+			Vector3 operator*(const Vector3 vec) { return Vector3(x * vec.x, y * vec.y, z * vec.z); }
+			Vector3 operator/(const Vector3 vec) { return Vector3(x / vec.x, y / vec.y, z / vec.z); }
 			Vector3 operator* (const float & f) const { return Vector3(x * f, y * f ,z * f); }
 			Vector3 operator/ (const float & f) const { return Vector3(x / f, y / f, z / f); }
 			Vector3 operator= (const float & f) const { return Vector3(f, f, f); }
@@ -178,6 +182,7 @@ namespace MySpace
 			}
 
 			float Length()const { return sqrtf(x * x + y * y + z * z); }
+
 			Vector3 Normalize()
 			{
 				float length = Length();
@@ -218,26 +223,17 @@ namespace MySpace
 			// ベクトルの正規化
 			static Vector3 Normalize(Vector3 vec)
 			{
-				//Vector3 vec = v;
 				float len = Length(vec);
 				if (!len) return vec;
 				vec.x /= len;
 				vec.y /= len;
 				vec.z /= len;
 				return vec;
-			}
-			//// 正規化した値を返す
-			//static Vector3 Normalize(const Vector3 & vec)
-			//{
-			//	float value = vec.Length();
-			//	if (value == 1.0f) return vec; // 既に正規化済みなら何もしない
-			//	if (value == 0.0f) return Vector3(0, 0, 0);
-			//	return (vec / value);
-			//}
-
-			static Vector3 Lerp(const Vector3& from, const Vector3& to, float value) {
-				value = 0;
-				return from * (1.0f - value) + to * value;
+			}		
+			
+			static Vector3 Lerp(Vector3 from, const Vector3 to, const float value) 
+			{
+				return from * (from - to) * value;
 			}
 
 
@@ -270,8 +266,9 @@ namespace MySpace
 
 		class Vector4 : public XMFLOAT4
 		{
+#pragma region Serialize
 		private:
-			// シリアライズ
+			//--- シリアライズ
 			friend class cereal::access;
 			template<class Archive>
 			void save(Archive & archive) const
@@ -283,6 +280,7 @@ namespace MySpace
 			{
 				archive(CEREAL_NVP(x), CEREAL_NVP(y), CEREAL_NVP(z), CEREAL_NVP(w));
 			}
+#pragma endregion
 		public:
 			Vector4() { x = y = z = w = 0; };
 			Vector4(float x1, float y1, float z1, float w1) { x = x1; y = y1; z = z1; w = w1; };
@@ -293,10 +291,6 @@ namespace MySpace
 			XMFLOAT4 operator= (const Vector4 vec) { return XMFLOAT4(x = vec.x, y = vec.y, z = vec.z, w = vec.w); }
 			XMFLOAT4 operator+= (const Vector4 vec) { return XMFLOAT4(x += vec.x, y += vec.y, z += vec.z, w += vec.w); }
 			void operator= (const XMFLOAT4 vec) { x = vec.x; y = vec.y; z = vec.z; w = vec.w; }
-			Vector4 operator+ (const XMFLOAT4 vec) { return Vector4(x += vec.x, y += vec.y, z += vec.z, w += vec.w); }
-			Vector4 operator- (const XMFLOAT4 vec) { return Vector4(x -= vec.x, y -= vec.y, z -= vec.z, w -= vec.w); }
-			Vector4 operator* (const XMFLOAT4 vec) { return Vector4(x *= vec.x, y *= vec.y, z *= vec.z, w *= vec.w); }
-			Vector4 operator/ (const XMFLOAT4 vec) { return Vector4(x /= vec.x, y /= vec.y, z /= vec.z, w /= vec.w); }
 			void operator+= (const XMFLOAT4 vec) { x += vec.x; y += vec.y; z += vec.z; w += vec.w; }
 			void operator-= (const XMFLOAT4 vec) { x -= vec.x; y -= vec.y; z -= vec.z; w -= vec.w; }
 			void operator*= (const XMFLOAT4 vec) { x *= vec.x; y *= vec.y; z *= vec.z; w *= vec.w; }
@@ -304,31 +298,31 @@ namespace MySpace
 
 			void operator*= (const float f) { x *= f; y *= f; z *= f; w *= f; }
 			void operator/= (const float f) { x /= f; y /= f; z /= f; w /= f; }
-			Vector4 operator+(const Vector4& vec) { return Vector4(x + vec.x, y + vec.y, z + vec.z, w + vec.w); }
-			Vector4 operator-(const Vector4& vec) { return Vector4(x - vec.x, y - vec.y, z - vec.z, w - vec.w); }
-			Vector4 operator*(const Vector4& vec) { return Vector4(x * vec.x, y * vec.y, z * vec.z, w * vec.w); }
-			Vector4 operator/(const Vector4& vec) { return Vector4(x / vec.x, y / vec.y, z / vec.z, w / vec.w); }
+			Vector4 operator+(const Vector4 vec) { return Vector4(x + vec.x, y + vec.y, z + vec.z, w + vec.w); }
+			Vector4 operator-(const Vector4 vec) { return Vector4(x - vec.x, y - vec.y, z - vec.z, w - vec.w); }
+			Vector4 operator*(const Vector4 vec) { return Vector4(x * vec.x, y * vec.y, z * vec.z, w * vec.w); }
+			Vector4 operator/(const Vector4 vec) { return Vector4(x / vec.x, y / vec.y, z / vec.z, w / vec.w); }
 			Vector4 operator* (const float & f) const { return Vector4(x, y, z, w) * f; }
 			Vector4 operator/ (const float & f) const { return Vector4(x / f, y / f, z / f, w / f); }
 			bool operator== (const Vector4& vec)const { return (x == vec.x) && (y == vec.y) && (z == vec.z) && (w == vec.w); }
 			bool operator!= (const Vector4& vec)const { return !(*this == vec); }
 			Vector4 operator-() const { return Vector4(-x, -y, -z, -w); }
 			Vector4 operator+() const { return Vector4(x, y, z, w); }
+
+
+			static Vector4 Lerp(Vector4 from, const Vector4 to, const float value)
+			{
+				return from * (from - to) * value;
+			}
+
 		};
 
 		class Matrix4x4 : public XMFLOAT4X4
 		{
+#pragma region Serialize
 		private:
 			//--- シリアライズ
 			friend class cereal::access;
-			/*template<class Archive>
-			void serialize(Archive & archive, XMFLOAT4X4 & m)
-			{
-				archive(CEREAL_NVP(m._11), CEREAL_NVP(m._12), CEREAL_NVP(m._13), CEREAL_NVP(m._14),
-					CEREAL_NVP(m._21), CEREAL_NVP(m._22), CEREAL_NVP(m._23), CEREAL_NVP(m._24),
-					CEREAL_NVP(m._31), CEREAL_NVP(m._32), CEREAL_NVP(m._33), CEREAL_NVP(m._34),
-					CEREAL_NVP(m._41), CEREAL_NVP(m._42), CEREAL_NVP(m._43), CEREAL_NVP(m._44));
-			}*/
 			template<class Archive>
 			void save(Archive & archive)const
 			{
@@ -345,6 +339,7 @@ namespace MySpace
 					CEREAL_NVP(_31), CEREAL_NVP(_32), CEREAL_NVP(_33), CEREAL_NVP(_34),
 					CEREAL_NVP(_41), CEREAL_NVP(_42), CEREAL_NVP(_43), CEREAL_NVP(_44));
 			}
+#pragma endregion
 		public:
 			Matrix4x4() {
 				_11 = 0.0f; _12 = 0.0f; _13 = 0.0f; _14 = 0.0f;
@@ -367,8 +362,10 @@ namespace MySpace
 					m00, m01, m02, m03,
 					m10, m11, m12, m13,
 					m20, m21, m22, m23,
-					m30, m31, m32, m33) {}
-			~Matrix4x4() {};
+					m30, m31, m32, m33)
+			{}
+			~Matrix4x4()
+			{};
 
 			void operator= (const DirectX::XMFLOAT4X4 mt)
 			{
@@ -396,14 +393,16 @@ namespace MySpace
 				_41 *= mt._41; _42 *= mt._42; _43 *= mt._43; _44 *= mt._44;
 			}
 
-			void Identity() {
+			void Identity() 
+			{
 				_11 = 1.0f; _12 = 0.0f; _13 = 0.0f; _14 = 0.0f;
 				_21 = 0.0f; _22 = 1.0f; _23 = 0.0f; _24 = 0.0f;
 				_31 = 0.0f; _32 = 0.0f; _33 = 1.0f; _34 = 0.0f;
 				_41 = 0.0f; _42 = 0.0f; _43 = 0.0f; _44 = 1.0f;
 			};
 			
-			static Matrix4x4 MatrixIdentity() {
+			static Matrix4x4 MatrixIdentity()
+			{
 				Matrix4x4 ret;
 				ret._11 = 1.0f; ret._12 = 0.0f; ret._13 = 0.0f; ret._14 = 0.0f;
 				ret._21 = 0.0f; ret._22 = 1.0f; ret._23 = 0.0f; ret._24 = 0.0f;
@@ -411,6 +410,11 @@ namespace MySpace
 				ret._41 = 0.0f; ret._42 = 0.0f; ret._43 = 0.0f; ret._44 = 1.0f;
 				return ret;
 			};
+
+			void StoreFloat(const XMMATRIX& mtx)
+			{
+				DirectX::XMStoreFloat4x4(this, mtx);
+			}
 
 			Matrix4x4 CalcWorld(Vector3 pos, Vector3 center = Vector3(0, 0, 0))
 			{
@@ -427,37 +431,39 @@ namespace MySpace
 				return mtx;
 			}
 
-			Matrix4x4 Multiply(Matrix4x4 a)
+			Matrix4x4 Multiply(const Matrix4x4& a)const
 			{
-				auto newMtx = XMMatrixMultiply(XMLoadFloat4x4(&*this), XMLoadFloat4x4(&a));
+				auto mtx = XMMatrixMultiply(XMLoadFloat4x4(&*this), XMLoadFloat4x4(&a));
 				Matrix4x4 ret;
-				XMStoreFloat4x4(&ret, newMtx);
+				XMStoreFloat4x4(&ret, mtx);
 				return ret;
 			}
 
-			Matrix4x4 Transpose()
+			Matrix4x4 Transpose()const
 			{
-				DirectX::XMFLOAT4X4 ret = *this;
+				Matrix4x4 ret = *this;
 				XMMATRIX mtx = DirectX::XMMatrixTranspose(XMLoadFloat4x4(&ret));
 				DirectX::XMStoreFloat4x4(&ret, mtx);
-				return Matrix4x4(ret);
+				return ret;
 			}
 
-			Matrix4x4 Inverse()
+			Matrix4x4 Inverse()const
 			{
-				DirectX::XMFLOAT4X4 ret = *this;
+				Matrix4x4 ret = *this;
 				DirectX::XMMATRIX mtx = DirectX::XMLoadFloat4x4(&ret);
 				mtx = DirectX::XMMatrixInverse(nullptr, mtx);
 				DirectX::XMStoreFloat4x4(&ret, mtx);
-				return Matrix4x4(ret);
+				return ret;
 			}
 
 		};
 
+		// 作ったはいいが、知識が足りない
 		class Quaternion : public XMFLOAT4
 		{
+#pragma region Serialize
 		private:
-			// シリアライズ
+			//--- シリアライズ
 			friend class cereal::access;
 			template<class Archive>
 			void save(Archive & archive) const
@@ -469,6 +475,7 @@ namespace MySpace
 			{
 				archive(CEREAL_NVP(x), CEREAL_NVP(y), CEREAL_NVP(z), CEREAL_NVP(w));
 			}
+#pragma endregion
 		public:
 			Quaternion() 
 				:XMFLOAT4(0,0,0,0)
@@ -477,9 +484,11 @@ namespace MySpace
 				:XMFLOAT4(x,y,z,w)
 			{
 			};
-			~Quaternion() {};
+			~Quaternion() 
+			{};
 		};
 
+		// 本来はXMFLOAT4を継承したいが、メンバ変数名が異なるため、悩む
 		struct Color
 		{
 		private:
@@ -497,11 +506,14 @@ namespace MySpace
 			}
 		public:
 			float r, g, b, a;
-		public:
-			Color() :r(0), g(0), b(0), a(1) {};
-			Color(float x, float y, float z, float w) :r(x), g(y), b(z), a(w) {}
-			Color(XMFLOAT4 color) :r(color.x), g(color.y), b(color.z), a(color.w) {}
 
+		public:
+			Color() :r(0), g(0), b(0), a(1) 
+			{};
+			Color(float x, float y, float z, float w) :r(x), g(y), b(z), a(w) 
+			{}
+			Color(XMFLOAT4 color) :r(color.x), g(color.y), b(color.z), a(color.w) 
+			{}
 			
 			void operator=(XMFLOAT4 c) { r = c.x; g = c.y; b = c.z; a = c.w; }
 			void operator=(XMFLOAT3 c) { r = c.x; g = c.y; b = c.z; }
@@ -549,7 +561,6 @@ namespace MySpace
 			{
 				return Color(0.0f, 0.0f, 1.0f, 1.0f);
 			}
-
 
 		};
 

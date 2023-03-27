@@ -372,7 +372,9 @@ void CCamera::ImGuiDebug()
 {
 	//--- MainCameraê›íË
 	bool isMain = GetMain() == BaseToDerived<CCamera>().get();
-	if(ImGui::Checkbox("Main Camera", &isMain))
+
+	Debug::SetTextAndAligned("Main Camera");
+	if(ImGui::Checkbox("##Main Camera", &isMain))
 		CCamera::SetMain(BaseToDerived<CCamera>());
 
 	m_fAspectRatio = CScreen::GetWidth() / CScreen::GetHeight();
@@ -399,7 +401,8 @@ void CCamera::ImGuiDebug()
 		m_fLengthInterval = sqrtf(fVecX * fVecX + fVecZ * fVecZ);
 	}
 
-	ImGui::Text("Length %.5f", &m_fLengthInterval);
+	Debug::SetTextAndAligned("LengthInterval");
+	ImGui::Text("%.5f", &m_fLengthInterval);
 
 	Debug::SetTextAndAligned("Camera Up");
 	ImGui::DragFloat3("##Camera Up", m_vUp);

@@ -88,30 +88,30 @@ bool CVolume::IsLayer(const int layerBit)
 void CVolume::AddRendererID(const int nID)
 {
 	const int layer = GetLayer();
-	if (!m_aRenderIDCash.count(layer))
+	if (!m_aRenderIDCache.count(layer))
 	{
-		m_aRenderIDCash[layer] = std::vector<int>();
+		m_aRenderIDCache[layer] = std::vector<int>();
 	}
 
-	m_aRenderIDCash[layer].push_back(nID);
+	m_aRenderIDCache[layer].push_back(nID);
 }
 
 //==========================================================
 // ƒNƒŠƒA
 //==========================================================
-void CVolume::ResetRenderCash()
+void CVolume::ResetRenderCache()
 {
-	m_aRenderIDCash.clear();
+	m_aRenderIDCache.clear();
 }
 
 //==========================================================
 // Žæ“¾
 //==========================================================
-std::vector<int> CVolume::GetRenderCash()const
+std::vector<int> CVolume::GetRenderCache()const
 {
-	if (m_aRenderIDCash.size() == 0)
+	if (m_aRenderIDCache.size() == 0)
 		return std::vector<int>();
-	return m_aRenderIDCash.begin()->second;
+	return m_aRenderIDCache.begin()->second;
 }
 
 

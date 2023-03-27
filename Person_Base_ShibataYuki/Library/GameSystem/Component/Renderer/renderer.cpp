@@ -16,7 +16,7 @@
 #include <GraphicsSystem/Manager/assetsManager.h>
 #include <GraphicsSystem/Manager/shaderManager.h>
 
-#include <ImGui/imgui.h>
+#include <DebugSystem/imGuiPackage.h>
 
 using namespace MySpace::Game;
 
@@ -25,7 +25,7 @@ using namespace MySpace::Game;
 // コンストラクタ
 //==========================================================
 CRenderer::CRenderer()
-	:m_bVisible(true), m_nDrawIdx(-1)
+	:m_nDrawIdx(-1)
 {
 }
 
@@ -33,7 +33,7 @@ CRenderer::CRenderer()
 // コンストラクタ
 //==========================================================
 CRenderer::CRenderer(std::shared_ptr<CGameObject> owner)
-	:CComponent(owner), m_bVisible(true), m_vColor(1,1,1,1)
+	:CComponent(owner), m_bVisible(true), m_vColor(1,1,1,1), m_nDrawIdx(-1)
 {
 
 }
@@ -43,6 +43,10 @@ CRenderer::CRenderer(std::shared_ptr<CGameObject> owner)
 //==========================================================
 CRenderer::~CRenderer()
 {
+	// 何故か登録されているので離脱
+	if (m_nDrawIdx == -1)
+		return;
+
 	if(auto sys = SceneManager::CSceneManager::Get()->GetDrawSystem(); sys)
 		sys->ExecutSystem(m_nDrawIdx);
 }
@@ -115,7 +119,6 @@ void CRenderer::SetLayer(int value)
 
 void CRenderer::ImGuiDebug()
 {
-	static bool windowDisp = false;
 	auto pSM = Application::Get()->GetSystem<MySpace::Graphics::CAssetsManager>()->GetShaderManager();
 	
 	// shader選択、表示
@@ -129,18 +132,11 @@ void CRenderer::ImGuiDebug()
 		m_strVertexShader = vsName;
 	}
 
-	ImGui::Checkbox("render visible", &m_bVisible);
-
-	ImGui::Checkbox("baseColor", &windowDisp);
-	if (!windowDisp)
-		return;
-	if (ImGui::Begin("ColorWindow", &windowDisp))
-	{
-		Vector4 color = Vector4(m_vColor.a, m_vColor.g, m_vColor.b, m_vColor.a);
-		ImGui::ColorPicker4("color4", (float*)&color);
-		m_vColor = Color(color.x, color.y, color.z, color.w);
-		ImGui::End();
-	}
+	Debug::SetTextAndAligned("Render Visible");
+	ImGui::Checkbox("##render visible", &m_bVisible);
+	
+	Debug::SetTextAndAligned("Regist Namber");
+	ImGui::Text("%d", m_nDrawIdx);
 
 }
 

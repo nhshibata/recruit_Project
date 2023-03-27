@@ -27,8 +27,8 @@ void CSceneSerealizeData::SaveStorage(CScene* scene)
 	auto objs = scene->GetObjManager()->GetList();	// オブジェクトを格納
 	for (auto & obj : objs)
 	{
-		if (obj->GetTransform()->GetParent().lock())
-			continue;	// 親が居れば
+		//if (obj->GetTransform()->GetParent().lock())
+		//	continue;	// 親が居れば
 
 		this->m_aGameObjectManager.emplace_back(obj);
 	}

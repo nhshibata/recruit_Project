@@ -34,6 +34,7 @@ namespace MySpace
 }
 #pragma endregion
 
+
 namespace MySpace
 {
 	namespace Game
@@ -65,13 +66,13 @@ namespace MySpace
 		public:
 			//--- エイリアス
 			using Ptr = std::weak_ptr<CComponent>;
-
+			
 		private:
 			//--- メンバ変数
 			Ptr m_pSelfPtr;							// 自身のスマートポインタ
 			std::weak_ptr<CGameObject> m_pOwner;	// 親オブジェクト	
 			bool m_bActive;							// アクティブ状態
-
+			
 		public:
 			//--- ﾒﾝﾊﾞ関数
 			CComponent();
@@ -108,23 +109,17 @@ namespace MySpace
 			// 衝突したときに呼び出される関数
 			// 実装したい時にオーバーライドする
 
-			// *@当たり判定
 			// *@衝突時
 			virtual void OnCollisionEnter(CGameObject* obj);
-			// *@当たり判定
 			// *@衝突状態
 			virtual void OnCollisionStay(CGameObject* obj);
-			// *@当たり判定
 			// *@衝突終了時
 			virtual void OnCollisionExit(CGameObject* obj);
 			
-			// *@当たり判定
 			// *@衝突時
-			virtual void OnTriggerEnter(CGameObject* obj);
-			// *@当たり判定
+			virtual void OnTriggerEnter(CGameObject* obj);			
 			// *@衝突状態
 			virtual void OnTriggerStay(CGameObject* obj);
-			// *@当たり判定
 			// *@衝突終了時
 			virtual void OnTriggerExit(CGameObject* obj);
 

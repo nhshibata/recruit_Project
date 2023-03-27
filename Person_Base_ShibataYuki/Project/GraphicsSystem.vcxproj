@@ -19,6 +19,7 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="..\Library\GraphicsSystem\DirectX\depthShadow.h" />
     <ClInclude Include="..\Library\GraphicsSystem\DirectX\depthStencil.h" />
     <ClInclude Include="..\Library\GraphicsSystem\DirectX\DXDevice.h" />
     <ClInclude Include="..\Library\GraphicsSystem\DirectX\GBuffer.h" />
@@ -49,7 +50,6 @@
     <ClInclude Include="..\Library\GraphicsSystem\Render\Sphere.h" />
     <ClInclude Include="..\Library\GraphicsSystem\Render\vertex.h" />
     <ClInclude Include="..\Library\GraphicsSystem\Shader\constantBuffer.h" />
-    <ClInclude Include="..\Library\GraphicsSystem\Shader\depthShadow.h" />
     <ClInclude Include="..\Library\GraphicsSystem\Shader\domainShader.h" />
     <ClInclude Include="..\Library\GraphicsSystem\Shader\GraphicsBase.h" />
     <ClInclude Include="..\Library\GraphicsSystem\Shader\hullShader.h" />
@@ -64,6 +64,7 @@
     <ClInclude Include="..\Library\GraphicsSystem\Texture\Texture.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="..\Library\GraphicsSystem\DirectX\depthShadow.cpp" />
     <ClCompile Include="..\Library\GraphicsSystem\DirectX\depthStencil.cpp" />
     <ClCompile Include="..\Library\GraphicsSystem\DirectX\DXDevice.cpp" />
     <ClCompile Include="..\Library\GraphicsSystem\DirectX\GBuffer.cpp" />

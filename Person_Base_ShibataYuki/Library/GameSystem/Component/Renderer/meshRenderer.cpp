@@ -10,6 +10,7 @@
 #include <GameSystem/GameObject/gameObject.h>
 #include <GameSystem/Manager/sceneManager.h>
 #include <GameSystem/Manager/drawSystem.h>
+#include <GraphicsSystem/Shader/shaderStruct.h>
 
 #include <DebugSystem/imGuiPackage.h>
 
@@ -38,8 +39,8 @@ CMeshRenderer::CMeshRenderer(std::shared_ptr<CGameObject> owner)
 		Vector4(0.0f, 0.0f, 0.0f, 1.0f),
 		1.0f);
 	// デフォルトシェーダー
-	m_strPixelShader = "PS_Mesh";
-	m_strVertexShader = "VS_Mesh";
+	m_strPixelShader = CPixelName::szDefaultMesh;
+	m_strVertexShader = CVertexName::szDefaultMesh;
 }
 
 //==========================================================
@@ -120,16 +121,25 @@ RENDER_DATA CMeshRenderer::GetShaderData()
 
 void CMeshRenderer::ImGuiDebug()
 {
+	static bool colorView = false;
+
 	CRenderer::ImGuiDebug();
 
+	// 区切り
 	ImGui::Separator();
 
 	Debug::SetTextAndAligned("BSphere:");
-	ImGui::Text("%f", GetBSRadius());
+	ImGui::Text("%.5f", GetBSRadius());
 
-	ImGui::Checkbox("Static", (bool*)&m_nStaticMode);
-	ImGui::SameLine();
-	ImGui::Checkbox("Shadow", (bool*)&m_bShadow);
+	Debug::SetTextAndAligned("Static");
+	ImGui::Checkbox("##Static", (bool*)&m_nStaticMode);
+	//ImGui::Checkbox("Shadow", (bool*)&m_bShadow);
+
+	Debug::SetTextAndAligned("Color Window");
+	ImGui::Checkbox("##Color Window", (bool*)&colorView);
+
+	if (!colorView)
+		return;
 
 	ImGui::BeginTabBar("Material");
 	if (ImGui::BeginTabItem("Diffuse"))

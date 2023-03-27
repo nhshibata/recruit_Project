@@ -1,5 +1,5 @@
 {
-    "../Data/scene\\PostProcess.scene": {
+    "../Data/scene\\ParentChild.scene": {
         "ptr_wrapper": {
             "id": 2147483649,
             "data": {
@@ -888,7 +888,7 @@
                                                             "b": 1.0,
                                                             "a": 1.0
                                                         },
-                                                        "m_strPixelShader": "PS_AssimpNega",
+                                                        "m_strPixelShader": "PS_Assimp",
                                                         "m_strVertexShader": "VS_Assimp"
                                                     },
                                                     "m_vCenter": {
@@ -1618,21 +1618,21 @@
                                                                 },
                                                                 "m_material": {
                                                                     "m_Diffuse": {
-                                                                        "x": 1.0,
+                                                                        "x": 0.0,
                                                                         "y": 1.0,
-                                                                        "z": 1.0,
+                                                                        "z": 0.0,
                                                                         "w": 0.30000001192092898
                                                                     },
                                                                     "m_Ambient": {
-                                                                        "x": 1.0,
+                                                                        "x": 0.0,
                                                                         "y": 1.0,
-                                                                        "z": 1.0,
+                                                                        "z": 0.0,
                                                                         "w": 0.0
                                                                     },
                                                                     "m_Specular": {
-                                                                        "x": 0.10000000149011612,
-                                                                        "y": 0.10000000149011612,
-                                                                        "z": 0.10000000149011612,
+                                                                        "x": 0.0,
+                                                                        "y": 0.0,
+                                                                        "z": 0.0,
                                                                         "w": 1.0
                                                                     },
                                                                     "m_Emissive": {
@@ -1641,7 +1641,7 @@
                                                                         "z": 0.0,
                                                                         "w": 1.0
                                                                     },
-                                                                    "m_Power": 0.0
+                                                                    "m_Power": 1.0
                                                                 }
                                                             }
                                                         }
@@ -3595,6 +3595,208 @@
                                                 },
                                                 "m_modelName": "../Data/model/ToyStage\\BrickOctagon.fbx"
                                             }
+                                        }
+                                    }
+                                ]
+                            }
+                        }
+                    },
+                    {
+                        "polymorphic_id": 1073741824,
+                        "ptr_wrapper": {
+                            "id": 2147483755,
+                            "data": {
+                                "gameObject": {
+                                    "m_objName": "GameObj_1",
+                                    "m_spThisPtr": {
+                                        "locked_ptr": {
+                                            "polymorphic_id": 1073741824,
+                                            "ptr_wrapper": {
+                                                "id": 107
+                                            }
+                                        }
+                                    }
+                                },
+                                "m_eState": 0,
+                                "m_pLayer": {
+                                    "ptr_wrapper": {
+                                        "id": 2147483756,
+                                        "data": {
+                                            "m_nLayer": 0
+                                        }
+                                    }
+                                },
+                                "m_pTag": {
+                                    "ptr_wrapper": {
+                                        "id": 2147483757,
+                                        "data": {
+                                            "m_nTagID": 0
+                                        }
+                                    }
+                                },
+                                "m_aComponent": [
+                                    {
+                                        "polymorphic_id": 1,
+                                        "ptr_wrapper": {
+                                            "id": 2147483758,
+                                            "data": {
+                                                "transform": {
+                                                    "Component": {},
+                                                    "m_pSelfPtr": {
+                                                        "locked_ptr": {
+                                                            "polymorphic_id": 1,
+                                                            "ptr_wrapper": {
+                                                                "id": 110
+                                                            }
+                                                        }
+                                                    },
+                                                    "m_bActive": true
+                                                },
+                                                "m_vPos": {
+                                                    "x": 0.0,
+                                                    "y": 0.0,
+                                                    "z": 0.0
+                                                },
+                                                "m_vOldPos": {
+                                                    "x": 0.0,
+                                                    "y": 0.0,
+                                                    "z": 0.0
+                                                },
+                                                "m_vRot": {
+                                                    "x": 0.0,
+                                                    "y": 0.0,
+                                                    "z": 0.0
+                                                },
+                                                "m_vDestRot": {
+                                                    "x": 0.0,
+                                                    "y": 0.0,
+                                                    "z": 0.0
+                                                },
+                                                "m_vScale": {
+                                                    "x": 1.0,
+                                                    "y": 1.0,
+                                                    "z": 1.0
+                                                },
+                                                "m_Rot": {
+                                                    "x": 0.0,
+                                                    "y": 0.0,
+                                                    "z": 0.0,
+                                                    "w": 0.0
+                                                },
+                                                "m_pChilds": [
+                                                    {
+                                                        "locked_ptr": {
+                                                            "polymorphic_id": 1073741824,
+                                                            "ptr_wrapper": {
+                                                                "id": 2147483759,
+                                                                "data": {
+                                                                    "transform": {
+                                                                        "Component": {},
+                                                                        "m_pSelfPtr": {
+                                                                            "locked_ptr": {
+                                                                                "polymorphic_id": 1,
+                                                                                "ptr_wrapper": {
+                                                                                    "id": 111
+                                                                                }
+                                                                            }
+                                                                        },
+                                                                        "m_bActive": true
+                                                                    },
+                                                                    "m_vPos": {
+                                                                        "x": 0.0,
+                                                                        "y": 0.0,
+                                                                        "z": 0.0
+                                                                    },
+                                                                    "m_vOldPos": {
+                                                                        "x": 0.0,
+                                                                        "y": 0.0,
+                                                                        "z": 0.0
+                                                                    },
+                                                                    "m_vRot": {
+                                                                        "x": 0.0,
+                                                                        "y": 0.0,
+                                                                        "z": 0.0
+                                                                    },
+                                                                    "m_vDestRot": {
+                                                                        "x": 0.0,
+                                                                        "y": 0.0,
+                                                                        "z": 0.0
+                                                                    },
+                                                                    "m_vScale": {
+                                                                        "x": 1.0,
+                                                                        "y": 1.0,
+                                                                        "z": 1.0
+                                                                    },
+                                                                    "m_Rot": {
+                                                                        "x": 0.0,
+                                                                        "y": 0.0,
+                                                                        "z": 0.0,
+                                                                        "w": 0.0
+                                                                    },
+                                                                    "m_pChilds": [],
+                                                                    "m_pParent": {
+                                                                        "locked_ptr": {
+                                                                            "polymorphic_id": 1073741824,
+                                                                            "ptr_wrapper": {
+                                                                                "id": 110
+                                                                            }
+                                                                        }
+                                                                    }
+                                                                }
+                                                            }
+                                                        }
+                                                    }
+                                                ],
+                                                "m_pParent": {
+                                                    "locked_ptr": {
+                                                        "polymorphic_id": 0
+                                                    }
+                                                }
+                                            }
+                                        }
+                                    }
+                                ]
+                            }
+                        }
+                    },
+                    {
+                        "polymorphic_id": 1073741824,
+                        "ptr_wrapper": {
+                            "id": 2147483760,
+                            "data": {
+                                "gameObject": {
+                                    "m_objName": "GameObj_1",
+                                    "m_spThisPtr": {
+                                        "locked_ptr": {
+                                            "polymorphic_id": 1073741824,
+                                            "ptr_wrapper": {
+                                                "id": 112
+                                            }
+                                        }
+                                    }
+                                },
+                                "m_eState": 0,
+                                "m_pLayer": {
+                                    "ptr_wrapper": {
+                                        "id": 2147483761,
+                                        "data": {
+                                            "m_nLayer": 0
+                                        }
+                                    }
+                                },
+                                "m_pTag": {
+                                    "ptr_wrapper": {
+                                        "id": 2147483762,
+                                        "data": {
+                                            "m_nTagID": 0
+                                        }
+                                    }
+                                },
+                                "m_aComponent": [
+                                    {
+                                        "polymorphic_id": 1,
+                                        "ptr_wrapper": {
+                                            "id": 111
                                         }
                                     }
                                 ]

@@ -23,29 +23,33 @@ namespace MySpace
 		static constexpr int CONTROL_POS_X = 150;
 
 		// *@コントロールの位置設定
-		// *@デフォルトは100
+		// *@デフォルトはCONTROL_POS_Xで設定
+		// *@変更したい場合はオフセットで調整
 		void SetControlPosX(float offset = 0.0f);
 
-		// *@Textを表示し、Samelineを呼び出し、Cursor位置を設定する
+		// *@コントロールのdesc右側を左にする関数
+		// *@この関数を呼び出した後に呼ぶコントロールの位置を調整する(コントロールのdescは##でタグ化すること)
+		// *@表示させたいdescとオフセットで調整
 		void SetTextAndAligned(std::string text, float offset = 0.0f);
 
 		// *@文字列入力
+		// *@変更がなければ、引き数が返る
 		_NODISCARD std::string InputString(std::string text, std::string desc = std::string());
 
 		// *@コンボ表示
-		// *@引き数: 表示リスト vector<string>, メニュー名 string
+		// *@引き数: 表示リスト vector<string>, メニュー名 string, コンボに表示させたい文字 string
 		std::string DispComboSelect(std::vector<std::string> list, std::string desc, std::string preview = std::string());
 		
-		// *@コンボ表示
-		// *@インデックス取得用
-		// *@引き数: 表示リスト vector<string>, メニュー名 string, int idx
+		// *@コンボ表示 インデックス取得用
+		// *@引き数: vector<string>: 表示リスト, string: メニュー名, int: preview表示させたいｲﾝﾃﾞｯｸｽ
 		int DispComboSelect(std::vector<std::string> list, std::string desc, int idx);
 
 		// *@メニューバー表示
+		// *@引き数: vector<string>: 表示リスト, string: メニュー名, string: 表示させたい拡張子
 		std::string DispFileMenuBar(std::string path, std::string desc = std::string(), std::string ext = std::string());
 		
 		// *@メニューバー表示
-		// *@引き数: 表示リスト vector<string>, メニュー名 string
+		// *@引き数: vector<string>:表示リスト, string:メニュー名
 		std::string DispMenuBar(std::vector<std::string> list, std::string desc = std::string());
 
 		// *@メニューバー表示(パス先からファイル名を取得しているため、無駄がある)
@@ -68,7 +72,6 @@ namespace MySpace
 
 		// *@ラジオボタン表示
 		_NODISCARD int CreateRadio(std::vector<std::string> vec, int current);
-
 
 #pragma region DRAG_AND_DROP
 

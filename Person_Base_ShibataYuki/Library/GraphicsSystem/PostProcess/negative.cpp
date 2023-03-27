@@ -47,11 +47,11 @@ HRESULT CNegative::InitShader()
 	auto pSM = Application::Get()->GetSystem<CAssetsManager>()->GetShaderManager();
 	{
 		PixelShaderSharedPtr ps = std::make_shared<CPixelShader>();
-		hr = ps->Make(CSO_PATH(PS_Negative.cso));
+		hr = ps->Make(CPixelName::GetCSO(CPixelName::szNegative));
 		if (FAILED(hr))
 			return hr;
 		else
-			pSM->SetPS("PS_Negative", ps);
+			pSM->SetPS(CPixelName::szNegative, ps);
 	}
 
 	return hr;
@@ -87,7 +87,7 @@ void CNegative::DrawSprite(CGBuffer* pGBuf)
 	pSM->CBWrite(NAME_TO(SHADER_RATE), &rate);
 	pSM->BindCB(NAME_TO(SHADER_RATE));
 	pGBuf->SetSRV(CGBuffer::ETexture::COLOR);
-	CPolygon::Draw(pDX->GetDeviceContext(), "PS_Negative", "VS_2D");
+	CPolygon::Draw(pDX->GetDeviceContext(), CPixelName::szNegative, CVertexName::sz2D);
 
 	//--- İ’è‚Ì‰Šú‰»
 	CPolygon::SetColor(1, 1, 1, 1);

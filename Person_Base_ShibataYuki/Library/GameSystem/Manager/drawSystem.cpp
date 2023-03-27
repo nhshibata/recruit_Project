@@ -66,7 +66,7 @@ void CDrawSystem::Update()
 void CDrawSystem::CheckRenderedObjectsIn3D()
 {
 	// キャッシュのクリア
-	m_VolumeMgr.ResetRendererCash();
+	m_VolumeMgr.ResetRendererCache();
 
 	//--- 3D描画(Mesh,Model)
 	for (auto & it : m_aIntMap)
@@ -122,7 +122,7 @@ void CDrawSystem::CheckRenderedObjectsIn3D()
 		render->GetOwner()->CameraTest(true);
 
 		// 所属LayerとIDを格納
-		m_VolumeMgr.AddRendererCash(CLayer::NumberToBit(render->GetLayer()), it.first);
+		m_VolumeMgr.AddRendererCache(CLayer::NumberToBit(render->GetLayer()), it.first);
 	}
 }
 
@@ -193,44 +193,43 @@ void CDrawSystem::GBufferDraw(const bool bGbuffer, std::function<bool(int)> func
 	{
 		// ライティング有効
 		pLight->SetEnable();
-
 		//--- 半透明部分描画
 		pDX->SetBlendState(static_cast<int>(EBlendState::BS_ALPHABLEND));
 		pDX->SetZWrite(false);// Z書き込み
-	}
 
-	for (auto & intancingModel : m_aInstancingModelMap)
-	{
-		// 一時変数
-		auto info = &intancingModel.first;
-
-		if (info->IsError())
-			continue;
-
-		//--- 描画するモデルの取得
-		auto model = pAssets->GetModelManager()->GetModel(info->strName);
-
-		// shaderBind
-		if(bGbuffer)
-			pSM->CallBackFuncAndBind(std::string(), aVSName[0]);
-		else
-			pSM->CallBackFuncAndBind(info->strPixel, info->strVertex);
-
-		//--- インスタンシングに必要なデータ格納
-		std::vector<RENDER_DATA> data;
-		for (auto & id : intancingModel.second.aID)
+		for (auto & intancingModel : m_aInstancingModelMap)
 		{
-			if (func)
+			// 一時変数
+			auto info = &intancingModel.first;
+
+			if (info->IsError())
+				continue;
+
+			//--- 描画するモデルの取得
+			auto model = pAssets->GetModelManager()->GetModel(info->strName);
+
+			// shaderBind
+			if (bGbuffer)
+				pSM->CallBackFuncAndBind(std::string(), aVSName[0]);
+			else
+				pSM->CallBackFuncAndBind(info->strPixel, info->strVertex);
+
+			//--- インスタンシングに必要なデータ格納
+			std::vector<RENDER_DATA> data;
+			for (auto & id : intancingModel.second.aID)
 			{
-				if (!func(id))
-					continue;
+				if (func)
+				{
+					if (!func(id))
+						continue;
+				}
+
+				CMeshRenderer* mesh = dynamic_cast<CMeshRenderer*>(m_aIntMap[id].lock().get());
+				data.push_back(mesh->GetShaderData());
 			}
 
-			CMeshRenderer* mesh = dynamic_cast<CMeshRenderer*>(m_aIntMap[id].lock().get());
-			data.push_back(mesh->GetShaderData());
+			model->DrawInstancing(pDX->GetDeviceContext(), data, EByOpacity::eTransparentOnly, false);
 		}
-
-		model->DrawInstancing(pDX->GetDeviceContext(), data, EByOpacity::eTransparentOnly, false);
 	}
 
 	if (!bGbuffer)
@@ -297,7 +296,8 @@ void CDrawSystem::GBufferDraw(const bool bGbuffer, std::function<bool(int)> func
 //=========================================================
 void CDrawSystem::Draw3D()
 {
-	/*m_aInstancingMeshMap.clear();
+	/*CDrawSystemBase::Draw3D();
+	m_aInstancingMeshMap.clear();
 	m_aInstancingModelMap.clear();
 	return;*/
 
@@ -337,7 +337,12 @@ void CDrawSystem::Draw3D()
 	pDX->SetBlendState(static_cast<int>(EBlendState::BS_ALPHABLEND));
 	pDX->SetZWrite(true);// Z書き込み	// ライティング有効
 	pLight->SetEnable();
+
+	//--- 影用の深度バッファ作成
 	Draw3DShadow();
+
+	//--- スカイドーム描画
+	pCamera->DrawSkyDome();
 
 	// ｶﾒﾗを順に描画実行
 	auto aCamera = pCamera->GetStackCameras();
@@ -368,7 +373,6 @@ void CDrawSystem::Draw3D()
 		// Sceneに描画先を変更
 		pDX->SwitchRender(pDX->GetRenderTargetView(), pDX->GetDepthStencilView());
 		// 3D描画
-		pCamera->GetGBuffer()->SetSRV(CGBuffer::ETexture::DEPTH);
 		GBufferDraw(false, layerChaeckCamera);
 
 		// 各種ﾃｸｽﾁｬの設定
@@ -384,7 +388,7 @@ void CDrawSystem::Draw3D()
 		{
 			if (1)
 			{
-				auto aID = vol->GetRenderCash();
+				auto aID = vol->GetRenderCache();
 				// ラムダ式
 				auto idChaeck = [=](int id)->bool {
 					for (auto & no : aID)
@@ -397,12 +401,35 @@ void CDrawSystem::Draw3D()
 				//--- GBuffer描画
 				// レンダーターゲットの設定
 				pCamera->GetGBuffer()->SetUpColorRenderTarget();
-				//pCamera->GetGBuffer()->SetUpMultiRenderTarget();
+				
 				// 3D描画
 				GBufferDraw(true, idChaeck);
 			}
+
+			// ポストプロセス生成
 			vol->GetEffect()->DrawSprite(pCamera->GetGBuffer());
-			aEffectTex.push_back(vol->GetEffect()->GetResource());
+			//aEffectTex.push_back(vol->GetEffect()->GetResource());
+
+			//--- ﾃｸｽﾁｬ合成
+			//--- 描画設定
+			pDX->SetZBuffer(false);
+			CPolygon::SetSize(CScreen::GetSize());
+			CPolygon::SetPos(XMFLOAT2(0, 0));
+			CPolygon::SetFrameSize(XMFLOAT2(1, 1));
+			CPolygon::SetUV(XMFLOAT2(0, 0));
+			CPolygon::SetAngle(0);
+
+			// 加算合成必須
+			pDX->SetBlendState(EBlendState::BS_ADDITIVE);
+			pDX->SwitchRender(pDX->GetRenderTargetView(), pDX->GetDepthStencilView());
+
+			// ポリゴン描画
+			CPolygon::SetTexture(vol->GetEffect()->GetResource());
+			CPolygon::Draw(pDX->GetDeviceContext());
+
+			CPolygon::SetSize(XMFLOAT2(1, 1));
+			pDX->SetBlendState(EBlendState::BS_NONE);
+			pDX->SetZBuffer(true);
 		}
 
 		// 先頭から順にｶﾒﾗを設定
@@ -425,7 +452,7 @@ void CDrawSystem::Draw3D()
 	// volumeが一切ないので処理しない
 	if (aEffectTex.size() == 0)
 		return;
-
+	
 	//--- ﾃｸｽﾁｬ合成
 	//--- 描画設定
 	pDX->SetZBuffer(false);
@@ -450,7 +477,7 @@ void CDrawSystem::Draw3D()
 	pDX->SetBlendState(EBlendState::BS_NONE);
 	pDX->SetZBuffer(true);
 
-	pDX->SwitchRender(pDX->GetRenderTargetView(),pDX->GetDepthStencilView());
+	//pDX->SwitchRender(pDX->GetRenderTargetView(),pDX->GetDepthStencilView());
 
 }
 

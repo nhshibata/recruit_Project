@@ -45,9 +45,8 @@ namespace MySpace
 			{
 				archive(cereal::make_nvp("transform", cereal::base_class<CComponent>(this)),
 					CEREAL_NVP(m_vPos), CEREAL_NVP(m_vOldPos), CEREAL_NVP(m_vRot),
-					CEREAL_NVP(m_vDestRot), CEREAL_NVP(m_vScale),
-					/*CEREAL_NVP(m_mWorldMtx),CEREAL_NVP(m_mLocalMtx),*/CEREAL_NVP(m_Rot)
-					/*CEREAL_NVP(m_pChilds), CEREAL_NVP(m_pParent),*/
+					CEREAL_NVP(m_vDestRot), CEREAL_NVP(m_vScale), CEREAL_NVP(m_Rot),
+					CEREAL_NVP(m_pChilds), CEREAL_NVP(m_pParent)
 				);
 			}
 			template<class Archive>
@@ -55,9 +54,8 @@ namespace MySpace
 			{
 				archive(cereal::make_nvp("transform", cereal::base_class<CComponent>(this)),
 					CEREAL_NVP(m_vPos), CEREAL_NVP(m_vOldPos), CEREAL_NVP(m_vRot),
-					CEREAL_NVP(m_vDestRot), CEREAL_NVP(m_vScale),
-					/*CEREAL_NVP(m_mWorldMtx),CEREAL_NVP(m_mLocalMtx),*/ CEREAL_NVP(m_Rot)
-					/*CEREAL_NVP(m_pChilds), CEREAL_NVP(m_pParent),*/
+					CEREAL_NVP(m_vDestRot), CEREAL_NVP(m_vScale), CEREAL_NVP(m_Rot),
+					CEREAL_NVP(m_pChilds), CEREAL_NVP(m_pParent) 
 				);
 			}
 		private:
@@ -120,7 +118,7 @@ namespace MySpace
 			_NODISCARD inline 
 				std::vector<std::weak_ptr<CTransform>> GetChilds()		{ return m_pChilds; }
 			// *@子オブジェクト取得
-			_NODISCARD std::weak_ptr<CTransform> GetChild(int no);
+			_NODISCARD std::weak_ptr<CTransform> GetChild(const int& no);
 			// *@要素数を返す
 			_NODISCARD inline int GetChildCount()						{ return static_cast<int>(m_pChilds.size()); };
 
@@ -129,25 +127,10 @@ namespace MySpace
 			// *@子要素追加
 			void AddChild(std::weak_ptr<CTransform> child);
 			// *@子要素除外
-			void RemoveChild(std::weak_ptr<CTransform> child)
-			{
-				for (auto it = m_pChilds.begin(); it != m_pChilds.end(); ++it)
-				{
-					if ((*it).lock() == child.lock())
-					{
-						m_pChilds.erase(it); 
-						break;
-					}
-				}
-			}
+			void RemoveChild(std::weak_ptr<CTransform> child);
+
 			// *@親子関係解消
-			void ParentDissolved()
-			{
-				if (!m_pParent.lock())
-					return;
-				m_pParent.lock()->RemoveChild(BaseToDerived<CTransform>());
-				m_pParent.reset();
-			}
+			void ParentDissolved();
 
 			//--- オブジェクト向き取得
 			// *@前方
@@ -176,6 +159,7 @@ namespace MySpace
 
 				return Vector3(mtx._31, mtx._32, mtx._33).Normalize();
 			}
+
 			// *@ 上方
 			Vector3 up()
 			{

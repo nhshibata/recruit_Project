@@ -15,7 +15,7 @@
 
 namespace MySpace
 {
-	namespace Game
+	namespace Graphics
 	{
 
 		class CDepthShadow
@@ -24,9 +24,9 @@ namespace MySpace
 			//--- ƒƒ“ƒo•Ï”
 			std::shared_ptr<MySpace::Graphics::CDepthStencil> m_pDepthStencil;	// ‘‚«‚İæ
 			std::shared_ptr<MySpace::Graphics::CRenderTarget> m_pRenderTarget;	// ‘‚«‚İæ
-			static inline const LPCSTR m_LightCB = "sunLightCB";
-			static inline const LPCSTR m_DepthWriteCB = "DepthWriteCB";
-			static constexpr const char* SHADER_NAME_PSVS = "DepthWrite";
+			float m_fNear;
+			float m_fFar;
+			DirectX::XMFLOAT2 m_vScreenSize;
 
 		public:
 			CDepthShadow();
@@ -47,6 +47,11 @@ namespace MySpace
 			void SetUpTexture(UINT slot);
 
 			ID3D11ShaderResourceView* GetResource() { return m_pRenderTarget->GetSRV(); }
+
+#if BUILD_MODE
+			void ImGuiDebug();
+#endif // BUILD_MODE
+
 		};
 
 	}

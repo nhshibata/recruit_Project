@@ -27,8 +27,6 @@ namespace
 // コンストラクタ
 //==========================================================
 CRigidbody::CRigidbody()
-	:m_bGravity(true), m_bIsSleep(false), m_fGravity(GRAVITY), m_fResistance(1.0f), m_fMass(1.0f),
-	m_vAccel(0, 0, 0), m_vTargetPos(1, 1, 1), m_vVel(0, 0, 0), m_vForce(0, 0, 0)
 {
 }
 
@@ -56,11 +54,12 @@ CRigidbody::~CRigidbody()
 //==========================================================
 void CRigidbody::FixedUpdate()
 {
-	
 	Vector3 pos = GetOwner()->GetTransform()->GetPos();
+	Vector3 oldPos = GetOwner()->GetTransform()->GetOldPos();
+	Vector3 rot = GetOwner()->GetTransform()->GetRot();
 
-	// 重力を与える
 	{
+		// 重力を与える
 		if (m_bGravity)
 		{
 			m_vForce.y += float(m_fGravity * CFps::Get()->DeltaTime());
@@ -76,9 +75,6 @@ void CRigidbody::FixedUpdate()
 		m_pFreezPos.Fix(pos);
 	}
 
-	Vector3 oldPos = GetOwner()->GetTransform()->GetOldPos();
-	Vector3 rot = GetOwner()->GetTransform()->GetRot();
-
 	// 角度固定
 	m_pFreezRot.Fix(rot);
 
@@ -86,8 +82,7 @@ void CRigidbody::FixedUpdate()
 	GetOwner()->GetTransform()->SetRot(rot);
 
 	// 動いたか動いてないか
-	if (pos.x == oldPos.x && pos.y == oldPos.y &&
-		pos.z == oldPos.z)
+	if (pos.x == oldPos.x && pos.y == oldPos.y && pos.z == oldPos.z)
 	{
 		m_bIsSleep = true;
 	}
@@ -124,8 +119,14 @@ void CRigidbody::SetFreezRot(bool x, bool y, bool z)
 
 void CRigidbody::OnCollisionEnter(CGameObject* obj)
 {
-	m_vForce = Vector3::zero();
-	m_vVel = { 0,0,0 };
+	//m_vForce = Vector3::zero();
+	m_vVel = Vector3::zero();
+}
+
+void CRigidbody::OnCollisionStay(CGameObject* obj)
+{
+	//m_vForce = Vector3::zero();
+	m_vVel = Vector3::zero();
 }
 
 
@@ -133,40 +134,42 @@ void CRigidbody::OnCollisionEnter(CGameObject* obj)
 
 void CRigidbody::ImGuiDebug()
 {
-	Debug::SetTextAndAligned(u8"rigidbody 重力");
-	ImGui::InputFloat("##rigidbody 重力", &m_fGravity);
+	Debug::SetTextAndAligned(u8"Rigidbody 重力");
+	ImGui::InputFloat("##Rigidbody 重力", &m_fGravity);
 
-	Debug::SetTextAndAligned(u8"rigidbody 抵抗");
-	ImGui::InputFloat("##rigidbody 抵抗", &m_fResistance);
+	Debug::SetTextAndAligned(u8"Rigidbody 抵抗");
+	ImGui::InputFloat("##Rigidbody 抵抗", &m_fResistance);
 	
-	Debug::SetTextAndAligned("rigidbody 速度");
-	ImGui::InputFloat3("##rigidbody 速度", (float*)m_vVel);
+	Debug::SetTextAndAligned(u8"Rigidbody 力");
+	ImGui::InputFloat3("##Rigidbody 力", (float*)m_vForce);
+	
+	Debug::SetTextAndAligned(u8"Rigidbody 速度");
+	ImGui::InputFloat3("##Rigidbody 速度", (float*)m_vVel);
 
-	Debug::SetTextAndAligned(u8"rigidbody 加速度");
-	ImGui::InputFloat3("##rigidbody 加速度", (float*)m_vAccel);
+	Debug::SetTextAndAligned(u8"Rigidbody 加速度");
+	ImGui::InputFloat3("##Rigidbody 加速度", (float*)m_vAccel);
 
-	Debug::SetTextAndAligned(u8"rigidbody 目標座標");
-	ImGui::InputFloat3("##rigidbody 目標座標", (float*)m_vTargetPos);
+	/*Debug::SetTextAndAligned(u8"Rigidbody 目標座標");
+	ImGui::InputFloat3("##Rigidbody 目標座標", (float*)m_vTargetPos);*/
 
-	ImGui::Checkbox(u8"動", &m_bIsSleep);
+	Debug::SetTextAndAligned(u8"Rigidbody Is Sleep");
+	ImGui::Checkbox("##Rigidbody Is Sleep", &m_bIsSleep);
 
-	ImGui::Text(u8"pos固定");
-	ImGui::SameLine();
+	Debug::SetTextAndAligned("Frieze Pos");
 	ImGui::Checkbox(u8"x", &m_pFreezPos.bX);
 	ImGui::SameLine();
 	ImGui::Checkbox(u8"y", &m_pFreezPos.bY);
 	ImGui::SameLine();
 	ImGui::Checkbox(u8"z", &m_pFreezPos.bZ);
-	m_pFreezPos.Fix(GetOwner()->GetTransform()->GetPos());
+	m_pFreezPos.Fixed(GetOwner()->GetTransform()->GetPos());
 	
-	ImGui::Text(u8"rot固定");
-	ImGui::SameLine();
+	Debug::SetTextAndAligned("Frieze Rot");
 	ImGui::Checkbox(u8"x", &m_pFreezRot.bX);
 	ImGui::SameLine();
 	ImGui::Checkbox(u8"y", &m_pFreezRot.bY);
 	ImGui::SameLine();
 	ImGui::Checkbox(u8"z", &m_pFreezRot.bZ);
-	m_pFreezRot.Fix(GetOwner()->GetTransform()->GetRot());
+	m_pFreezRot.Fixed(GetOwner()->GetTransform()->GetRot());
 	
 }
 

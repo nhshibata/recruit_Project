@@ -162,6 +162,8 @@ void CGameApp::Uninit(Application* app)const
 	CGamePad::Uninit();
 	_CrtDumpMemoryLeaks();
 
+	CSceneManager::Get()->Uninit();
+
 }
 
 //==========================================================
@@ -231,23 +233,11 @@ void CGameApp::Draw(Application* app)
 #ifdef BUILD_MODE
 	auto imgui = app->GetSystem<ImGuiManager>();
 
-	//--- 描画先変更
-	if (imgui->IsSceneRender())
-	{
-		imgui->SceneRenderClear();
-		imgui->SceneRender();
-	}
-	else
-	{
-		auto pDX = app->GetSystem<CDXDevice>();
-		pDX->SwitchRender(pDX->GetRenderTargetView(), pDX->GetDepthStencilView());
-	}
-
 	// オブジェクトが存在しないとき
 	if (CCamera::GetMain() && CLight::GetMain())
 	{
 		// スカイドーム描画
-		CCamera::GetMain()->DrawSkyDome();
+		//CCamera::GetMain()->DrawSkyDome();
 		
 		// シーンの描画
 		CSceneManager::Get()->DrawScene();
@@ -256,14 +246,8 @@ void CGameApp::Draw(Application* app)
 		app->GetSystem<CAssetsManager>()->GetEffekseer()->Draw();
 	}
 
+	// ギズモ表示
 	imgui->SceneGizmo();
-
-	//--- 描画先切替
-	if (imgui->IsSceneRender())
-	{
-		auto pDX = app->GetSystem<CDXDevice>();
-		pDX->SwitchRender(nullptr, nullptr);
-	}
 
 	//--- ImGuiの描画
 	imgui->Render();
@@ -298,6 +282,7 @@ void CGameApp::BeginRender(Application* app)
 	pDC->ClearRenderTargetView(pDX->GetRenderTargetView(), ClearColor);
 	pDC->ClearDepthStencilView(pDX->GetDepthStencilView(), D3D11_CLEAR_DEPTH | D3D11_CLEAR_STENCIL, 1.0f, 0);
 
+	pDX->SwitchRender(pDX->GetRenderTargetView(), pDX->GetDepthStencilView());
 }
 
 //==========================================================

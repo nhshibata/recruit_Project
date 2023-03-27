@@ -42,9 +42,9 @@ namespace MySpace
 			bool m_bIsTrigger;				// 当たった時の動作(trueですり抜け)
 			int m_nSystemIdx;
 
-			std::list<std::weak_ptr<CGameObject>> m_pOldStayList;	// 1フレーム前に接触していた
-			std::list<std::weak_ptr<CGameObject>> m_pHitList;		// 現在フレーム接触
-			std::list<std::weak_ptr<CGameObject>> m_pExitList;		// 離れた
+			std::list<std::weak_ptr<CGameObject>> m_aOldHitList;	// 1フレーム前に接触していた
+			std::list<std::weak_ptr<CGameObject>> m_aHitList;		// 現在フレーム接触
+			std::list<std::weak_ptr<CGameObject>> m_aExitList;		// 離れた
 
 		private:
 			//--- ﾒﾝﾊﾞ関数
@@ -54,8 +54,7 @@ namespace MySpace
 			
 		public:
 			//--- ﾒﾝﾊﾞ関数
-			CCollision() :m_bIsTrigger(false), m_nSystemIdx(-1)
-			{};
+			CCollision();
 			CCollision(std::shared_ptr<CGameObject> owner, bool trigger = false);
 			virtual ~CCollision();
 

@@ -161,14 +161,16 @@ void CBillboardRenderer::ImGuiDebug()
 	static std::vector<std::string> s_FileList;
 
 	//--- 画像のリロード
-	if (s_FileList.empty() || ImGui::Button(u8"Image reload"))
+	Debug::SetTextAndAligned("Image Reload");
+	if (s_FileList.empty() || ImGui::Button("##Image Reload"))
 	{
 		MySpace::System::CFilePath file;
 		s_FileList = file.GetAllFileName(TEXTURE_PATH);
 	}
 
 	//--- メニューからﾃｸｽﾁｬ選択
-	if (auto name = DispComboSelect(s_FileList, u8"Image", m_pSprite->GetImageName()); !name.empty())
+	Debug::SetTextAndAligned("Image");
+	if (auto name = DispComboSelect(s_FileList, "##Image", m_pSprite->GetImageName()); !name.empty())
 	{
 		m_pSprite->SetImage(name);
 	}

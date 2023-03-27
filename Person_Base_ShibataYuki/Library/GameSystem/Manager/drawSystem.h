@@ -13,7 +13,6 @@
 
 //--- インクルード部
 #include <GameSystem/Manager/drawSystemBase.h>
-#include <GameSystem/Shader/depthShadow.h>
 #include <GameSystem/Manager/volumeManager.h>
 
 #include <DirectXMath.h>

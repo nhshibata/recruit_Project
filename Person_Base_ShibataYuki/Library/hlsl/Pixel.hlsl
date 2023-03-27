@@ -5,7 +5,7 @@
 //=========================================================
 
 // グローバル
-cbuffer global : register(b1) {
+cbuffer global : register(b11) {
 	float4	g_vEye;			// 視点座標
 	// 光源
 	float4	g_vLightDir;	// 光源方向

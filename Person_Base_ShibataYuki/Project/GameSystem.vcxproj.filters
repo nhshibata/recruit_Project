@@ -73,12 +73,6 @@
     <Filter Include="ソース ファイル\Factory">
       <UniqueIdentifier>{fdf10f7a-9aa5-4dba-a958-280f48be2e8a}</UniqueIdentifier>
     </Filter>
-    <Filter Include="ソース ファイル\Shader">
-      <UniqueIdentifier>{4306d637-ac51-417e-b7d1-70607ab04449}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="ヘッダー ファイル\Shader">
-      <UniqueIdentifier>{3e1a0799-7995-4808-8e06-4ad6114637d3}</UniqueIdentifier>
-    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\Library\GameSystem\components.h">
@@ -200,9 +194,6 @@
     </ClInclude>
     <ClInclude Include="..\Library\GameSystem\Component\BaseComponent.h">
       <Filter>ヘッダー ファイル\Component</Filter>
-    </ClInclude>
-    <ClInclude Include="..\Library\GameSystem\Shader\depthShadow.h">
-      <Filter>ヘッダー ファイル\Shader</Filter>
     </ClInclude>
     <ClInclude Include="..\Library\GameSystem\Component\Camera\layerCamera.h">
       <Filter>ヘッダー ファイル\Component\Camera</Filter>
@@ -331,9 +322,6 @@
     </ClCompile>
     <ClCompile Include="..\Library\GameSystem\GameObject\layer.cpp">
       <Filter>ソース ファイル\GameObject</Filter>
-    </ClCompile>
-    <ClCompile Include="..\Library\GameSystem\Shader\depthShadow.cpp">
-      <Filter>ソース ファイル\Shader</Filter>
     </ClCompile>
     <ClCompile Include="..\Library\GameSystem\Component\Camera\layerCamera.cpp">
       <Filter>ソース ファイル\Component\Camera</Filter>

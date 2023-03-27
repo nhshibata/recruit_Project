@@ -11,7 +11,7 @@
 //#include <stageBuild.h>
 //#include <stageManager.h>
 //#include <titleMove.h>
-#include <..\..\Source\spellPlayer.h>
+//#include <spellPlayer.h>
 
 
 void CreateComponentSpell();

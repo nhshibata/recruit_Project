@@ -10,6 +10,7 @@
 #include <GraphicsSystem/Render/polygon.h>
 #include <GraphicsSystem/Shader/shader.h>
 #include <GraphicsSystem/Render/mesh.h>
+#include <GraphicsSystem/Shader/shaderStruct.h>
 
 #include <Application/Application.h>
 #include <Application/screen.h>
@@ -80,14 +81,14 @@ HRESULT CPolygon::InitShader(ID3D11Device* pDevice)
 	auto pSM = Application::Get()->GetSystem<CAssetsManager>()->GetShaderManager();
 	PixelShaderSharedPtr ps = std::make_shared<CPixelShader>();
 	VertexShaderSharedPtr vs = std::make_shared<CVertexShader>();
-	hr = ps->Make(CSO_PATH(PS_2D.cso));
+	hr = ps->Make(CPixelName::GetCSO(CPixelName::sz2D));
 	if (FAILED(hr))
 		return hr;
-	hr = vs->Make(CSO_PATH(VS_2D.cso), layout, _countof(layout));
+	hr = vs->Make(CVertexName::GetCSO(CVertexName::sz2D), layout, _countof(layout));
 	if (FAILED(hr))
 		return hr;
-	pSM->SetPS("PS_2D", ps);
-	pSM->SetVS("VS_2D", vs);
+	pSM->SetPS(CPixelName::sz2D, ps);
+	pSM->SetVS(CVertexName::sz2D, vs);
 
 	// 定数バッファ生成
 	D3D11_BUFFER_DESC bd;
@@ -196,8 +197,8 @@ void CPolygon::Draw(ID3D11DeviceContext* pDeviceContext)
 	pDeviceContext->IASetInputLayout(m_pInputLayout);*/
 	{
 		auto pSM = Application::Get()->GetSystem<CAssetsManager>()->GetShaderManager();
-		pSM->BindPS("PS_2D");
-		pSM->BindVS("VS_2D");
+		pSM->BindPS(CPixelName::sz2D);
+		pSM->BindVS(CVertexName::sz2D);
 	}
 
 	UINT stride = sizeof(VERTEX_2D);

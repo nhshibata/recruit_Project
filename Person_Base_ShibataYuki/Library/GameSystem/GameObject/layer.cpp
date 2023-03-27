@@ -1,7 +1,9 @@
 //=========================================================
 // [layer.h]
 //---------------------------------------------------------
-//作成:2022/04/19
+// 作成:2022/04/19
+// 更新:2023/03/0? 機能してなかった部分を実装
+//				32ビット分の情報を扱えるように調整
 //---------------------------------------------------------
 // レイヤーｸﾗｽ : 部品ｸﾗｽ
 //=========================================================
@@ -30,8 +32,9 @@ namespace MySpace
 		// コンストラクタ
 		//==========================================================
 		CLayer::CLayer()
+			:m_nLayer(0)
 		{
-			m_nLayer = CLayer::NumberToBit(0);
+			
 		};
 
 		//==========================================================
@@ -140,7 +143,7 @@ namespace MySpace
 		void CLayer::LoadSystem()
 		{
 			CCerealize<std::map<int, std::string>> sirial;
-			sirial.OutputFile("layerList", LAYER_PATH, m_aLayerMap);
+			sirial.OutputFile("layerList", LAYER_DATA_PATH, m_aLayerMap);
 		}
 
 		//==========================================================
@@ -150,7 +153,7 @@ namespace MySpace
 		void CLayer::SaveSystem()
 		{
 			CCerealize<std::map<int, std::string>> sirial;
-			m_aLayerMap = sirial.InputFile(LAYER_PATH);
+			m_aLayerMap = sirial.InputFile(LAYER_DATA_PATH);
 		}
 		
 
@@ -185,7 +188,7 @@ namespace MySpace
 				return;
 
 			ImGui::SetNextWindowPos(ImGui::GetMousePos(), ImGuiCond_::ImGuiCond_Once);
-			ImGui::SetNextWindowSize(ImVec2(CScreen::GetWidth() / 8, CScreen::GetHeight() / 6), ImGuiCond_::ImGuiCond_Once);
+			ImGui::SetNextWindowSize(ImVec2(CScreen::GetWidth() / 6, CScreen::GetHeight() / 6), ImGuiCond_::ImGuiCond_Once);
 			if (ImGui::Begin("Layer Window", &disp))
 			{
 				// 全て表示
@@ -196,7 +199,7 @@ namespace MySpace
 					ImGui::Text("%d", layer.first);
 					ImGui::SameLine();
 					Debug::SetControlPosX();
-					ImGui::Text("%s", layer.second);
+					ImGui::Text("%s", layer.second.c_str());
 				}
 
 				//--- 追加する情報
@@ -213,7 +216,7 @@ namespace MySpace
 					{
 						// 初期化
 						disp = false;
-						AddNo = 0;
+						AddNo = static_cast<int>(m_aLayerMap.size());
 						InputLayer.clear();
 					}
 					else
@@ -238,7 +241,7 @@ namespace MySpace
 				{
 					int bit = CLayer::NumberToBit(layer.first);
 					// 推された/選択された
-					// and確認で選択中
+					// and確認で選択中表示
 					if (ImGui::Selectable(layer.second.c_str(), layerBit & bit))
 					{
 						// 数字をビットに変えて、XORで変更(0->1 or 1->0)

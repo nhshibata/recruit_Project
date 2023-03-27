@@ -66,7 +66,6 @@
     <ClInclude Include="..\Library\GameSystem\Scene\scene.h" />
     <ClInclude Include="..\Library\GameSystem\Scene\sceneSerealize.h" />
     <ClInclude Include="..\Library\GameSystem\Scene\sceneTransitionDetection.h" />
-    <ClInclude Include="..\Library\GameSystem\Shader\depthShadow.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\Library\GameSystem\components.cpp" />
@@ -115,7 +114,6 @@
     <ClCompile Include="..\Library\GameSystem\Scene\scene.cpp" />
     <ClCompile Include="..\Library\GameSystem\Scene\sceneSerealize.cpp" />
     <ClCompile Include="..\Library\GameSystem\Scene\sceneTransitionDetection.cpp" />
-    <ClCompile Include="..\Library\GameSystem\Shader\depthShadow.cpp" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <VCProjectVersion>15.0</VCProjectVersion>

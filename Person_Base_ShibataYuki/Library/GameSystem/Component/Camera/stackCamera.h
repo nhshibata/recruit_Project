@@ -59,7 +59,7 @@ namespace MySpace
 			void Stack(std::weak_ptr<CStackCamera> camera, int idx = -1);
 			
 			// *@マスク対象か確認
-			bool IsMask(const int layer)const override final;
+			bool IsMask(const int layer)override final;
 
 			// *@モード取得
 			bool IsStackMode(const EStackMode mode) { return m_eMode == mode; }

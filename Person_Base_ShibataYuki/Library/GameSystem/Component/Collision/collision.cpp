@@ -16,11 +16,19 @@ using namespace MySpace::Game;
 using namespace MySpace::SceneManager;
 
 //==========================================================
+// コンストラクタ
+//==========================================================
+CCollision::CCollision()
+	:m_nSystemIdx(-1)
+{
+}
+
+//==========================================================
 // 引数付きコンストラクタ
 //==========================================================
 CCollision::CCollision(std::shared_ptr<CGameObject> owner, bool trigger)
 	:CComponent(owner), m_bIsTrigger(trigger), m_vOldPos(0, 0, 0),
-	m_pOldStayList(0),m_pHitList(0), m_nSystemIdx(-1)
+	m_aOldHitList(0),m_aHitList(0), m_nSystemIdx(-1)
 {
 }
 
@@ -33,9 +41,9 @@ CCollision::~CCollision()
 	if(m_nSystemIdx != -1)
 		CSceneManager::Get()->GetCollisionSystem()->ExecutSystem(m_nSystemIdx);
 
-	m_pOldStayList.clear();
-	m_pHitList.clear();
-	m_pExitList.clear();
+	m_aOldHitList.clear();
+	m_aHitList.clear();
+	m_aExitList.clear();
 }
 
 //==========================================================
@@ -60,7 +68,6 @@ void CCollision::Awake()
 //==========================================================
 void CCollision::Init()
 {
-	
 
 	// 過去座標
 	m_vOldPos = Transform()->GetPos();
@@ -88,7 +95,8 @@ void CCollision::Update()
 //==========================================================
 void CCollision::RequestCollision()
 {
-	m_nSystemIdx = CSceneManager::Get()->GetCollisionSystem()->RegistToSystem(BaseToDerived<CCollision>());
+	if(m_nSystemIdx == -1)
+		m_nSystemIdx = CSceneManager::Get()->GetCollisionSystem()->RegistToSystem(BaseToDerived<CCollision>());
 }
 
 //==========================================================
@@ -102,19 +110,18 @@ void CCollision::HitResponse(CCollision* other)
 	std::weak_ptr<CGameObject> otherObj = other->GetOwner(0);
 	CGameObject* pObj = otherObj.lock().get();
 	
+	if (this == other)
+		return;
+
 	// トリガーがtrue / 衝突オブジェがtrue
 	bool trigger = m_bIsTrigger | other->IsTrigger();
 
-	// 衝突したオブジェクトのタグを保存
-	//SetColTag(pObj->GetTagPtr()->GetTag());
-
-	// Stay
-	m_pHitList.push_back(otherObj);
+	// Enter
+	m_aHitList.push_back(otherObj);
 
 	// Stay:以前のフレームで接触していたか確認
-	//if (auto it = std::find(m_pOldStayList.begin(), m_pOldStayList.end(), otherObj.lock()); it != m_pOldStayList.end())
 	bool found = false;
-	for (auto & obj : m_pOldStayList)
+	for (auto & obj : m_aOldHitList)
 	{
 		if (obj.lock() == otherObj.lock())
 		{
@@ -127,9 +134,8 @@ void CCollision::HitResponse(CCollision* other)
 	{
 		if (!trigger)
 		{
-			// 元の座標を格納
-			//Transform()->SetPos(m_vOldPos);
 			GetOwner()->OnCollisionStay(pObj);
+			pObj->OnCollisionStay(GetOwner());
 		}
 		else
 		{
@@ -145,9 +151,8 @@ void CCollision::HitResponse(CCollision* other)
 	{	// Trigger:今のフレームで接触始めた
 		if (!trigger)
 		{
-			// 元の座標を格納
-			//Transform()->SetPos(m_vOldPos);
 			GetOwner()->OnCollisionEnter(pObj);
+			pObj->OnCollisionEnter(GetOwner());
 		}
 		else
 		{
@@ -171,17 +176,16 @@ void CCollision::HitResponse(CCollision* other)
 void CCollision::ColObjectUpdate()
 {
 	//--- 前フレームのリストを確認
-	for (std::list<std::weak_ptr<CGameObject>>::iterator it = m_pOldStayList.begin(); it != m_pOldStayList.end(); ++it)
+	for (std::list<std::weak_ptr<CGameObject>>::iterator it = m_aOldHitList.begin(); it != m_aOldHitList.end(); ++it)
 	{
 		if (!(*it).lock()) // 削除されている可能性を鑑みて
 			continue;
 
-		// 格納されていない、離れた
-		//if (auto found = std::find(m_pHitList.begin(), m_pHitList.end(), (*it)); found == m_pHitList.end())
+		// 格納されていない、離れた		
 		bool res = false;
-		for (auto & obj : m_pHitList)
+		for (auto & obj : m_aHitList)
 		{	
-			if ((*it).lock() == (*it).lock())
+			if (obj.lock() == (*it).lock())
 			{	// 格納されていた
 				res = true;
 				break;
@@ -190,18 +194,15 @@ void CCollision::ColObjectUpdate()
 		if (res)
 			continue;
 
-		m_pExitList.push_back((*it));
+		m_aExitList.push_back((*it));
+
 #ifdef BUILD_MODE
 		++m_nDebugExitCnt;
 #endif // BUILD_MODE
 
 	}
 
-	// hitリストからStayリストへ格納
-	m_pOldStayList = m_pHitList;
 
-	// 次の判定のため、クリア
-	m_pHitList.clear();
 }
 
 //==========================================================
@@ -210,11 +211,11 @@ void CCollision::ColObjectUpdate()
 //==========================================================
 bool CCollision::ExitTell()
 {
-	//--- EnterリストにStayオブジェがあれば除外
-	for (std::list<std::weak_ptr<CGameObject>>::iterator it = m_pExitList.begin(); it != m_pExitList.end(); ++it)
+	for (std::list<std::weak_ptr<CGameObject>>::iterator it = m_aExitList.begin(); it != m_aExitList.end(); ++it)
 	{
 		CGameObject* pObj = (*it).lock().get();
-		if (!pObj)continue;
+		if (!pObj)
+			continue;
 
 		if (!m_bIsTrigger)
 		{
@@ -225,7 +226,14 @@ bool CCollision::ExitTell()
 			GetOwner()->OnTriggerExit(pObj);
 		}
 	}
-	m_pExitList.clear();
+
+	// hitリストからStayリストへ格納
+	m_aOldHitList.clear();
+	m_aOldHitList = m_aHitList;
+	// 次の判定のため、クリア
+	m_aHitList.clear();
+	m_aExitList.clear();
+	
 	return false;
 }
 
@@ -235,18 +243,31 @@ bool CCollision::ExitTell()
 void CCollision::ImGuiDebug()
 {
 
-	ImGui::Text("current hit", m_pOldStayList.size());
-	ImGui::Text("Enter:", m_nDebugEnterCnt);
-	ImGui::Text("Stay :", m_nDebugStayCnt);
-	ImGui::Text("Exit :", m_nDebugExitCnt);
-	ImGui::Text(u8"当たり判定用過去サイズ [x:%f][y:%f][z:%f]", &m_vOldScale);
-	ImGui::Checkbox("Is Trigger", (bool*)&m_bIsTrigger);
+	/*Debug::SetTextAndAligned("current hit");
+	ImGui::Text("%d", m_aOldHitList.size());*/
+
+	Debug::SetTextAndAligned("Enter");
+	ImGui::Text("%d", m_nDebugEnterCnt);
+
+	Debug::SetTextAndAligned("Stay");
+	ImGui::Text("%d", m_nDebugStayCnt);
+
+	Debug::SetTextAndAligned("Exit");
+	ImGui::Text("%d", m_nDebugExitCnt);
+
+	/*Debug::SetTextAndAligned(u8"当たり判定用過去サイズ");
+	ImGui::Text("[x:%.5f][y:%.5f][z:%.5f]", &m_vOldScale);*/
+
+	Debug::SetTextAndAligned("Is Trigger");
+	ImGui::Checkbox("##Is Trigger", (bool*)&m_bIsTrigger);
 	
 	Debug::SetTextAndAligned("Center");
 	ImGui::DragFloat3("##Center", (float*)m_vCenter);
 
 	// 再初期化はここで行う
-	m_nDebugEnterCnt = m_nDebugStayCnt = m_nDebugExitCnt = 0;
+	m_nDebugEnterCnt = 0;
+	m_nDebugStayCnt = 0;
+	m_nDebugExitCnt = 0;
 
 }
 

@@ -6,7 +6,7 @@
 //=========================================================
 
 //--- インクルード部
-#include <GameSystem/Shader/depthShadow.h>
+#include <GraphicsSystem/DirectX/depthShadow.h>
 #include <GameSystem/Component/Light/directionalLight.h>
 #include <GameSystem/Component/Camera/camera.h>
 #include <GameSystem/Component/Transform/transform.h>
@@ -16,6 +16,8 @@
 #include <GraphicsSystem/Manager/assetsManager.h>
 #include <GraphicsSystem/Shader/shaderStruct.h>
 
+#include <DebugSystem/imGuiPackage.h>
+
 using namespace MySpace::Game;
 using namespace MySpace::Graphics;
 
@@ -23,8 +25,10 @@ using namespace MySpace::Graphics;
 // コンストラクタ
 //=========================================================
 CDepthShadow::CDepthShadow()
+	:m_fFar(1000.0f * 0.7f), m_fNear(0.2f)
 {
-
+	m_vScreenSize.x = CScreen::GetWidth() * 5;
+	m_vScreenSize.y = CScreen::GetHeight() * 5;
 }
 
 //=========================================================
@@ -46,30 +50,20 @@ void CDepthShadow::InitShader()
 	// 太陽
 	auto sm = Application::Get()->GetSystem<CAssetsManager>()->GetShaderManager();
 	ConstantBufferSharedPtr sunCB = std::make_shared<CConstantBuffer>();
-	if (FAILED(sunCB->Make(sizeof(SHADER_SUN), 6, CConstantBuffer::EType::Vertex)))
+	if (FAILED(sunCB->Make(sizeof(SHADER_SUN), Slot::CB_SUN_VP, CConstantBuffer::EType::Vertex)))
 	{
 
 	}
 	else
 		sm->SetCB(NAME_TO(SHADER_SUN), sunCB);
-	
-	// 深度書き込み用
-	/*ConstantBufferSharedPtr writeCB = std::make_shared<CConstantBuffer>();
-	if (FAILED(writeCB->Make(sizeof(DirectX::XMFLOAT4X4) * 3, 5, CConstantBuffer::EType::Vertex)))
-	{
-
-	}
-	else
-		sm->SetCB(m_DepthWriteCB, writeCB);
-*/
 
 	PixelShaderSharedPtr ps = std::make_shared<CPixelShader>();
-	if (FAILED(ps->Make(FORDER_DIR(Data/shader/PS_DepthWrite.cso))))
+	if (FAILED(ps->Make(CPixelName::GetCSO(CPixelName::szDepthWrite))))
 	{
 
 	}
 	else
-		sm->SetPS("PS_DepthWrite",ps);
+		sm->SetPS(CPixelName::szDepthWrite,ps);
 
 	VertexShaderSharedPtr vs = std::make_shared<CVertexShader>();
 	const D3D11_INPUT_ELEMENT_DESC layout[] =
@@ -78,12 +72,12 @@ void CDepthShadow::InitShader()
 		{"NORMAL",	 0, DXGI_FORMAT_R32G32B32_FLOAT,0, D3D11_APPEND_ALIGNED_ELEMENT,D3D11_INPUT_PER_VERTEX_DATA,0},
 		{"TEXCOORD", 0, DXGI_FORMAT_R32G32_FLOAT,   0, D3D11_APPEND_ALIGNED_ELEMENT,D3D11_INPUT_PER_VERTEX_DATA,0}
 	};
-	if (FAILED(vs->Make(FORDER_DIR(Data/shader/VS_DepthWrite.cso), layout, _countof(layout))))
+	if (FAILED(vs->Make(CVertexName::GetCSO(CVertexName::szDepthWrite), layout, _countof(layout))))
 	{
 
 	}
 	else
-		sm->SetVS("VS_DepthWrite", vs);
+		sm->SetVS(CVertexName::szDepthWrite, vs);
 }
 
 //=========================================================
@@ -114,8 +108,8 @@ void CDepthShadow::Begin()
 	auto sm = Application::Get()->GetSystem<CAssetsManager>()->GetShaderManager();
 
 	// ps,vs設定
-	sm->BindPS("PS_DepthWrite");
-	sm->BindVS("VS_DepthWrite");
+	sm->BindPS(CPixelName::szDepthWrite);
+	sm->BindVS(CVertexName::szDepthWrite);
 
 	//--- ライト
 	CDirectionalLight* light = dynamic_cast<CDirectionalLight*>(CLight::GetMain());
@@ -131,13 +125,10 @@ void CDepthShadow::Begin()
 		DirectX::XMVectorSet(dir.x, dir.y, dir.z, 0),
 		DirectX::XMVectorSet(0, 1, 0, 0)
 	);
-	// 平行投影
-	
-	DirectX::XMMATRIX sunProj =	XMMatrixPerspectiveFovLH(XMConvertToRadians(45), CScreen::GetWidth()/ CScreen::GetHeight(), 0.2f, 1000.0f);
-	sunProj = DirectX::XMMatrixOrthographicLH(
+	// 平行投影	
+	DirectX::XMMATRIX sunProj = DirectX::XMMatrixOrthographicLH(
+		m_vScreenSize.x, m_vScreenSize.y, m_fNear, m_fFar
 		//5.0f, 5.0f * (9.0f / 16.0f), 0.2f, 1000.0f
-		CScreen::GetWidth()*5, CScreen::GetHeight()*5, 0.2f, 1000.0f/2	
-		// 全体の影マップを作るには、Sceneの利用している大きさでなければ
 	);
 	SHADER_SUN sunMat;
 	DirectX::XMStoreFloat4x4(&sunMat.sunView, DirectX::XMMatrixTranspose(sunView));
@@ -165,7 +156,28 @@ void CDepthShadow::End()
 //=========================================================
 void CDepthShadow::SetUpTexture(UINT slot)
 {
-	// model 4? mesh 1?
+	// model4?
 	auto pTex = m_pRenderTarget->GetSRV();
 	Application::Get()->GetSystem<CDXDevice>()->GetDeviceContext()->PSSetShaderResources(slot, 1, &pTex);
 }
+
+
+#if BUILD_MODE
+
+void CDepthShadow::ImGuiDebug()
+{
+
+	Debug::SetTextAndAligned("Near");
+	ImGui::DragFloat("##Near", (float*)&m_fNear, 0.1f, 0.1f);
+
+	Debug::SetTextAndAligned("Far");
+	ImGui::DragFloat("##Far", (float*)&m_fFar, 0.1f, 0.2f);
+	
+	Debug::SetTextAndAligned("Projection ScreenSize");
+	ImGui::DragFloat2("##Projection Screen", (float*)&m_vScreenSize, 10.0f);
+	
+	ImGui::Image(GetResource(), ImVec2(CScreen::GetWidth()*0.25f, CScreen::GetHeight()*0.25f));
+
+}
+
+#endif // BUILD_MODE

@@ -13,6 +13,7 @@
 #if BUILD_MODE
 #include <DebugSystem/imguiManager.h>
 #include <DebugSystem/imGuiPackage.h>
+#include <DebugSystem/imGuiContextMenu.h>
 
 #include <ImGui/imgui.h>
 #include <ImGui/imgui_impl_win32.h>
@@ -149,14 +150,14 @@ void CInspector::CopyGameObject()
 	{
 		// ﾃﾞｰﾀを外部保存
 		auto obj = m_spViewObj.lock();
-		sirial.OutputFile(m_spViewObj.lock()->GetName(), GAME_COPY, obj);
+		sirial.OutputFile(m_spViewObj.lock()->GetName(), COPY_DATA_GAME_OBJECT_PATH, obj);
 	}
 
 	// 一時的なオブジェクト生成
 	if (auto work = std::make_shared<CGameObject>(); work)
 	{
 		// ﾃﾞｰﾀ読み込み
-		work = sirial.InputFile(GAME_COPY);
+		work = sirial.InputFile(COPY_DATA_GAME_OBJECT_PATH);
 
 		// 新しいオブジェクト生成
 		m_spViewObj = CGameObject::CreateObject();
@@ -196,7 +197,8 @@ void CInspector::DispOptionBar()
 
 			// FIXME:ﾎﾟｲﾝﾀｺﾋﾟｰしてるのみ問題あり
 			if (ImGui::MenuItem("Copy"))
-				CopyGameObject();
+				Debug::CopyGameObject();
+				//CopyGameObject();
 
 			if (ImGui::MenuItem("Delete"))
 				DeleteObject();

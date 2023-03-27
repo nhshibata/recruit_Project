@@ -11,8 +11,10 @@
 #include <GameSystem/Component/Transform/rigidbody.h>
 #include <GameSystem/Component/Collision/boxCollision.h>
 #include <GameSystem/Component/Renderer/modelRenderer.h>
+#include <GameSystem/Component/Camera/camera.h>
 
 #include <CoreSystem/Input/input.h>
+#include <DebugSystem/imGuiPackage.h>
 
 using namespace MySpace::Game;
 
@@ -20,7 +22,7 @@ using namespace MySpace::Game;
 // コンストラクタ
 //========================================================
 CActionPlayer::CActionPlayer()
-	:m_fSpeed(1), m_fJump(1), m_bLand(false)
+	:m_rb(nullptr)
 {
 }
 
@@ -29,7 +31,8 @@ CActionPlayer::CActionPlayer()
 //========================================================
 CActionPlayer::CActionPlayer(CGameObject::Ptr owner)
 	:CComponent(owner),
-	m_fSpeed(1), m_fJump(1), m_bLand(false)
+	m_fSpeed(1), m_fJump(70), m_bLand(false)
+	, m_rb(nullptr)
 {
 }
 
@@ -38,6 +41,19 @@ CActionPlayer::CActionPlayer(CGameObject::Ptr owner)
 //========================================================
 CActionPlayer::~CActionPlayer()
 {
+}
+
+//========================================================
+// 読み込み時呼び出し
+//========================================================
+void CActionPlayer::OnLoad()
+{
+	//--- ｺﾝﾎﾟｰﾈﾝﾄ追加	
+
+	// リジッドボディ
+	auto rb = GetComponent<CRigidbody>();
+	m_rb = rb;
+
 }
 
 //========================================================
@@ -50,14 +66,15 @@ void CActionPlayer::Awake()
 	auto box = AddComponent<CBoxCollision>();
 	box->SetTrigger(false);
 
-	// 描画
-	auto model = AddComponent<CModelRenderer>();
-	//model->SetModel(MODEL_PATH2());
-
 	// リジッドボディ
 	auto rb = AddComponent<CRigidbody>();
 	rb->SetGravity(true);
+	rb->SetResist(0.0f);
+	m_rb = rb.get();
 
+	// 描画
+	auto model = AddComponent<CModelRenderer>();
+	//model->SetModel(MODEL_PATH2());
 }
 
 //========================================================
@@ -106,11 +123,13 @@ void CActionPlayer::Update()
 	{
 		if (CInput::GetKeyTrigger(VK_SPACE))
 		{
-			auto rb = GetComponent<CRigidbody>();
-			rb->AddForce(Vector3(0, m_fJump, 0));
+			m_rb->AddForce(Vector3(0, m_fJump, 0));
 		}
 	}
 
+	if (auto cam = CCamera::GetMain(); cam)
+		cam->SetTarget(pos);
+	
 	Transform()->SetPos(pos);
 }
 
@@ -132,6 +151,32 @@ void CActionPlayer::OnCollisionStay(CGameObject* obj)
 {
 	if (obj->GetTagPtr()->Compare("Land"))
 	{
+		m_bLand = true;
+	}
+}
+
+//========================================================
+// 当たり判定
+//========================================================
+void CActionPlayer::OnCollisionExit(CGameObject* obj)
+{
+	if (obj->GetTagPtr()->Compare("Land"))
+	{
 		m_bLand = false;
 	}
 }
+
+
+#if BUILD_MODE
+
+void CActionPlayer::ImGuiDebug()
+{
+	Debug::SetTextAndAligned("Jump");
+	ImGui::DragFloat("##Jump", &m_fJump);
+
+	Debug::SetTextAndAligned("Land");
+	ImGui::Checkbox("##Land", &m_bLand);
+
+}
+
+#endif // BUILD_MODE

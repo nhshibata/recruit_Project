@@ -18,6 +18,7 @@
 #include <GraphicsSystem/DirectX/DXDevice.h>
 #include <GraphicsSystem/Manager/assetsManager.h>
 #include <GraphicsSystem/Manager/shaderManager.h>
+#include <GraphicsSystem/Shader/shaderStruct.h>
 
 #include <DebugSystem/imGuiPackage.h>
 #include <CoreSystem/File/filePath.h>
@@ -38,8 +39,8 @@ CModelRenderer::CModelRenderer()
 		Vector4(0.0f, 0.0f, 0.0f, 1.0f),	// wはpowerに使われている
 		Vector4(0.0f, 0.0f, 0.0f, 0.0f),
 		1.0f);
-	m_strPixelShader = "PS_Assimp";
-	m_strVertexShader = "VS_Assimp";
+	m_strPixelShader = CPixelName::szDefaultAssimp;
+	m_strVertexShader = CVertexName::szDefaultAssimp;
 }
 
 //==========================================================
@@ -55,8 +56,8 @@ CModelRenderer::CModelRenderer(std::shared_ptr<CGameObject> owner)
 		Vector4(0.0f, 0.0f, 0.0f, 1.0f),	// wはpowerに使われている
 		Vector4(0.0f, 0.0f, 0.0f, 0.0f),
 		1.0f);
-	m_strPixelShader = "PS_Assimp";
-	m_strVertexShader = "VS_Assimp";
+	m_strPixelShader = CPixelName::szDefaultAssimp;
+	m_strVertexShader = CVertexName::szDefaultAssimp;
 }
 
 //==========================================================
@@ -588,14 +589,22 @@ void CModelRenderer::ImGuiDebug()
 
 	//--- フォルダからファイル名取得
 	// 入力時、再取得
+	Debug::SetTextAndAligned("ModelFiles");
 	if (m_aXModelList.empty() && m_aObjModelList.empty() && m_aFbxModelList.empty() || 
-		ImGui::Button(u8"model reload"))
+		ImGui::Button("Reload"))
 	{
 		MySpace::System::CFilePath file;
 		m_aXModelList = file.GetAllFileName(MODEL_PATH, ".x");
 		m_aObjModelList = file.GetAllFileName(MODEL_PATH, ".obj");
 		m_aFbxModelList = file.GetAllFileName(MODEL_PATH, ".fbx");
 	}
+
+	// 名前入力
+	Debug::SetTextAndAligned("Model Name");
+	m_modelName = InputString(m_modelName, "##LoadModel Name");
+	Debug::SetTextAndAligned("Model Load");
+	if (ImGui::Button("Load"))
+		SetModel(m_modelName);
 
 	//--- モデル選択読み込み
 
@@ -623,19 +632,11 @@ void CModelRenderer::ImGuiDebug()
 		SetModel(name);
 	}
 
-	// 名前入力
-	Debug::SetTextAndAligned("LoadModel Name");
-	m_modelName = InputString(m_modelName, "##LoadModel Name");
-	if (ImGui::Button("Load"))
-		SetModel(m_modelName);
-
 	ImGui::Separator();
 
-	// static設定
 	// マテリアル
 	CMeshRenderer::ImGuiDebug();
 
-	//ImGui::EndTabBar();
 }
 
 #endif // BUILD_MODE
