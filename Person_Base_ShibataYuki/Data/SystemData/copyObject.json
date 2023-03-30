@@ -1,11 +1,11 @@
 {
-    "Land": {
+    "GameObj_810": {
         "polymorphic_id": 1073741824,
         "ptr_wrapper": {
             "id": 2147483649,
             "data": {
                 "gameObject": {
-                    "m_objName": "Land",
+                    "m_objName": "GameObj_810",
                     "m_spThisPtr": {
                         "locked_ptr": {
                             "polymorphic_id": 1073741824,
@@ -28,7 +28,7 @@
                     "ptr_wrapper": {
                         "id": 2147483651,
                         "data": {
-                            "m_nTagID": 4
+                            "m_nTagID": 0
                         }
                     }
                 },
@@ -53,12 +53,12 @@
                                 },
                                 "m_vPos": {
                                     "x": 0.0,
-                                    "y": 0.0,
+                                    "y": 19.0,
                                     "z": 0.0
                                 },
                                 "m_vOldPos": {
                                     "x": 0.0,
-                                    "y": 0.0,
+                                    "y": 19.0,
                                     "z": 0.0
                                 },
                                 "m_vRot": {
@@ -72,59 +72,30 @@
                                     "z": 0.0
                                 },
                                 "m_vScale": {
-                                    "x": 1.0,
-                                    "y": 1.0,
-                                    "z": 1.0
+                                    "x": 10.0,
+                                    "y": 10.0,
+                                    "z": 10.0
                                 },
                                 "m_Rot": {
                                     "x": 0.0,
                                     "y": 0.0,
                                     "z": 0.0,
                                     "w": 0.0
+                                },
+                                "m_pChilds": [],
+                                "m_pParent": {
+                                    "locked_ptr": {
+                                        "polymorphic_id": 0
+                                    }
                                 }
                             }
                         }
                     },
                     {
                         "polymorphic_id": 2147483650,
-                        "polymorphic_name": "MySpace::Game::CBoxCollision",
-                        "ptr_wrapper": {
-                            "id": 2147483653,
-                            "data": {
-                                "boxCollision": {
-                                    "collision": {
-                                        "Component": {},
-                                        "m_pSelfPtr": {
-                                            "locked_ptr": {
-                                                "polymorphic_id": 2,
-                                                "ptr_wrapper": {
-                                                    "id": 5
-                                                }
-                                            }
-                                        },
-                                        "m_bActive": true
-                                    },
-                                    "m_bIsTrigger": false,
-                                    "m_vCenter": {
-                                        "x": 0.0,
-                                        "y": 0.0,
-                                        "z": 0.0
-                                    }
-                                },
-                                "m_vSize": {
-                                    "x": 0.5,
-                                    "y": 0.5,
-                                    "z": 0.5
-                                },
-                                "m_bOBBMode": true
-                            }
-                        }
-                    },
-                    {
-                        "polymorphic_id": 2147483651,
                         "polymorphic_name": "MySpace::Game::CModelRenderer",
                         "ptr_wrapper": {
-                            "id": 2147483654,
+                            "id": 2147483653,
                             "data": {
                                 "modelRender": {
                                     "meshRender": {
@@ -132,9 +103,9 @@
                                             "Component": {},
                                             "m_pSelfPtr": {
                                                 "locked_ptr": {
-                                                    "polymorphic_id": 3,
+                                                    "polymorphic_id": 2,
                                                     "ptr_wrapper": {
-                                                        "id": 6
+                                                        "id": 5
                                                     }
                                                 }
                                             },
@@ -156,7 +127,7 @@
                                         "z": 0.0
                                     },
                                     "m_bLightEnable": true,
-                                    "m_fBSRadius": 0.8372229337692261,
+                                    "m_fBSRadius": 0.4175710380077362,
                                     "m_nStaticMode": 0,
                                     "m_bShadow": false,
                                     "m_MeshMaterial": {
@@ -187,7 +158,7 @@
                                         "m_Power": 1.0
                                     }
                                 },
-                                "m_modelName": "../Data/model/ToyStage\\WorkBlock.fbx"
+                                "m_modelName": "../Data/model/ToyStage\\Fan.fbx"
                             }
                         }
                     }

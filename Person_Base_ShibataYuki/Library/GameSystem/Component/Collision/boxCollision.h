@@ -58,8 +58,13 @@ namespace MySpace
 			bool m_bOBBMode;	// OBB判定を取るか
 
 		private:
-			void PosAdjustment(Vector3 pos, Vector3 size);
+			void PosAdjustment(CCollision* otherCol,Vector3 pos, Vector3 size);
 			bool IsCollidedWithBox(CSphereCollision* sphere);
+
+			// 2つのボックスがめり込んでいる距離を計算する関数
+			float CalculateOverlap(const Vector3& currentPos, const Vector3& otherPos, const Vector3& size1, const Vector3& size2);
+			// めり込んだ距離から移動ベクトルを計算する関数
+			Vector3 CalculateMoveVector(const Vector3& currentPos, const Vector3& otherPos, const float& overlap);
 
 		public:
 			CBoxCollision();

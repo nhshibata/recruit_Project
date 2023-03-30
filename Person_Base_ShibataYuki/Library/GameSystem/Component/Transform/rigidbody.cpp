@@ -27,6 +27,7 @@ namespace
 // コンストラクタ
 //==========================================================
 CRigidbody::CRigidbody()
+	:m_bCol(false)
 {
 }
 
@@ -37,6 +38,7 @@ CRigidbody::CRigidbody(std::shared_ptr<CGameObject> owner)
 	:CComponent(owner)
 	, m_bGravity(true), m_bIsSleep(false), m_fGravity(GRAVITY), m_fResistance(1.0f), m_fMass(1.0f),
 	m_vAccel(0, 0, 0), m_vTargetPos(1, 1, 1), m_vVel(0, 0, 0), m_vForce(0, 0, 0)
+	, m_bCol(false)
 {
 
 }
@@ -52,37 +54,38 @@ CRigidbody::~CRigidbody()
 //==========================================================
 // 更新
 //==========================================================
-void CRigidbody::FixedUpdate()
+void CRigidbody::Update()
 {
 	Vector3 pos = GetOwner()->GetTransform()->GetPos();
 	Vector3 oldPos = GetOwner()->GetTransform()->GetOldPos();
 	Vector3 rot = GetOwner()->GetTransform()->GetRot();
 
 	{
-		// 重力を与える
-		if (m_bGravity)
-		{
-			m_vForce.y += float(m_fGravity * CFps::Get()->DeltaTime());
-		}
+		
 		Vector3 vec = m_vForce / (m_fMass == 0.0f ? 1.0f : m_fMass);
 		m_vVel += vec * CFps::Get()->DeltaTime();
 		pos += m_vVel * CFps::Get()->DeltaTime();
 		// 抵抗
 		m_fResistance = std::clamp(m_fResistance, 0.0f, 1.0f);
 		m_vForce *= (1.0f - m_fResistance);
+		// 重力を与える
+		if (m_bGravity && !m_bCol)
+		{
+			m_vForce.y += float(m_fGravity * CFps::Get()->DeltaTime());
+		}
 
 		// 位置固定
-		m_pFreezPos.Fix(pos);
+		m_pFreezPos.Fix(&pos);
 	}
 
 	// 角度固定
-	m_pFreezRot.Fix(rot);
+	m_pFreezRot.Fix(&rot);
 
 	GetOwner()->GetTransform()->SetPos(pos);
 	GetOwner()->GetTransform()->SetRot(rot);
 
 	// 動いたか動いてないか
-	if (pos.x == oldPos.x && pos.y == oldPos.y && pos.z == oldPos.z)
+	if (pos != oldPos)
 	{
 		m_bIsSleep = true;
 	}
@@ -119,14 +122,22 @@ void CRigidbody::SetFreezRot(bool x, bool y, bool z)
 
 void CRigidbody::OnCollisionEnter(CGameObject* obj)
 {
-	//m_vForce = Vector3::zero();
+	m_vForce = Vector3::zero();
 	m_vVel = Vector3::zero();
+	m_bCol = true;
 }
 
 void CRigidbody::OnCollisionStay(CGameObject* obj)
 {
 	//m_vForce = Vector3::zero();
 	m_vVel = Vector3::zero();
+}
+
+void CRigidbody::OnCollisionExit(CGameObject* obj)
+{
+	//m_vForce = Vector3::zero();
+	m_vVel = Vector3::zero();
+	m_bCol = false;
 }
 
 
@@ -139,6 +150,9 @@ void CRigidbody::ImGuiDebug()
 
 	Debug::SetTextAndAligned(u8"Rigidbody 抵抗");
 	ImGui::InputFloat("##Rigidbody 抵抗", &m_fResistance);
+	
+	Debug::SetTextAndAligned(u8"Rigidbody 質量");
+	ImGui::InputFloat("##Rigidbody 質量", &m_fMass);
 	
 	Debug::SetTextAndAligned(u8"Rigidbody 力");
 	ImGui::InputFloat3("##Rigidbody 力", (float*)m_vForce);

@@ -18,6 +18,8 @@
 #include <CoreSystem/Util/define.h>
 
 #define COPY_DATA_GAME_OBJECT_PATH		FORDER_DIR(data/SystemData/copyObject.json)
+#define PREFAB_FOLDER_PATH				FORDER_DIR(data/prefab/)
+#define PREFAB_PATH(name)				FORDER_DIR(data/prefab/name.prefab)
 #define TAG_DATA_PATH					FORDER_DIR(data/SystemData/tag.json)
 #define LAYER_DATA_PATH					FORDER_DIR(data/SystemData/layer.json)
 

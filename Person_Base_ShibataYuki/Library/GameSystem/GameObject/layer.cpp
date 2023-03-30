@@ -189,7 +189,7 @@ namespace MySpace
 
 			ImGui::SetNextWindowPos(ImGui::GetMousePos(), ImGuiCond_::ImGuiCond_Once);
 			ImGui::SetNextWindowSize(ImVec2(CScreen::GetWidth() / 6, CScreen::GetHeight() / 6), ImGuiCond_::ImGuiCond_Once);
-			if (ImGui::Begin("Layer Window", &disp))
+			if (ImGui::Begin("Layer Window", &disp), ImGuiWindowFlags_::ImGuiWindowFlags_HorizontalScrollbar)
 			{
 				// ‘S‚Ä•\Ž¦
 				for (auto & layer : m_aLayerMap)

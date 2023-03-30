@@ -37,6 +37,10 @@ namespace MySpace
 		void PopUpGameObjectMenu(MySpace::Game::CGameObject* pObj);
 
 		std::shared_ptr<MySpace::Game::CGameObject> CopyGameObject();
+
+		void PrefabSelect();
+
+		std::shared_ptr<MySpace::Game::CGameObject> PrefabPaste();
 	}
 }
 

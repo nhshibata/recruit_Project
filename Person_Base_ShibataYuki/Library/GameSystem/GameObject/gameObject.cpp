@@ -70,7 +70,7 @@ CGameObject::CGameObject(const CGameObject & object)
 	this->m_objName = object.m_objName;
 #endif // BUILD_MODE
 
-	this->m_pTransform = object.m_pTransform;
+	//this->m_pTransform = object.m_pTransform;
 	this->m_eState = object.m_eState;
 	this->m_pLayer = object.m_pLayer;
 	this->m_pTag = object.m_pTag;
@@ -100,7 +100,7 @@ CGameObject::CGameObject(const CGameObject & object)
 //==========================================================
 CGameObject::~CGameObject()
 {
-	Uninit();
+	//Uninit();
 }
 
 //==========================================================
@@ -154,7 +154,10 @@ void CGameObject::Init()
 void CGameObject::Uninit()
 {
 	for (auto & com : m_aComponent)
+	{
+		com->Uninit();
 		com.reset();
+	}
 	m_aComponent.clear();
 }
 
@@ -330,15 +333,24 @@ bool CGameObject::RemoveComponent(std::weak_ptr<CComponent> com)
 }
 
 //==========================================================
-// コンポーネント破棄
+// コンポーネント追加
 //==========================================================
 bool CGameObject::SetComponent(std::shared_ptr<CComponent> com)
 {
 	// あればfalse
-	for (auto & it : m_aComponent)
+	/*for (auto & it : m_aComponent)
 	{
 		if (com->GetName() == it->GetName())
 			return false;
+	}*/
+
+	// なんらかの理由でない時
+	if (!m_pTransform.lock())
+	{
+		if (com->GetName().find("Transform") != std::string::npos)
+		{
+			m_pTransform = com->BaseToDerived<CTransform>();			
+		}
 	}
 
 	com->SetOwner(GetPtr());

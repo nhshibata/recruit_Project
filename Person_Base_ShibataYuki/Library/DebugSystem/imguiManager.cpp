@@ -17,6 +17,7 @@
 #include <DebugSystem/hierarchy.h>
 #include <DebugSystem/inspector.h>
 #include <DebugSystem/imGuiSceneGizmo.h>
+#include <DebugSystem/imGuiContextMenu.h>
 
 #ifdef BUILD_MODE
 
@@ -190,7 +191,7 @@ void ImGuiManager::Update()
 	screenSize.y *= 0.4f;
 	ImGui::SetNextWindowPos(ImVec2(0, CScreen::GetHeight() - screenSize.y), ImGuiCond_Once);
 	ImGui::SetNextWindowSize(ImVec2(screenSize.x, screenSize.y), ImGuiCond_Once);
-	ImGui::Begin(u8"ステータス", &m_bEditFlg, ImGuiWindowFlags_::ImGuiWindowFlags_MenuBar);
+	ImGui::Begin(u8"ステータス", &m_bEditFlg, ImGuiWindowFlags_::ImGuiWindowFlags_MenuBar | ImGuiWindowFlags_::ImGuiWindowFlags_MenuBar);
 	ImGui::BeginTabBar("tabs", ImGuiTabBarFlags_None);
 
 	//--- 状態取得セット
@@ -204,7 +205,8 @@ void ImGuiManager::Update()
 		// シーン名表示
 		ImGui::Text(u8"現在のシーン名 : %s", scene->GetSceneName().c_str());
 		ImGui::Text(u8"オブジェクト数 : %d", CSceneManager::Get()->GetActiveScene()->GetObjManager()->GetList().size());
-
+		Debug::PrefabSelect();
+		
 		// フレームレート表示
 		ImGui::EndTabItem();	// とじる
 	}
@@ -270,6 +272,10 @@ void ImGuiManager::Update()
 	{
 		ImGui::Checkbox("ImGui OFF", &m_bPause);
 
+		ImGui::Checkbox("Grid", &m_bGridDisp);
+
+		if(ImGui::Button("Camera Reset"))
+			m_pDebugCamera.lock()->Reset();
 		/*int res = 0;
 		for (int cnt = 1; cnt < sizeof(EMouseHovered); cnt++)
 		{
@@ -277,10 +283,6 @@ void ImGuiManager::Update()
 			res *= 10;
 		}
 		ImGui::Text("Hover->%d", res);*/
-		ImGui::Checkbox("Grid", &m_bGridDisp);
-
-		if(ImGui::Button("Camera Reset"))
-			m_pDebugCamera.lock()->Reset();
 		ImGui::EndTabItem();// とじる
 	}
 

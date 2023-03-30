@@ -165,8 +165,7 @@ void CCollision::HitResponse(CCollision* other)
 
 	}
 
-	// 離れたオブジェクトの判定
-	ColObjectUpdate();
+	
 }
 
 //==========================================================
@@ -211,6 +210,9 @@ void CCollision::ColObjectUpdate()
 //==========================================================
 bool CCollision::ExitTell()
 {
+	// 離れたオブジェクトの判定
+	ColObjectUpdate();
+
 	for (std::list<std::weak_ptr<CGameObject>>::iterator it = m_aExitList.begin(); it != m_aExitList.end(); ++it)
 	{
 		CGameObject* pObj = (*it).lock().get();

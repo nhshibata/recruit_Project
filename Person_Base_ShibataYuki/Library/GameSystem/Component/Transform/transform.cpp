@@ -30,8 +30,7 @@ CTransform::CTransform()
 //==========================================================
 CTransform::CTransform(std::shared_ptr<CGameObject> owner)
 	:CComponent(owner),m_pChilds(0),m_vPos(0,0,0), m_vRot(0,0,0), m_vScale(1,1,1), m_vDestRot(0, 0, 0)
-{
-	m_pChilds = std::vector<std::weak_ptr<CTransform>>();
+{	
 	XMStoreFloat4x4(&m_mLocalMtx, XMMatrixIdentity());
 	XMStoreFloat4x4(&m_mWorldMtx, XMMatrixIdentity());
 }
@@ -43,22 +42,20 @@ CTransform::~CTransform()
 {
 	// 親子関係解除
 	ParentDissolved();
-}
 
-//==========================================================
-// 解放
-//==========================================================
-void CTransform::Uninit()
-{
-	if (GetOwner()->GetState() != CGameObject::E_ObjectState::DESTROY)
-		return;
+	if (GetOwner())
+	{
+		if (GetOwner()->GetState() != CGameObject::E_ObjectState::DESTROY)
+			return;
+	}
+
 	// 削除状態で消されたとき(Uninitは削除状態以外、読み込みなどでも呼ばれる)
 	// 子も削除
 	std::vector<std::weak_ptr<CTransform>>::iterator it = m_pChilds.begin();
 	for (; it != m_pChilds.end(); ++it)
 	{
 		auto obj = (*it).lock();
-		if (obj) 
+		if (obj)
 		{
 			obj->GetOwner()->SetState(CGameObject::E_ObjectState::DESTROY);
 		}
@@ -71,6 +68,14 @@ void CTransform::Uninit()
 void CTransform::Init()
 {
 
+}
+
+//==========================================================
+// 解放
+//==========================================================
+void CTransform::Uninit()
+{
+	
 }
 
 //==========================================================

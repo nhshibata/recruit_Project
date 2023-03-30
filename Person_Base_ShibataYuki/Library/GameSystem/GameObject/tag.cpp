@@ -71,7 +71,7 @@ void CTag::ImGuiTag(bool& disp)
 	
 	ImGui::SetNextWindowPos(ImGui::GetMousePos(), ImGuiCond_::ImGuiCond_Once);
 	ImGui::SetNextWindowSize(ImVec2(CScreen::GetWidth() / 6, CScreen::GetHeight() / 6), ImGuiCond_::ImGuiCond_Once);
-	if (ImGui::Begin("Create Tag", &disp))
+	if (ImGui::Begin("Create Tag", &disp), ImGuiWindowFlags_::ImGuiWindowFlags_HorizontalScrollbar)
 	{
 		char input[52];
 		strcpy_s(input, newTagName.c_str());

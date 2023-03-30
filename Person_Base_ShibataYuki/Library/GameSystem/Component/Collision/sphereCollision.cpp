@@ -277,7 +277,8 @@ void CSphereCollision::Update()
 {
 	// debug•\Ž¦
 	XMVECTOR vCenter = XMLoadFloat3(&GetCenter());
-	XMMATRIX mWorld = XMLoadFloat4x4(&Transform()->GetWorldMatrix());
+	Matrix4x4 mtx = Matrix4x4::CalcWorldMatrix(Transform()->GetPos(), Transform()->GetRot(), Transform()->GetScale() * Vector3(m_fRadius, m_fRadius, m_fRadius) * 1.001f);
+	XMMATRIX mWorld = XMLoadFloat4x4(&mtx);
 
 	vCenter = XMVector3TransformCoord(vCenter, mWorld);
 	mWorld = XMMatrixTranslationFromVector(vCenter);
