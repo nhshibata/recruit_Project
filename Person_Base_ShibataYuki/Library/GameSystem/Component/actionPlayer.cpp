@@ -11,7 +11,7 @@
 #include <GameSystem/Component/Transform/rigidbody.h>
 #include <GameSystem/Component/Collision/boxCollision.h>
 #include <GameSystem/Component/Renderer/modelRenderer.h>
-#include <GameSystem/Component/Camera/camera.h>
+#include <GameSystem/Component/Camera/debugCamera.h>
 
 #include <CoreSystem/Input/input.h>
 #include <DebugSystem/imGuiPackage.h>
@@ -69,7 +69,7 @@ void CActionPlayer::Awake()
 	// リジッドボディ
 	auto rb = AddComponent<CRigidbody>();
 	rb->SetGravity(true);
-	rb->SetResist(0.0f);
+	rb->SetResist(0.5f);
 	m_rb = rb.get();
 
 	// 描画
@@ -128,7 +128,12 @@ void CActionPlayer::Update()
 	}
 
 	if (auto cam = CCamera::GetMain(); cam)
-		cam->SetTarget(pos);
+	{
+		if (auto debug = BaseToDerived<CDebugCamera>(); !debug)
+		{
+			cam->SetTarget(pos);
+		}
+	}
 	
 	Transform()->SetPos(pos);
 }

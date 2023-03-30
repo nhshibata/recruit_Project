@@ -12,12 +12,16 @@
 
 #include <GameSystem/components.h>
 #include <CoreSystem/File/cerealize.h>
+#include <CoreSystem/File/filePath.h>
 
 namespace MySpace
 {
 
 	namespace Debug
 	{
+		// よくないが、暫定
+		static std::string selectPrefab;
+
 		//=========================================================
 		// コンテキストメニュー表示
 		// FIXME:ネストが深い
@@ -28,6 +32,8 @@ namespace MySpace
 				u8"ParentDissolved(親子関係解消)",
 				u8"Copy",
 				u8"Paste",
+				u8"Prefab化",
+				u8"Prefab Paste",
 				u8"Close",
 			};
 
@@ -62,6 +68,28 @@ namespace MySpace
 					CopyGameObject();
 					break;
 				}
+				case 3:
+				{
+					// シリアライズ化して名前,ﾎﾟｲﾝﾀなどだけ上書きすればできる?
+					// できた
+					// シリアライズクラス作成
+					CCerealize<std::shared_ptr<CGameObject>> sirial;
+					{
+						std::string fileName = PREFAB_FOLDER_PATH;
+						fileName += pObj->GetName();
+						fileName += ".prefab";
+
+						// ﾃﾞｰﾀを外部保存
+						auto obj = pObj->GetPtr().lock();
+						sirial.OutputFile(pObj->GetName(), fileName, obj);
+					}
+					break;
+				}
+				case 4:
+				{
+					PrefabPaste();
+					break;
+				}
 			}
 		}
 
@@ -85,6 +113,71 @@ namespace MySpace
 			newObj.lock()->SetName(work->GetName() + "_Clone");
 			newObj.lock()->SetObjTag(work->GetTag());
 			newObj.lock()->SetLayer(work->GetLayer());
+			newObj.lock()->Uninit();
+
+			// 読みこまれたコンポーネントの受け渡し
+			auto comList = work->GetComponentList();
+			for (auto & com : comList)
+			{
+				newObj.lock()->SetComponent(com);
+
+				//--- 描画と当たり判定クラスは要請する必要があるため、Initを呼び出す
+				// NOTE: 限定的なもので汎用性に欠ける。正直どうなのか
+				if (com->GetName().find("Renderer") != std::string::npos ||
+					com->GetName().find("Collision") != std::string::npos)
+				{
+					com->Awake();
+					com->Init();
+				}
+			}
+			// オブジェクト破棄
+			work.reset();
+
+			return newObj.lock();
+		}
+
+		//==========================================================
+		// ファイル選択
+		//==========================================================
+		void PrefabSelect()
+		{
+			static std::vector<std::string> aPrefab;
+
+			Debug::SetTextAndAligned("Prefab Reload");
+			if (aPrefab.size() == 0 || ImGui::Button("Prefab Reload"))
+			{
+				MySpace::System::CFilePath file;
+				aPrefab = file.GetAllFileName(PREFAB_FOLDER_PATH, ".prefab");
+			}
+
+			// GUI表示
+			Debug::SetTextAndAligned("Prefab");
+			selectPrefab = MySpace::Debug::DispComboSelect(aPrefab, "##Prefab", selectPrefab);
+		}
+
+		//=========================================================
+		// prefabｺﾋﾟｰ
+		//=========================================================
+		std::shared_ptr<MySpace::Game::CGameObject> PrefabPaste()
+		{
+			if (selectPrefab.empty())
+				return std::shared_ptr<CGameObject>();
+			
+			// 一時的なオブジェクト生成
+			auto work = std::make_shared<CGameObject>();
+
+			CCerealize<std::shared_ptr<CGameObject>> sirial;
+			// ﾃﾞｰﾀ読み込み
+			work = sirial.InputFile(selectPrefab.c_str());
+			if (!work)
+				return work;
+
+			// 新しいオブジェクト生成
+			auto newObj = CGameObject::CreateObject();
+			// 情報設定
+			newObj.lock()->SetName(work->GetName());
+			newObj.lock()->SetObjTag(work->GetTag());
+			newObj.lock()->SetLayer(work->GetLayer());
 			// 読みこまれたコンポーネントの受け渡し
 			auto comList = work->GetComponentList();
 			for (auto & com : comList)
@@ -104,7 +197,6 @@ namespace MySpace
 
 			return newObj.lock();
 		}
-
 	}
 
 }

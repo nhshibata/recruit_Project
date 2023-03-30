@@ -68,25 +68,25 @@ namespace MySpace
 					x = y = z = 0;
 					bX = bY = bZ = false;
 				};
-				void Fixed(bool pX, bool pY, bool pZ, Vector3 vec)
+				void Fixed(bool pX, bool pY, bool pZ, const Vector3& vec)
 				{
 					if (pX) { bX = true; x = vec.x; }
 					if (pY) { bY = true; y = vec.y; }
 					if (pZ) { bZ = true; z = vec.z; }
 				}
 				// *@固定設定されている値を保存
-				void Fixed(Vector3 vec)
+				void Fixed(const Vector3& vec)
 				{
 					if (bX) { x = vec.x; }
 					if (bX) { y = vec.y; }
 					if (bX) { z = vec.z; }
 				}
 				// *@固定設定されていた場合は、保存された値を反映
-				void Fix(Vector3 vec)
+				void Fix(Vector3* vec)
 				{
-					if (bX) vec.x = x; 
-					if (bY) vec.y = y; 
-					if (bZ) vec.z = z; 
+					if (bX) vec->x = x; 
+					if (bY) vec->y = y; 
+					if (bZ) vec->z = z; 
 				}
 			};
 
@@ -106,6 +106,7 @@ namespace MySpace
 			FixedVector3 m_pFreezPos;	// 座標固定
 			FixedVector3 m_pFreezRot;	// 回転固定
 
+			bool m_bCol;
 		public:
 			//--- メンバ関数
 			CRigidbody();
@@ -114,10 +115,11 @@ namespace MySpace
 			
 			// *@生成時呼び出し
 			virtual void Awake() {};
-			void FixedUpdate();
+			void Update();
 
 			void OnCollisionEnter(CGameObject * obj);
 			void OnCollisionStay(CGameObject * obj);
+			void OnCollisionExit(CGameObject * obj);
 
 			//--- ゲッター・セッター
 			_NODISCARD inline Vector3 GetVel() { return m_vVel; };

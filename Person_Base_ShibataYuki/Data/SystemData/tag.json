@@ -4,6 +4,7 @@
         "MainCamera",
         "light",
         "Player",
-        "Land"
+        "Land",
+        "DebugCamera"
     ]
 }

@@ -149,7 +149,7 @@ namespace MySpace
 			Vector3 operator/ (const float & f) const { return Vector3(x / f, y / f, z / f); }
 			Vector3 operator= (const float & f) const { return Vector3(f, f, f); }
 			bool operator== (const Vector3& vec)const { return (x == vec.x) && (y == vec.y) && (z == vec.z); }
-			bool operator!= (const Vector3& vec)const { return !(*this == vec); }
+			bool operator!= (const Vector3& vec)const { return (x != vec.x) || (y != vec.y) || (z != vec.z); }
 			Vector3 operator-() const { return Vector3(-x, -y, -z); }
 			Vector3 operator+() const { return Vector3(x, y, z); }
 			operator float* () const { return (float *)&x; }
@@ -429,6 +429,29 @@ namespace MySpace
 				mWorld = XMMatrixTranslationFromVector(vCenter);
 				XMStoreFloat4x4(&mtx, mWorld);
 				return mtx;
+			}
+
+			_NODISCARD static Matrix4x4 CalcWorldMatrix(const Vector3& vPos, const Vector3& vRot, const Vector3& vScale)
+			{
+				XMMATRIX mtx, scl, rot, translate;
+				mtx = XMMatrixIdentity();
+
+				// ƒTƒCƒY”½‰f
+				scl = XMMatrixScaling(vScale.x, vScale.y, vScale.z);
+				mtx = XMMatrixMultiply(mtx, scl);
+
+				// ‰ñ“]
+				rot = XMMatrixRotationRollPitchYaw(XMConvertToRadians(vRot.x), XMConvertToRadians(vRot.y),
+												   XMConvertToRadians(vRot.z));
+				mtx = XMMatrixMultiply(mtx, rot);
+
+				// ˆÊ’u‚ð”½‰f
+				translate = XMMatrixTranslation(vPos.x, vPos.y, vPos.z);
+				mtx = XMMatrixMultiply(mtx, translate);
+
+				Matrix4x4 ret;
+				DirectX::XMStoreFloat4x4(&ret, mtx);
+				return ret;
 			}
 
 			Matrix4x4 Multiply(const Matrix4x4& a)const

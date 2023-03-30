@@ -497,8 +497,8 @@ void CMesh::DrawInstancing(
 			{
 				if (cnt >= aData.size() || cntNum >= aData.size())
 					break;
-				imtx->mWorld[cnt] = aData[cntNum].mWorld;
-				imd->renderData[cnt] = aData[cntNum];
+				imtx->mWorld[cnt] = aData[cnt].mWorld;
+				imd->renderData[cnt] = aData[cnt];
 			}
 			sm->CBWrite(NAME_TO(INSTANCE_MATRIX), imtx, sizeof(INSTANCE_MATRIX));
 			sm->CBWrite(NAME_TO(INSTANCHING_MATERIAL), imd, sizeof(INSTANCHING_MATERIAL));
@@ -509,7 +509,7 @@ void CMesh::DrawInstancing(
 		}
 
 		// ƒ|ƒŠƒSƒ“‚Ì•`‰æ
-		if (aData.size() > MAX_WORLD_MATRIX)
+		if (aData.size() >= MAX_WORLD_MATRIX)
 			pDeviceContext->DrawIndexedInstanced(static_cast<UINT>(m_nNumIndex), static_cast<UINT>(cnt), 0, 0, 0);
 		else
 			pDeviceContext->DrawIndexedInstanced(static_cast<UINT>(m_nNumIndex), static_cast<UINT>(aData.size()), 0, 0, 0);

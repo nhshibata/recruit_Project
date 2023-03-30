@@ -66,7 +66,7 @@ void CInspector::Update(ImGuiManager* manager)
 	ImGui::SetNextWindowSize(ImVec2(screenSize.x, screenSize.y * 0.75f), ImGuiCond_Once);
 
 	m_bOpen = m_spViewObj.lock() ? true : false;
-	ImGui::Begin("Inspector", &m_bOpen, ImGuiWindowFlags_::ImGuiWindowFlags_MenuBar);
+	ImGui::Begin("Inspector", &m_bOpen, ImGuiWindowFlags_::ImGuiWindowFlags_MenuBar | ImGuiWindowFlags_::ImGuiWindowFlags_HorizontalScrollbar);
 
 	if (!m_bOpen)
 		m_spViewObj.reset();
@@ -153,33 +153,34 @@ void CInspector::CopyGameObject()
 		sirial.OutputFile(m_spViewObj.lock()->GetName(), COPY_DATA_GAME_OBJECT_PATH, obj);
 	}
 
-	// 一時的なオブジェクト生成
-	if (auto work = std::make_shared<CGameObject>(); work)
-	{
-		// ﾃﾞｰﾀ読み込み
-		work = sirial.InputFile(COPY_DATA_GAME_OBJECT_PATH);
+	//// 一時的なオブジェクト生成
+	//if (auto work = std::make_shared<CGameObject>(); work)
+	//{
+	//	// ﾃﾞｰﾀ読み込み
+	//	work = sirial.InputFile(COPY_DATA_GAME_OBJECT_PATH);
 
-		// 新しいオブジェクト生成
-		m_spViewObj = CGameObject::CreateObject();
-		// 読みこまれたコンポーネントの受け渡し
-		auto comList = work->GetComponentList();
-		for (auto & com : comList)
-		{
-			m_spViewObj.lock()->SetComponent(com);
-			//--- 描画と当たり判定クラスは要請する必要があるため、Initを呼び出す
-			// NOTE: 限定的なもので汎用性に欠ける。正直どうなのか
-			if (com->GetName().find("Renderer") != std::string::npos ||
-				com->GetName().find("Collision") != std::string::npos)
-			{
-				com->Awake();
-				com->Init();
-			}
-		}
+	//	// 新しいオブジェクト生成
+	//	m_spViewObj = CGameObject::CreateObject();
+	//	// 読みこまれたコンポーネントの受け渡し
+	//	auto comList = work->GetComponentList();
+	//	for (auto & com : comList)
+	//	{
+	//		m_spViewObj.lock()->SetComponent(com);
+	//		//--- 描画と当たり判定クラスは要請する必要があるため、Initを呼び出す
+	//		// NOTE: 限定的なもので汎用性に欠ける。正直どうなのか
+	//		if (com->GetName().find("Renderer") != std::string::npos ||
+	//			com->GetName().find("Collision") != std::string::npos)
+	//		{
+	//			com->Awake();
+	//			com->Init();
+	//		}
+	//	}
 
-		// オブジェクト破棄
-		work.reset();
-	}
+	//	// オブジェクト破棄
+	//	work.reset();
+	//}
 
+	m_spViewObj = Debug::CopyGameObject();
 }
 
 //==========================================================
@@ -270,7 +271,7 @@ void CInspector::AddComponentWindow()
 	std::vector<std::string> componentName = CComponentFactory::GetNameList();
 	static std::string serchWord;
 	
-	if (ImGui::Begin("AddComponent", &m_bIsAddComponent, ImGuiWindowFlags_::ImGuiWindowFlags_MenuBar))
+	if (ImGui::Begin("AddComponent", &m_bIsAddComponent, ImGuiWindowFlags_::ImGuiWindowFlags_MenuBar | ImGuiWindowFlags_::ImGuiWindowFlags_HorizontalScrollbar))
 	{
 		//--- 検索入力
 		char input[56] = "\0";

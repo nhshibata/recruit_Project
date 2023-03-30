@@ -82,7 +82,7 @@ void CHierachy::Update(ImGuiManager* manager)
 	ImGui::SetNextWindowPos(ImVec2(0, 0), ImGuiCond_Once);
 	ImGui::SetNextWindowSize(ImVec2(screenSize.x * 0.2f, screenSize.y * 0.6f), ImGuiCond_Once);
 	bool flg = true;
-	ImGui::Begin("Hierarchy", &flg, ImGuiWindowFlags_MenuBar);
+	ImGui::Begin("Hierarchy", &flg, ImGuiWindowFlags_::ImGuiWindowFlags_MenuBar | ImGuiWindowFlags_::ImGuiWindowFlags_HorizontalScrollbar);
 
 	// ƒV[ƒ“‚ª‘¶Ý‚µ‚Ä‚¢‚È‚¯‚ê‚Îˆ—‚µ‚È‚¢
 	if (!CSceneManager::Get()->GetActiveScene())
@@ -223,7 +223,7 @@ void CHierachy::DispSaveLoadMenu()
 	ImGui::SetNextWindowPos(ImVec2(20, 20), ImGuiCond_Once);
 	ImGui::SetNextWindowSize(ImVec2(200, 300), ImGuiCond_Once);
 
-	if (ImGui::Begin("Load", &m_bLoadSaveWindow, ImGuiWindowFlags_MenuBar))
+	if (ImGui::Begin("Load", &m_bLoadSaveWindow, ImGuiWindowFlags_::ImGuiWindowFlags_MenuBar | ImGuiWindowFlags_::ImGuiWindowFlags_HorizontalScrollbar))
 	{
 		if (ImGui::BeginMenuBar())
 		{
@@ -474,8 +474,13 @@ void CHierachy::CreateObjectsWindow()
 			float col = float(gridCnt % m_CreateParam.nGrid);
 			float row = float(gridCnt / m_CreateParam.nGrid);
 			auto newPos = m_CreateParam.vCenter;
-			newPos.x = (m_CreateParam.vCenter.x - (m_CreateParam.nGrid - 1 * m_CreateParam.fMargin * 0.5f)) + col * m_CreateParam.fMargin;
-			newPos.z = (m_CreateParam.vCenter.z - (m_CreateParam.nGrid - 1 * m_CreateParam.fMargin * 0.5f)) + row * m_CreateParam.fMargin;
+
+
+			float offsetX = (col - (m_CreateParam.nGrid - 1) * 0.5f) * m_CreateParam.fMargin;
+			float offsetZ = (row - (m_CreateParam.nGrid - 1) * 0.5f) * m_CreateParam.fMargin;
+
+			newPos.x += offsetX;
+			newPos.z += offsetZ;
 			pObj->GetTransform()->SetPos(newPos);
 		}
 	}
