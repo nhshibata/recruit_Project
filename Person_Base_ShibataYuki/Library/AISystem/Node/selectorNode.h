@@ -17,10 +17,30 @@ namespace AI
 {
 	class CSelectorNode : public CParentNode
 	{
+#pragma region Serialize
+	private:
+		//--- シリアライズ
+		friend class cereal::access;
+		template<class Archive>
+		void save(Archive& archive) const
+		{
+			archive(cereal::make_nvp("selectorNode", cereal::base_class<CSelectorNode>(this))
+			);
+		}
+		template<class Archive>
+		void load(Archive& archive)
+		{
+			archive(cereal::make_nvp("selectorNode", cereal::base_class<CSelectorNode>(this))
+			);
+		}
+#pragma endregion
+
 	public:
 		// *@ノード実行関数
 		CAINode::EStatus Execute(CAISystem* sys)final;
 	};
 }
+
+CEREAL_REGISTER_TYPE(AI::CSelectorNode)
 
 #endif // !__SELECTOR_NODE_H__

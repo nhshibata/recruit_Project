@@ -24,6 +24,25 @@ namespace AI
 
 	class CStateNode : public CAINode
 	{
+#pragma region Serialize
+	private:
+		//--- シリアライズ
+		friend class cereal::access;
+		template<class Archive>
+		void save(Archive& archive) const
+		{
+			archive(cereal::make_nvp("stateNode", cereal::base_class<CAINode>(this)),
+					CEREAL_NVP(m_pRoot), CEREAL_NVP(m_pConditons)
+			);
+		}
+		template<class Archive>
+		void load(Archive& archive)
+		{
+			archive(cereal::make_nvp("stateNode", cereal::base_class<CAINode>(this)),
+					CEREAL_NVP(m_pRoot), CEREAL_NVP(m_pConditons)
+			);
+		}
+#pragma endregion
 	private:
 		//--- エイリアス
 		using StateCondition = std::shared_ptr<CStateCondition>;
@@ -52,6 +71,8 @@ namespace AI
 		inline void SetNode(CAINode::Ptr node) { m_pRoot = node; }
 	};
 }
+
+CEREAL_REGISTER_TYPE(AI::CStateNode)
 
 #endif // !__STATE_NODE_H__
 

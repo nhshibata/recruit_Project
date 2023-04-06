@@ -22,6 +22,26 @@ namespace AI
 	// 実行ノードを必ず設定
 	class CDecoratorNode : public CAINode
 	{
+#pragma region Serialize
+	private:
+		//--- シリアライズ
+		friend class cereal::access;
+		template<class Archive>
+		void save(Archive& archive) const
+		{
+			archive(cereal::make_nvp("decoratorNode", cereal::base_class<CAINode>(this)),
+					CEREAL_NVP(m_pConcrete)
+			);
+		}
+		template<class Archive>
+		void load(Archive& archive)
+		{
+			archive(cereal::make_nvp("decoratorNode", cereal::base_class<CAINode>(this)),
+					CEREAL_NVP(m_pConcrete)
+			);
+		}
+#pragma endregion
+
 	private:
 		//--- メンバ変数
 		CAINode::Ptr m_pConcrete;		// 装飾対象
@@ -49,5 +69,7 @@ namespace AI
 		inline void SetConcreate(CAINode::Ptr ptr) { m_pConcrete = ptr; }
 	};
 }
+
+CEREAL_REGISTER_TYPE(AI::CDecoratorNode)
 
 #endif // !__DECORATOR_NODE_H__

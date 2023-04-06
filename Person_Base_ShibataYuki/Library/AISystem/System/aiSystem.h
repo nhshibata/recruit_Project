@@ -2,6 +2,7 @@
 // [AISystem.h]
 //------------------
 // 作成:2022/11/22
+//------------------
 // 基本的なビヘイビア
 // ノードの追加順で優先度が決まる
 // ノードのノードだと子ノードが優先される
@@ -38,6 +39,25 @@ namespace AI
 	
 	class CAISystem : public CComponent
 	{
+#pragma region Serialize
+	private:
+		//--- シリアライズ
+		friend class cereal::access;
+		template<class Archive>
+		void save(Archive& archive) const
+		{
+			archive(cereal::make_nvp("AISystemComponent", cereal::base_class<CComponent>(this)),
+					CEREAL_NVP(m_pRoot), CEREAL_NVP(m_Nodes)
+			);
+		}
+		template<class Archive>
+		void load(Archive& archive)
+		{
+			archive(cereal::make_nvp("AISystemComponent", cereal::base_class<CComponent>(this)),
+					CEREAL_NVP(m_pRoot), CEREAL_NVP(m_Nodes)
+			);
+		}
+#pragma endregion
 	private:
 		//--- エイリアス
 		using NodePtr = std::shared_ptr<CAINode>;
@@ -51,6 +71,7 @@ namespace AI
 
 	public:
 		//--- メンバ関数
+		CAISystem();
 		CAISystem(std::shared_ptr<CGameObject> ptr);
 		~CAISystem();
 		
@@ -131,5 +152,7 @@ namespace AI
 
 	};
 }
+
+CEREAL_REGISTER_TYPE(AI::CAISystem)
 
 #endif // !__AI_SYSTEM_H__
