@@ -54,13 +54,15 @@ namespace MySpace
 			};
 			struct STCreateWindowSet
 			{
-				bool bDisp;
-				bool bCopy;
-				float fMargin;
-				int nGrid;
-				int nObjType;
-				MyMath::Vector3 vCenter;
-				STCreateWindowSet():bDisp(false),bCopy(true),fMargin(1),nGrid(3),nObjType(0) {}
+				bool bDisp;				 // 表示フラグ
+				bool bCopy;				 // 複製
+				float fMargin;			 // マージン
+				int nGrid;				 // 縦×横
+				int nObjType;			 // 複製でない場合の生成Type(cppで定義)
+				MyMath::Vector3 vCenter; // 中心
+				std::string strName;	 // 名前
+				STCreateWindowSet():bDisp(false),bCopy(true),fMargin(1),nGrid(3),nObjType(0) 
+				{}
 			};
 		private:
 			static constexpr const char* DESC_SELECT_OBJ = u8"selectGameObjcet";	// *@ドラッグ＆ドロップ認識用文字列

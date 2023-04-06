@@ -12,6 +12,7 @@
 
 //--- インクルード部
 #include <memory>
+#include <CoreSystem/Util/cerealCommon.h>
 
 //--- 定数定義
 // AID: AIDefine
@@ -28,6 +29,25 @@ namespace AI
 	class CAINode
 	{
 		friend class CAISystem;
+
+#pragma region Serialize
+	private:
+		//--- シリアライズ
+		friend class cereal::access;
+		template<class Archive>
+		void save(Archive& archive) const
+		{
+			archive(CEREAL_NVP(m_eStatus), CEREAL_NVP(m_nIndex)
+			);
+		}
+		template<class Archive>
+		void load(Archive& archive)
+		{
+			archive(CEREAL_NVP(m_eStatus), CEREAL_NVP(m_nIndex)
+			);
+		}
+#pragma endregion
+
 	public:
 		//--- 列挙体
 		// *@ノード状態
@@ -72,13 +92,13 @@ namespace AI
 
 		//--- ゲッター・セッター
 		// *@登録インデックス取得
-		int GetIndex()const { return m_nIndex; }
+		_NODISCARD inline int GetIndex()const { return m_nIndex; }
 
 		// *@状態取得
-		CAINode::EStatus GetStatus()const { return m_eStatus; }
+		_NODISCARD CAINode::EStatus GetStatus()const { return m_eStatus; }
 
 		// *@ｱｸﾃｨﾌﾞ状態確認
-		bool IsActive()const { return m_eStatus != EStatus::NONE_ACTIVE; }
+		_NODISCARD bool IsActive()const { return m_eStatus != EStatus::NONE_ACTIVE; }
 	};
 }
 #endif // DEBUG

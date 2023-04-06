@@ -442,7 +442,10 @@ void CHierachy::CreateObjectsWindow()
 	// type‘I‘ð
 	m_CreateParam.nObjType = Debug::DispComboSelect(aSelectType, "Type", m_CreateParam.nObjType);
 
-	Debug::SetTextAndAligned("Duplicate");
+	Debug::SetTextAndAligned("ObjectName");
+	m_CreateParam.strName = Debug::InputString(m_CreateParam.strName, m_CreateParam.strName);
+	
+	Debug::SetTextAndAligned("Duplicate?");
 	ImGui::Checkbox("##Duplicate", &m_CreateParam.bCopy);
 
 	Debug::SetTextAndAligned(u8"Grid (? ~ ?)");
@@ -482,6 +485,10 @@ void CHierachy::CreateObjectsWindow()
 			newPos.x += offsetX;
 			newPos.z += offsetZ;
 			pObj->GetTransform()->SetPos(newPos);
+
+			if (!m_CreateParam.strName.empty())
+				pObj->SetName(m_CreateParam.strName + "_" + std::to_string(gridCnt));
+
 		}
 	}
 

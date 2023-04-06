@@ -17,6 +17,25 @@ namespace AI
 {
 	class CSequencerNode : public CParentNode
 	{
+#pragma region Serialize
+	private:
+		//--- シリアライズ
+		friend class cereal::access;
+		template<class Archive>
+		void save(Archive& archive) const
+		{
+			archive(cereal::make_nvp("seqencerNode", cereal::base_class<CSequencerNode>(this)),
+					CEREAL_NVP(m_nCurrentNode)
+			);
+		}
+		template<class Archive>
+		void load(Archive& archive)
+		{
+			archive(cereal::make_nvp("seqencerNode", cereal::base_class<CSequencerNode>(this)),
+					CEREAL_NVP(m_nCurrentNode)
+			);
+		}
+#pragma endregion
 	private:
 		//--- メンバ変数
 		int m_nCurrentNode = 0;
@@ -27,5 +46,7 @@ namespace AI
 		CAINode::EStatus Execute(CAISystem* sys)final;
 	};
 }
+
+CEREAL_REGISTER_TYPE(AI::CSequencerNode)
 
 #endif // !__SEQUENCER_NODE_H__

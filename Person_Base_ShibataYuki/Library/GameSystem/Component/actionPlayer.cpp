@@ -69,7 +69,7 @@ void CActionPlayer::Awake()
 	// リジッドボディ
 	auto rb = AddComponent<CRigidbody>();
 	rb->SetGravity(true);
-	rb->SetResist(0.5f);
+	rb->SetResist(1.0f);
 	m_rb = rb.get();
 
 	// 描画
@@ -129,7 +129,7 @@ void CActionPlayer::Update()
 
 	if (auto cam = CCamera::GetMain(); cam)
 	{
-		if (auto debug = BaseToDerived<CDebugCamera>(); !debug)
+		if (auto debug = cam->BaseToDerived<CDebugCamera>(); !debug)
 		{
 			cam->SetTarget(pos);
 		}

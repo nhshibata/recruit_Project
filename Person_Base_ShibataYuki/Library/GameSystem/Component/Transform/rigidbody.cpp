@@ -60,24 +60,37 @@ void CRigidbody::Update()
 	Vector3 oldPos = GetOwner()->GetTransform()->GetOldPos();
 	Vector3 rot = GetOwner()->GetTransform()->GetRot();
 
+	//if(0){
+	//	Vector3 vec = m_vForce / (m_fMass == 0.0f ? 1.0f : m_fMass);
+	//	m_vVel += vec * CFps::Get()->DeltaTime();
+	//	pos += m_vVel * CFps::Get()->DeltaTime();
+	//	// íÔçR
+	//	m_fResistance = std::clamp(m_fResistance, 0.0f, 1.0f);
+	//	m_vForce *= (1.0f - m_fResistance);
+	//	// èdóÕÇó^Ç¶ÇÈ
+	//	if (m_bGravity && !m_bCol)
+	//	{
+	//		m_vForce.y += float(m_fGravity * CFps::Get()->DeltaTime());
+	//	}
+	//}
+	//else
 	{
-		
-		Vector3 vec = m_vForce / (m_fMass == 0.0f ? 1.0f : m_fMass);
-		m_vVel += vec * CFps::Get()->DeltaTime();
+		m_vVel += m_vForce * (1.0f / (m_fMass == 0.0f ? 1.0f : m_fMass));
+		m_vVel += m_vAccel * CFps::Get()->DeltaTime();
 		pos += m_vVel * CFps::Get()->DeltaTime();
 		// íÔçR
 		m_fResistance = std::clamp(m_fResistance, 0.0f, 1.0f);
 		m_vForce *= (1.0f - m_fResistance);
+
 		// èdóÕÇó^Ç¶ÇÈ
 		if (m_bGravity && !m_bCol)
 		{
-			m_vForce.y += float(m_fGravity * CFps::Get()->DeltaTime());
+			m_vAccel.y += m_fGravity;
 		}
-
-		// à íuå≈íË
-		m_pFreezPos.Fix(&pos);
 	}
 
+	// à íuå≈íË
+	m_pFreezPos.Fix(&pos);
 	// äpìxå≈íË
 	m_pFreezRot.Fix(&rot);
 
@@ -124,6 +137,7 @@ void CRigidbody::OnCollisionEnter(CGameObject* obj)
 {
 	m_vForce = Vector3::zero();
 	m_vVel = Vector3::zero();
+	m_vAccel = Vector3::zero();
 	m_bCol = true;
 }
 
@@ -131,12 +145,13 @@ void CRigidbody::OnCollisionStay(CGameObject* obj)
 {
 	//m_vForce = Vector3::zero();
 	m_vVel = Vector3::zero();
+	m_vAccel = Vector3::zero();
 }
 
 void CRigidbody::OnCollisionExit(CGameObject* obj)
 {
 	//m_vForce = Vector3::zero();
-	m_vVel = Vector3::zero();
+	//m_vVel = Vector3::zero();
 	m_bCol = false;
 }
 
@@ -145,6 +160,14 @@ void CRigidbody::OnCollisionExit(CGameObject* obj)
 
 void CRigidbody::ImGuiDebug()
 {
+	Debug::SetTextAndAligned("Rigidbody Reset");
+	if (ImGui::Button("Reset"))
+	{
+		m_vForce = Vector3::zero();
+		m_vVel = Vector3::zero();
+		m_vAccel = Vector3::zero();
+	}
+
 	Debug::SetTextAndAligned(u8"Rigidbody èdóÕ");
 	ImGui::InputFloat("##Rigidbody èdóÕ", &m_fGravity);
 

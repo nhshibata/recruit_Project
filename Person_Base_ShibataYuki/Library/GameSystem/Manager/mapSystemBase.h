@@ -40,27 +40,26 @@ namespace MySpace
 			CMapSystemBase() { m_aIntMap.clear(); };
 			virtual ~CMapSystemBase() { m_aIntMap.clear(); };
 
-			// *@“o˜^
+			// *@“o˜^—pŠÖ”
 			// *@“o˜^‚µ‚½Û‚É”Ô†‚ğ•Ô‚·
-			_NODISCARD inline int RegistToSystem(T type)
+			_NODISCARD int RegistToSystem(T type)
 			{
 				//--- intŒ^Å‘å’l
-				int* nMax = new int(0);
-				*nMax = (std::numeric_limits<int>::max)();
+				int nMax = 0;
+				nMax = (std::numeric_limits<int>::max)();
 
 				//--- Ši”[ƒTƒCƒYŠm”F
-				if(m_aIntMap.size() >= *nMax)
+				if(m_aIntMap.size() >= nMax)
 					return -1;
 				
 				//--- Ši”[æ’Tõ
 				int retIdx = 0;
 				while (1)
 				{
-					retIdx = rand() % *nMax;
+					retIdx = rand() % nMax;
 					if (!m_aIntMap.count(retIdx))
 						break;
 				}
-				delete nMax;
 
 				m_aIntMap[retIdx] = type;
 				return retIdx;
@@ -69,6 +68,7 @@ namespace MySpace
 			// *@”jŠü(map‚Ì‚½‚ßA®—ñ‚Í‚³‚¹‚È‚¢)
 			virtual bool ExecutSystem(const int idx)
 			{
+				//--- –¢“o˜^Šm”F(–¾‚ç‚©‚Èƒ~ƒX)
 				if (idx == -1)
 					return false;
 				if (!m_aIntMap.count(idx))

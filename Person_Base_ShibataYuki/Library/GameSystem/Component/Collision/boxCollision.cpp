@@ -238,7 +238,7 @@ bool CBoxCollision::HitCheckPtr(CCollision* other)
 	// トリガーがOFFなら押し出し
 	if (!IsTrigger() && !other->IsTrigger())
 	{
-		size = other->Transform()->GetScale() * (size * 2);
+		size = other->Transform()->GetScale() * (size);
 		/*XMFLOAT4X4 mW1 = Transform()->GetWorldMatrix();
 		XMFLOAT4X4 invWorld;
 		XMMATRIX worldMat = XMLoadFloat4x4(&mW1);
@@ -262,7 +262,7 @@ bool CBoxCollision::HitCheckPtr(CCollision* other)
 void CBoxCollision::PosAdjustment(CCollision* otherCol, Vector3 otherPos, Vector3 otherSize)
 {
 #if 1
-	const Vector3 size = Transform()->GetScale() * (m_vSize * 2);
+	const Vector3 size = Transform()->GetScale() * (m_vSize);
 	const Vector3 currentPos = Transform()->GetPos();
 	// 距離
 	float overlapDistance = CalculateOverlap(currentPos, otherPos, size, otherSize);
@@ -270,7 +270,7 @@ void CBoxCollision::PosAdjustment(CCollision* otherCol, Vector3 otherPos, Vector
 	// 新しい座標
 	Vector3 newPos = currentPos;
 	Vector3 newOtherPos = otherPos;
-	// 移動しているかフラグ
+	// 移動可否フラグ
 	bool sleep = false;
 	bool otherSleep = false;
 	{

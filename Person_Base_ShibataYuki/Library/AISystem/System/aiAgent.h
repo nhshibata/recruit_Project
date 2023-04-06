@@ -23,6 +23,27 @@ namespace AI
 {	
 	class CAIAgent :public CAISystem
 	{
+#pragma region Serialize
+	private:
+		//--- シリアライズ
+		friend class cereal::access;
+		template<class Archive>
+		void save(Archive& archive) const
+		{
+			archive(cereal::make_nvp("AIAgentComponent", cereal::base_class<CAISystem>(this)),
+					CEREAL_NVP(m_vTarget), CEREAL_NVP(m_fDistans), 
+					CEREAL_NVP(m_fLimitDistans), CEREAL_NVP(m_bIsStoping)
+			);
+		}
+		template<class Archive>
+		void load(Archive& archive)
+		{
+			archive(cereal::make_nvp("AIAgentComponent", cereal::base_class<CAISystem>(this)),
+					CEREAL_NVP(m_vTarget), CEREAL_NVP(m_fDistans),
+					CEREAL_NVP(m_fLimitDistans), CEREAL_NVP(m_bIsStoping)
+			);
+		}
+#pragma endregion
 	private:
 		//--- メンバ変数
 		Vector3 m_vTarget;			// 目標座標
@@ -32,6 +53,7 @@ namespace AI
 
 	public:
 		//--- メンバ関数
+		CAIAgent();
 		CAIAgent(std::shared_ptr<CGameObject> owner);
 		~CAIAgent();
 		
@@ -53,5 +75,7 @@ namespace AI
 		inline bool IsStoping() { return m_bIsStoping; }
 	};
 }
+
+CEREAL_REGISTER_TYPE(AI::CAIAgent)
 
 #endif // !__AI_AGENT_H__

@@ -18,6 +18,25 @@ namespace AI
 {
 	class CParentNode : public CAINode
 	{
+#pragma region Serialize
+	private:
+		//--- シリアライズ
+		friend class cereal::access;
+		template<class Archive>
+		void save(Archive& archive) const
+		{
+			archive(cereal::make_nvp("parentNode", cereal::base_class<CAINode>(this)),
+					CEREAL_NVP(m_Child)
+			);
+		}
+		template<class Archive>
+		void load(Archive& archive)
+		{
+			archive(cereal::make_nvp("parentNode", cereal::base_class<CAINode>(this)),
+					CEREAL_NVP(m_Child)
+			);
+		}
+#pragma endregion
 	protected:
 		//--- エイリアス
 		using ChildNode = std::vector<CAINode::Ptr>;
@@ -44,5 +63,7 @@ namespace AI
 	};
 
 }
+
+CEREAL_REGISTER_TYPE(AI::CParentNode)
 
 #endif // !__PARENT_NODE_H__
