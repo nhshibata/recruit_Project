@@ -60,45 +60,9 @@ HRESULT COutline::InitShader()
 //=========================================================
 void COutline::DrawSprite(CGBuffer* pGBuf)
 {
-	auto pSM = Application::Get()->GetSystem<CAssetsManager>()->GetShaderManager();
 
-	auto pDX = Application::Get()->GetSystem<CDXDevice>();
-	const auto screenSize = CScreen::GetSize();
-	ID3D11RenderTargetView* pView[] = { m_pMainRT.GetView() };
+	CPostProcess::DrawSprite(pGBuf, CPixelName::szOutline, CVertexName::sz2D);
 
-	//レンダリングターゲットをクリア。
-	m_pMainRT.Clear(0, 0, 0, 0);
-
-	//--- 描画設定
-	pDX->SetZBuffer(false);
-	pDX->SetZWrite(false);
-	pDX->SetBlendState(EBlendState::BS_ALPHABLEND);
-	CPolygon::SetSize(screenSize);
-	CPolygon::SetPos(0, 0);
-	CPolygon::SetUV(0.0f, 0.0f);
-	CPolygon::SetFrameSize(1.0f, 1.0f);
-	CPolygon::SetColor(1, 1, 1, 1);
-
-	pDX->GetDeviceContext()->OMSetRenderTargets(1, pView, nullptr);
-	pGBuf->SetSRV(CGBuffer::ETexture::COLOR);
-	CPolygon::Draw(pDX->GetDeviceContext(), CPixelName::szOutline, CVertexName::sz2D);
-
-	//--- 設定の初期化
-	CPolygon::SetColor(1, 1, 1, 1);
-	CPolygon::SetSize(1, 1);
-	CPolygon::SetTexture(NULL);
-	pDX->SetZBuffer(true);
-	pDX->SetZWrite(true);
-	pDX->SetBlendState(EBlendState::BS_NONE);
-
-}
-
-//=========================================================
-// SRV
-//=========================================================
-ID3D11ShaderResourceView* COutline::GetResource()
-{
-	return m_pMainRT.GetSRV();
 }
 
 

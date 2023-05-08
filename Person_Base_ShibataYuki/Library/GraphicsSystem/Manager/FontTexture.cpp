@@ -227,10 +227,21 @@ CFontTexture::STCharaData CFontTexture::CreateTex(LPCWSTR character, std::wstrin
 
 	// フォント用テクスチャを作成
 	HRESULT hr = pApp->GetDevice()->CreateTexture2D(&rtDesc, NULL, &fontTexture);
+	if (FAILED(hr))
+	{
+		m_aStringMap[fontName][character].pTex = nullptr;
+		return m_aStringMap[fontName][character];
+	}
 
 	// フォント用テクスチャリソースにテクスチャ情報をコピー
 	D3D11_MAPPED_SUBRESOURCE mappedSubrsrc;
-	deviceContext->Map(fontTexture, 0, D3D11_MAP_WRITE_DISCARD, 0, &mappedSubrsrc);
+	hr = deviceContext->Map(fontTexture, 0, D3D11_MAP_WRITE_DISCARD, 0, &mappedSubrsrc);
+	if (FAILED(hr))
+	{
+		m_aStringMap[fontName][character].pTex = nullptr;
+		return m_aStringMap[fontName][character];
+	}
+
 	BYTE* pBits = static_cast<BYTE*>(mappedSubrsrc.pData);
 	INT iOfs_x = gm.gmptGlyphOrigin.x;
 	INT iOfs_y = tm.tmAscent - gm.gmptGlyphOrigin.y;
@@ -305,10 +316,26 @@ std::vector<CFontTexture::STCharaData> CFontTexture::GetString(std::wstring text
 	std::vector<CFontTexture::STCharaData> ret;
 	
 	// 文字列を一文字ずつ切り取る
-	for (auto & character : text)
+	/*for (auto & character : text)
 	{
 		ret.push_back(CreateTex(static_cast<LPCWSTR>(&character), fontName));
+	}*/
+
+	/*for (auto it = text.begin(); it != text.end(); )
+	{
+		auto character = *it;
+		ret.push_back(CreateTex(static_cast<LPCWSTR>(&character), fontName));
+		++it;
+	}*/
+
+	for (int i = 0; i < text.size()-1; i++)
+	{
+		auto data = CreateTex(static_cast<LPCWSTR>(&text[i]), fontName);
+		if (data.pTex == nullptr)
+			break;
+		ret.push_back(data);
 	}
+
 
 	return ret;
 }

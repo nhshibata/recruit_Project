@@ -125,6 +125,7 @@ void CVolume::ImGuiDebug()
 		"Monochrome",
 		"Negative",
 		"Outline",
+		"Darkness",
 		"Reset",
 	};
 
@@ -150,6 +151,9 @@ void CVolume::ImGuiDebug()
 			m_pPost = std::make_unique<COutline>();
 			break;
 		case 4:
+			m_pPost = std::make_unique<CDarkness>();
+			break;
+		case 5:
 			m_pPost.reset();
 			break;
 		default:

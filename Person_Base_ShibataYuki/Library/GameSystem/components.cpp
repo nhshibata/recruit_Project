@@ -32,6 +32,8 @@ void CreateComponentType()
 	mgr->SetComponentSave<CDebugCamera>();
 
 	mgr->SetComponentSave<CDirectionalLight>();
+	mgr->SetComponentSave<CPointLight>();
+
 	mgr->SetComponentSave<CSphereCollision>();
 	mgr->SetComponentSave<CBoxCollision>();
 

@@ -65,7 +65,6 @@ CDrawSystemBase::~CDrawSystemBase()
 void CDrawSystemBase::Init()
 {
 	m_pDepthShadow->InitShader();
-
 }
 
 //==========================================================
@@ -432,7 +431,7 @@ void CDrawSystemBase::Draw3D()
 		{
 			CMeshRenderer* mesh = dynamic_cast<CMeshRenderer*>(m_aIntMap[id].lock().get());
 			data.push_back(mesh->GetShaderData());
-		}
+		}		
 
 		// shaderBind
 		pSM->CallBackFuncAndBind(info->strPixel, info->strVertex);
@@ -510,8 +509,8 @@ void CDrawSystemBase::Draw3D()
 			for (auto & id : meshObj.second.aID)
 			{
 				CMeshRenderer* mesh = dynamic_cast<CMeshRenderer*>(m_aIntMap[id].lock().get());
-				data.push_back(mesh->GetShaderData());
-			}
+				data.push_back(mesh->GetShaderData());				
+			}			
 
 			meshObj.second.pMesh->DrawInstancing(data, false);
 		}

@@ -1,24 +1,21 @@
 //==========================================================
-// [depthOfField.h]
+// [darkness.h]
 //---------------------------------------------------------
-// 作成:2023/02/15 
+// 作成:2023/04/09
 //---------------------------------------------------------
-// シェーダーの魔導書から対応
-// https://github.com/shoeisha-books/hlsl-grimoire-sample/blob/f65ac5cacd4de3c260282069fecf4b254d59207c/MiniEngine/GaussianBlur.cpp
 //==========================================================
 
-#ifndef __DEPTH_OF_FIELD_H__
-#define __DEPTH_OF_FIELD_H__
+#ifndef __DARKNESS_H__
+#define __DARKNESS_H__
 
 //--- インクルード部
 #include <GraphicsSystem/PostProcess/postProcess.h>
-#include <GraphicsSystem/PostProcess/gaussianBlur.h>
 
 namespace MySpace
 {
 	namespace Graphics
 	{
-		class CDepthOfField : public CPostProcess
+		class CDarkness : public CPostProcess
 		{
 #pragma region CEREAL
 			//--- シリアライズ
@@ -26,25 +23,21 @@ namespace MySpace
 			template<class Archive>
 			void save(Archive& archive) const
 			{
-				archive(cereal::make_nvp("depthOfField", cereal::base_class<CPostProcess>(this)),
-						CEREAL_NVP(m_fPower)
+				archive(cereal::make_nvp("darkness", cereal::base_class<CPostProcess>(this))
 				);
 			}
 			template<class Archive>
 			void load(Archive& archive)
 			{
-				archive(cereal::make_nvp("depthOfField", cereal::base_class<CPostProcess>(this)),
-						CEREAL_NVP(m_fPower)
+				archive(cereal::make_nvp("darkness", cereal::base_class<CPostProcess>(this))
 				);
 			}
 #pragma endregion
 		private:
-			float m_fPower;
-			CGaussianBlur m_Gauss;			// ガウスブラー
 
 		public:
-			CDepthOfField();
-			~CDepthOfField();
+			CDarkness();
+			~CDarkness();
 
 			static HRESULT InitShader();
 
@@ -59,6 +52,6 @@ namespace MySpace
 	}
 }
 
-CEREAL_REGISTER_TYPE(MySpace::Graphics::CDepthOfField)
+CEREAL_REGISTER_TYPE(MySpace::Graphics::CDarkness)
 
-#endif // !__DEPTH_OF_FIELD_H__
+#endif // !__MONOCHROME_H__

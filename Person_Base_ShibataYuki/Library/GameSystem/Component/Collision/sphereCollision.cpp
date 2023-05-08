@@ -256,7 +256,7 @@ void CSphereCollision::ImGuiDebug()
 		return;
 
 	Debug::SetTextAndAligned("collision radius");
-	if (ImGui::DragFloat("##radius", &m_fRadius))
+	if (ImGui::DragFloat("##radius", &m_fRadius, 0.1f))
 	{
 		m_pDebugSphere->Init(16, 8, m_fRadius);
 	}

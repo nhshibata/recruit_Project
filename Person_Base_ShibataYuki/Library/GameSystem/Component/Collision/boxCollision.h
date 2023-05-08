@@ -63,6 +63,7 @@ namespace MySpace
 
 			// 2つのボックスがめり込んでいる距離を計算する関数
 			float CalculateOverlap(const Vector3& currentPos, const Vector3& otherPos, const Vector3& size1, const Vector3& size2);
+			Vector3 CalculateOverlapV(const Vector3& currentPos, const Vector3& otherPos, const Vector3& size1, const Vector3& size2);
 			// めり込んだ距離から移動ベクトルを計算する関数
 			Vector3 CalculateMoveVector(const Vector3& currentPos, const Vector3& otherPos, const float& overlap);
 

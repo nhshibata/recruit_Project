@@ -53,7 +53,7 @@ CDirectionalLight::~CDirectionalLight()
 //=========================================================
 void CDirectionalLight::Awake()
 {
-	CLight::Init();
+	CLight::Awake();
 	XMFLOAT3 vDir = LIGHT0_DIRECTION;
 	XMFLOAT3 vDirection = LIGHT0_DIRECTION;
 	XMStoreFloat3(&vDirection, XMVector3Normalize(XMLoadFloat3(&vDir)));

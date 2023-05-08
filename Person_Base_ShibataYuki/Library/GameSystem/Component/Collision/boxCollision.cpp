@@ -262,6 +262,80 @@ bool CBoxCollision::HitCheckPtr(CCollision* other)
 void CBoxCollision::PosAdjustment(CCollision* otherCol, Vector3 otherPos, Vector3 otherSize)
 {
 #if 1
+	Vector3 pos = Transform()->GetPos();
+	Vector3 size = Transform()->GetScale() * m_vSize;
+	auto oldPos = Transform()->GetOldPos();
+
+	// 移動していないなら中断
+	if (pos == oldPos)
+		return;
+
+	// 1. 重なっているバウンディングボックスの重なり量を計算する
+	Vector3 overlap = CalculateOverlapV(pos, size, otherPos, otherSize);
+
+	// 2. 重なっている場合は自分の位置を調整する
+	if (overlap.Length() > 0.0f)
+	{
+		// 3. 自分の位置を重なっている量だけ相手の方向に移動する
+		pos += overlap;
+
+		// 4. 重なりが解消されるまで処理を続ける
+		while (true)
+		{
+			Vector3 newOverlap = CalculateOverlapV(pos, size, otherPos, otherSize);
+			if (newOverlap.Length() == 0.0f)
+			{
+				break;
+			}
+			pos += newOverlap;
+		}
+	}
+
+	// 2. 重なりの量に応じて、相手のCollisionの位置から相対的に見た位置に移動する
+	//if (overlap.x != 0.0f)
+	//{
+	//	float moveX = std::abs(overlap.x) * std::copysign(1.0f, -overlap.x);
+	//	pos.x += moveX;
+	//}
+	//if (overlap.y != 0.0f)
+	//{
+	//	float moveY = std::abs(overlap.y) * std::copysign(1.0f, -overlap.y);
+	//	pos.y += moveY;
+	//}
+	//if (overlap.z != 0.0f)
+	//{
+	//	float moveZ = std::abs(overlap.z) * std::copysign(1.0f, -overlap.z);
+	//	pos.z += moveZ;
+	//}
+
+	//// 3. 再度バウンディングボックスの重なりを計算し、重なりがなくなるまで1と2を繰り返す
+	//while (overlap.Length() > 0.01f)
+	//{
+	//	Vector3 move = Vector3::zero();
+	//	if (overlap.x != 0.0f)
+	//	{
+	//		float moveX = std::abs(overlap.x) * std::copysign(1.0f, -overlap.x);
+	//		move.x = std::clamp(moveX, -std::abs(overlap.x), std::abs(overlap.x));
+	//	}
+	//	if (overlap.y != 0.0f)
+	//	{
+	//		float moveY = std::abs(overlap.y) * std::copysign(1.0f, -overlap.y);
+	//		move.y = std::clamp(moveY, -std::abs(overlap.y), std::abs(overlap.y));
+	//	}
+	//	if (overlap.z != 0.0f)
+	//	{
+	//		float moveZ = std::abs(overlap.z) * std::copysign(1.0f, -overlap.z);
+	//		move.z = std::clamp(moveZ, -std::abs(overlap.z), std::abs(overlap.z));
+	//	}
+
+	//	pos += move;
+
+	//	// 3. 再度バウンディングボックスの重なりを計算し、重なりがなくなるまで2を繰り返す
+	//	overlap = CalculateOverlapV(pos, size, otherPos, otherSize);
+	//}
+	Transform()->SetPos(pos);
+
+#elif 4
 	const Vector3 size = Transform()->GetScale() * (m_vSize);
 	const Vector3 currentPos = Transform()->GetPos();
 	// 距離
@@ -458,10 +532,73 @@ bool CBoxCollision::IsCollidedWithBox(CSphereCollision* sphere)
 //==========================================================
 // 2つのボックスがめり込んでいる距離を計算する関数
 //==========================================================
+Vector3 CBoxCollision::CalculateOverlapV(
+	const Vector3& currentPos, const Vector3& otherPos,
+	const Vector3& size1, const Vector3& size2)
+{
+	Vector3 halfSize1 = size1 / 2.0f;
+	Vector3 halfSize2 = size2 / 2.0f;
+
+	Vector3 center1 = halfSize1 + currentPos;
+	Vector3 center2 = halfSize2 + otherPos;
+
+	Vector3 distance = center1 - center2;
+	Vector3 overlap = Vector3::zero();
+
+	// x軸方向の重なりを計算
+	float xOverlap = halfSize1.x + halfSize2.x - std::abs(distance.x);
+	if (xOverlap > 0.0f)
+	{
+		if (distance.x > 0.0f)
+		{
+			overlap.x = xOverlap;
+		}
+		else
+		{
+			overlap.x = -xOverlap;
+		}
+	}
+
+	// y軸方向の重なりを計算
+	float yOverlap = halfSize1.y + halfSize2.y - std::abs(distance.y);
+	if (yOverlap > 0.0f)
+	{
+		if (distance.y > 0.0f)
+		{
+			overlap.y = yOverlap;
+		}
+		else
+		{
+			overlap.y = -yOverlap;
+		}
+	}
+
+	// z軸方向の重なりを計算
+	float zOverlap = halfSize1.z + halfSize2.z - std::abs(distance.z);
+	if (zOverlap > 0.0f)
+	{
+		if (distance.z > 0.0f)
+		{
+			overlap.z = zOverlap;
+		}
+		else
+		{
+			overlap.z = -zOverlap;
+		}
+	}
+
+	return overlap;
+}
+
+//==========================================================
+// 2つのボックスがめり込んでいる距離を計算する関数
+//==========================================================
 float CBoxCollision::CalculateOverlap(
 	const Vector3& currentPos, const Vector3& otherPos, 
 	const Vector3& size1, const Vector3& size2)
 {
+
+#if 1
 	// 2つの矩形の中心間の距離を計算
 	Vector3 bPos = otherPos;
 	Vector3 centerOffset =  bPos - currentPos;
@@ -487,6 +624,7 @@ float CBoxCollision::CalculateOverlap(
 	}
 
 	return 0.0f;
+#endif // 1
 }
 
 //==========================================================
@@ -522,7 +660,7 @@ void CBoxCollision::ImGuiDebug()
 
 	Debug::SetTextAndAligned("box size");
 	// 3次元座標
-	if (ImGui::DragFloat3("##boxsize", (float*)&m_vSize))
+	if (ImGui::DragFloat3("##boxsize", (float*)&m_vSize, 0.1f))
 	{
 		m_pDebugBox->Init(m_vSize);
 	}
@@ -547,7 +685,7 @@ void CBoxCollision::Update()
 		// 平行移動マトリックス生成
 		Vector3 center = GetCenter();
 		// 0.001はZファイティング防止
-		auto renderSize = Transform()->GetScale() * (m_vSize / 2) * 1.001f;
+		auto renderSize = Transform()->GetScale() * (m_vSize) * 1.001f;
 		XMMATRIX mMove = XMMatrixTranslation(center.x, center.y, center.z);
 		Matrix4x4 mtx = Matrix4x4::CalcWorldMatrix(Transform()->GetPos(), Transform()->GetRot(), renderSize);
 		
@@ -562,7 +700,7 @@ void CBoxCollision::Update()
 	{
 		XMVECTOR vCenter = XMLoadFloat3(&GetCenter());
 		// 0.001はZファイティング防止
-		auto renderSize = Transform()->GetScale() * (m_vSize / 2) * 1.001f;
+		auto renderSize = Transform()->GetScale() * (m_vSize) * 1.001f;
 		Matrix4x4 mtx = Matrix4x4::CalcWorldMatrix(Transform()->GetPos(), Transform()->GetRot(), renderSize);
 		XMMATRIX mWorld = XMLoadFloat4x4(&mtx);
 

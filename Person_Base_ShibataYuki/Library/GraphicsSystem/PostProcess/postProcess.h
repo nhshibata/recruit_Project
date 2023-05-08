@@ -39,16 +39,23 @@ namespace MySpace
 			{
 			}
 
+		protected:
+			CRenderTarget m_pMainRT;		// 最終描画先
+
 		public:
+			CPostProcess();
+			virtual ~CPostProcess();
+
 			// *@スプライト描画
-			virtual void DrawSprite(CGBuffer* pGBuf) = 0;
+			virtual void DrawSprite(CGBuffer* pGBuf);
+			void DrawSprite(CGBuffer* pGBuf, std::string ps, std::string vs);
 
-			virtual ID3D11ShaderResourceView* GetResource() = 0;
+			_NODISCARD virtual ID3D11ShaderResourceView* GetResource();
 
-			std::string GetTypeName() { return typeid(*this).name(); }
+			_NODISCARD std::string GetTypeName() { return typeid(*this).name(); }
 
 #if BUILD_MODE
-			virtual void ImGuiDebug() {};
+			virtual void ImGuiDebug();
 #endif // BIULD_MODE
 
 		};

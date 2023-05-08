@@ -43,8 +43,7 @@ namespace MySpace
 			float m_fThreshold;				// しきい値
 			CGaussianBlur m_Gauss;			// ガウスブラー
 			CRenderTarget m_pLuminnceRT;	// 輝度抽出用
-			CRenderTarget m_pMainRT;		// 最終描画先
-
+		
 		public:
 			CBloom();
 			~CBloom();
@@ -52,8 +51,6 @@ namespace MySpace
 			static HRESULT InitShader();
 
 			void DrawSprite(CGBuffer* pGBuf);
-
-			_NODISCARD ID3D11ShaderResourceView* GetResource()override;
 
 			_NODISCARD const float GetPower()const { return m_fBlurPower; }
 			void SetPower(const float value) { m_fBlurPower = value; }

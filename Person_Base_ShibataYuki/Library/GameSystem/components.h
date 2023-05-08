@@ -21,6 +21,8 @@
 #include <GameSystem/Component/Camera/debugCamera.h>
 
 #include <GameSystem/Component/Light/light.h>
+#include <GameSystem/Component/Light/pointLight.h>
+#include <GameSystem/Component/Light/spotLight.h>
 #include <GameSystem/Component/Light/directionalLight.h>
 
 #include <GameSystem/Component/Renderer/renderer.h>

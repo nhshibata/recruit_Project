@@ -17,8 +17,10 @@ namespace MySpace
 {
 	namespace Graphics
 	{
+		
 		namespace Slot
 		{
+
 			enum EConstantBufSlot
 			{
 				// íËêîñºä»ó™ = ÉXÉçÉbÉgî‘çÜ
@@ -32,7 +34,7 @@ namespace MySpace
 				CB_RATE = 7,
 				CB_SCREEN_SIZE = 8,
 				CB_BLUR = 9,
-
+				CB_SPOT_LIGHTS = 10,
 				CB_MESH_MATERIAL = 11,
 			};
 
@@ -48,6 +50,7 @@ namespace MySpace
 				TS_NORMAL = 7,
 				TS_WORLD = 8,
 				TS_DEPTH = 9,
+				TS_LIGHT_MAP = 10,
 			};
 		}
 
@@ -83,6 +86,7 @@ namespace MySpace
 			static inline const LPCSTR szNegative =		"PS_Negative";
 			static inline const LPCSTR szOutline =		"PS_Outline";
 			static inline const LPCSTR szMonochrome =	"PS_Monochrome";
+			static inline const LPCSTR szDarkness =		"PS_Darkness";
 			static inline const LPCSTR szBlur =			"PS_Blur";
 		};
 
@@ -151,6 +155,31 @@ namespace MySpace
 			float mono;
 			float dummy;
 			float dummy_one;
+		};
+
+		struct STPointLight
+		{
+			float fRange;
+			DirectX::XMFLOAT3 vRange;
+			DirectX::XMFLOAT4 vColor;
+			STPointLight()
+				:fRange(1), vRange(1,1,1), vColor(0,0,0,0)
+			{
+
+			}
+			STPointLight(float range, DirectX::XMFLOAT4 color)
+				:fRange(range), vColor(color)
+			{
+			}
+		};
+
+		// b10
+		struct SHADER_POINT_LIGHT
+		{
+			static inline constexpr int MAX_LIGHT = 30;
+
+			STPointLight aLights[MAX_LIGHT];
+			UINT nLoopMax;
 		};
 
 	}

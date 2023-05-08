@@ -200,6 +200,7 @@ namespace MySpace
 			// *@ŠNavMesh‚Ìæ“¾
 			inline CNavMeshBake* GetNavMesh()const						{ return m_pNavMesh; };
 
+
 #ifdef BUILD_MODE
 		private:
 			char m_cDebugSceneName[256] = "none";

@@ -184,13 +184,17 @@ void CTextRenderer::ImGuiDebug()
 
 	Debug::SetTextAndAligned("String");
 	auto inputStr = MySpace::Debug::InputString(text, "##String");
+	if(inputStr != text)
 	{
 		m_Text = StringToWString(inputStr);
 	}
+
 	
 	Debug::SetTextAndAligned("Text offset");
 	ImGui::InputFloat("##Text offset", &m_fOffset);
-	ImGui::Checkbox("Vertical", &m_bVerticalWrit);
+	
+	Debug::SetTextAndAligned("Vertical");
+	ImGui::Checkbox("##Vertical", &m_bVerticalWrit);
 
 	CRenderer::ImGuiDebug();
 }

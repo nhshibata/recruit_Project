@@ -18,6 +18,7 @@
 #include <GraphicsSystem/PostProcess/negative.h>
 #include <GraphicsSystem/PostProcess/monochrome.h>
 #include <GraphicsSystem/PostProcess/outline.h>
+#include <GraphicsSystem/PostProcess/darkness.h>
 
 namespace MySpace
 {
