@@ -1,7 +1,7 @@
 //==========================================================
-// [outline.cpp]
+// [darkness.cpp]
 //---------------------------------------------------------
-// 作成:2023/03/07
+// 作成:2023/04/09
 //---------------------------------------------------------
 //==========================================================
 
@@ -9,7 +9,7 @@
 #include <Application/Application.h>
 #include <Application/screen.h>
 
-#include <GraphicsSystem/PostProcess/monochrome.h>
+#include <GraphicsSystem/PostProcess/darkness.h>
 #include <GraphicsSystem/Manager/assetsManager.h>
 #include <GraphicsSystem/Manager/shaderManager.h>
 #include <GraphicsSystem/Manager/imageResourceManager.h>
@@ -22,7 +22,7 @@ using namespace MySpace::Graphics;
 //=========================================================
 // コンストラクタ
 //=========================================================
-CMonochrome::CMonochrome()
+CDarkness::CDarkness()
 {
 	auto screenSize = CScreen::GetSize();
 	m_pMainRT.Create(DXGI_FORMAT::DXGI_FORMAT_R8G8B8A8_UNORM, (UINT)screenSize.x, (UINT)screenSize.y);
@@ -32,7 +32,7 @@ CMonochrome::CMonochrome()
 //=========================================================
 // デストラクタ
 //=========================================================
-CMonochrome::~CMonochrome()
+CDarkness::~CDarkness()
 {
 
 }
@@ -40,23 +40,17 @@ CMonochrome::~CMonochrome()
 //=========================================================
 // 静的関数
 //=========================================================
-HRESULT CMonochrome::InitShader()
+HRESULT CDarkness::InitShader()
 {
 	HRESULT hr = S_OK;
 	{
 		auto pSM = Application::Get()->GetSystem<CAssetsManager>()->GetShaderManager();
 		PixelShaderSharedPtr ps = std::make_shared<CPixelShader>();
-		hr = ps->Make(CPixelName::GetCSO(CPixelName::szMonochrome));
+		hr = ps->Make(CPixelName::GetCSO(CPixelName::szDarkness));
 		if (FAILED(hr))
 			return hr;
 		else
-			pSM->SetPS(CPixelName::szMonochrome, ps);
-	}
-
-	// ﾃｸｽﾁｬ読み込み
-	{
-		auto imgMgr = Application::Get()->GetSystem<CAssetsManager>()->GetImageManager();
-		m_pToon = imgMgr->GetResource(FORDER_DIR(Data/Texture/ramp.png));
+			pSM->SetPS(CPixelName::szDarkness, ps);
 	}
 
 	return hr;
@@ -65,25 +59,22 @@ HRESULT CMonochrome::InitShader()
 //=========================================================
 // 描画
 //=========================================================
-void CMonochrome::DrawSprite(CGBuffer* pGBuf)
+void CDarkness::DrawSprite(CGBuffer* pGBuf)
 {
-	auto pDX = Application::Get()->GetSystem<CDXDevice>();
-
 	// テクスチャ設定
 	pGBuf->SetSRV(CGBuffer::ETexture::COLOR);
 	pGBuf->SetSRV(CGBuffer::ETexture::NORMAL);
-	auto pTex = m_pToon->GetSRV();
-	pDX->GetDeviceContext()->PSSetShaderResources(5, 1, &pTex);
+	
 	//CPolygon::Draw(pDX->GetDeviceContext(), CPixelName::szMonochrome, CVertexName::sz2D);
 
-	CPostProcess::DrawSprite(pGBuf, CPixelName::szMonochrome, CVertexName::sz2D);
+	CPostProcess::DrawSprite(pGBuf, CPixelName::szDarkness, CVertexName::sz2D);
 
 }
 
 
 #if BUILD_MODE
 
-void CMonochrome::ImGuiDebug()
+void CDarkness::ImGuiDebug()
 {
 
 }

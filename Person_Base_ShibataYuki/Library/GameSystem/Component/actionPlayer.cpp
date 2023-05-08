@@ -94,30 +94,26 @@ void CActionPlayer::Update()
 	auto pos = Transform()->GetPos();
 	Vector3 move;
 
+	// “ü—Í‚É‚æ‚Á‚Äis•ûŒüˆÚ“®
 	if (CInput::GetKeyPress(VK_W))
 	{
 		move = Transform()->forward() * m_fSpeed;
-		pos.x += move.x;
-		pos.z += move.z;
 	}
 	if (CInput::GetKeyPress(VK_S))
 	{
 		move = -Transform()->forward() * m_fSpeed;
-		pos.x += move.x;
-		pos.z += move.z;
 	}
 	if (CInput::GetKeyPress(VK_A))
 	{
 		move = -Transform()->up() * m_fSpeed;
-		pos.x += move.x;
-		pos.z += move.z;
 	}
 	if (CInput::GetKeyPress(VK_D))
 	{
 		move = Transform()->up() * m_fSpeed;
-		pos.x += move.x;
-		pos.z += move.z;
 	}
+
+	// —Í‚ð‰Á‚¦‚é
+	m_rb->AddForce(move);
 
 	if (m_bLand)
 	{
@@ -135,7 +131,6 @@ void CActionPlayer::Update()
 		}
 	}
 	
-	Transform()->SetPos(pos);
 }
 
 //========================================================

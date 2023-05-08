@@ -12,6 +12,7 @@
 #include <GameSystem/components.h>
 #include <GameSystem/Manager/collisionSystem.h>
 #include <GameSystem/Manager/drawSystem.h>
+#include <GameSystem/Manager/lightManager.h>
 #include <AISystem/Nav/navMeshBake.h>
 
 #include <DebugSystem/imguiManager.h>
@@ -54,6 +55,7 @@ HRESULT CSceneManager::Init()
 	// NavMesh
 	m_pNavMesh->Init();
 
+	// 描画システムの初期化
 	m_pDrawSystem->Init();
 
 	// パス設定

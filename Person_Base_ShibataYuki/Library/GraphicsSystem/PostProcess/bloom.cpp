@@ -137,14 +137,6 @@ void CBloom::DrawSprite(CGBuffer* pGBuf)
 
 }
 
-//=========================================================
-// ƒŒƒ“ƒ_[Ã¸½Á¬‚Ìæ“¾
-//=========================================================
-ID3D11ShaderResourceView* CBloom::GetResource()
-{
-	return m_pMainRT.GetSRV();
-}
-
 
 #if BUILD_MODE
 

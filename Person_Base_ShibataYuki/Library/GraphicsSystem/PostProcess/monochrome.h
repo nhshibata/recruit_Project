@@ -34,7 +34,6 @@ namespace MySpace
 			}
 #pragma endregion
 		private:
-			CRenderTarget m_pMainRT;		// ç≈èIï`âÊêÊ
 			static inline ImageSharedPtr m_pToon;
 
 		public:
@@ -44,8 +43,6 @@ namespace MySpace
 			static HRESULT InitShader();
 
 			void DrawSprite(CGBuffer* pGBuf);
-
-			ID3D11ShaderResourceView* GetResource()override;
 
 #if BUILD_MODE
 			void ImGuiDebug();

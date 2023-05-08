@@ -32,6 +32,7 @@
     <ClInclude Include="..\Library\GraphicsSystem\Manager\resourceMap.h" />
     <ClInclude Include="..\Library\GraphicsSystem\Manager\shaderManager.h" />
     <ClInclude Include="..\Library\GraphicsSystem\PostProcess\bloom.h" />
+    <ClInclude Include="..\Library\GraphicsSystem\PostProcess\darkness.h" />
     <ClInclude Include="..\Library\GraphicsSystem\PostProcess\depthOfField.h" />
     <ClInclude Include="..\Library\GraphicsSystem\PostProcess\gaussianBlur.h" />
     <ClInclude Include="..\Library\GraphicsSystem\PostProcess\monochrome.h" />
@@ -76,11 +77,13 @@
     <ClCompile Include="..\Library\GraphicsSystem\Manager\modelManager.cpp" />
     <ClCompile Include="..\Library\GraphicsSystem\Manager\shaderManager.cpp" />
     <ClCompile Include="..\Library\GraphicsSystem\PostProcess\bloom.cpp" />
+    <ClCompile Include="..\Library\GraphicsSystem\PostProcess\darkness.cpp" />
     <ClCompile Include="..\Library\GraphicsSystem\PostProcess\depthOfField.cpp" />
     <ClCompile Include="..\Library\GraphicsSystem\PostProcess\gaussianBlur.cpp" />
     <ClCompile Include="..\Library\GraphicsSystem\PostProcess\monochrome.cpp" />
     <ClCompile Include="..\Library\GraphicsSystem\PostProcess\negative.cpp" />
     <ClCompile Include="..\Library\GraphicsSystem\PostProcess\outline.cpp" />
+    <ClCompile Include="..\Library\GraphicsSystem\PostProcess\postProcess.cpp" />
     <ClCompile Include="..\Library\GraphicsSystem\Render\AssimpModel.cpp" />
     <ClCompile Include="..\Library\GraphicsSystem\Render\billboard.cpp" />
     <ClCompile Include="..\Library\GraphicsSystem\Render\box.cpp" />
@@ -180,6 +183,16 @@
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Pixel</ShaderType>
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Pixel</ShaderType>
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Pixel</ShaderType>
+      <ObjectFileOutput Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">$(SolutionDir)Data\shader\%(Filename).cso</ObjectFileOutput>
+      <ObjectFileOutput Condition="'$(Configuration)|$(Platform)'=='Release|x64'">$(SolutionDir)Data\shader\%(Filename).cso</ObjectFileOutput>
+    </FxCompile>
+    <FxCompile Include="..\Library\hlsl\PS_Darkness.hlsl">
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Pixel</ShaderType>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Pixel</ShaderType>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Pixel</ShaderType>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Pixel</ShaderType>
+      <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">5.0</ShaderModel>
+      <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Release|x64'">5.0</ShaderModel>
       <ObjectFileOutput Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">$(SolutionDir)Data\shader\%(Filename).cso</ObjectFileOutput>
       <ObjectFileOutput Condition="'$(Configuration)|$(Platform)'=='Release|x64'">$(SolutionDir)Data\shader\%(Filename).cso</ObjectFileOutput>
     </FxCompile>

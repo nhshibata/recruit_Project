@@ -17,8 +17,9 @@
 #include <GraphicsSystem/PostProcess/gaussianBlur.h>
 #include <GraphicsSystem/PostProcess/bloom.h>
 #include <GraphicsSystem/PostProcess/negative.h>
-#include <GraphicsSystem/PostProcess/monochrome.h>
 #include <GraphicsSystem/PostProcess/outline.h>
+#include <GraphicsSystem/PostProcess/monochrome.h>
+#include <GraphicsSystem/PostProcess/darkness.h>
 
 #include <GameSystem/Component/Camera/camera.h>
 #include <GameSystem/Component/Light/directionalLight.h>
@@ -193,6 +194,9 @@ HRESULT CShaderManager::Init()
 	if (FAILED(hr))
 		return hr;
 	hr = COutline::InitShader();
+	if (FAILED(hr))
+		return hr;
+	hr = CDarkness::InitShader();
 	if (FAILED(hr))
 		return hr;
 

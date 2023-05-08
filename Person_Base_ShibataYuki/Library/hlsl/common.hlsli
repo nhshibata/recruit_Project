@@ -11,6 +11,7 @@
 #define MAX_BONE_MATRIX	    64
 #define MAX_WORLD_MATRIX    400
 #define IF_SUB(x,y,z)       (x + ((x * y - x) * z))
+#define MAX_LIGHT      30
 
 //--- 構造体定義
 // 行列
@@ -27,6 +28,14 @@ struct MaterialData
     float4 fSpecular;   // 鏡面反射色+強度
     float4 fEmissive;   // 発光色
     float4 fFlags;      // 拡散色テクスチャ有無, 発光色テクスチャ有無, 透過テクスチャ有無
+};
+
+// ポイントライト
+struct Light
+{    
+    float Range;
+    float3 Dummy;
+    float4 Color;
 };
 
 //==========================================================
@@ -120,6 +129,12 @@ cbuffer ScreenSize : register(b8)
 cbuffer Blur : register(b9)
 {
     float4 g_weight[2]; // 重み
+}
+
+cbuffer Lights : register(b10)
+{
+    Light g_lights[MAX_LIGHT];
+    uint g_lightMax;
 }
 
 //==========================================================

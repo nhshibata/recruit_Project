@@ -171,6 +171,9 @@
     <ClInclude Include="..\Library\GraphicsSystem\DirectX\depthShadow.h">
       <Filter>ヘッダー ファイル\DirectX</Filter>
     </ClInclude>
+    <ClInclude Include="..\Library\GraphicsSystem\PostProcess\darkness.h">
+      <Filter>ヘッダー ファイル\PostProcess</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\Library\GraphicsSystem\Texture\Texture.cpp">
@@ -275,6 +278,12 @@
     <ClCompile Include="..\Library\GraphicsSystem\DirectX\depthShadow.cpp">
       <Filter>ソース ファイル\DirectX</Filter>
     </ClCompile>
+    <ClCompile Include="..\Library\GraphicsSystem\PostProcess\postProcess.cpp">
+      <Filter>ソース ファイル\PostProcess</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Library\GraphicsSystem\PostProcess\darkness.cpp">
+      <Filter>ソース ファイル\PostProcess</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <FxCompile Include="..\Library\hlsl\Vertex.hlsl">
@@ -371,6 +380,9 @@
       <Filter>リソース ファイル</Filter>
     </FxCompile>
     <FxCompile Include="..\Library\hlsl\VS_DepthOfField.hlsl">
+      <Filter>リソース ファイル</Filter>
+    </FxCompile>
+    <FxCompile Include="..\Library\hlsl\PS_Darkness.hlsl">
       <Filter>リソース ファイル</Filter>
     </FxCompile>
   </ItemGroup>

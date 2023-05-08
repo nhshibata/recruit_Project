@@ -5,11 +5,14 @@
 //=========================================================
 
 //--- インクルード部
+#include <Application/Application.h>
 #include <GameSystem/Component/Light/light.h>
 #include <GameSystem/Component/Light/directionalLight.h>
 #include <GameSystem/GameObject/gameObject.h>
 #include <GameSystem/Manager/sceneManager.h>
 
+#include <GameSystem/Manager/sceneManager.h>
+#include <GameSystem/Manager/lightManager.h>
 #include <DebugSystem/imGuiPackage.h>
 
 using namespace MySpace::Game;
@@ -18,14 +21,19 @@ using namespace MySpace::Game;
 // コンストラクタ
 //==========================================================
 CLight::CLight()
+	:m_nSystemIdx(-1)
 {
+	// システムへの登録
+	// ロード用
+	if(m_nSystemIdx == -1)
+		m_nSystemIdx = CLightManager::Get()->RegistToSystem(BaseToDerived<CLight>());
 }
 
 //==========================================================
 // 引き数付きコンストラクタ
 //==========================================================
 CLight::CLight(std::shared_ptr<CGameObject> owner)
-	:CComponent(owner), m_bEnable(true)
+	:CComponent(owner), m_bEnable(true), m_nSystemIdx(-1)
 {
 	GetOwner()->GetTagPtr()->CreateTag("light");
 	GetOwner()->SetObjTag("light");
@@ -41,6 +49,9 @@ CLight::~CLight()
 	{
 		m_pMainLight = nullptr;
 	}
+
+	if(m_nSystemIdx != -1)
+		CLightManager::Get()->ExecutSystem(m_nSystemIdx);
 }
 
 //==========================================================
@@ -63,6 +74,10 @@ void CLight::Awake()
 	GetOwner()->SetObjTag("light");
 	Set(this);
 	m_bEnable = true;
+
+	if (m_nSystemIdx == -1)
+		m_nSystemIdx = CLightManager::Get()->RegistToSystem(BaseToDerived<CLight>());
+
 }
 
 //==========================================================

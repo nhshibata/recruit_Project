@@ -19,6 +19,7 @@
 #include <GameSystem/Component/Light/directionalLight.h>
 #include <GameSystem/Component/Renderer/polygonRenderer.h>
 #include <GameSystem/Component/Renderer/meshRenderer.h>
+#include <GameSystem/Manager/lightManager.h>
 
 #include <GraphicsSystem/Render/polygon.h>
 #include <GraphicsSystem/Render/billboard.h>
@@ -49,6 +50,16 @@ CDrawSystem::CDrawSystem()
 CDrawSystem::~CDrawSystem()
 {
 	
+}
+
+//==========================================================
+// 更新
+//==========================================================
+void CDrawSystem::Init()
+{
+	CDrawSystemBase::Init();
+
+	CLightManager::Get()->InitShader();
 }
 
 //==========================================================
@@ -179,8 +190,8 @@ void CDrawSystem::GBufferDraw(const bool bGbuffer, std::function<bool(int)> func
 					continue;
 			}
 			CMeshRenderer* mesh = dynamic_cast<CMeshRenderer*>(m_aIntMap[id].lock().get());
-			data.push_back(mesh->GetShaderData());
-		}
+			data.push_back(mesh->GetShaderData());			
+		}		
 
 		model->DrawInstancing(pDX->GetDeviceContext(), data, EByOpacity::eOpacityOnly, false);
 
@@ -263,8 +274,8 @@ void CDrawSystem::GBufferDraw(const bool bGbuffer, std::function<bool(int)> func
 					continue;
 			}
 			CMeshRenderer* mesh = dynamic_cast<CMeshRenderer*>(m_aIntMap[id].lock().get());
-			data.push_back(mesh->GetShaderData());
-		}
+			data.push_back(mesh->GetShaderData());			
+		}		
 
 		// ビルボードか確認
 		if (CBillboard* bill = dynamic_cast<CBillboard*>(instancingMesh.second.pMesh); bill != nullptr)
@@ -369,6 +380,10 @@ void CDrawSystem::Draw3D()
 		pCamera->GetGBuffer()->SetUpMultiRenderTarget();
 		// 3D描画
 		GBufferDraw(true, layerChaeck);
+
+		//--- ライトの定数バッファ設定
+		CLightManager::Get()->BeginRender(pCamera->GetGBuffer());
+		CLightManager::Get()->SetUpTexture();
 
 		// Sceneに描画先を変更
 		pDX->SwitchRender(pDX->GetRenderTargetView(), pDX->GetDepthStencilView());

@@ -37,7 +37,7 @@ namespace MySpace
 			}
 		private:
 			bool m_bEnable;			// ライティング有効/無効
-
+			int m_nSystemIdx;
 			static inline CLight* m_pMainLight = nullptr;
 
 		public:

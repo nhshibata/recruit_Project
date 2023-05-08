@@ -128,14 +128,6 @@ void CDepthOfField::DrawSprite(CGBuffer* pGBuf)
 
 }
 
-//=========================================================
-// ƒŒƒ“ƒ_[Ã¸½Á¬‚Ìæ“¾
-//=========================================================
-ID3D11ShaderResourceView* CDepthOfField::GetResource()
-{
-	return m_pMainRT.GetSRV();
-}
-
 
 #if BUILD_MODE
 

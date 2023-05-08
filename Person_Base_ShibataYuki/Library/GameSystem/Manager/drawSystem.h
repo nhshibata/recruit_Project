@@ -61,6 +61,7 @@ namespace MySpace
 			CDrawSystem();
 			~CDrawSystem();
 
+			void Init()override;
 			void Update();
 
 			// *@VolumeŠÇ—ƒNƒ‰ƒX‚Ìæ“¾

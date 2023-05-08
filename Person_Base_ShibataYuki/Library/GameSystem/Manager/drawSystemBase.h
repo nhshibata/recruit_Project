@@ -141,7 +141,7 @@ namespace MySpace
 			CDrawSystemBase();
 			virtual ~CDrawSystemBase();
 
-			void Init();
+			virtual void Init();
 			virtual void Update();
 
 			// *@“o˜^ override

@@ -73,6 +73,12 @@
     <Filter Include="ソース ファイル\Factory">
       <UniqueIdentifier>{fdf10f7a-9aa5-4dba-a958-280f48be2e8a}</UniqueIdentifier>
     </Filter>
+    <Filter Include="ヘッダー ファイル\Component\DarkGame">
+      <UniqueIdentifier>{b3df4aa5-e04a-4c76-862b-fe26f974620e}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ソース ファイル\Component\DarkGame">
+      <UniqueIdentifier>{a4d89087-2f17-4eb6-a09e-53a57cc0a224}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\Library\GameSystem\components.h">
@@ -216,6 +222,15 @@
     <ClInclude Include="..\Library\GameSystem\Component\actionPlayer.h">
       <Filter>ヘッダー ファイル\Component</Filter>
     </ClInclude>
+    <ClInclude Include="..\Library\GameSystem\Component\Light\spotLight.h">
+      <Filter>ヘッダー ファイル\Component\Light</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Library\GameSystem\Manager\lightManager.h">
+      <Filter>ヘッダー ファイル\Manager</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Library\GameSystem\Component\Light\pointLight.h">
+      <Filter>ヘッダー ファイル\Component\Light</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\Library\GameSystem\components.cpp">
@@ -343,6 +358,15 @@
     </ClCompile>
     <ClCompile Include="..\Library\GameSystem\Component\actionPlayer.cpp">
       <Filter>ソース ファイル\Component</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Library\GameSystem\Component\Light\spotLight.cpp">
+      <Filter>ソース ファイル\Component\Light</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Library\GameSystem\Manager\lightManager.cpp">
+      <Filter>ソース ファイル\Manager</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Library\GameSystem\Component\Light\pointLight.cpp">
+      <Filter>ソース ファイル\Component\Light</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>
