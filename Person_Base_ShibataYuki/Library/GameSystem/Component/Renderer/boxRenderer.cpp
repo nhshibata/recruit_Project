@@ -49,6 +49,16 @@ void CBoxRenderer::OnLoad()
 //==========================================================
 void CBoxRenderer::Awake()
 {
+	if (m_pBBox)
+	{
+		auto mW = m_pBBox->GetWorld();
+		Vector3 scale = Vector3(
+			sqrtf(mW.m[0][0] + mW.m[1][0] + mW.m[2][0]),
+			sqrtf(mW.m[0][1] + mW.m[1][1] + mW.m[2][1]),
+			sqrtf(mW.m[0][2] + mW.m[1][2] + mW.m[2][2])
+		);
+		SetBSRadius(scale.GetLargeValue() * m_vSize.GetLargeValue());
+	}
 }
 
 //==========================================================
@@ -119,7 +129,7 @@ HRESULT CBoxRenderer::SetBox(Vector3 vBBox)
 
 	if(!m_pBBox)
 		m_pBBox = std::make_shared<CBox>();
-	
+
 	m_vSize = vBBox;
 	hr = m_pBBox->Init(vBBox);
 	if (FAILED(hr))
@@ -137,10 +147,10 @@ void CBoxRenderer::ImGuiDebug()
 {
 	//ImGui::Button(u8"SphereRenderer")
 
-	m_vSize = Transform()->GetScale();
+	//m_vSize = Transform()->GetScale();
 
 	Debug::SetTextAndAligned("Renderer BoxSize");
-	if (ImGui::DragFloat3("##BoxSize renderer", (float*)&m_vSize))
+	if (ImGui::DragFloat3("##BoxSize renderer", (float*)&m_vSize, 0.1f))
 	{
 		SetBox(m_vSize);
 		//Transform()->SetScale(m_vSize);

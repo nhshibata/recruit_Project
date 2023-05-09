@@ -207,8 +207,8 @@ public:
 	CAssimpMesh(ID3D11Device* pDevice, CAssimpModel* pModel, std::vector<TAssimpVertex> aVertex, std::vector<UINT> aIndex, TAssimpMaterial& material);
 	virtual ~CAssimpMesh();
 
-	void Draw(ID3D11DeviceContext* pDC, DirectX::XMFLOAT4X4& mtxWorld, EByOpacity byOpacity = eNoAffect);
-	void DrawInstancing(ID3D11DeviceContext* pDC, DirectX::XMFLOAT4X4& mtxWorld, 
+	void Draw(ID3D11DeviceContext* pDC, const DirectX::XMFLOAT4X4& mtxWorld, EByOpacity byOpacity = eNoAffect);
+	void DrawInstancing(ID3D11DeviceContext* pDC, const DirectX::XMFLOAT4X4& mtxWorld, 
 						UINT instanceNum, EByOpacity byOpacity = eNoAffect);
 	void Release();
 
@@ -269,7 +269,7 @@ public:
 	void SetTextureMatrix(DirectX::XMFLOAT4X4& mtxTexture);
 	bool Load(ID3D11Device* pDevice, ID3D11DeviceContext* pDC, std::string filename);
 	void Draw(ID3D11DeviceContext* pDC, DirectX::XMFLOAT4X4& mtxWorld, EByOpacity byOpacity = eNoAffect);
-	void DrawInstancing(ID3D11DeviceContext* pDC, std::vector<MySpace::Graphics::RENDER_DATA>& mtxWorld,
+	void DrawInstancing(ID3D11DeviceContext* pDC, const std::vector<MySpace::Graphics::RENDER_DATA>& mtxWorld,
 						EByOpacity byOpacity = eNoAffect, bool defaultShader = true);
 	void DrawNode(ID3D11DeviceContext* pDC, aiNode* piNode, const aiMatrix4x4& piMatrix, EByOpacity byOpacity);
 	void DrawInstancingNode(ID3D11DeviceContext* pDC, aiNode* piNode, const aiMatrix4x4& piMatrix, 
