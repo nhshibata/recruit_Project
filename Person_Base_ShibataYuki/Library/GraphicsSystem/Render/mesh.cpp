@@ -353,7 +353,7 @@ void CMesh::Draw(ID3D11ShaderResourceView* pTexture, XMFLOAT4X4* mWorld)
 // 描画インスタンシング
 //==========================================================
 void CMesh::DrawInstancing(
-	std::vector<RENDER_DATA> aData, bool defaultShader,
+	const std::vector<RENDER_DATA>& aData, const bool& defaultShader,
 	ID3D11ShaderResourceView* pTexture, XMFLOAT4X4* mWorld)
 {
 	if (defaultShader)
@@ -380,8 +380,8 @@ void CMesh::DrawInstancing(
 // mesh使いまわし
 //==========================================================
 void CMesh::DrawInstancing(
-	std::vector<DirectX::XMFLOAT4X4> aData, D3D11_PRIMITIVE_TOPOLOGY eTopology,
-	bool defaultShader,
+	const std::vector<DirectX::XMFLOAT4X4>& aData, D3D11_PRIMITIVE_TOPOLOGY eTopology,
+	const bool& defaultShader,
 	ID3D11ShaderResourceView* pTexture, XMFLOAT4X4* mWorld)
 {
 	if (defaultShader)
@@ -413,7 +413,7 @@ void CMesh::DrawInstancing(
 // Renrerまとめ
 //==========================================================
 void CMesh::DrawInstancing(
-	std::vector<RENDER_DATA> aData, D3D11_PRIMITIVE_TOPOLOGY eTopology,
+	const std::vector<RENDER_DATA>& aData, D3D11_PRIMITIVE_TOPOLOGY eTopology,
 	ID3D11Buffer* vertexB, ID3D11Buffer* indexB,
 	ID3D11ShaderResourceView* pTexture, XMFLOAT4X4* mWorld)
 {
@@ -433,6 +433,7 @@ void CMesh::DrawInstancing(
 
 	if (pTexture)
 		pDeviceContext->PSSetShaderResources(0, 1, &pTexture);
+
 	//--- b0
 	SHADER_GLOBAL_WVP cb;
 	CCamera* pCamera = CCamera::GetMain();

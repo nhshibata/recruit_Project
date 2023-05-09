@@ -142,18 +142,18 @@ namespace MySpace
 			
 			// *@インスタンシング描画
 			// *@第二引数falseでdefaultShader off
-			void DrawInstancing(std::vector<RENDER_DATA> aMesh, bool defaultShader = true,
-								ID3D11ShaderResourceView* m_pTexture = nullptr,XMFLOAT4X4* mWorld = nullptr);
+			void DrawInstancing(const std::vector<RENDER_DATA>& aMesh, const bool& defaultShader = true,
+								ID3D11ShaderResourceView* m_pTexture = nullptr, XMFLOAT4X4* mWorld = nullptr);
 			
 			// *@インスタンシング描画
 			// *@第二引数falseでdefaultShader off
-			void DrawInstancing(std::vector<DirectX::XMFLOAT4X4> aMesh, 
-								D3D11_PRIMITIVE_TOPOLOGY topology=D3D11_PRIMITIVE_TOPOLOGY::D3D11_PRIMITIVE_TOPOLOGY_TRIANGLESTRIP,
-								bool defaultShader = true,
+			void DrawInstancing(const std::vector<DirectX::XMFLOAT4X4>& aMesh, 
+								D3D11_PRIMITIVE_TOPOLOGY topology = D3D11_PRIMITIVE_TOPOLOGY::D3D11_PRIMITIVE_TOPOLOGY_TRIANGLESTRIP,
+								const bool& defaultShader = true,
 								ID3D11ShaderResourceView* m_pTexture = nullptr,XMFLOAT4X4* mWorld = nullptr);
 			
 			// *@インスタンシング描画
-			void DrawInstancing(std::vector<RENDER_DATA> aData, D3D11_PRIMITIVE_TOPOLOGY eTopology,
+			void DrawInstancing(const std::vector<RENDER_DATA>& aData, D3D11_PRIMITIVE_TOPOLOGY eTopology,
 								ID3D11Buffer* vertexS, ID3D11Buffer* indexS,
 								ID3D11ShaderResourceView* m_pTexture = nullptr, XMFLOAT4X4* mWorld = nullptr);
 			

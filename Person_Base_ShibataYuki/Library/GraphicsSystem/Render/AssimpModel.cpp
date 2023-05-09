@@ -473,7 +473,7 @@ void CAssimpMesh::SetBoneMatrix(ID3D11DeviceContext* pDC, XMFLOAT4X4 mtxBone[])
 }
 
 // 描画
-void CAssimpMesh::Draw(ID3D11DeviceContext* pDC, XMFLOAT4X4& m44World, EByOpacity byOpacity)
+void CAssimpMesh::Draw(ID3D11DeviceContext* pDC, const XMFLOAT4X4& m44World, EByOpacity byOpacity)
 {
 	// ユーザ定義マテリアル
 	TAssimpMaterial* pMaterial = m_pModel->GetMaterial();
@@ -600,7 +600,7 @@ void CAssimpMesh::Draw(ID3D11DeviceContext* pDC, XMFLOAT4X4& m44World, EByOpacit
 
 }
 // 描画
-void CAssimpMesh::DrawInstancing(ID3D11DeviceContext* pDC, XMFLOAT4X4& m44World, UINT instanceNum, EByOpacity byOpacity)
+void CAssimpMesh::DrawInstancing(ID3D11DeviceContext* pDC, const XMFLOAT4X4& m44World, UINT instanceNum, EByOpacity byOpacity)
 {
 	// ユーザ定義マテリアル
 	TAssimpMaterial* pMaterial = m_pModel->GetMaterial();
@@ -942,7 +942,7 @@ void CAssimpModel::Draw(ID3D11DeviceContext* pDC, XMFLOAT4X4& mtxWorld, EByOpaci
 	DrawNode(pDC, m_pScene->mRootNode, *piMatrix, byOpacity);
 }
 
-void CAssimpModel::DrawInstancing(ID3D11DeviceContext* pDC, std::vector<RENDER_DATA>& aData,
+void CAssimpModel::DrawInstancing(ID3D11DeviceContext* pDC, const std::vector<RENDER_DATA>& aData,
 								  EByOpacity byOpacity, bool defaultShader)
 {
 	if (!m_pScene) return;

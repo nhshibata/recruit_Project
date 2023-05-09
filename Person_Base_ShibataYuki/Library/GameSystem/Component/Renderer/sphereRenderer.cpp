@@ -49,7 +49,16 @@ void CSphereRenderer::OnLoad()
 void CSphereRenderer::Awake()
 {	
 	if (!m_pBSphere)
+	{
 		SetSphere(m_fRadius);
+		auto mW = m_pBSphere->GetWorld();
+		Vector3 scale = Vector3(
+			sqrtf(mW.m[0][0] + mW.m[1][0] + mW.m[2][0]),
+			sqrtf(mW.m[0][1] + mW.m[1][1] + mW.m[2][1]),
+			sqrtf(mW.m[0][2] + mW.m[1][2] + mW.m[2][2])
+		);
+		SetBSRadius(scale.GetLargeValue() * m_fRadius);
+	}
 }
 
 //=========================================================

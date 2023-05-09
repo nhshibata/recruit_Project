@@ -57,6 +57,7 @@ void CMeshRenderer::Init()
 {
 	// •`‰æ“o˜^
 	CRenderer::Init();
+
 }
 
 //==========================================================
@@ -101,7 +102,7 @@ void CMeshRenderer::SetInstancing(CMesh* mesh, std::string name)
 			std::string(std::to_string(mesh->GetIndexNum()) + std::to_string(mesh->GetMaterial()->GetFloat())),
 			m_strPixelShader, m_strVertexShader, m_nDrawIdx, mesh);
 	}
-
+	
 }
 
 //=========================================================

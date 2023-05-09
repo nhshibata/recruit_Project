@@ -93,6 +93,8 @@ namespace MySpace
 			void CreateObjectsWindow();
 			std::shared_ptr<MySpace::Game::CGameObject> CreateObject(const int No, std::shared_ptr<MySpace::Game::CGameObject> = std::shared_ptr<MySpace::Game::CGameObject>());
 
+			// *@クリックでオブジェクトを選択
+			void ClickSelect(MySpace::Debug::ImGuiManager* manager);
 
 		public:
 			CHierachy();
@@ -100,7 +102,7 @@ namespace MySpace
 
 			void Update(MySpace::Debug::ImGuiManager* mgr);
 
-			void SetPath(std::string name) { m_strSavePath = name; };
+			void SetPath(const std::string name) { m_strSavePath = name; };
 
 			// *sceneファイルの再取得
 			void LoadScenePathList();

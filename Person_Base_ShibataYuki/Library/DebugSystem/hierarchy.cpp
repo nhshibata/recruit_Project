@@ -30,8 +30,13 @@
 #include <GameSystem/Component/Renderer/modelRenderer.h>
 #include <GameSystem/Manager/sceneManager.h>
 #include <GameSystem/Manager/gameObjectManager.h>
+#include <GameSystem/Manager/drawSystem.h>
 
 #include <CoreSystem/File/filePath.h>
+#include <CoreSystem/Input/input.h>
+
+#include <Application/Application.h>
+#include <GraphicsSystem/DirectX/DXDevice.h>
 
 using namespace MySpace::System;
 using namespace MySpace::Debug;
@@ -200,6 +205,15 @@ void CHierachy::Update(ImGuiManager* manager)
 	//--- セーブロード
 	if (m_bLoadSaveWindow)
 		DispSaveLoadMenu();
+
+	//--- クリック
+	if(manager->GetHover() == ImGuiManager::EMouseHovered::HOVERED_NONE)
+	{
+		if (CInput::GetMouseTrigger(MOUSEBUTTON_L))
+		{
+			ClickSelect(manager);
+		}
+	}
 
 
 	ImGui::PopStyleColor();
@@ -546,6 +560,139 @@ CGameObject::Ptr CHierachy::CreateObject(const int No, std::shared_ptr<MySpace::
 	}
 
 	return obj;
+}
+
+// *@クリックでオブジェクトを選択
+void CHierachy::ClickSelect(MySpace::Debug::ImGuiManager* manager)
+{
+	// マウス座標
+	CCamera* pCam = CCamera::GetMain();
+	XMFLOAT3 E = pCam->Transform()->GetPos();
+	const auto& mousePos = Input::Mouse::GetPosition();
+
+#if 1
+	// マウスカーソルの位置をワールド座標に変換
+	const auto& g_vp = Application::Get()->GetSystem<CDXDevice>()->GetViewPort();
+	XMFLOAT3 mouseP;
+	XMStoreFloat3(&mouseP, XMVector3Unproject(XMVectorSet(mousePos.x, mousePos.y, 0.0f, 1.0f),
+										 g_vp->TopLeftX, g_vp->TopLeftY, g_vp->Width, g_vp->Height, g_vp->MinDepth, g_vp->MaxDepth,
+										 XMLoadFloat4x4(&pCam->GetProjMatrix()), XMLoadFloat4x4(&pCam->GetViewMatrix()),
+										 XMMatrixIdentity()));
+
+	// オブジェクトリストを取得
+	const auto& list = CSceneManager::Get()->GetDrawSystem()->GetList();
+
+	// 判定範囲を調整するためのスケール係数
+	const float scale = 100.0f * 0.5f;
+
+	// オブジェクトリストを走査して、マウスカーソルの位置にあるオブジェクトを検索する
+	int selectedIndex = -1;
+	float minDistance = std::numeric_limits<float>::max();
+	for (int i = 0; i < list.size(); ++i)
+	{
+		const auto& render = list[i].lock()->BaseToDerived<CMeshRenderer>();
+		if (!render) 
+			continue;
+
+		// オブジェクトの中心座標を取得
+		XMFLOAT3 centerPos = render->Transform()->GetPos();
+
+		// オブジェクトの拡大率を取得
+		XMFLOAT3 scaleVec = render->Transform()->GetScale();
+
+		// 判定半径を計算
+		float radius = std::max(std::max(scaleVec.x, scaleVec.y), scaleVec.z);
+		radius = render->GetBSRadius() * scale;
+
+		// マウスカーソルとオブジェクト中心点との距離を計算
+		float distance = sqrtf(powf(centerPos.x - mouseP.x, 2) + powf(centerPos.y - mouseP.y, 2) + powf(centerPos.z - mouseP.z, 2));
+
+		// 奥行きの値を計算
+		XMVECTOR depthVec = XMVector3Length(XMLoadFloat3(&centerPos) - XMLoadFloat3(&E));
+		float depth = XMVectorGetX(depthVec);
+
+		// 判定半径以下かつ、マウスカーソルとオブジェクト中心点との距離が最小値よりも小さい場合、このオブジェクトを選択する
+		if (distance <= radius && depth < minDistance)
+		{
+			if (render->GetOwner()->GetTag() == "MainCamera")
+				continue;
+
+			// Ｚチェック関係ワーク更新
+			selectedIndex = i;		// 選択中のオブジェクトインデックスを保存
+			minDistance = depth;    // 選択中のオブジェクトの奥行きを保存
+		}
+	}
+
+	// ヒットしていれば
+	if (selectedIndex != -1)
+	{
+		auto bj = list[selectedIndex].lock()->GetOwner(0);
+		manager->GetInspector()->SetSelectGameObject(bj);
+	}
+
+#elif 3
+
+	//const POINT& mousePos = *CInput::GetMousePosition();
+	const auto& mousePos = Input::Mouse::GetPosition();
+	const auto& g_vp = Application::Get()->GetSystem<CDXDevice>()->GetViewPort();
+	const auto& list = CSceneManager::Get()->GetDrawSystem()->GetList();
+	int Zidx = -1;
+	float HitZDepth = 9999.0f;
+
+	for (int cnt = 0; cnt < list.size(); cnt++)
+	{
+		const auto& render = list[cnt].lock();
+
+		const XMFLOAT4X4& worldMatrix = render->Transform()->GetWorldMatrix();
+
+		// オブジェクトの中心座標を取得
+		XMVECTOR centerPos = XMLoadFloat3(&render->Transform()->GetPos());
+
+		// オブジェクトの拡大率を取得
+		XMVECTOR scaleVec = XMLoadFloat3(&render->Transform()->GetScale());
+
+		// 当たり判定の基準点をオブジェクト中心座標からオブジェクトの拡大率に応じて移動させる
+		centerPos = XMVector3Transform(centerPos, XMLoadFloat4x4(&worldMatrix));
+
+		// マウスカーソルの位置をワールド座標に変換
+		XMFLOAT3 mouseP;
+		XMStoreFloat3(&mouseP, XMVector3Unproject(XMVectorSet(mousePos.x, mousePos.y, 0.0f, 1.0f),
+											 g_vp->TopLeftX, g_vp->TopLeftY, g_vp->Width, g_vp->Height, g_vp->MinDepth, g_vp->MaxDepth,
+											 XMLoadFloat4x4(&pCam->GetProjMatrix()), XMLoadFloat4x4(&pCam->GetViewMatrix()),
+											 XMMatrixIdentity()));
+
+		// 当たり判定領域の半径を計算
+		float radius = XMVectorGetX(XMVector3Length(scaleVec));
+
+		// 当たり判定
+		XMFLOAT3 center;
+		XMStoreFloat3(&center, centerPos);
+		float distance = sqrtf(powf(center.x - mouseP.x, 2) + powf(center.y - mouseP.y, 2) + powf(center.z - mouseP.z, 2));
+
+		// 奥行きの値を計算
+		XMVECTOR depthVec = XMVector3Length(centerPos - XMLoadFloat3(&E));
+		float depth = XMVectorGetX(depthVec);
+
+		if (distance <= radius && depth < HitZDepth)
+		{
+			if (render->GetOwner()->GetTag() == "MainCamera")
+				continue;
+
+			// あたり
+			// Ｚチェック関係ワーク更新
+			Zidx = cnt;				// 選択中のオブジェクトインデックスを保存
+			HitZDepth = depth;    // 選択中のオブジェクトの奥行きを保存
+		}
+	}
+
+	// ヒットしていれば
+	if (Zidx != -1)
+	{
+		auto bj = list[Zidx].lock()->GetOwner(0);
+		manager->GetInspector()->SetSelectGameObject(bj);
+	}
+#endif // 0
+
 }
 
 #endif // !BUILD_MODE

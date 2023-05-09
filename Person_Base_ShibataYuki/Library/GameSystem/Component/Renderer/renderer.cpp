@@ -135,7 +135,7 @@ void CRenderer::ImGuiDebug()
 	Debug::SetTextAndAligned("Render Visible");
 	ImGui::Checkbox("##render visible", &m_bVisible);
 	
-	Debug::SetTextAndAligned("Regist Namber");
+	Debug::SetTextAndAligned("Regist Number");
 	ImGui::Text("%d", m_nDrawIdx);
 
 }

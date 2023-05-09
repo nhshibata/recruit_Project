@@ -148,9 +148,7 @@ namespace MySpace
 			inline void DownHover(EMouseHovered hover)
 			{
 				if (m_eHover & hover)
-				{
 					m_eHover = static_cast<EMouseHovered>(m_eHover ^ hover);
-				}
 			}
 
 			// *@マウス状態取得用関数セット
@@ -168,7 +166,7 @@ namespace MySpace
 				m_aDebugMap.insert(MapStringPair(log, 0));
 			};
 
-			// ギズモ描画
+			// *@ギズモ描画
 			void SceneGizmo();
 
 		};
