@@ -64,8 +64,9 @@ namespace MySpace
 				STCreateWindowSet():bDisp(false),bCopy(true),fMargin(1),nGrid(3),nObjType(0) 
 				{}
 			};
-		private:
+		public:
 			static constexpr const char* DESC_SELECT_OBJ = u8"selectGameObjcet";	// *@ドラッグ＆ドロップ認識用文字列
+		private:
 
 			bool m_bLoadSaveWindow;
 			std::string m_strSavePath;

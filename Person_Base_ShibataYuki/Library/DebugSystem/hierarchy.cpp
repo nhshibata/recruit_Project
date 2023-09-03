@@ -632,65 +632,6 @@ void CHierachy::ClickSelect(MySpace::Debug::ImGuiManager* manager)
 
 #elif 3
 
-	//const POINT& mousePos = *CInput::GetMousePosition();
-	const auto& mousePos = Input::Mouse::GetPosition();
-	const auto& g_vp = Application::Get()->GetSystem<CDXDevice>()->GetViewPort();
-	const auto& list = CSceneManager::Get()->GetDrawSystem()->GetList();
-	int Zidx = -1;
-	float HitZDepth = 9999.0f;
-
-	for (int cnt = 0; cnt < list.size(); cnt++)
-	{
-		const auto& render = list[cnt].lock();
-
-		const XMFLOAT4X4& worldMatrix = render->Transform()->GetWorldMatrix();
-
-		// オブジェクトの中心座標を取得
-		XMVECTOR centerPos = XMLoadFloat3(&render->Transform()->GetPos());
-
-		// オブジェクトの拡大率を取得
-		XMVECTOR scaleVec = XMLoadFloat3(&render->Transform()->GetScale());
-
-		// 当たり判定の基準点をオブジェクト中心座標からオブジェクトの拡大率に応じて移動させる
-		centerPos = XMVector3Transform(centerPos, XMLoadFloat4x4(&worldMatrix));
-
-		// マウスカーソルの位置をワールド座標に変換
-		XMFLOAT3 mouseP;
-		XMStoreFloat3(&mouseP, XMVector3Unproject(XMVectorSet(mousePos.x, mousePos.y, 0.0f, 1.0f),
-											 g_vp->TopLeftX, g_vp->TopLeftY, g_vp->Width, g_vp->Height, g_vp->MinDepth, g_vp->MaxDepth,
-											 XMLoadFloat4x4(&pCam->GetProjMatrix()), XMLoadFloat4x4(&pCam->GetViewMatrix()),
-											 XMMatrixIdentity()));
-
-		// 当たり判定領域の半径を計算
-		float radius = XMVectorGetX(XMVector3Length(scaleVec));
-
-		// 当たり判定
-		XMFLOAT3 center;
-		XMStoreFloat3(&center, centerPos);
-		float distance = sqrtf(powf(center.x - mouseP.x, 2) + powf(center.y - mouseP.y, 2) + powf(center.z - mouseP.z, 2));
-
-		// 奥行きの値を計算
-		XMVECTOR depthVec = XMVector3Length(centerPos - XMLoadFloat3(&E));
-		float depth = XMVectorGetX(depthVec);
-
-		if (distance <= radius && depth < HitZDepth)
-		{
-			if (render->GetOwner()->GetTag() == "MainCamera")
-				continue;
-
-			// あたり
-			// Ｚチェック関係ワーク更新
-			Zidx = cnt;				// 選択中のオブジェクトインデックスを保存
-			HitZDepth = depth;    // 選択中のオブジェクトの奥行きを保存
-		}
-	}
-
-	// ヒットしていれば
-	if (Zidx != -1)
-	{
-		auto bj = list[Zidx].lock()->GetOwner(0);
-		manager->GetInspector()->SetSelectGameObject(bj);
-	}
 #endif // 0
 
 }

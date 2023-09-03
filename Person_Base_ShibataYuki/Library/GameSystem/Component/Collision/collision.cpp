@@ -267,7 +267,7 @@ void CCollision::ImGuiDebug()
 	ImGui::DragFloat3("##Center", (float*)m_vCenter);
 
 	// Ä‰Šú‰»‚Í‚±‚±‚Ås‚¤
-	m_nDebugEnterCnt = 0;
+	/*m_nDebugEnterCnt = 0;*/
 	m_nDebugStayCnt = 0;
 	m_nDebugExitCnt = 0;
 

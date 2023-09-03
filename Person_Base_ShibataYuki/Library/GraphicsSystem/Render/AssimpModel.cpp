@@ -921,8 +921,6 @@ void CAssimpModel::Draw(ID3D11DeviceContext* pDC, XMFLOAT4X4& mtxWorld, EByOpaci
 
 	m_mtxWorld = mtxWorld;
 
-	//pDC->VSSetShader(m_pVertexShader, nullptr, 0);
-	//pDC->PSSetShader(m_pPixelShader, nullptr, 0);
 	//// 頂点インプットレイアウトをセット
 	//pDC->IASetInputLayout(m_pVertexLayout);
 

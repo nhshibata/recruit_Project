@@ -39,11 +39,12 @@ private:
 	std::map<std::string, MySpace::System::CSystemBase*>	m_aSystems;
 	ID3D11Device* m_pDevice;
 	ID3D11DeviceContext* m_pDeviceContext;
+	bool m_bIsRun;
 
 private:
 	//--- メンバ関数
-	Application();							// コンストラクタ
-	~Application();							// デストラクタ
+	Application();										// コンストラクタ
+	~Application();										// デストラクタ
 
 public:
 	bool Init(HINSTANCE h_cpInstance);					// システム有効化
@@ -57,6 +58,9 @@ public:
 	
 	ID3D11Device* GetDevice();
 	ID3D11DeviceContext* GetDeviceContext();
+
+	// *@終了
+	void Quit() { m_bIsRun = false; }
 
 	// *@システムへの生ﾎﾟｲﾝﾀによる追加
 	MySpace::System::CSystemBase* AddSystem(MySpace::System::CSystemBase* add, std::string name)

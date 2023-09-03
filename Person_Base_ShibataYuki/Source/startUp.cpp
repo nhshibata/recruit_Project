@@ -57,9 +57,7 @@
 #include <Application/Application.h>
 #include <GameSystem/Manager/sceneManager.h>
 
-//#include <gameCentipedeMarch.h>
 #include <spellComponents.h>
-//#include <gameCentipedeMarch.h>
 
 //--- ライブラリ参照
 // プロパティで指定するか、ここで指定するか悩みどころ
@@ -118,7 +116,12 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 				pScene->SetSceneName("StartScene");
 			}
 			else
+			{
 				CSceneManager::Get()->LoadScene(FORDER_DIR(Data/scene/GG_Shadow.scene));
+				//CSceneManager::Get()->LoadScene(FORDER_DIR(Data/scene/ActionStage.scene));
+				//CSceneManager::Get()->LoadScene(FORDER_DIR(Data/scene/PostProcess.scene));
+			}
+
 			/*auto obj = CGameObject::CreateObject().lock();
 			auto game = obj->AddComponent<Spell::CGameManager>();
 			game->GetOwner()->SetName("GameManager");*/
