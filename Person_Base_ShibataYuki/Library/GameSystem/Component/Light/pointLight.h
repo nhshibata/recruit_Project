@@ -42,7 +42,7 @@ namespace MySpace
 		public:
 			//--- “› ﬁä÷êî
 			CPointLight();
-			CPointLight(std::shared_ptr<CGameObject> owner);
+			CPointLight(CGameObject::Ptr owner);
 			~CPointLight();
 
 			void OnLoad();

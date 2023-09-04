@@ -18,18 +18,16 @@ using namespace MySpace::Game;
 // コンストラクタ
 //==========================================================
 CPointLight::CPointLight()
+	: m_fRange(1)
 {
 }
 
 //==========================================================
 // 引き数付きコンストラクタ
 //==========================================================
-CPointLight::CPointLight(std::shared_ptr<CGameObject> owner)
+CPointLight::CPointLight(CGameObject::Ptr owner)
 	:CLight(owner), m_fRange(1)
 {
-	GetOwner()->GetTagPtr()->CreateTag("light");
-	GetOwner()->SetObjTag("light");
-
 	m_vColor = Color(rand() % 10 * 0.1f, rand() % 10 * 0.1f, rand() % 10 * 0.1f, 1.0f);
 }
 
@@ -57,7 +55,6 @@ void CPointLight::Awake()
 	CLight::Awake();
 	GetOwner()->GetTagPtr()->CreateTag("light");
 	GetOwner()->SetObjTag("light");
-	
 }
 
 //========================================================

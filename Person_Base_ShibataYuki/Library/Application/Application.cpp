@@ -45,7 +45,7 @@ namespace
 // 初期化
 //==========================================================
 Application::Application()
-	:m_hInst(0),m_hWnd(0),m_pDevice(nullptr),m_pDeviceContext(nullptr)
+	:m_hInst(0),m_hWnd(0),m_pDevice(nullptr),m_pDeviceContext(nullptr), m_bIsRun(true)
 {
 }
 
@@ -124,7 +124,7 @@ void Application::Destroy()
 	//CWindow::Get()->Close(WINDOW_CLASS_NAME, m_hInst);
 	UnregisterClass(WINDOW_CLASS_NAME, m_hInst);
 	
-	//--- システム部分解放
+	//--- システム解放
 	// 最後尾から順に解放
 	for (auto rit = m_aSystems.rbegin(); rit != m_aSystems.rend();)
 	{
@@ -153,7 +153,7 @@ unsigned long Application::MainLoop()
 	CFps::Get()->Init();
 
 	// 無限ループ
-	while (window->ExecMessage()) 
+	while (window->ExecMessage() && m_bIsRun)
 	{
 		//--- fps更新
 		CFps::Get()->Update();

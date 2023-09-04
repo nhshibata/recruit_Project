@@ -44,7 +44,7 @@ namespace MySpace
 			//--- ﾒﾝﾊﾞ関数
 			CLight();
 			CLight(std::shared_ptr<CGameObject> owner);
-			~CLight();
+			virtual ~CLight();
 
 			void OnLoad();
 			virtual void Awake();			// 初期化 他コンポーネントの取得などを行う

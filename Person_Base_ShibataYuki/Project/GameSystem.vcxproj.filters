@@ -73,11 +73,11 @@
     <Filter Include="ソース ファイル\Factory">
       <UniqueIdentifier>{fdf10f7a-9aa5-4dba-a958-280f48be2e8a}</UniqueIdentifier>
     </Filter>
-    <Filter Include="ヘッダー ファイル\Component\DarkGame">
-      <UniqueIdentifier>{b3df4aa5-e04a-4c76-862b-fe26f974620e}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="ソース ファイル\Component\DarkGame">
+    <Filter Include="ソース ファイル\DarkGame">
       <UniqueIdentifier>{a4d89087-2f17-4eb6-a09e-53a57cc0a224}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ヘッダー ファイル\DarkGame">
+      <UniqueIdentifier>{b3df4aa5-e04a-4c76-862b-fe26f974620e}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -231,6 +231,54 @@
     <ClInclude Include="..\Library\GameSystem\Component\Light\pointLight.h">
       <Filter>ヘッダー ファイル\Component\Light</Filter>
     </ClInclude>
+    <ClInclude Include="..\Library\GameSystem\DarkGame\lightCollision.h">
+      <Filter>ヘッダー ファイル\DarkGame</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Library\GameSystem\DarkGame\floor.h">
+      <Filter>ヘッダー ファイル\DarkGame</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Library\GameSystem\DarkGame\gameGoal.h">
+      <Filter>ヘッダー ファイル\DarkGame</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Library\GameSystem\DarkGame\obstacle.h">
+      <Filter>ヘッダー ファイル\DarkGame</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Library\GameSystem\DarkGame\enemyBase.h">
+      <Filter>ヘッダー ファイル\DarkGame</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Library\GameSystem\DarkGame\gameStartPosition.h">
+      <Filter>ヘッダー ファイル\DarkGame</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Library\GameSystem\DarkGame\goalMeterUI.h">
+      <Filter>ヘッダー ファイル\DarkGame</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Library\GameSystem\DarkGame\gameManager.h">
+      <Filter>ヘッダー ファイル\DarkGame</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Library\GameSystem\DarkGame\darkPlayer.h">
+      <Filter>ヘッダー ファイル\DarkGame</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Library\GameSystem\DarkGame\lightCollisionRegistry.h">
+      <Filter>ヘッダー ファイル\DarkGame</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Library\GameSystem\DarkGame\lightCollisionCondition.h">
+      <Filter>ヘッダー ファイル\DarkGame</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Library\GameSystem\DarkGame\lightCollisionManager.h">
+      <Filter>ヘッダー ファイル\DarkGame</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Library\GameSystem\DarkGame\moveCharacter.h">
+      <Filter>ヘッダー ファイル\DarkGame</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Library\GameSystem\DarkGame\animUI.h">
+      <Filter>ヘッダー ファイル\DarkGame</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Library\GameSystem\DarkGame\imageSwitch.h">
+      <Filter>ヘッダー ファイル\DarkGame</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Library\GameSystem\DarkGame\pauseMenu.h">
+      <Filter>ヘッダー ファイル\DarkGame</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\Library\GameSystem\components.cpp">
@@ -367,6 +415,54 @@
     </ClCompile>
     <ClCompile Include="..\Library\GameSystem\Component\Light\pointLight.cpp">
       <Filter>ソース ファイル\Component\Light</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Library\GameSystem\DarkGame\lightCollision.cpp">
+      <Filter>ソース ファイル\DarkGame</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Library\GameSystem\DarkGame\floor.cpp">
+      <Filter>ソース ファイル\DarkGame</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Library\GameSystem\DarkGame\gameGoal.cpp">
+      <Filter>ソース ファイル\DarkGame</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Library\GameSystem\DarkGame\obstacle.cpp">
+      <Filter>ソース ファイル\DarkGame</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Library\GameSystem\DarkGame\enemyBase.cpp">
+      <Filter>ソース ファイル\DarkGame</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Library\GameSystem\DarkGame\gameStartPosition.cpp">
+      <Filter>ソース ファイル\DarkGame</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Library\GameSystem\DarkGame\goalMeterUI.cpp">
+      <Filter>ソース ファイル\DarkGame</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Library\GameSystem\DarkGame\gameManager.cpp">
+      <Filter>ソース ファイル\DarkGame</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Library\GameSystem\DarkGame\darkPlayer.cpp">
+      <Filter>ソース ファイル\DarkGame</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Library\GameSystem\DarkGame\lightCollisionCondition.cpp">
+      <Filter>ソース ファイル\DarkGame</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Library\GameSystem\DarkGame\lightCollisionRegistry.cpp">
+      <Filter>ソース ファイル\DarkGame</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Library\GameSystem\DarkGame\lightCollisionManager.cpp">
+      <Filter>ソース ファイル\DarkGame</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Library\GameSystem\DarkGame\moveCharacter.cpp">
+      <Filter>ソース ファイル\DarkGame</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Library\GameSystem\DarkGame\animUI.cpp">
+      <Filter>ソース ファイル\DarkGame</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Library\GameSystem\DarkGame\imageSwitch.cpp">
+      <Filter>ソース ファイル\DarkGame</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Library\GameSystem\DarkGame\pauseMenu.cpp">
+      <Filter>ソース ファイル\DarkGame</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

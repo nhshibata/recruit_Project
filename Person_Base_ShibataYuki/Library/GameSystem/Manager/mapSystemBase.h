@@ -87,6 +87,8 @@ namespace MySpace
 				return T();
 			}
 
+			inline MAP GetMap()const { return m_aIntMap; }
+
 		};
 	}
 }
